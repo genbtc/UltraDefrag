@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="native" />
+		<Option platforms="Windows;" />
+		<Option pch_mode="2" />
+		<Option compiler="msvc10" />
+		<Build>
+			<Target title="Release">
+				<Option platforms="Windows;" />
+				<Option output="../bin/native" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../bin/" />
+				<Option object_output="../obj/" />
+				<Option type="3" />
+				<Option compiler="msvc10" />
+				<Compiler>
+					<Add option="/MD" />
+					<Add option="/arch:SSE2" />
+					<Add option="/Ox" />
+					<Add option="/W3" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="/MD" />
+			<Add option="/arch:SSE2" />
+			<Add option="/Ox" />
+			<Add option="/W3" />
+			<Add option="/nologo /W3 /GS- /Gd /O2 /c" />
+			<Add option="/DBUILD_DLL" />
+			<Add option="/DWIN32" />
+			<Add option="/DNDEBUG" />
+			<Add option="/D_MBCS" />
+			<Add option="/DUSE_WINSDK" />
+			<Add option="/D_CRT_SECURE_NO_WARNINGS" />
+			<Add option="/D_CONSOLE" />
+			<Add option="/D_USRDLL" />
+			<Add option="/DZENWINX_EXPORTS" />
+			<Add option="/DUDEFRAG_EXPORTS" />
+			<Add directory="C:/Software/wxWidgets-2.8.12/lib/vc_libwinsdk-X86/mswu" />
+			<Add directory="C:/Software/wxWidgets-2.8.12/include" />
+		</Compiler>
+		<ResourceCompiler>
+			<Add directory="C:/Software/wxWidgets-2.8.12/lib/vc_libwinsdk-X86/mswu" />
+			<Add directory="C:/Software/wxWidgets-2.8.12/include" />
+		</ResourceCompiler>
+		<Linker>
+			<Add option="/INCREMENTAL:NO" />
+			<Add option="/nologo" />
+			<Add option="/nodefaultlib" />
+			<Add option="/subsystem:console" />
+			<Add option='/entry:&quot;DllMain&quot;' />
+			<Add option="/dll" />
+			<Add option="/def:native.def" />
+			<Add option="/implib:..\lib\native.lib" />
+			<Add option="/MANIFEST:NO" />
+			<Add library="ntdll.lib" />
+		</Linker>
+		<Unit filename="analyze.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="auxiliary.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="case-tables.h" />
+		<Unit filename="case-tables.h.bak.h" />
+		<Unit filename="commands.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="dbg.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="defrag.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="defrag_native.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="defrag_native.h" />
+		<Unit filename="entry.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="env.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="event.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="file.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ftw.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ftw_ntfs.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="int64.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="keyboard.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="keytrans.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ldr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="list.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="map.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mem.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="misc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="move.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mutex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ntfs.h" />
+		<Unit filename="ntndk.h" />
+		<Unit filename="optimize.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="options.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="path.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="prb.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="prb.h" />
+		<Unit filename="privilege.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="reg.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="reports.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="script.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="search.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="stdio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="string.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="thread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="time.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="udefrag-internals.h" />
+		<Unit filename="udefrag-native.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="udefrag-volume.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="udefrag.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="udefrag.h" />
+		<Unit filename="udefrag.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
+		<Unit filename="volume.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="zenwinx.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="zenwinx.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<wxsmith version="1">
+				<gui name="wxWidgets" src="" main="" init_handlers="necessary" language="CPP" />
+			</wxsmith>
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

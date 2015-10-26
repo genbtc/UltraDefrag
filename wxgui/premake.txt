@@ -1,0 +1,18 @@
+-- premake5.lua
+workspace "UltraDefrag"
+   configurations { "Debug", "Release" }
+
+project "UltraDefrag"
+   kind "WindowedApp"
+   language "C++"
+   targetdir "bin/%{cfg.buildcfg}"
+
+   files { "**.h", "**.c" }
+
+   filter "configurations:Debug"
+      defines { "DEBUG" }
+      flags { "Symbols" }
+
+   filter "configurations:Release"
+      defines { "NDEBUG" }
+      optimize "On"

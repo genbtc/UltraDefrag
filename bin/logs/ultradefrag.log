@@ -1,0 +1,103 @@
+﻿~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  UltraDefrag 7.0.1 test1 log file
+  Windows NT 10.0
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  If you'd like to report a bug, attach this file to your bug report please:
+
+  http://sourceforge.net/tracker/?group_id=199532&atid=969870
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+2015-10-26 10:40:44.079 INFO:  winx_set_dbg_log: log_path = \??\C:\Software\udefrag\bin\logs\ultradefrag.log
+2015-10-26 10:40:44.082 INFO:  Utils::DownloadFile: downloading http://www.google-analytics.com/__utm.gif?utmwv=4.6.5&utmn=2007513147&utmhn=ultradefrag.sourceforge.net&utmhid=917253451&utmr=-&utmp=/appstat/gui-x86.html&utmac=UA-15890458-1&utmcc=__utma%3D474422458.559970018.1445870444.1445870444.1445870444.50%3B%2B__utmz%3D474422458.1445870444.27.2.utmcsr%3Dgoogle.com%7Cutmccn%3D(referral)%7Cutmcmd%3Dreferral%7Cutmcct%3D%2F%3B
+2015-10-26 10:40:44.116 INFO:  winx_set_dbg_log: log_path = \??\C:\Software\udefrag\bin\logs\ultradefrag.log
+2015-10-26 10:40:44.116 INFO:  MainFrame::MainFrame: current directory differs from installation location, so it is portable
+2015-10-26 10:40:44.116 INFO:  MainFrame::MainFrame: current directory: C:\Software\udefrag\bin
+2015-10-26 10:40:44.124 ERROR: MainFrame::InitMenu: can't find locale info for szl
+2015-10-26 10:40:44.124 INFO:  MainFrame::InitMenu: languages: 64, break count: 19, delta: 23
+2015-10-26 10:40:44.135 ERROR: Utils::DownloadFile: URLDownloadToCacheFile failed with code 0x800c0005
+2015-10-26 10:40:44.162 DEBUG: MainFrame::InitVolList: client width ......... 20
+2015-10-26 10:40:44.162 DEBUG: MainFrame::InitVolList: column 0 width ....... 6
+2015-10-26 10:40:44.162 DEBUG: MainFrame::InitVolList: column 1 width ....... 1
+2015-10-26 10:40:44.162 DEBUG: MainFrame::InitVolList: column 2 width ....... 2
+2015-10-26 10:40:44.162 DEBUG: MainFrame::InitVolList: column 3 width ....... 3
+2015-10-26 10:40:44.162 DEBUG: MainFrame::InitVolList: column 4 width ....... 2
+2015-10-26 10:40:44.162 DEBUG: MainFrame::InitVolList: column 5 width ....... 6
+2015-10-26 10:40:44.198 INFO:  ConfigThread::Entry: configuration tracking started
+2015-10-26 10:40:44.234 DEBUG: MainFrame::AdjustListColumns: border width ......... 1
+2015-10-26 10:40:44.234 DEBUG: MainFrame::AdjustListColumns: client width ......... 841
+2015-10-26 10:40:44.234 DEBUG: MainFrame::AdjustListColumns: total column width ... 20
+2015-10-26 10:40:44.237 DEBUG: MainFrame::AdjustListColumns: column 0 width ....... 252
+2015-10-26 10:40:44.240 DEBUG: MainFrame::AdjustListColumns: column 1 width ....... 78
+2015-10-26 10:40:44.243 DEBUG: MainFrame::AdjustListColumns: column 2 width ....... 102
+2015-10-26 10:40:44.245 DEBUG: MainFrame::AdjustListColumns: column 3 width ....... 133
+2015-10-26 10:40:44.248 DEBUG: MainFrame::AdjustListColumns: column 4 width ....... 125
+2015-10-26 10:40:44.253 DEBUG: MainFrame::AdjustListColumns: column 5 width ....... 151
+2015-10-26 10:40:44.253 DEBUG: MainFrame::AdjustListColumns: border width ......... 1
+2015-10-26 10:40:44.253 DEBUG: MainFrame::AdjustListColumns: client width ......... 841
+2015-10-26 10:40:44.253 DEBUG: MainFrame::AdjustListColumns: total column width ... 841
+2015-10-26 10:40:44.253 DEBUG: MainFrame::AdjustListColumns: column 0 width ....... 252
+2015-10-26 10:40:44.253 DEBUG: MainFrame::AdjustListColumns: column 1 width ....... 78
+2015-10-26 10:40:44.253 DEBUG: MainFrame::AdjustListColumns: column 2 width ....... 102
+2015-10-26 10:40:44.254 DEBUG: MainFrame::AdjustListColumns: column 3 width ....... 133
+2015-10-26 10:40:44.254 DEBUG: MainFrame::AdjustListColumns: column 4 width ....... 125
+2015-10-26 10:40:44.255 DEBUG: MainFrame::AdjustListColumns: column 5 width ....... 151
+2015-10-26 10:40:44.255 DEBUG: MainFrame::AdjustListColumns: border width ......... 1
+2015-10-26 10:40:44.255 DEBUG: MainFrame::AdjustListColumns: client width ......... 841
+2015-10-26 10:40:44.255 DEBUG: MainFrame::AdjustListColumns: total column width ... 841
+2015-10-26 10:40:44.255 DEBUG: MainFrame::AdjustListColumns: column 0 width ....... 252
+2015-10-26 10:40:44.255 DEBUG: MainFrame::AdjustListColumns: column 1 width ....... 78
+2015-10-26 10:40:44.255 DEBUG: MainFrame::AdjustListColumns: column 2 width ....... 102
+2015-10-26 10:40:44.255 DEBUG: MainFrame::AdjustListColumns: column 3 width ....... 133
+2015-10-26 10:40:44.256 DEBUG: MainFrame::AdjustListColumns: column 4 width ....... 125
+2015-10-26 10:40:44.256 DEBUG: MainFrame::AdjustListColumns: column 5 width ....... 151
+2015-10-26 10:40:44.256 DEBUG: MainFrame::AdjustListColumns: border width ......... 1
+2015-10-26 10:40:44.256 DEBUG: MainFrame::AdjustListColumns: client width ......... 841
+2015-10-26 10:40:44.256 DEBUG: MainFrame::AdjustListColumns: total column width ... 841
+2015-10-26 10:40:44.256 DEBUG: MainFrame::AdjustListColumns: column 0 width ....... 252
+2015-10-26 10:40:44.257 DEBUG: MainFrame::AdjustListColumns: column 1 width ....... 78
+2015-10-26 10:40:44.258 DEBUG: MainFrame::AdjustListColumns: column 2 width ....... 102
+2015-10-26 10:40:44.258 DEBUG: MainFrame::AdjustListColumns: column 3 width ....... 133
+2015-10-26 10:40:44.258 DEBUG: MainFrame::AdjustListColumns: column 4 width ....... 125
+2015-10-26 10:40:44.259 DEBUG: MainFrame::AdjustListColumns: column 5 width ....... 151
+2015-10-26 10:40:44.375 ERROR: winx_query_symbolic_link: cannot open \??\A:: 0xc0000034 status: The system cannot find the file specified.  
+2015-10-26 10:40:44.375 ERROR: winx_query_symbolic_link: cannot open \??\B:: 0xc0000034 status: The system cannot find the file specified.  
+2015-10-26 10:40:44.375 INFO:  get_drive_geometry: C: device capacity = 111.7 GB
+2015-10-26 10:40:44.375 INFO:  get_drive_geometry: D: device capacity = 3.6 TB
+2015-10-26 10:40:44.375 INFO:  get_drive_geometry: E: device capacity = 111.7 GB
+2015-10-26 10:40:44.375 INFO:  internal_validate_volume: Disk F: is on cdrom drive.
+2015-10-26 10:40:44.375 ERROR: winx_query_symbolic_link: cannot open \??\G:: 0xc0000034 status: The system cannot find the file specified.  
+2015-10-26 10:40:44.375 INFO:  get_drive_geometry: H: device capacity = 1.3 TB
+2015-10-26 10:40:44.375 INFO:  get_drive_geometry: I: device capacity = 1.3 TB
+2015-10-26 10:40:44.375 ERROR: winx_query_symbolic_link: cannot open \??\J:: 0xc0000034 status: The system cannot find the file specified.  
+2015-10-26 10:40:44.375 INFO:  get_drive_geometry: K: device capacity = 1.8 TB
+2015-10-26 10:40:44.375 ERROR: winx_query_symbolic_link: cannot open \??\L:: 0xc0000034 status: The system cannot find the file specified.  
+2015-10-26 10:40:44.375 ERROR: winx_query_symbolic_link: cannot open \??\M:: 0xc0000034 status: The system cannot find the file specified.  
+2015-10-26 10:40:44.375 ERROR: winx_query_symbolic_link: cannot open \??\N:: 0xc0000034 status: The system cannot find the file specified.  
+2015-10-26 10:40:44.375 ERROR: winx_query_symbolic_link: cannot open \??\O:: 0xc0000034 status: The system cannot find the file specified.  
+2015-10-26 10:40:44.375 ERROR: winx_query_symbolic_link: cannot open \??\P:: 0xc0000034 status: The system cannot find the file specified.  
+2015-10-26 10:40:44.375 ERROR: winx_query_symbolic_link: cannot open \??\Q:: 0xc0000034 status: The system cannot find the file specified.  
+2015-10-26 10:40:44.376 ERROR: winx_query_symbolic_link: cannot open \??\R:: 0xc0000034 status: The system cannot find the file specified.  
+2015-10-26 10:40:44.376 ERROR: winx_query_symbolic_link: cannot open \??\S:: 0xc0000034 status: The system cannot find the file specified.  
+2015-10-26 10:40:44.376 ERROR: winx_query_symbolic_link: cannot open \??\T:: 0xc0000034 status: The system cannot find the file specified.  
+2015-10-26 10:40:44.376 ERROR: winx_query_symbolic_link: cannot open \??\U:: 0xc0000034 status: The system cannot find the file specified.  
+2015-10-26 10:40:44.376 ERROR: winx_query_symbolic_link: cannot open \??\V:: 0xc0000034 status: The system cannot find the file specified.  
+2015-10-26 10:40:44.376 ERROR: winx_query_symbolic_link: cannot open \??\W:: 0xc0000034 status: The system cannot find the file specified.  
+2015-10-26 10:40:44.376 ERROR: winx_query_symbolic_link: cannot open \??\X:: 0xc0000034 status: The system cannot find the file specified.  
+2015-10-26 10:40:44.376 ERROR: winx_query_symbolic_link: cannot open \??\Y:: 0xc0000034 status: The system cannot find the file specified.  
+2015-10-26 10:40:44.376 ERROR: winx_query_symbolic_link: cannot open \??\Z:: 0xc0000034 status: The system cannot find the file specified.  
+2015-10-26 10:40:44.381 DEBUG: MainFrame::AdjustListColumns: border width ......... 1
+2015-10-26 10:40:44.381 DEBUG: MainFrame::AdjustListColumns: client width ......... 812
+2015-10-26 10:40:44.381 DEBUG: MainFrame::AdjustListColumns: total column width ... 841
+2015-10-26 10:40:44.388 DEBUG: MainFrame::AdjustListColumns: column 0 width ....... 243
+2015-10-26 10:40:44.397 DEBUG: MainFrame::AdjustListColumns: column 1 width ....... 75
+2015-10-26 10:40:44.398 INFO:  Utils::DownloadFile: downloading http://ultradefrag.sourceforge.net/stable-version.ini
+2015-10-26 10:40:44.409 ERROR: Utils::DownloadFile: URLDownloadToCacheFile failed with code 0x800c0005
+2015-10-26 10:40:44.413 DEBUG: MainFrame::AdjustListColumns: column 2 width ....... 98
+2015-10-26 10:40:44.419 DEBUG: MainFrame::AdjustListColumns: column 3 width ....... 129
+2015-10-26 10:40:44.438 DEBUG: MainFrame::AdjustListColumns: column 4 width ....... 121
+2015-10-26 10:40:44.444 DEBUG: MainFrame::AdjustListColumns: column 5 width ....... 146
+2015-10-26 11:41:31.100 INFO:  ConfigThread::Entry: configuration tracking stopped

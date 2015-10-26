@@ -1,0 +1,93 @@
+/obj/native/analyze.c">
+/obj/native/auxiliary.c">
+/obj/native/case-tables.h" />
+/obj/native/commands.c">
+/obj/native/dbg.c">
+/obj/native/defrag.c">
+/obj/native/defrag_native.c">
+/obj/native/defrag_native.h" />
+/obj/native/entry.c">
+/obj/native/env.c">
+/obj/native/event.c">
+/obj/native/file.c">
+/obj/native/ftw.c">
+/obj/native/ftw_ntfs.c">
+/obj/native/int64.c">
+/obj/native/keyboard.c">
+/obj/native/keytrans.c">
+/obj/native/ldr.c">
+/obj/native/list.c">
+/obj/native/lock.c">
+/obj/native/map.c">
+/obj/native/mem.c">
+/obj/native/misc.c">
+/obj/native/move.c">
+/obj/native/mutex.c">
+/obj/native/ntfs.h" />
+/obj/native/ntndk.h" />
+/obj/native/optimize.c">
+/obj/native/options.c">
+/obj/native/path.c">
+/obj/native/prb.c">
+/obj/native/prb.h" />
+/obj/native/privilege.c">
+/obj/native/reg.c">
+/obj/native/reports.c">
+/obj/native/script.c">
+/obj/native/search.c">
+/obj/native/stdio.c">
+/obj/native/string.c">
+/obj/native/thread.c">
+/obj/native/time.c">
+/obj/native/udefrag-internals.h" />
+/obj/native/udefrag-native.c">
+/obj/native/udefrag-volume.c">
+/obj/native/udefrag.c">
+/obj/native/udefrag.h" />
+/obj/native/volume.c">
+/obj/native/zenwinx.c">
+/obj/native/zenwinx.h" />
+
+
+analyze.obj
+auxiliary.obj
+commands.obj
+dbg.obj
+defrag.obj
+defrag_native.obj
+entry.obj
+env.obj
+event.obj
+file.obj
+ftw.obj
+ftw_ntfs.obj
+int64.obj
+keyboard.obj
+keytrans.obj
+ldr.obj
+list.obj
+lock.obj
+map.obj
+mem.obj
+misc.obj
+move.obj
+mutex.obj
+objs.txt
+optimize.obj
+options.obj
+path.obj
+prb.obj
+privilege.obj
+reg.obj
+reports.obj
+script.obj
+search.obj
+stdio.obj
+string.obj
+thread.obj
+time.obj
+udefrag.obj
+udefrag-native.obj
+udefrag-volume.obj
+volume.obj
+zenwinx.obj

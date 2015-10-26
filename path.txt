@@ -1,0 +1,24 @@
+C:\Program Files (x86)\ATI Technologies\ATI.ACE\Core-Static
+C:\Program Files (x86)\CMake\bin
+C:\Program Files (x86)\HTML Help Workshop
+C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin
+C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\NETFX 4.0 Tools\x64
+C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\x64
+C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE
+C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\Tools
+C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Performance Tools
+C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Performance Tools\x64
+C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\BIN\amd64
+C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\VCPackages
+C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\Bin
+C:\Program Files (x86)\Microsoft Visual Studio 9.0\WinSDK\Bin
+C:\Program Files\Microsoft DNX\Dnvm\
+C:\Python27\
+C:\Python27\Scripts
+C:\Python35\
+C:\Python35\Scripts\
+C:\Users\EOFL\.dnx\bin
+C:\Windows\
+C:\windows\Microsoft.NET\Framework64\v3.5
+C:\windows\Microsoft.NET\Framework64\v4.0.30319
+C:\Windows\System32\
