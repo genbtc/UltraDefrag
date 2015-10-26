@@ -54,6 +54,10 @@
 #include <wx/thread.h>
 #include <wx/toolbar.h>
 #include <wx/uri.h>
+#include <wx/notebook.h>//genbtc
+#include <wx/panel.h>//genbtc
+#include <wx/grid.h>//genbtc
+#include <wx/sizer.h>//genbtc
 
 #if wxUSE_UNICODE
 #define wxCharStringFmtSpec "%ls"
@@ -80,8 +84,8 @@ typedef enum {
 } TBPFLAG;
 
 #include "../include/version.h"
-#include "../dll/zenwinx/zenwinx.h"
-#include "../dll/udefrag/udefrag.h"
+#include "../native/zenwinx.h"
+#include "../native/udefrag.h"
 
 // =======================================================================
 //                              Constants
@@ -573,6 +577,12 @@ private:
     wxMenuItem *m_subMenuDebug;
     wxMenuItem *m_subMenuUpgrade;
     wxMenu     *m_menuLanguage;
+
+    wxNotebook* m_notebook1;
+    wxPanel* m_panel1;
+    wxSplitterWindow* m_splitter1;
+    wxPanel* m_panel2;
+    wxGrid* m_grid1;
 
     wxSplitterWindow *m_splitter;
     DrivesList       *m_vList;

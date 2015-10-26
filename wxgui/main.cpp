@@ -249,24 +249,23 @@ MainFrame::MainFrame()
 
     // set main window title
     wxString *instdir = new wxString();
-    if(wxGetEnv(wxT("UD_INSTALL_DIR"),instdir)){
-        wxStandardPaths stdpaths;
-        wxFileName exepath(stdpaths.GetExecutablePath());
-        wxString cd = exepath.GetPath();
-        itrace("current directory: %ls",cd.wc_str());
-        itrace("installation directory: %ls",instdir->wc_str());
-        if(cd.CmpNoCase(*instdir) == 0){
-            itrace("current directory matches "
-                "installation location, so it isn't portable");
-            m_title = new wxString(wxT(VERSIONINTITLE));
-        } else {
-            itrace("current directory differs from "
-                "installation location, so it is portable");
-            m_title = new wxString(wxT(VERSIONINTITLE_PORTABLE));
-        }
+    //genBTC re-arranged the below, A LOT.
+    wxStandardPaths stdpaths;
+    wxFileName exepath(stdpaths.GetExecutablePath());
+    wxString cd = exepath.GetPath();
+    if((wxGetEnv(wxT("UD_INSTALL_DIR"),instdir))&&(cd.CmpNoCase(*instdir) == 0)) {
+        itrace("current directory matches "
+            "installation location, so it isn't portable");
+        itrace("installation location: %ls",instdir->wc_str());
+        m_title = new wxString(wxT(VERSIONINTITLE));
     } else {
+        itrace("current directory differs from "
+            "installation location, so it is portable");
+        itrace("current directory: %ls",cd.wc_str());
+        wxSetEnv(wxT("UD_IS_PORTABLE"),wxT("1"));
         m_title = new wxString(wxT(VERSIONINTITLE_PORTABLE));
     }
+    //genBTC re-arranged the above, A LOT.
     ProcessCommandEvent(ID_SetWindowTitle);
     delete instdir;
 
@@ -284,9 +283,17 @@ MainFrame::MainFrame()
     // create menu, tool and status bars
     InitMenu(); InitToolbar(); InitStatusBar();
 
+	//make sizer1 to Fit the the tabbed "notebook". And make the notebook
+	wxBoxSizer* bSizer1;
+	bSizer1 = new wxBoxSizer( wxVERTICAL );
+	m_notebook1 = new wxNotebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+
+	//make a panel inside the notebook to hold the m_splitter
+	m_panel1 = new wxPanel( m_notebook1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+
     // create list of volumes and cluster map
     // don't use live update style to avoid horizontal scrollbar appearance on list resizing
-    m_splitter = new wxSplitterWindow(this,wxID_ANY,
+    m_splitter = new wxSplitterWindow(m_panel1,wxID_ANY,
         wxDefaultPosition,wxDefaultSize,
         wxSP_3D/* | wxSP_LIVE_UPDATE*/ | wxCLIP_CHILDREN);
     m_splitter->SetMinimumPaneSize(DPI(MIN_PANEL_HEIGHT));
@@ -295,7 +302,6 @@ MainFrame::MainFrame()
         wxLC_NO_SORT_HEADER | wxLC_HRULES | wxLC_VRULES | wxBORDER_NONE);
     //LONG_PTR style = ::GetWindowLongPtr((HWND)m_vList->GetHandle(),GWL_STYLE);
     //style |= LVS_SHOWSELALWAYS; ::SetWindowLongPtr((HWND)m_vList->GetHandle(),GWL_STYLE,style);
-
     m_cMap = new ClusterMap(m_splitter);
 
     m_splitter->SplitHorizontally(m_vList,m_cMap);
@@ -306,9 +312,8 @@ MainFrame::MainFrame()
     else if(m_separatorPosition > maxPanelHeight) m_separatorPosition = maxPanelHeight;
     m_splitter->SetSashPosition(m_separatorPosition);
 
-    // update frame layout so we'll be able
-    // to initialize list of volumes and
-    // cluster map properly
+    // update frame layout so we'll be able to initialize
+    // list of volumes and cluster map properly
     wxSizeEvent evt(wxSize(m_width,m_height));
     ProcessEvent(evt); m_splitter->UpdateSize();
 
@@ -317,6 +322,55 @@ MainFrame::MainFrame()
 
     // populate list of volumes
     m_listThread = new ListThread();
+
+    //make sizer2 to Fit the splitter, and initialize it.
+	wxBoxSizer* bSizer2;
+	bSizer2 = new wxBoxSizer( wxVERTICAL );
+	bSizer2->Add( m_splitter, 1, wxEXPAND, 1 );
+	m_panel1->SetSizer( bSizer2 );
+//	m_panel1->Layout();
+//	bSizer2->Fit( m_panel1 );
+	//Finish Tab1 - Add the Panel1(Splitter+sizer2) to the notebook.
+	m_notebook1->AddPage( m_panel1, wxT("Main"), false );
+
+
+	//make a 2nd panel inside the notebook to hold the 2nd page(a grid)
+	m_panel2 = new wxPanel( m_notebook1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	m_grid1 = new wxGrid( m_panel2, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+	// Grid
+	m_grid1->CreateGrid( 5, 5 );
+	m_grid1->EnableEditing( true );
+	m_grid1->EnableGridLines( true );
+	m_grid1->EnableDragGridSize( false );
+	m_grid1->SetMargins( 0, 0 );
+	// Columns
+	m_grid1->EnableDragColMove( false );
+	m_grid1->EnableDragColSize( true );
+	m_grid1->SetColLabelSize( 30 );
+	m_grid1->SetColLabelAlignment( wxALIGN_CENTRE, wxALIGN_CENTRE );
+	// Rows
+	m_grid1->EnableDragRowSize( true );
+	m_grid1->SetRowLabelSize( 80 );
+	m_grid1->SetRowLabelAlignment( wxALIGN_CENTRE, wxALIGN_CENTRE );
+	// Label Appearance
+	// Cell Defaults
+	m_grid1->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
+
+	//make sizer3 to Fit the grid, and initialize it.
+	wxBoxSizer* bSizer3;
+	bSizer3 = new wxBoxSizer( wxVERTICAL );
+	bSizer3->Add( m_grid1, 0, wxALL, 5 );
+	m_panel2->SetSizer( bSizer3 );
+//	m_panel2->Layout();
+	bSizer3->Fit( m_panel2 );
+	//Finish Tab 2 - Add the Panel2(Grid+sizer3) to the notebook.
+	m_notebook1->AddPage( m_panel2, wxT("Grid"), false );
+
+    //Finish Notebook & initialize
+	bSizer1->Add( m_notebook1, 1, wxEXPAND | wxALL, 4 );
+	this->SetSizer( bSizer1 );
+//	this->Layout();
+
 
     // check the boot time defragmenter presence
     wxFileName btdFile(wxT("%SystemRoot%\\system32\\defrag_native.exe"));

@@ -201,7 +201,7 @@ void MainFrame::ReadUserPreferences(wxCommandEvent& WXUNUSED(event))
     wxUnsetEnv(wxT("UD_SORTING_ORDER"));
     wxUnsetEnv(wxT("UD_TIME_LIMIT"));
 
-    /* interprete guiopts.lua file */
+    /* interpret guiopts.lua file */
     lua_State *L; int status;
     wxFileName path(wxT(".\\options\\guiopts.lua"));
     path.Normalize();
@@ -224,7 +224,7 @@ void MainFrame::ReadUserPreferences(wxCommandEvent& WXUNUSED(event))
 
     status = luaL_dofile(L,path.GetFullPath().char_str());
     if(status != 0){
-        wxString error = wxT("cannot interprete ") + path.GetFullPath();
+        wxString error = wxT("cannot interpret ") + path.GetFullPath();
         etrace("%ls",error.wc_str());
         if(!lua_isnil(L,-1)){
             const char *msg = lua_tostring(L,-1);
@@ -346,23 +346,23 @@ done:
 void MainFrame::OnGuiOptions(wxCommandEvent& WXUNUSED(event))
 {
     if(m_title->Find(wxT("Portable")) != wxNOT_FOUND)
-        Utils::ShellExec(wxT("notepad"),wxT("open"),wxT(".\\options\\guiopts.lua"));
+        Utils::ShellExec(wxT("notepad.exe"),wxT("open"),wxT(".\\options\\guiopts.lua"));
     else
-        Utils::ShellExec(wxT(".\\options\\guiopts.lua"),wxT("edit"));
+        Utils::ShellExec(wxT(".\\options\\guiopts.lua"),wxT("open"));
 }
 
 void MainFrame::OnBootScript(wxCommandEvent& WXUNUSED(event))
 {
     wxFileName script(wxT("%SystemRoot%\\system32\\ud-boot-time.cmd"));
-    script.Normalize(); Utils::ShellExec(script.GetFullPath(),wxT("edit"));
+    script.Normalize(); Utils::ShellExec(script.GetFullPath(),wxT("open"));
 }
 
 void MainFrame::OnReportOptions(wxCommandEvent& WXUNUSED(event))
 {
     if(m_title->Find(wxT("Portable")) != wxNOT_FOUND)
-        Utils::ShellExec(wxT("notepad"),wxT("open"),wxT(".\\options\\udreportopts.lua"));
+        Utils::ShellExec(wxT("notepad.exe"),wxT("open"),wxT(".\\options\\udreportopts.lua"));
     else
-        Utils::ShellExec(wxT(".\\options\\udreportopts.lua"),wxT("edit"));
+        Utils::ShellExec(wxT(".\\options\\udreportopts.lua"),wxT("open"));
 }
 
 /** @} */

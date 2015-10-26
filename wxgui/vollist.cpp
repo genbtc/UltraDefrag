@@ -53,14 +53,17 @@ void MainFrame::InitVolList()
     // set mono-space font for the list unless Burmese translation is selected
     if(g_locale->GetCanonicalName().Left(2) != wxT("my")){
         wxFont font = m_vList->GetFont();
-        if(font.SetFaceName(wxT("Courier New"))){
+        if(font.SetFaceName(wxT("Lucida Console"))){
             font.SetPointSize(DPI(9));
             m_vList->SetFont(font);
         }
     }
 
+    //account for the borders
+    //int border = wxSystemSettings::GetMetric(wxSYS_BORDER_X);//genBTC
+
     // adjust widths so all the columns will fit to the window
-    int width = m_vList->GetClientSize().GetWidth();
+    int width = m_vList->GetClientSize().GetWidth();// - border*4;//genBTC
     int lastColumnWidth = width;
 
     dtrace("client width ......... %d", width);
@@ -193,6 +196,10 @@ void MainFrame::AdjustListColumns(wxCommandEvent& event)
         for(int i = 0; i < LIST_COLUMNS; i++)
             m_r[i] = (double)m_vList->GetColumnWidth(i) / (double)cwidth;
     }
+//genBTC - this stops dynamic column adjusting when you resize the windowframe
+//     else{
+//        return;
+//     }
 
     int lastColumnWidth = width;
 

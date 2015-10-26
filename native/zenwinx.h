@@ -35,7 +35,7 @@ extern "C" {
 #define NtCloseSafe(h) { if(h) { NtClose(h); h = NULL; } }
 
 /* debugging macros */
-#include "../../include/dbg.h"
+#include "../include/dbg.h"
 
 /* prints whatever specified */
 #define trace(format,...)  winx_dbg_print(0,format,## __VA_ARGS__)
@@ -63,7 +63,7 @@ extern "C" {
 
 /*
 * DbgCheckN macro definitions are used
-* to simplify debugging of a situation 
+* to simplify debugging of a situation
 * when something is mistyped in sources.
 */
 #define DbgCheck1(c,r) { \
@@ -275,7 +275,7 @@ void winx_heap_free(void *addr);
 
 /*
 * If a small amount of memory is needed,
-* call winx_malloc and don't care on the 
+* call winx_malloc and don't care on the
 * returned value correctness. In case of
 * allocation failure it'll simply abort
 * the application.
