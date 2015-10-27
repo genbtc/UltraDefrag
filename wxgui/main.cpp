@@ -245,7 +245,7 @@ MainFrame::MainFrame()
 
     // read configuration
     ReadAppConfiguration();
-    ProcessCommandEvent(ID_ReadUserPreferences);
+    ProcessCommandEvent(EventID_ReadUserPreferences);
 
     // set main window title
     wxString *instdir = new wxString();
@@ -266,7 +266,7 @@ MainFrame::MainFrame()
         m_title = new wxString(wxT(VERSIONINTITLE_PORTABLE));
     }
     //genBTC re-arranged the above, A LOT.
-    ProcessCommandEvent(ID_SetWindowTitle);
+    ProcessCommandEvent(EventID_SetWindowTitle);
     delete instdir;
 
     // set main window size and position
@@ -283,7 +283,7 @@ MainFrame::MainFrame()
     // create menu, tool and status bars
     InitMenu(); InitToolbar(); InitStatusBar();
 
-	//make sizer1 to Fit the the tabbed "notebook". And make the notebook
+	//make sizer1 to hold the the tabbed "notebook". And make the notebook
 	wxBoxSizer* bSizer1;
 	bSizer1 = new wxBoxSizer( wxVERTICAL );
 	m_notebook1 = new wxNotebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
@@ -292,7 +292,7 @@ MainFrame::MainFrame()
 	m_panel1 = new wxPanel( m_notebook1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 
     // create list of volumes and cluster map
-    // don't use live update style to avoid horizontal scrollbar appearance on list resizing
+    // - don't - use live update style to avoid horizontal scrollbar appearance on list resizing
     m_splitter = new wxSplitterWindow(m_panel1,wxID_ANY,
         wxDefaultPosition,wxDefaultSize,
         wxSP_3D/* | wxSP_LIVE_UPDATE*/ | wxCLIP_CHILDREN);
@@ -319,7 +319,6 @@ MainFrame::MainFrame()
 
     InitVolList();
     m_vList->SetFocus();
-
     // populate list of volumes
     m_listThread = new ListThread();
 
@@ -328,61 +327,44 @@ MainFrame::MainFrame()
 	bSizer2 = new wxBoxSizer( wxVERTICAL );
 	bSizer2->Add( m_splitter, 1, wxEXPAND, 1 );
 	m_panel1->SetSizer( bSizer2 );
-//	m_panel1->Layout();
-//	bSizer2->Fit( m_panel1 );
-	//Finish Tab1 - Add the Panel1(Splitter+sizer2) to the notebook.
-	m_notebook1->AddPage( m_panel1, wxT("Main"), false );
 
+	//Finish Tab1 - Add the Panel1(Splitter+sizer2) to the notebook.
+	m_notebook1->AddPage( m_panel1, wxT("Drives"), false );
 
 	//make a 2nd panel inside the notebook to hold the 2nd page(a grid)
 	m_panel2 = new wxPanel( m_notebook1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-	m_grid1 = new wxGrid( m_panel2, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
-	// Grid
-	m_grid1->CreateGrid( 5, 5 );
-	m_grid1->EnableEditing( true );
-	m_grid1->EnableGridLines( true );
-	m_grid1->EnableDragGridSize( false );
-	m_grid1->SetMargins( 0, 0 );
-	// Columns
-	m_grid1->EnableDragColMove( false );
-	m_grid1->EnableDragColSize( true );
-	m_grid1->SetColLabelSize( 30 );
-	m_grid1->SetColLabelAlignment( wxALIGN_CENTRE, wxALIGN_CENTRE );
-	// Rows
-	m_grid1->EnableDragRowSize( true );
-	m_grid1->SetRowLabelSize( 80 );
-	m_grid1->SetRowLabelAlignment( wxALIGN_CENTRE, wxALIGN_CENTRE );
-	// Label Appearance
-	// Cell Defaults
-	m_grid1->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
 
-	//make sizer3 to Fit the grid, and initialize it.
+    m_filesList = new FilesList(m_panel2,wxLC_REPORT | \
+        wxLC_HRULES | wxLC_VRULES | wxBORDER_NONE);
+    InitFilesList();
+    m_listfilesThread = new ListFilesThread();//genBTC
+
+	//make sizer3 to Fit the page2list, and initialize it.
 	wxBoxSizer* bSizer3;
 	bSizer3 = new wxBoxSizer( wxVERTICAL );
-	bSizer3->Add( m_grid1, 0, wxALL, 5 );
+	bSizer3->Add( m_filesList, 1, wxEXPAND, 1 );
 	m_panel2->SetSizer( bSizer3 );
-//	m_panel2->Layout();
+
 	bSizer3->Fit( m_panel2 );
-	//Finish Tab 2 - Add the Panel2(Grid+sizer3) to the notebook.
-	m_notebook1->AddPage( m_panel2, wxT("Grid"), false );
+	//Finish Tab 2 - Add the Panel2(page2list+sizer3) to the notebook.
+	m_notebook1->AddPage( m_panel2, wxT("Files"), false );
 
     //Finish Notebook & initialize
-	bSizer1->Add( m_notebook1, 1, wxEXPAND | wxALL, 4 );
+	bSizer1->Add( m_notebook1, 1, wxEXPAND, 1 );
 	this->SetSizer( bSizer1 );
-//	this->Layout();
 
 
     // check the boot time defragmenter presence
     wxFileName btdFile(wxT("%SystemRoot%\\system32\\defrag_native.exe"));
     btdFile.Normalize();
     bool btd = btdFile.FileExists();
-    m_menuBar->FindItem(ID_BootEnable)->Enable(btd);
-    m_menuBar->FindItem(ID_BootScript)->Enable(btd);
-    m_toolBar->EnableTool(ID_BootEnable,btd);
-    m_toolBar->EnableTool(ID_BootScript,btd);
+    m_menuBar->FindItem(EventID_BootEnable)->Enable(btd);
+    m_menuBar->FindItem(EventID_BootScript)->Enable(btd);
+    m_toolBar->EnableTool(EventID_BootEnable,btd);
+    m_toolBar->EnableTool(EventID_BootScript,btd);
     if(btd && ::winx_bootex_check(L"defrag_native") > 0){
-        m_menuBar->FindItem(ID_BootEnable)->Check(true);
-        m_toolBar->ToggleTool(ID_BootEnable,true);
+        m_menuBar->FindItem(EventID_BootEnable)->Check(true);
+        m_toolBar->ToggleTool(EventID_BootEnable,true);
         m_btdEnabled = true;
     } else {
         m_btdEnabled = false;
@@ -395,7 +377,7 @@ MainFrame::MainFrame()
 
     wxConfigBase *cfg = wxConfigBase::Get();
     int ulevel = (int)cfg->Read(wxT("/Upgrade/Level"),1);
-    wxMenuItem *item = m_menuBar->FindItem(ID_HelpUpgradeNone + ulevel);
+    wxMenuItem *item = m_menuBar->FindItem(EventID_HelpUpgradeNone + ulevel);
     if(item) item->Check();
 
     m_upgradeThread = new UpgradeThread(ulevel);
@@ -409,7 +391,7 @@ MainFrame::MainFrame()
     SetSystemTrayIcon(wxT("tray"),wxT("UltraDefrag"));
 
     // set localized text
-    ProcessCommandEvent(ID_LocaleChange \
+    ProcessCommandEvent(EventID_LocaleChange \
         + g_locale->GetLanguage());
 
     // allow disk processing
@@ -422,13 +404,14 @@ MainFrame::MainFrame()
 MainFrame::~MainFrame()
 {
     // terminate threads
-    ProcessCommandEvent(ID_Stop);
+    ProcessCommandEvent(EventID_Stop);
     ::SetEvent(g_synchEvent);
     delete m_btdThread;
     delete m_configThread;
     delete m_crashInfoThread;
     delete m_jobThread;
     delete m_listThread;
+    delete m_listfilesThread;//genbtc
 
     // save configuration
     SaveAppConfiguration();
@@ -464,76 +447,81 @@ bool MainFrame::CheckForTermination(int time)
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     // file menu
-    EVT_MENU_RANGE(ID_Analyze, ID_MftOpt,
+    EVT_MENU_RANGE(EventID_Analyze, EventID_MftOpt,
                    MainFrame::OnStartJob)
-    EVT_MENU(ID_Pause, MainFrame::OnPause)
-    EVT_MENU(ID_Stop,  MainFrame::OnStop)
+    EVT_MENU(EventID_Pause, MainFrame::OnPause)
+    EVT_MENU(EventID_Stop,  MainFrame::OnStop)
 
-    EVT_MENU(ID_Repeat,  MainFrame::OnRepeat)
+    EVT_MENU(EventID_Repeat,  MainFrame::OnRepeat)
 
-    EVT_MENU(ID_SkipRem, MainFrame::OnSkipRem)
-    EVT_MENU(ID_Rescan,  MainFrame::OnRescan)
+    EVT_MENU(EventID_SkipRem, MainFrame::OnSkipRem)
+    EVT_MENU(EventID_Rescan,  MainFrame::OnRescan)
 
-    EVT_MENU(ID_Repair,  MainFrame::OnRepair)
+    EVT_MENU(EventID_Repair,  MainFrame::OnRepair)
 
-    EVT_MENU(ID_Exit, MainFrame::OnExit)
+    EVT_MENU(EventID_Exit, MainFrame::OnExit)
 
     // report menu
-    EVT_MENU(ID_ShowReport, MainFrame::OnShowReport)
+    EVT_MENU(EventID_ShowReport, MainFrame::OnShowReport)
 
     // settings menu
-    EVT_MENU_RANGE(ID_LangShowLog, ID_LangSubmit,
+    EVT_MENU_RANGE(EventID_LangShowLog, EventID_LangSubmit,
                    MainFrame::OnLangOpenTransifex)
-    EVT_MENU(ID_LangOpenFolder, MainFrame::OnLangOpenFolder)
+    EVT_MENU(EventID_LangOpenFolder, MainFrame::OnLangOpenFolder)
 
-    EVT_MENU_RANGE(ID_LocaleChange, ID_LocaleChange \
+    EVT_MENU_RANGE(EventID_LocaleChange, EventID_LocaleChange \
         + wxUD_LANGUAGE_LAST, MainFrame::OnLocaleChange)
 
-    EVT_MENU(ID_GuiOptions, MainFrame::OnGuiOptions)
+    EVT_MENU(EventID_GuiOptions, MainFrame::OnGuiOptions)
 
-    EVT_MENU(ID_BootEnable, MainFrame::OnBootEnable)
-    EVT_MENU(ID_BootScript, MainFrame::OnBootScript)
+    EVT_MENU(EventID_BootEnable, MainFrame::OnBootEnable)
+    EVT_MENU(EventID_BootScript, MainFrame::OnBootScript)
 
-    EVT_MENU(ID_ReportOptions, MainFrame::OnReportOptions)
+    EVT_MENU(EventID_ReportOptions, MainFrame::OnReportOptions)
 
     // help menu
-    EVT_MENU(ID_HelpContents,     MainFrame::OnHelpContents)
-    EVT_MENU(ID_HelpBestPractice, MainFrame::OnHelpBestPractice)
-    EVT_MENU(ID_HelpFaq,          MainFrame::OnHelpFaq)
-    EVT_MENU(ID_HelpLegend,       MainFrame::OnHelpLegend)
+    EVT_MENU(EventID_HelpContents,     MainFrame::OnHelpContents)
+    EVT_MENU(EventID_HelpBestPractice, MainFrame::OnHelpBestPractice)
+    EVT_MENU(EventID_HelpFaq,          MainFrame::OnHelpFaq)
+    EVT_MENU(EventID_HelpLegend,       MainFrame::OnHelpLegend)
 
-    EVT_MENU(ID_DebugLog,  MainFrame::OnDebugLog)
-    EVT_MENU(ID_DebugSend, MainFrame::OnDebugSend)
+    EVT_MENU(EventID_DebugLog,  MainFrame::OnDebugLog)
+    EVT_MENU(EventID_DebugSend, MainFrame::OnDebugSend)
 
-    EVT_MENU_RANGE(ID_HelpUpgradeNone,
-                   ID_HelpUpgradeCheck,
+    EVT_MENU_RANGE(EventID_HelpUpgradeNone,
+                   EventID_HelpUpgradeCheck,
                    MainFrame::OnHelpUpgrade)
-    EVT_MENU(ID_HelpAbout, MainFrame::OnHelpAbout)
+    EVT_MENU(EventID_HelpAbout, MainFrame::OnHelpAbout)
 
     // event handlers
     EVT_ACTIVATE(MainFrame::OnActivate)
     EVT_MOVE(MainFrame::OnMove)
     EVT_SIZE(MainFrame::OnSize)
 
-    EVT_MENU(ID_AdjustListColumns, MainFrame::AdjustListColumns)
-    EVT_MENU(ID_AdjustListHeight,  MainFrame::AdjustListHeight)
-    EVT_MENU(ID_AdjustSystemTrayIcon,     MainFrame::AdjustSystemTrayIcon)
-    EVT_MENU(ID_AdjustTaskbarIconOverlay, MainFrame::AdjustTaskbarIconOverlay)
-    EVT_MENU(ID_BootChange,        MainFrame::OnBootChange)
-    EVT_MENU(ID_CacheJob,          MainFrame::CacheJob)
-    EVT_MENU(ID_DefaultAction,     MainFrame::OnDefaultAction)
-    EVT_MENU(ID_DiskProcessingFailure, MainFrame::OnDiskProcessingFailure)
-    EVT_MENU(ID_JobCompletion,     MainFrame::OnJobCompletion)
-    EVT_MENU(ID_PopulateList,      MainFrame::PopulateList)
-    EVT_MENU(ID_ReadUserPreferences,   MainFrame::ReadUserPreferences)
-    EVT_MENU(ID_RedrawMap,         MainFrame::RedrawMap)
-    EVT_MENU(ID_SelectAll,         MainFrame::SelectAll)
-    EVT_MENU(ID_SetWindowTitle,    MainFrame::SetWindowTitle)
-    EVT_MENU(ID_ShowUpgradeDialog, MainFrame::ShowUpgradeDialog)
-    EVT_MENU(ID_Shutdown,          MainFrame::Shutdown)
-    EVT_MENU(ID_UpdateStatusBar,   MainFrame::UpdateStatusBar)
-    EVT_MENU(ID_UpdateVolumeInformation, MainFrame::UpdateVolumeInformation)
-    EVT_MENU(ID_UpdateVolumeStatus,      MainFrame::UpdateVolumeStatus)
+    EVT_MENU(EventID_AdjustListColumns, MainFrame::AdjustListColumns)
+    EVT_MENU(EventID_AdjustListHeight,  MainFrame::AdjustListHeight)
+    EVT_MENU(EventID_AdjustFilesListColumns, MainFrame::FilesAdjustListColumns)//genBTC
+    EVT_MENU(EventID_AdjustFilesListHeight,  MainFrame::FilesAdjustListHeight)//genBTC
+    EVT_MENU(EventID_AdjustSystemTrayIcon,     MainFrame::AdjustSystemTrayIcon)
+    EVT_MENU(EventID_AdjustTaskbarIconOverlay, MainFrame::AdjustTaskbarIconOverlay)
+    EVT_MENU(EventID_BootChange,        MainFrame::OnBootChange)
+    EVT_MENU(EventID_CacheJob,          MainFrame::CacheJob)
+    EVT_MENU(EventID_DefaultAction,     MainFrame::OnDefaultAction)
+    EVT_MENU(EventID_DiskProcessingFailure, MainFrame::OnDiskProcessingFailure)
+    EVT_MENU(EventID_JobCompletion,     MainFrame::OnJobCompletion)
+    EVT_MENU(EventID_PopulateList,      MainFrame::PopulateList)
+    EVT_MENU(EventID_PopulateFilesList,      MainFrame::FilesPopulateList) //genBTC
+    EVT_MENU(EventID_ReadUserPreferences,   MainFrame::ReadUserPreferences)
+    EVT_MENU(EventID_RedrawMap,         MainFrame::RedrawMap)
+    EVT_MENU(EventID_SelectAll,         MainFrame::SelectAll)
+    EVT_MENU(EventID_SetWindowTitle,    MainFrame::SetWindowTitle)
+    EVT_MENU(EventID_ShowUpgradeDialog, MainFrame::ShowUpgradeDialog)
+    EVT_MENU(EventID_Shutdown,          MainFrame::Shutdown)
+    EVT_MENU(EventID_UpdateStatusBar,   MainFrame::UpdateStatusBar)
+    EVT_MENU(EventID_UpdateVolumeInformation, MainFrame::UpdateVolumeInformation)
+    EVT_MENU(EventID_UpdateVolumeStatus,      MainFrame::UpdateVolumeStatus)
+    EVT_MENU(EventID_UpdateFilesVolumeInformation, MainFrame::FilesUpdateVolumeInformation)//genBTC
+    EVT_MENU(EventID_UpdateFilesVolumeStatus,      MainFrame::FilesUpdateVolumeStatus)//genBTC
 END_EVENT_TABLE()
 
 // =======================================================================
@@ -544,7 +532,7 @@ WXLRESULT MainFrame::MSWWindowProc(WXUINT msg,WXWPARAM wParam,WXLPARAM lParam)
 {
     if(msg == g_TaskbarIconMsg){
         // handle shell restart
-        PostCommandEvent(this,ID_AdjustTaskbarIconOverlay);
+        PostCommandEvent(this,EventID_AdjustTaskbarIconOverlay);
         return 0;
     }
     return wxFrame::MSWWindowProc(msg,wParam,lParam);

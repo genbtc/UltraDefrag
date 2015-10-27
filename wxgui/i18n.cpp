@@ -120,7 +120,7 @@ void App::SetLocale(int id)
  */
 void MainFrame::OnLocaleChange(wxCommandEvent& event)
 {
-    App::SetLocale(event.GetId() - ID_LocaleChange);
+    App::SetLocale(event.GetId() - EventID_LocaleChange);
 
     // update menu labels and tool bar tool-tips
     wxString ItemLabel;
@@ -132,86 +132,86 @@ void MainFrame::OnLocaleChange(wxCommandEvent& event)
     m_menuBar->SetMenuLabel(3, _("&Help"));
 
     // action menu
-    UD_UpdateMenuItemLabel(ID_Analyze  , "&Analyze"              , "F5");
-    UD_UpdateMenuItemLabel(ID_Defrag   , "&Defragment"           , "F6");
-    UD_UpdateMenuItemLabel(ID_QuickOpt , "&Quick optimization"   , "F7");
-    UD_UpdateMenuItemLabel(ID_FullOpt  , "&Full optimization"    , "Ctrl+F7");
-    UD_UpdateMenuItemLabel(ID_MftOpt   , "&Optimize MFT"         , "Shift+F7");
-    UD_UpdateMenuItemLabel(ID_Pause    , "Pa&use"                , "Space");
-    UD_UpdateMenuItemLabel(ID_Stop     , "&Stop"                 , "Ctrl+C");
-    UD_UpdateMenuItemLabel(ID_Repeat   , "Re&peat action"        , "Shift+R");
-    UD_UpdateMenuItemLabel(ID_SkipRem  , "Skip removable &media" , "Ctrl+M");
-    UD_UpdateMenuItemLabel(ID_Rescan   , "&Rescan drives"        , "Ctrl+D");
-    UD_UpdateMenuItemLabel(ID_Repair   , "Repair dri&ves"        , "");
-    UD_UpdateMenuItemLabel(ID_Exit     , "E&xit"                 , "Alt+F4");
+    UD_UpdateMenuItemLabel(EventID_Analyze  , "&Analyze"              , "F5");
+    UD_UpdateMenuItemLabel(EventID_Defrag   , "&Defragment"           , "F6");
+    UD_UpdateMenuItemLabel(EventID_QuickOpt , "&Quick optimization"   , "F7");
+    UD_UpdateMenuItemLabel(EventID_FullOpt  , "&Full optimization"    , "Ctrl+F7");
+    UD_UpdateMenuItemLabel(EventID_MftOpt   , "&Optimize MFT"         , "Shift+F7");
+    UD_UpdateMenuItemLabel(EventID_Pause    , "Pa&use"                , "Space");
+    UD_UpdateMenuItemLabel(EventID_Stop     , "&Stop"                 , "Ctrl+C");
+    UD_UpdateMenuItemLabel(EventID_Repeat   , "Re&peat action"        , "Shift+R");
+    UD_UpdateMenuItemLabel(EventID_SkipRem  , "Skip removable &media" , "Ctrl+M");
+    UD_UpdateMenuItemLabel(EventID_Rescan   , "&Rescan drives"        , "Ctrl+D");
+    UD_UpdateMenuItemLabel(EventID_Repair   , "Repair dri&ves"        , "");
+    UD_UpdateMenuItemLabel(EventID_Exit     , "E&xit"                 , "Alt+F4");
 
     // when done sub-menu
     m_subMenuWhenDone->SetItemLabel(_("&When done"));
-    UD_UpdateMenuItemLabel(ID_WhenDoneNone      , "&None"      , "");
-    UD_UpdateMenuItemLabel(ID_WhenDoneExit      , "E&xit"      , "");
-    UD_UpdateMenuItemLabel(ID_WhenDoneStandby   , "Stan&dby"   , "");
-    UD_UpdateMenuItemLabel(ID_WhenDoneHibernate , "&Hibernate" , "");
-    UD_UpdateMenuItemLabel(ID_WhenDoneLogoff    , "&Logoff"    , "");
-    UD_UpdateMenuItemLabel(ID_WhenDoneReboot    , "&Reboot"    , "");
-    UD_UpdateMenuItemLabel(ID_WhenDoneShutdown  , "&Shutdown"  , "");
+    UD_UpdateMenuItemLabel(EventID_WhenDoneNone      , "&None"      , "");
+    UD_UpdateMenuItemLabel(EventID_WhenDoneExit      , "E&xit"      , "");
+    UD_UpdateMenuItemLabel(EventID_WhenDoneStandby   , "Stan&dby"   , "");
+    UD_UpdateMenuItemLabel(EventID_WhenDoneHibernate , "&Hibernate" , "");
+    UD_UpdateMenuItemLabel(EventID_WhenDoneLogoff    , "&Logoff"    , "");
+    UD_UpdateMenuItemLabel(EventID_WhenDoneReboot    , "&Reboot"    , "");
+    UD_UpdateMenuItemLabel(EventID_WhenDoneShutdown  , "&Shutdown"  , "");
 
     // report menu
-    UD_UpdateMenuItemLabel(ID_ShowReport , "&Show report" , "F8");
+    UD_UpdateMenuItemLabel(EventID_ShowReport , "&Show report" , "F8");
 
     // settings menu
     m_subMenuLanguage->SetItemLabel(_("&Language"));
     m_subMenuBootConfig->SetItemLabel(_("&Boot time scan"));
     m_subMenuSortingConfig->SetItemLabel(_("&Sorting"));
-    UD_UpdateMenuItemLabel(ID_ReportOptions , "&Reports" , "Ctrl+R");
+    UD_UpdateMenuItemLabel(EventID_ReportOptions , "&Reports" , "Ctrl+R");
 
     // language sub-menu
-    UD_UpdateMenuItemLabel(ID_LangShowLog    , "&View change log"            , "");
-    UD_UpdateMenuItemLabel(ID_LangShowReport , "View translation &report"    , "");
-    UD_UpdateMenuItemLabel(ID_LangOpenFolder , "&Translations folder"        , "");
-    UD_UpdateMenuItemLabel(ID_LangSubmit     , "&Submit current translation" , "");
+    UD_UpdateMenuItemLabel(EventID_LangShowLog    , "&View change log"            , "");
+    UD_UpdateMenuItemLabel(EventID_LangShowReport , "View translation &report"    , "");
+    UD_UpdateMenuItemLabel(EventID_LangOpenFolder , "&Translations folder"        , "");
+    UD_UpdateMenuItemLabel(EventID_LangSubmit     , "&Submit current translation" , "");
 
     // graphical interface sub-menu
-    UD_UpdateMenuItemLabel(ID_GuiOptions , "&Options" , "F10");
+    UD_UpdateMenuItemLabel(EventID_GuiOptions , "&Options" , "F10");
 
     // boot time scan sub-menu
-    UD_UpdateMenuItemLabel(ID_BootEnable , "&Enable" , "F11");
-    UD_UpdateMenuItemLabel(ID_BootScript , "&Script" , "F12");
+    UD_UpdateMenuItemLabel(EventID_BootEnable , "&Enable" , "F11");
+    UD_UpdateMenuItemLabel(EventID_BootScript , "&Script" , "F12");
 
     // sorting sub-menu
-    UD_UpdateMenuItemLabel(ID_SortByPath             , "By &path"                   , "");
-    UD_UpdateMenuItemLabel(ID_SortBySize             , "By &size"                   , "");
-    UD_UpdateMenuItemLabel(ID_SortByCreationDate     , "By &creation time"          , "");
-    UD_UpdateMenuItemLabel(ID_SortByModificationDate , "By last &modification time" , "");
-    UD_UpdateMenuItemLabel(ID_SortByLastAccessDate   , "By &last access time"       , "");
-    UD_UpdateMenuItemLabel(ID_SortAscending          , "In &ascending order"        , "");
-    UD_UpdateMenuItemLabel(ID_SortDescending         , "In &descending order"       , "");
+    UD_UpdateMenuItemLabel(EventID_SortByPath             , "By &path"                   , "");
+    UD_UpdateMenuItemLabel(EventID_SortBySize             , "By &size"                   , "");
+    UD_UpdateMenuItemLabel(EventID_SortByCreationDate     , "By &creation time"          , "");
+    UD_UpdateMenuItemLabel(EventID_SortByModificationDate , "By last &modification time" , "");
+    UD_UpdateMenuItemLabel(EventID_SortByLastAccessDate   , "By &last access time"       , "");
+    UD_UpdateMenuItemLabel(EventID_SortAscending          , "In &ascending order"        , "");
+    UD_UpdateMenuItemLabel(EventID_SortDescending         , "In &descending order"       , "");
 
     // help menu
-    UD_UpdateMenuItemLabel(ID_HelpContents     , "&Contents"                   , "F1");
-    UD_UpdateMenuItemLabel(ID_HelpBestPractice , "Best &practice"              , "F2");
-    UD_UpdateMenuItemLabel(ID_HelpFaq          , "&Frequently asked questions" , "F3");
-    UD_UpdateMenuItemLabel(ID_HelpLegend       , "Cluster map &legend"         , "");
+    UD_UpdateMenuItemLabel(EventID_HelpContents     , "&Contents"                   , "F1");
+    UD_UpdateMenuItemLabel(EventID_HelpBestPractice , "Best &practice"              , "F2");
+    UD_UpdateMenuItemLabel(EventID_HelpFaq          , "&Frequently asked questions" , "F3");
+    UD_UpdateMenuItemLabel(EventID_HelpLegend       , "Cluster map &legend"         , "");
 
     // upgrade sub-menu
     m_subMenuUpgrade->SetItemLabel(_("&Upgrade"));
-    UD_UpdateMenuItemLabel(ID_HelpUpgradeNone   , "&Never check"                , "");
-    UD_UpdateMenuItemLabel(ID_HelpUpgradeStable , "Check &stable releases only" , "");
-    UD_UpdateMenuItemLabel(ID_HelpUpgradeAll    , "Check &all releases"         , "");
-    UD_UpdateMenuItemLabel(ID_HelpUpgradeCheck  , "&Check now"                  , "");
-    UD_UpdateMenuItemLabel(ID_HelpAbout         , "&About"                      , "F4");
+    UD_UpdateMenuItemLabel(EventID_HelpUpgradeNone   , "&Never check"                , "");
+    UD_UpdateMenuItemLabel(EventID_HelpUpgradeStable , "Check &stable releases only" , "");
+    UD_UpdateMenuItemLabel(EventID_HelpUpgradeAll    , "Check &all releases"         , "");
+    UD_UpdateMenuItemLabel(EventID_HelpUpgradeCheck  , "&Check now"                  , "");
+    UD_UpdateMenuItemLabel(EventID_HelpAbout         , "&About"                      , "F4");
 
     // debug sub-menu
     m_subMenuDebug->SetItemLabel(_("&Debug"));
-    UD_UpdateMenuItemLabel(ID_DebugLog  , "Open &log"        , "Alt+L");
-    UD_UpdateMenuItemLabel(ID_DebugSend , "Send bug &report" , "");
+    UD_UpdateMenuItemLabel(EventID_DebugLog  , "Open &log"        , "Alt+L");
+    UD_UpdateMenuItemLabel(EventID_DebugSend , "Send bug &report" , "");
 
     // update tool-tips that differ from menu labels
     ItemLabel = _("&Boot time scan"); ItemLabel << wxT(" (F11)");
-    m_toolBar->SetToolShortHelp(ID_BootEnable,ItemLabel);
+    m_toolBar->SetToolShortHelp(EventID_BootEnable,ItemLabel);
     ItemLabel = _("Boot time script"); ItemLabel << wxT(" (F12)");
-    m_toolBar->SetToolShortHelp(ID_BootScript,ItemLabel);
+    m_toolBar->SetToolShortHelp(EventID_BootScript,ItemLabel);
     ItemLabel = _("&Help"); ItemLabel << wxT(" (F1)");
-    m_toolBar->SetToolShortHelp(ID_HelpContents,ItemLabel);
+    m_toolBar->SetToolShortHelp(EventID_HelpContents,ItemLabel);
 
     // update list column labels
     wxListItem item; item.SetMask(wxLIST_MASK_TEXT);
@@ -222,6 +222,13 @@ void MainFrame::OnLocaleChange(wxCommandEvent& event)
     item.SetText(_("Free space"));    m_vList->SetColumn(4,item);
     //xgettext:no-c-format
     item.SetText(_("% free"));        m_vList->SetColumn(5,item);
+
+    item.SetText(_("Fragments"));     m_filesList->SetColumn(0,item);
+    item.SetText(_("Size"));          m_filesList->SetColumn(1,item);
+    item.SetText(_("Filename"));      m_filesList->SetColumn(2,item);
+    item.SetText(_("Comment"));       m_filesList->SetColumn(3,item);
+    item.SetText(_("Status"));        m_filesList->SetColumn(4,item);
+    item.SetText(_(""));              m_filesList->SetColumn(5,item);
 
     // set mono-space font for the list unless Burmese translation is selected
     if(g_locale->GetCanonicalName().Left(2) != wxT("my")){
@@ -235,15 +242,15 @@ void MainFrame::OnLocaleChange(wxCommandEvent& event)
     // update list status fields
     for(int i = 0; i < m_vList->GetItemCount(); i++){
         int letter = (int)m_vList->GetItemText(i)[0];
-        wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,ID_UpdateVolumeStatus);
+        wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,EventID_UpdateVolumeStatus);
         event.SetInt(letter); ProcessEvent(event);
     }
 
     // update task-bar icon overlay
-    ProcessCommandEvent(ID_AdjustTaskbarIconOverlay);
+    ProcessCommandEvent(EventID_AdjustTaskbarIconOverlay);
 
     // update progress counters
-    ProcessCommandEvent(ID_UpdateStatusBar);
+    ProcessCommandEvent(EventID_UpdateStatusBar);
 
     // update report translation
     App::SaveReportTranslation();
@@ -333,11 +340,11 @@ void MainFrame::OnLangOpenTransifex(wxCommandEvent& event)
     wxString localeDir(wxT(""));
 
     switch(event.GetId()){
-        case ID_LangShowLog:
+        case EventID_LangShowLog:
             if(GetLocaleFolder(localeDir))
                 url << wxT("resource/main/l/") << localeDir << wxT("/view/");
             break;
-        case ID_LangSubmit:
+        case EventID_LangSubmit:
             if(GetLocaleFolder(localeDir))
                 url << wxT("translate/#") << localeDir << wxT("/main/");
     }

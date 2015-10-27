@@ -72,7 +72,7 @@ void *BtdThread::Entry()
                 if(result >= 0){
                     itrace("boot time defragmenter %hs",
                         result > 0 ? "enabled" : "disabled");
-                    wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,ID_BootChange);
+                    wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,EventID_BootChange);
                     event.SetInt(result > 0 ? true : false);
                     wxPostEvent(g_mainFrame,event);
                 }
@@ -102,8 +102,8 @@ void MainFrame::OnBootEnable(wxCommandEvent& WXUNUSED(event))
     if(result == 0){
         // registration succeeded
         m_btdEnabled = m_btdEnabled ? false : true;
-        m_menuBar->FindItem(ID_BootEnable)->Check(m_btdEnabled);
-        m_toolBar->ToggleTool(ID_BootEnable,m_btdEnabled);
+        m_menuBar->FindItem(EventID_BootEnable)->Check(m_btdEnabled);
+        m_toolBar->ToggleTool(EventID_BootEnable,m_btdEnabled);
     } else {
         if(m_btdEnabled) Utils::ShowError(wxT("Cannot disable the boot time defragmenter!"));
         else  Utils::ShowError(wxT("Cannot enable the boot time defragmenter!"));
@@ -113,8 +113,8 @@ void MainFrame::OnBootEnable(wxCommandEvent& WXUNUSED(event))
 void MainFrame::OnBootChange(wxCommandEvent& event)
 {
     m_btdEnabled = (event.GetInt() > 0);
-    m_menuBar->FindItem(ID_BootEnable)->Check(m_btdEnabled);
-    m_toolBar->ToggleTool(ID_BootEnable,m_btdEnabled);
+    m_menuBar->FindItem(EventID_BootEnable)->Check(m_btdEnabled);
+    m_toolBar->ToggleTool(EventID_BootEnable,m_btdEnabled);
 }
 
 /** @} */

@@ -87,7 +87,7 @@ void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
     );
     if(g_mainFrame->CheckOption(wxT("UD_DRY_RUN"))) title += wxT(" (dry run)");
 
-    wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,ID_SetWindowTitle);
+    wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,EventID_SetWindowTitle);
     event.SetString(title); wxPostEvent(g_mainFrame,event);
 
     g_mainFrame->SetSystemTrayIcon(g_mainFrame->m_paused ? \
@@ -127,16 +127,16 @@ void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
         );
     }
     cacheEntry->stopped = g_mainFrame->m_stopped;
-    event.SetId(ID_CacheJob);
+    event.SetId(EventID_CacheJob);
     event.SetInt(letter);
     event.SetClientData((void *)cacheEntry);
     wxPostEvent(g_mainFrame,event);
 
     // update progress indicators
-    event.SetId(ID_UpdateVolumeStatus);
+    event.SetId(EventID_UpdateVolumeStatus);
     event.SetInt(letter); wxPostEvent(g_mainFrame,event);
-    PostCommandEvent(g_mainFrame,ID_RedrawMap);
-    PostCommandEvent(g_mainFrame,ID_UpdateStatusBar);
+    PostCommandEvent(g_mainFrame,EventID_RedrawMap);
+    PostCommandEvent(g_mainFrame,EventID_UpdateStatusBar);
 }
 
 int JobThread::Terminator(void *p)
@@ -148,7 +148,7 @@ int JobThread::Terminator(void *p)
 void JobThread::ProcessVolume(int index)
 {
     // update volume capacity information
-    wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,ID_UpdateVolumeInformation);
+    wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,EventID_UpdateVolumeInformation);
     event.SetInt((int)m_letter); wxPostEvent(g_mainFrame,event);
 
     // process volume
@@ -162,7 +162,7 @@ void JobThread::ProcessVolume(int index)
     }
 
     if(result < 0 && !g_mainFrame->m_stopped){
-        wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,ID_DiskProcessingFailure);
+        wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,EventID_DiskProcessingFailure);
         event.SetInt(result); event.SetString((*m_volumes)[index]); wxPostEvent(g_mainFrame,event);
     }
 
@@ -197,7 +197,7 @@ void *JobThread::Entry()
             }
 
             // complete the job
-            PostCommandEvent(g_mainFrame,ID_JobCompletion);
+            PostCommandEvent(g_mainFrame,EventID_JobCompletion);
             delete m_volumes; m_launch = false;
         }
     }
@@ -224,22 +224,22 @@ void MainFrame::OnStartJob(wxCommandEvent& event)
 
     // lock everything till the job completion
     m_busy = true; m_paused = false; m_stopped = false;
-    UD_DisableTool(ID_Analyze);
-    UD_DisableTool(ID_Defrag);
-    UD_DisableTool(ID_QuickOpt);
-    UD_DisableTool(ID_FullOpt);
-    UD_DisableTool(ID_MftOpt);
-    UD_DisableTool(ID_Repeat);
-    UD_DisableTool(ID_SkipRem);
-    UD_DisableTool(ID_Rescan);
-    UD_DisableTool(ID_Repair);
-    UD_DisableTool(ID_ShowReport);
+    UD_DisableTool(EventID_Analyze);
+    UD_DisableTool(EventID_Defrag);
+    UD_DisableTool(EventID_QuickOpt);
+    UD_DisableTool(EventID_FullOpt);
+    UD_DisableTool(EventID_MftOpt);
+    UD_DisableTool(EventID_Repeat);
+    UD_DisableTool(EventID_SkipRem);
+    UD_DisableTool(EventID_Rescan);
+    UD_DisableTool(EventID_Repair);
+    UD_DisableTool(EventID_ShowReport);
     m_subMenuSortingConfig->Enable(false);
 
     ReleasePause();
 
     SetSystemTrayIcon(wxT("tray_running"),wxT("UltraDefrag"));
-    ProcessCommandEvent(ID_AdjustTaskbarIconOverlay);
+    ProcessCommandEvent(EventID_AdjustTaskbarIconOverlay);
     /* set overall progress: normal 0% */
     if(CheckOption(wxT("UD_SHOW_PROGRESS_IN_TASKBAR"))){
         SetTaskbarProgressValue(0,1);
@@ -247,18 +247,18 @@ void MainFrame::OnStartJob(wxCommandEvent& event)
     }
 
     // set sorting parameters
-    if(m_menuBar->FindItem(ID_SortByPath)->IsChecked()){
+    if(m_menuBar->FindItem(EventID_SortByPath)->IsChecked()){
         wxSetEnv(wxT("UD_SORTING"),wxT("path"));
-    } else if(m_menuBar->FindItem(ID_SortBySize)->IsChecked()){
+    } else if(m_menuBar->FindItem(EventID_SortBySize)->IsChecked()){
         wxSetEnv(wxT("UD_SORTING"),wxT("size"));
-    } else if(m_menuBar->FindItem(ID_SortByCreationDate)->IsChecked()){
+    } else if(m_menuBar->FindItem(EventID_SortByCreationDate)->IsChecked()){
         wxSetEnv(wxT("UD_SORTING"),wxT("c_time"));
-    } else if(m_menuBar->FindItem(ID_SortByModificationDate)->IsChecked()){
+    } else if(m_menuBar->FindItem(EventID_SortByModificationDate)->IsChecked()){
         wxSetEnv(wxT("UD_SORTING"),wxT("m_time"));
-    } else if(m_menuBar->FindItem(ID_SortByLastAccessDate)->IsChecked()){
+    } else if(m_menuBar->FindItem(EventID_SortByLastAccessDate)->IsChecked()){
         wxSetEnv(wxT("UD_SORTING"),wxT("a_time"));
     }
-    if(m_menuBar->FindItem(ID_SortAscending)->IsChecked()){
+    if(m_menuBar->FindItem(EventID_SortAscending)->IsChecked()){
         wxSetEnv(wxT("UD_SORTING_ORDER"),wxT("asc"));
     } else {
         wxSetEnv(wxT("UD_SORTING_ORDER"),wxT("desc"));
@@ -266,16 +266,16 @@ void MainFrame::OnStartJob(wxCommandEvent& event)
 
     // launch the job
     switch(event.GetId()){
-    case ID_Analyze:
+    case EventID_Analyze:
         m_jobThread->m_jobType = ANALYSIS_JOB;
         break;
-    case ID_Defrag:
+    case EventID_Defrag:
         m_jobThread->m_jobType = DEFRAGMENTATION_JOB;
         break;
-    case ID_QuickOpt:
+    case EventID_QuickOpt:
         m_jobThread->m_jobType = QUICK_OPTIMIZATION_JOB;
         break;
-    case ID_FullOpt:
+    case EventID_FullOpt:
         m_jobThread->m_jobType = FULL_OPTIMIZATION_JOB;
         break;
     default:
@@ -295,52 +295,52 @@ void MainFrame::OnStartJob(wxCommandEvent& event)
 void MainFrame::OnJobCompletion(wxCommandEvent& WXUNUSED(event))
 {
     // unlock everything after the job completion
-    UD_EnableTool(ID_Analyze);
-    UD_EnableTool(ID_Defrag);
-    UD_EnableTool(ID_QuickOpt);
-    UD_EnableTool(ID_FullOpt);
-    UD_EnableTool(ID_MftOpt);
-    UD_EnableTool(ID_Repeat);
-    UD_EnableTool(ID_SkipRem);
-    UD_EnableTool(ID_Rescan);
-    UD_EnableTool(ID_Repair);
-    UD_EnableTool(ID_ShowReport);
+    UD_EnableTool(EventID_Analyze);
+    UD_EnableTool(EventID_Defrag);
+    UD_EnableTool(EventID_QuickOpt);
+    UD_EnableTool(EventID_FullOpt);
+    UD_EnableTool(EventID_MftOpt);
+    UD_EnableTool(EventID_Repeat);
+    UD_EnableTool(EventID_SkipRem);
+    UD_EnableTool(EventID_Rescan);
+    UD_EnableTool(EventID_Repair);
+    UD_EnableTool(EventID_ShowReport);
     m_subMenuSortingConfig->Enable(true);
     m_busy = false;
 
     ReleasePause();
 
     SetSystemTrayIcon(wxT("tray"),wxT("UltraDefrag"));
-    ProcessCommandEvent(ID_SetWindowTitle);
-    ProcessCommandEvent(ID_AdjustTaskbarIconOverlay);
+    ProcessCommandEvent(EventID_SetWindowTitle);
+    ProcessCommandEvent(EventID_AdjustTaskbarIconOverlay);
     SetTaskbarProgressState(TBPF_NOPROGRESS);
 
     // shutdown when requested
-    if(!m_stopped) ProcessCommandEvent(ID_Shutdown);
+    if(!m_stopped) ProcessCommandEvent(EventID_Shutdown);
 }
 
 void MainFrame::SetPause()
 {
-    m_menuBar->FindItem(ID_Pause)->Check(true);
-    m_toolBar->ToggleTool(ID_Pause,true);
+    m_menuBar->FindItem(EventID_Pause)->Check(true);
+    m_toolBar->ToggleTool(EventID_Pause,true);
 
     Utils::SetProcessPriority(IDLE_PRIORITY_CLASS);
 
     SetSystemTrayIcon(m_busy ? wxT("tray_paused") \
         : wxT("tray"),wxT("UltraDefrag"));
-    ProcessCommandEvent(ID_AdjustTaskbarIconOverlay);
+    ProcessCommandEvent(EventID_AdjustTaskbarIconOverlay);
 }
 
 void MainFrame::ReleasePause()
 {
-    m_menuBar->FindItem(ID_Pause)->Check(false);
-    m_toolBar->ToggleTool(ID_Pause,false);
+    m_menuBar->FindItem(EventID_Pause)->Check(false);
+    m_toolBar->ToggleTool(EventID_Pause,false);
 
     Utils::SetProcessPriority(NORMAL_PRIORITY_CLASS);
 
     SetSystemTrayIcon(m_busy ? wxT("tray_running") \
         : wxT("tray"),wxT("UltraDefrag"));
-    ProcessCommandEvent(ID_AdjustTaskbarIconOverlay);
+    ProcessCommandEvent(EventID_AdjustTaskbarIconOverlay);
 }
 
 void MainFrame::OnPause(wxCommandEvent& WXUNUSED(event))
@@ -360,8 +360,8 @@ void MainFrame::OnRepeat(wxCommandEvent& WXUNUSED(event))
 {
     if(!m_busy){
         m_repeat = m_repeat ? false : true;
-        m_menuBar->FindItem(ID_Repeat)->Check(m_repeat);
-        m_toolBar->ToggleTool(ID_Repeat,m_repeat);
+        m_menuBar->FindItem(EventID_Repeat)->Check(m_repeat);
+        m_toolBar->ToggleTool(EventID_Repeat,m_repeat);
     }
 }
 
@@ -411,11 +411,11 @@ void MainFrame::OnDefaultAction(wxCommandEvent& WXUNUSED(event))
         char letter = (char)m_vList->GetItemText(i)[0];
         if(udefrag_get_volume_information(letter,&v) >= 0){
             if(v.is_dirty){
-                ProcessCommandEvent(ID_Repair);
+                ProcessCommandEvent(EventID_Repair);
                 return;
             }
         }
-        ProcessCommandEvent(ID_Analyze);
+        ProcessCommandEvent(EventID_Analyze);
     }
 }
 

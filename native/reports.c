@@ -54,10 +54,11 @@ static void convert_to_utf8_path(char *dst,int size,wchar_t *src)
 
 static wchar_t *get_report_path(udefrag_job_parameters *jp)
 {
-    wchar_t *instdir, *fpath, *isportable;
+    wchar_t *instdir, *fpath;
+    wchar_t *isportable;//genBTC
     wchar_t *path = NULL;
 
-    isportable = winx_getenv(L"UD_IS_PORTABLE");
+    isportable = winx_getenv(L"UD_IS_PORTABLE");//genBTC
     if(isportable != NULL){
         /* portable version? */
         fpath = winx_get_module_filename();

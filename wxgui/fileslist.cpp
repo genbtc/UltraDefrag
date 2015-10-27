@@ -21,9 +21,9 @@
 //////////////////////////////////////////////////////////////////////////
 
 /**
- * @file vollist.cpp
- * @brief List of volumes.
- * @addtogroup VolList
+ * @file fileslist.cpp
+ * @brief List of files.
+ * @addtogroup FilesList
  * @{
  */
 
@@ -36,26 +36,26 @@
 
 #include "main.h"
 
-int g_fixedIcon;
-int g_fixedDirtyIcon;
-int g_removableIcon;
-int g_removableDirtyIcon;
+int f_fixedIcon;
+int f_fixedDirtyIcon;
+int f_removableIcon;
+int f_removableDirtyIcon;
 
 // =======================================================================
 //                           List of volumes
 // =======================================================================
 
-void MainFrame::InitVolList()
+void MainFrame::InitFilesList()
 {
     // save default font used for the list
-    m_vListFont = new wxFont(m_vList->GetFont());
+    m_filesListFont = new wxFont(m_filesList->GetFont());
 
     // set mono-space font for the list unless Burmese translation is selected
     if(g_locale->GetCanonicalName().Left(2) != wxT("my")){
-        wxFont font = m_vList->GetFont();
+        wxFont font = m_filesList->GetFont();
         if(font.SetFaceName(wxT("Lucida Console"))){
             font.SetPointSize(DPI(9));
-            m_vList->SetFont(font);
+            m_filesList->SetFont(font);
         }
     }
 
@@ -63,7 +63,7 @@ void MainFrame::InitVolList()
     //int border = wxSystemSettings::GetMetric(wxSYS_BORDER_X);//genBTC
 
     // adjust widths so all the columns will fit to the window
-    int width = m_vList->GetClientSize().GetWidth();// - border*4;//genBTC
+    int width = m_filesList->GetClientSize().GetWidth();// - border*4;//genBTC
     int lastColumnWidth = width;
 
     dtrace("INIT - client width ......... %d", width);
@@ -76,56 +76,56 @@ void MainFrame::InitVolList()
 
     for(int i = 0; i < LIST_COLUMNS - 1; i++) {
         int w = m_w[i] = (int)floor(m_r[i] * width);
-        m_vList->InsertColumn(i, wxEmptyString, format[i], w);
-        dtrace("column %d width ....... %d", i, w);
+        m_filesList->InsertColumn(i, wxEmptyString, format[i], w);
+        dtrace("FilesList column %d width ....... %d", i, w);
         lastColumnWidth -= w;
     }
 
     int w = (int)floor(m_r[LIST_COLUMNS - 1] * width);
     if(w > 0) w = lastColumnWidth;
     m_w[LIST_COLUMNS - 1] = w;
-    m_vList->InsertColumn(LIST_COLUMNS - 1,
+    m_filesList->InsertColumn(LIST_COLUMNS - 1,
         wxEmptyString, format[LIST_COLUMNS - 1], w
     );
-    dtrace("column %d width ....... %d", LIST_COLUMNS - 1, w);
+    dtrace("FilesList column %d width ....... %d", LIST_COLUMNS - 1, w);
 
     // attach drive icons
     int size = g_iconSize;
     wxImageList *list = new wxImageList(size,size);
-    g_fixedIcon          = list->Add(wxIcon(wxT("fixed")           , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
-    g_fixedDirtyIcon     = list->Add(wxIcon(wxT("fixed_dirty")     , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
-    g_removableIcon      = list->Add(wxIcon(wxT("removable")       , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
-    g_removableDirtyIcon = list->Add(wxIcon(wxT("removable_dirty") , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
-    m_vList->SetImageList(list,wxIMAGE_LIST_SMALL);
+    f_fixedIcon          = list->Add(wxIcon(wxT("fixed")           , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
+    f_fixedDirtyIcon     = list->Add(wxIcon(wxT("fixed_dirty")     , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
+    f_removableIcon      = list->Add(wxIcon(wxT("removable")       , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
+    f_removableDirtyIcon = list->Add(wxIcon(wxT("removable_dirty") , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
+    m_filesList->SetImageList(list,wxIMAGE_LIST_SMALL);
 
     // ensure that the list will cover integral number of items
-    m_vListHeight = 0xFFFFFFFF; // prevent expansion of the list
-    m_vList->InsertItem(0,wxT("hi"),0);
-    ProcessCommandEvent(EventID_AdjustListHeight);
+    m_filesListHeight = 0xFFFFFFFF; // prevent expansion of the list
+    m_filesList->InsertItem(0,wxT("hi"),0);
+    ProcessCommandEvent(EventID_AdjustFilesListHeight);
 
-    Connect(wxEVT_SIZE,wxSizeEventHandler(MainFrame::OnListSize),NULL,this);
-    m_splitter->Connect(wxEVT_COMMAND_SPLITTER_SASH_POS_CHANGED,
-        wxSplitterEventHandler(MainFrame::OnSplitChanged),NULL,this);
+    Connect(wxEVT_SIZE,wxSizeEventHandler(MainFrame::FilesOnListSize),NULL,this);
+//    m_splitter->Connect(wxEVT_COMMAND_SPLITTER_SASH_POS_CHANGED,
+//        wxSplitterEventHandler(MainFrame::FilesOnSplitChanged),NULL,this);
 }
 
 // =======================================================================
 //                            Event handlers
 // =======================================================================
 
-BEGIN_EVENT_TABLE(DrivesList, wxListView)
-    EVT_KEY_DOWN(DrivesList::OnKeyDown)
-    EVT_KEY_UP(DrivesList::OnKeyUp)
-    EVT_MOUSE_EVENTS(DrivesList::OnMouse)
-    EVT_LIST_ITEM_SELECTED(wxID_ANY,DrivesList::OnSelectionChange)
-    EVT_LIST_ITEM_DESELECTED(wxID_ANY,DrivesList::OnSelectionChange)
+BEGIN_EVENT_TABLE(FilesList, wxListView)
+    EVT_KEY_DOWN(FilesList::OnKeyDown)
+    EVT_KEY_UP(FilesList::OnKeyUp)
+    EVT_MOUSE_EVENTS(FilesList::OnMouse)
+    EVT_LIST_ITEM_SELECTED(wxID_ANY,FilesList::OnSelectionChange)
+    EVT_LIST_ITEM_DESELECTED(wxID_ANY,FilesList::OnSelectionChange)
 END_EVENT_TABLE()
 
-void DrivesList::OnKeyDown(wxKeyEvent& event)
+void FilesList::OnKeyDown(wxKeyEvent& event)
 {
     if(!g_mainFrame->m_busy) event.Skip();
 }
 
-void DrivesList::OnKeyUp(wxKeyEvent& event)
+void FilesList::OnKeyUp(wxKeyEvent& event)
 {
     if(!g_mainFrame->m_busy){
         // dtrace("Modifier: %d ... KeyCode: %d", \
@@ -147,7 +147,7 @@ void DrivesList::OnKeyUp(wxKeyEvent& event)
     }
 }
 
-void DrivesList::OnMouse(wxMouseEvent& event)
+void FilesList::OnMouse(wxMouseEvent& event)
 {
     if(!g_mainFrame->m_busy){
         // left double click starts default action
@@ -157,7 +157,7 @@ void DrivesList::OnMouse(wxMouseEvent& event)
     }
 }
 
-void DrivesList::OnSelectionChange(wxListEvent& event)
+void FilesList::OnSelectionChange(wxListEvent& event)
 {
     long i = GetFirstSelected();
     if(i != -1){
@@ -172,21 +172,21 @@ void DrivesList::OnSelectionChange(wxListEvent& event)
     event.Skip();
 }
 
-void MainFrame::SelectAll(wxCommandEvent& WXUNUSED(event))
+void MainFrame::FilesSelectAll(wxCommandEvent& WXUNUSED(event))
 {
-    for(int i = 0; i < m_vList->GetItemCount(); i++)
-        m_vList->Select(i); m_vList->Focus(0);
+    for(int i = 0; i < m_filesList->GetItemCount(); i++)
+        m_filesList->Select(i); m_filesList->Focus(0);
 }
 
-void MainFrame::AdjustListColumns(wxCommandEvent& event)
+void MainFrame::FilesAdjustListColumns(wxCommandEvent& event)
 {
     int width = event.GetInt();
-    if(width == 0) width = m_vList->GetClientSize().GetWidth();
+    if(width == 0) width = m_filesList->GetClientSize().GetWidth();
 
     // get current column widths, since user could have changed them
     int cwidth = 0; bool changed = false;
     for(int i = 0; i < LIST_COLUMNS; i++){
-        int w = m_vList->GetColumnWidth(i);
+        int w = m_filesList->GetColumnWidth(i);
         cwidth += w;
         if(w != m_w[i])
             changed = true;
@@ -194,24 +194,23 @@ void MainFrame::AdjustListColumns(wxCommandEvent& event)
 
     if(changed){
         for(int i = 0; i < LIST_COLUMNS; i++)
-            m_r[i] = (double)m_vList->GetColumnWidth(i) / (double)cwidth;
+            m_r[i] = (double)m_filesList->GetColumnWidth(i) / (double)cwidth;
     }
-//genBTC - this stops dynamic column adjusting when you resize the windowframe
-//     else{
-//        return;
-//     }
+    else{
+        return;
+    }
 
     int lastColumnWidth = width;
 
     int border = wxSystemSettings::GetMetric(wxSYS_BORDER_X);
 
-    dtrace("border width ......... %d", border);
-    dtrace("client width ......... %d", width);
-    dtrace("total column width ... %d", cwidth);
+    dtrace("FilesList border width ......... %d", border);
+    dtrace("FilesList client width ......... %d", width);
+    dtrace("FilesList total column width ... %d", cwidth);
 
     for(int i = 0; i < (LIST_COLUMNS - 1); i++) {
         int w = m_w[i] = (int)floor(m_r[i] * width);
-        m_vList->SetColumnWidth(i, w);
+        m_filesList->SetColumnWidth(i, w);
         dtrace("column %d width ....... %d", i, w);
         lastColumnWidth -= w;
     }
@@ -220,25 +219,27 @@ void MainFrame::AdjustListColumns(wxCommandEvent& event)
     if(w > 0) w = lastColumnWidth;
     m_w[LIST_COLUMNS - 1] = w;
 
-    m_vList->SetColumnWidth(LIST_COLUMNS - 1, w);
+    m_filesList->SetColumnWidth(LIST_COLUMNS - 1, w);
     dtrace("column %d width ....... %d", LIST_COLUMNS - 1, w);
 }
 
-void MainFrame::AdjustListHeight(wxCommandEvent& WXUNUSED(event))
+void MainFrame::FilesAdjustListHeight(wxCommandEvent& WXUNUSED(event))
 {
     // get client height of the list
-    int height = m_splitter->GetSashPosition();
-    height -= 2 * wxSystemSettings::GetMetric(wxSYS_BORDER_Y);
+    int height = m_filesList->GetClientSize().GetHeight();
+    dtrace("FilesList getclient.getheight  of the list ......... %d", height);
+//    int height = m_splitter->GetSashPosition();
+//    height -= 2 * wxSystemSettings::GetMetric(wxSYS_BORDER_Y);
 
     // avoid recursion
-    if(height == m_vListHeight) return;
-    bool expand = (height > m_vListHeight) ? true : false;
-    m_vListHeight = height;
+    if(height == m_filesListHeight) return;
+    bool expand = (height > m_filesListHeight) ? true : false;
+    m_filesListHeight = height;
 
-    if(!m_vList->GetColumnCount()) return;
+    if(!m_filesList->GetColumnCount()) return;
 
     // get height of the list header
-    HWND header = ListView_GetHeader((HWND)m_vList->GetHandle());
+    HWND header = ListView_GetHeader((HWND)m_filesList->GetHandle());
     if(!header){ letrace("cannot get list header"); return; }
 
     RECT rc;
@@ -248,42 +249,48 @@ void MainFrame::AdjustListHeight(wxCommandEvent& WXUNUSED(event))
     int header_height = rc.bottom - rc.top;
 
     // get height of a single row
-    wxRect rect; if(!m_vList->GetItemRect(0,rect)) return;
+    wxRect rect; if(!m_filesList->GetItemRect(0,rect)) return;
     int item_height = rect.GetHeight();
+    dtrace("FilesList one itemheight ......... %d", item_height);
 
     // force list to cover integral number of items
-    int items = (height - header_height) / item_height;
-    int new_height = header_height + items * item_height;
-    if(expand && new_height < height){
-        items ++; new_height += item_height;
-    }
+//    int items = (height - header_height) / item_height;
+//    dtrace("FilesList numitems ......... %d", items);
+//    int new_height = header_height + items * item_height;
+//    dtrace("FilesList newheight ......... %d", new_height);
+//    if(expand && new_height < height){
+//        items ++; new_height += item_height;
+//    }
+    //genBTC
+    int items = m_filesList->GetItemCount();
+    int new_height = items * item_height + header_height;
+    m_filesListHeight = new_height;
 
-    m_vListHeight = new_height;
-
+    dtrace("FilesList mfileslistheight-end......... %d", m_filesListHeight);
     // adjust client height of the list
     new_height += 2 * wxSystemSettings::GetMetric(wxSYS_BORDER_Y);
-    m_splitter->SetSashPosition(new_height);
+//    m_splitter->SetSashPosition(new_height);
 }
 
-void MainFrame::OnSplitChanged(wxSplitterEvent& event)
+void MainFrame::FilesOnSplitChanged(wxSplitterEvent& event)
 {
-    PostCommandEvent(this,EventID_AdjustListHeight);
-    PostCommandEvent(this,EventID_AdjustListColumns);
+    PostCommandEvent(this,EventID_AdjustFilesListHeight);
+    PostCommandEvent(this,EventID_AdjustFilesListColumns);
     PostCommandEvent(this,EventID_RedrawMap);
 
     event.Skip();
 }
 
-void MainFrame::OnListSize(wxSizeEvent& event)
+void MainFrame::FilesOnListSize(wxSizeEvent& event)
 {
-    int old_width = m_vList->GetClientSize().GetWidth();
+    int old_width = m_filesList->GetClientSize().GetWidth();
     int new_width = this->GetClientSize().GetWidth();
     new_width -= 2 * wxSystemSettings::GetMetric(wxSYS_EDGE_X);
-    if(m_vList->GetCountPerPage() < m_vList->GetItemCount())
+    if(m_filesList->GetCountPerPage() < m_filesList->GetItemCount())
         new_width -= wxSystemSettings::GetMetric(wxSYS_VSCROLL_X);
 
     // scale list columns; avoid horizontal scrollbar appearance
-    wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED,EventID_AdjustListColumns);
+    wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED,EventID_AdjustFilesListColumns);
     evt.SetInt(new_width);
     if(new_width <= old_width)
         ProcessEvent(evt);
@@ -293,15 +300,15 @@ void MainFrame::OnListSize(wxSizeEvent& event)
     event.Skip();
 }
 
-// =======================================================================
-//                            Drives scanner
-// =======================================================================
+//=======================================================================
+//                           Drives scanner
+//=======================================================================
 
-void *ListThread::Entry()
+void *ListFilesThread::Entry()
 {
     while(!g_mainFrame->CheckForTermination(200)){
         if(m_rescan){
-            PostCommandEvent(g_mainFrame,EventID_PopulateList);
+            PostCommandEvent(g_mainFrame,EventID_PopulateFilesList);
             m_rescan = false;
         }
     }
@@ -309,19 +316,19 @@ void *ListThread::Entry()
     return NULL;
 }
 
-void MainFrame::UpdateVolumeInformation(wxCommandEvent& event)
+void MainFrame::FilesUpdateVolumeInformation(wxCommandEvent& event)
 {
     int index = event.GetInt();
     volume_info *v = (volume_info *)event.GetClientData();
 
     if(!v){ // the request has been made from the running job
         int i;
-        for(i = 0; i < m_vList->GetItemCount(); i++){
-            char letter = (char)m_vList->GetItemText(i)[0];
+        for(i = 0; i < m_filesList->GetItemCount(); i++){
+            char letter = (char)m_filesList->GetItemText(i)[0];
             if((char)index == letter) break;
         }
 
-        if(i < m_vList->GetItemCount()){
+        if(i < m_filesList->GetItemCount()){
             v = new volume_info;
             int result = udefrag_get_volume_information((char)index,v);
             if(result < 0){ delete v; return; }
@@ -330,41 +337,41 @@ void MainFrame::UpdateVolumeInformation(wxCommandEvent& event)
     }
 
     if(v->is_dirty){
-        if(v->is_removable) m_vList->SetItemImage(index,g_removableDirtyIcon);
-        else m_vList->SetItemImage(index,g_fixedDirtyIcon);
-        m_vList->SetItem(index,1,_("Disk needs to be repaired"));
+        if(v->is_removable) m_filesList->SetItemImage(index,f_removableDirtyIcon);
+        else m_filesList->SetItemImage(index,f_fixedDirtyIcon);
+        m_filesList->SetItem(index,1,_("Disk needs to be repaired"));
     } else {
-        if(v->is_removable) m_vList->SetItemImage(index,g_removableIcon);
-        else m_vList->SetItemImage(index,g_fixedIcon);
+        if(v->is_removable) m_filesList->SetItemImage(index,f_removableIcon);
+        else m_filesList->SetItemImage(index,f_fixedIcon);
     }
 
     char s[32]; wxString string;
     ::winx_bytes_to_hr((ULONGLONG)(v->total_space.QuadPart),2,s,sizeof(s));
-    string.Printf(wxT("%hs"),s); m_vList->SetItem(index,3,string);
+    string.Printf(wxT("%hs"),s); m_filesList->SetItem(index,3,string);
 
     ::winx_bytes_to_hr((ULONGLONG)(v->free_space.QuadPart),2,s,sizeof(s));
-    string.Printf(wxT("%hs"),s); m_vList->SetItem(index,4,string);
+    string.Printf(wxT("%hs"),s); m_filesList->SetItem(index,4,string);
 
     double total = (double)v->total_space.QuadPart;
     double free = (double)v->free_space.QuadPart;
     double d = (total > 0) ? free / total : 0;
     int p = (int)(100 * d);
-    string.Printf(wxT("%u %%"),p); m_vList->SetItem(index,5,string);
+    string.Printf(wxT("%u %%"),p); m_filesList->SetItem(index,5,string);
 
     delete v;
 }
 
-void MainFrame::UpdateVolumeStatus(wxCommandEvent& event)
+void MainFrame::FilesUpdateVolumeStatus(wxCommandEvent& event)
 {
     char letter = (char)event.GetInt();
     JobsCacheEntry *cacheEntry = m_jobsCache[(int)letter];
     if(!cacheEntry) return;
 
     int index;
-    for(index = 0; index < m_vList->GetItemCount(); index++){
-        if(letter == (char)m_vList->GetItemText(index)[0]) break;
+    for(index = 0; index < m_filesList->GetItemCount(); index++){
+        if(letter == (char)m_filesList->GetItemText(index)[0]) break;
     }
-    if(index >= m_vList->GetItemCount()) return;
+    if(index >= m_filesList->GetItemCount()) return;
 
     wxString status;
     if(cacheEntry->pi.completion_status == 0 || cacheEntry->stopped){
@@ -413,19 +420,19 @@ void MainFrame::UpdateVolumeStatus(wxCommandEvent& event)
             );
         }
     }
-    m_vList->SetItem(index,1,status);
+    m_filesList->SetItem(index,1,status);
 
     wxString fragmentation = wxString::Format(wxT("%5.2lf %%"),
         cacheEntry->pi.fragmentation);
-    m_vList->SetItem(index,2,fragmentation);
+    m_filesList->SetItem(index,2,fragmentation);
 }
 
-void MainFrame::PopulateList(wxCommandEvent& event)
+void MainFrame::FilesPopulateList(wxCommandEvent& event)
 {
     volume_info *v = ::udefrag_get_vollist(m_skipRem);
     if(!v) return;
 
-    m_vList->DeleteAllItems();
+    m_filesList->DeleteAllItems();
 
     for(int i = 0; v[i].letter; i++){
         wxString label;
@@ -433,23 +440,23 @@ void MainFrame::PopulateList(wxCommandEvent& event)
             wxString::Format(wxT("%c: [%hs]"),
             v[i].letter,v[i].fsname).wc_str(),
             v[i].label);
-        m_vList->InsertItem(i,label);
+        m_filesList->InsertItem(i,label);
 
-        wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED,EventID_UpdateVolumeInformation);
+        wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED,EventID_UpdateFilesVolumeInformation);
         volume_info *v_copy = new volume_info;
         memcpy(v_copy,&v[i],sizeof(volume_info));
         e.SetInt(i); e.SetClientData((void *)v_copy);
         ProcessEvent(e);
 
-        e.SetId(EventID_UpdateVolumeStatus);
+        e.SetId(EventID_UpdateFilesVolumeStatus);
         e.SetInt((int)v[i].letter);
         ProcessEvent(e);
     }
 
-    ProcessCommandEvent(EventID_AdjustListColumns);
+    ProcessCommandEvent(EventID_AdjustFilesListColumns);
 
-    m_vList->Select(0);
-    m_vList->Focus(0);
+    m_filesList->Select(0);
+    m_filesList->Focus(0);
 
     m_currentJob = m_jobsCache[(int)v[0].letter];
     ProcessCommandEvent(EventID_RedrawMap);
@@ -458,17 +465,17 @@ void MainFrame::PopulateList(wxCommandEvent& event)
     ::udefrag_release_vollist(v);
 }
 
-void MainFrame::OnSkipRem(wxCommandEvent& WXUNUSED(event))
+void MainFrame::FilesOnSkipRem(wxCommandEvent& WXUNUSED(event))
 {
     if(!m_busy){
         m_skipRem = m_menuBar->FindItem(EventID_SkipRem)->IsChecked();
-        m_listThread->m_rescan = true;
+        m_listfilesThread->m_rescan = true;
     }
 }
 
-void MainFrame::OnRescan(wxCommandEvent& WXUNUSED(event))
+void MainFrame::FilesOnRescan(wxCommandEvent& WXUNUSED(event))
 {
-    if(!m_busy) m_listThread->m_rescan = true;
+    if(!m_busy) m_listfilesThread->m_rescan = true;
 }
 
 /** @} */

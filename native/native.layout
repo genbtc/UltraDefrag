@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Release" />
-	<File name="udefrag.rc" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="move.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="888" topLine="19" />
+			<Cursor1 position="0" topLine="291" />
 		</Cursor>
 	</File>
-	<File name="udefrag.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="map.c" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="21877" topLine="586" />
-		</Cursor>
-	</File>
-	<File name="reports.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1655" topLine="48" />
+			<Cursor1 position="1863" topLine="58" />
 		</Cursor>
 	</File>
 	<File name="defrag.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -21,14 +16,24 @@
 			<Cursor1 position="18170" topLine="443" />
 		</Cursor>
 	</File>
-	<File name="commands.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="reports.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="0" topLine="1075" />
+			<Cursor1 position="1655" topLine="48" />
 		</Cursor>
 	</File>
-	<File name="map.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="udefrag.c" open="1" top="1" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1899" topLine="42" />
+			<Cursor1 position="13265" topLine="353" />
+		</Cursor>
+	</File>
+	<File name="udefrag.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3415" topLine="120" />
+		</Cursor>
+	</File>
+	<File name="zenwinx.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1289" topLine="126" />
 		</Cursor>
 	</File>
 	<File name="dbg.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -36,24 +41,19 @@
 			<Cursor1 position="26820" topLine="762" />
 		</Cursor>
 	</File>
-	<File name="zenwinx.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="udefrag-internals.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1289" topLine="19" />
+			<Cursor1 position="1006" topLine="236" />
 		</Cursor>
 	</File>
-	<File name="udefrag-internals.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="ftw_ntfs.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1006" topLine="4" />
+			<Cursor1 position="0" topLine="243" />
 		</Cursor>
 	</File>
-	<File name="defrag_native.h" open="1" top="1" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="udefrag.rc" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1010" topLine="9" />
-		</Cursor>
-	</File>
-	<File name="udefrag.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3415" topLine="120" />
+			<Cursor1 position="888" topLine="19" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

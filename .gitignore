@@ -3,6 +3,7 @@
 */doxygen/*
 rsc-1/*
 *.bak
+bin/reports/*
 
 # Compiled Object files
 *.slo

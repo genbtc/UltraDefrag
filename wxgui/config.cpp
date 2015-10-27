@@ -135,18 +135,18 @@ void MainFrame::SaveAppConfiguration()
     cfg->Write(wxT("/Algorithm/SkipRemovableMedia"),m_skipRem);
 
     // save sorting parameters
-    if(m_menuBar->FindItem(ID_SortByPath)->IsChecked()){
+    if(m_menuBar->FindItem(EventID_SortByPath)->IsChecked()){
         cfg->Write(wxT("/Algorithm/Sorting"),wxT("path"));
-    } else if(m_menuBar->FindItem(ID_SortBySize)->IsChecked()){
+    } else if(m_menuBar->FindItem(EventID_SortBySize)->IsChecked()){
         cfg->Write(wxT("/Algorithm/Sorting"),wxT("size"));
-    } else if(m_menuBar->FindItem(ID_SortByCreationDate)->IsChecked()){
+    } else if(m_menuBar->FindItem(EventID_SortByCreationDate)->IsChecked()){
         cfg->Write(wxT("/Algorithm/Sorting"),wxT("c_time"));
-    } else if(m_menuBar->FindItem(ID_SortByModificationDate)->IsChecked()){
+    } else if(m_menuBar->FindItem(EventID_SortByModificationDate)->IsChecked()){
         cfg->Write(wxT("/Algorithm/Sorting"),wxT("m_time"));
-    } else if(m_menuBar->FindItem(ID_SortByLastAccessDate)->IsChecked()){
+    } else if(m_menuBar->FindItem(EventID_SortByLastAccessDate)->IsChecked()){
         cfg->Write(wxT("/Algorithm/Sorting"),wxT("a_time"));
     }
-    if(m_menuBar->FindItem(ID_SortAscending)->IsChecked()){
+    if(m_menuBar->FindItem(EventID_SortAscending)->IsChecked()){
         cfg->Write(wxT("/Algorithm/SortingOrder"),wxT("asc"));
     } else {
         cfg->Write(wxT("/Algorithm/SortingOrder"),wxT("desc"));
@@ -317,11 +317,11 @@ void *ConfigThread::Entry()
                 */
             } else {
                 itrace("configuration has been changed");
-                PostCommandEvent(g_mainFrame,ID_ReadUserPreferences);
-                PostCommandEvent(g_mainFrame,ID_SetWindowTitle);
-                PostCommandEvent(g_mainFrame,ID_AdjustSystemTrayIcon);
-                PostCommandEvent(g_mainFrame,ID_AdjustTaskbarIconOverlay);
-                PostCommandEvent(g_mainFrame,ID_RedrawMap);
+                PostCommandEvent(g_mainFrame,EventID_ReadUserPreferences);
+                PostCommandEvent(g_mainFrame,EventID_SetWindowTitle);
+                PostCommandEvent(g_mainFrame,EventID_AdjustSystemTrayIcon);
+                PostCommandEvent(g_mainFrame,EventID_AdjustTaskbarIconOverlay);
+                PostCommandEvent(g_mainFrame,EventID_RedrawMap);
             }
             counter ++;
             /* wait for the next notification */

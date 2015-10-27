@@ -97,105 +97,110 @@ enum {
     // file menu identifiers
 
     // NOTE: they share a single event handler
-    ID_Analyze = 1,
-    ID_Defrag,
-    ID_QuickOpt,
-    ID_FullOpt,
-    ID_MftOpt,
+    EventID_Analyze = 1,
+    EventID_Defrag,
+    EventID_QuickOpt,
+    EventID_FullOpt,
+    EventID_MftOpt,
 
-    ID_Pause,
-    ID_Stop,
+    EventID_Pause,
+    EventID_Stop,
 
-    ID_Repeat,
+    EventID_Repeat,
 
-    ID_SkipRem,
-    ID_Rescan,
+    EventID_SkipRem,
+    EventID_Rescan,
 
-    ID_Repair,
+    EventID_Repair,
 
-    ID_WhenDoneNone,
-    ID_WhenDoneExit,
-    ID_WhenDoneStandby,
-    ID_WhenDoneHibernate,
-    ID_WhenDoneLogoff,
-    ID_WhenDoneReboot,
-    ID_WhenDoneShutdown,
+    EventID_WhenDoneNone,
+    EventID_WhenDoneExit,
+    EventID_WhenDoneStandby,
+    EventID_WhenDoneHibernate,
+    EventID_WhenDoneLogoff,
+    EventID_WhenDoneReboot,
+    EventID_WhenDoneShutdown,
 
-    ID_Exit,
+    EventID_Exit,
 
     // report menu identifiers
-    ID_ShowReport,
+    EventID_ShowReport,
 
     // settings menu identifiers
 
     // NOTE: they share a single event handler
-    ID_LangShowLog,
-    ID_LangShowReport,
-    ID_LangSubmit,
+    EventID_LangShowLog,
+    EventID_LangShowReport,
+    EventID_LangSubmit,
 
-    ID_LangOpenFolder,
+    EventID_LangOpenFolder,
 
-    ID_GuiOptions,
+    EventID_GuiOptions,
 
-    ID_BootEnable,
-    ID_BootScript,
+    EventID_BootEnable,
+    EventID_BootScript,
 
-    ID_ReportOptions,
+    EventID_ReportOptions,
 
-    ID_SortByPath,
-    ID_SortBySize,
-    ID_SortByCreationDate,
-    ID_SortByModificationDate,
-    ID_SortByLastAccessDate,
+    EventID_SortByPath,
+    EventID_SortBySize,
+    EventID_SortByCreationDate,
+    EventID_SortByModificationDate,
+    EventID_SortByLastAccessDate,
 
-    ID_SortAscending,
-    ID_SortDescending,
+    EventID_SortAscending,
+    EventID_SortDescending,
 
     // help menu identifiers
-    ID_HelpContents,
-    ID_HelpBestPractice,
-    ID_HelpFaq,
-    ID_HelpLegend,
+    EventID_HelpContents,
+    EventID_HelpBestPractice,
+    EventID_HelpFaq,
+    EventID_HelpLegend,
 
-    ID_DebugLog,
-    ID_DebugSend,
+    EventID_DebugLog,
+    EventID_DebugSend,
 
     // NOTE: they share a single event handler
-    ID_HelpUpgradeNone,
-    ID_HelpUpgradeStable,
-    ID_HelpUpgradeAll,
-    ID_HelpUpgradeCheck,
+    EventID_HelpUpgradeNone,
+    EventID_HelpUpgradeStable,
+    EventID_HelpUpgradeAll,
+    EventID_HelpUpgradeCheck,
 
-    ID_HelpAbout,
+    EventID_HelpAbout,
 
     // event identifiers
-    ID_AdjustListColumns,
-    ID_AdjustListHeight,
-    ID_AdjustSystemTrayIcon,
-    ID_AdjustTaskbarIconOverlay,
-    ID_BootChange,
-    ID_CacheJob,
-    ID_DefaultAction,
-    ID_DiskProcessingFailure,
-    ID_JobCompletion,
-    ID_PopulateList,
-    ID_ReadUserPreferences,
-    ID_RedrawMap,
-    ID_SelectAll,
-    ID_SetWindowTitle,
-    ID_ShowUpgradeDialog,
-    ID_Shutdown,
-    ID_UpdateStatusBar,
-    ID_UpdateVolumeInformation,
-    ID_UpdateVolumeStatus,
+    EventID_AdjustListColumns,
+    EventID_AdjustListHeight,
+    EventID_AdjustFilesListColumns,      //genBTC
+    EventID_AdjustFilesListHeight,       //genBTC
+    EventID_AdjustSystemTrayIcon,
+    EventID_AdjustTaskbarIconOverlay,
+    EventID_BootChange,
+    EventID_CacheJob,
+    EventID_DefaultAction,
+    EventID_DiskProcessingFailure,
+    EventID_JobCompletion,
+    EventID_PopulateList,
+    EventID_PopulateFilesList,           //genBTC
+    EventID_ReadUserPreferences,
+    EventID_RedrawMap,
+    EventID_SelectAll,
+    EventID_SetWindowTitle,
+    EventID_ShowUpgradeDialog,
+    EventID_Shutdown,
+    EventID_UpdateStatusBar,
+    EventID_UpdateVolumeInformation,
+    EventID_UpdateVolumeStatus,
+    EventID_UpdateFilesVolumeInformation,    //genBTC
+    EventID_UpdateFilesVolumeStatus,         //genBTC
 
     // tray icon menu identifiers
-    ID_ShowHideMenu,
-    ID_PauseMenu,
-    ID_ExitMenu,
+    EventID_ShowHideMenu,
+    EventID_PauseMenu,
+    EventID_ExitMenu,
 
     // language selection menu item, must always be last in the list
-    ID_LocaleChange
+    EventID_LocaleChange
 };
 
 #define MAIN_WINDOW_DEFAULT_WIDTH  640
@@ -353,6 +358,19 @@ public:
     bool m_rescan;
 };
 
+//genBTC Fileslist
+class ListFilesThread: public wxThread {
+public:
+    ListFilesThread() : wxThread(wxTHREAD_JOINABLE) {
+        m_rescan = true; Create(); Run();
+    }
+    ~ListFilesThread() { Wait(); }
+
+    virtual void *Entry();
+
+    bool m_rescan;
+};
+
 class UpgradeThread: public wxThread {
 public:
     UpgradeThread(int level) : wxThread(wxTHREAD_JOINABLE) {
@@ -388,6 +406,22 @@ public:
       : wxListView(parent,wxID_ANY,
         wxDefaultPosition,wxDefaultSize,style) {}
     ~DrivesList() {}
+
+    void OnKeyDown(wxKeyEvent& event);
+    void OnKeyUp(wxKeyEvent& event);
+    void OnMouse(wxMouseEvent& event);
+    void OnSelectionChange(wxListEvent& event);
+
+    DECLARE_EVENT_TABLE()
+};
+
+//genBTC FilesList.cpp
+class FilesList: public wxListView {
+public:
+    FilesList(wxWindow* parent, long style)
+      : wxListView(parent,wxID_ANY,
+        wxDefaultPosition,wxDefaultSize,style) {}
+    ~FilesList() {}
 
     void OnKeyDown(wxKeyEvent& event);
     void OnKeyUp(wxKeyEvent& event);
@@ -482,6 +516,7 @@ public:
     void OnMove(wxMoveEvent& event);
     void OnSize(wxSizeEvent& event);
 
+    //Volume List (mixed)
     void AdjustListColumns(wxCommandEvent& event);
     void AdjustListHeight(wxCommandEvent& event);
     void AdjustSystemTrayIcon(wxCommandEvent& event);
@@ -504,6 +539,18 @@ public:
     void UpdateStatusBar(wxCommandEvent& event);
     void UpdateVolumeInformation(wxCommandEvent& event);
     void UpdateVolumeStatus(wxCommandEvent& event);
+
+    // Files List (new) genBTC
+    void FilesSelectAll(wxCommandEvent& event);
+    void FilesAdjustListColumns(wxCommandEvent& event);
+    void FilesAdjustListHeight(wxCommandEvent& event);
+    void FilesOnSplitChanged(wxSplitterEvent& event);
+    void FilesOnListSize(wxSizeEvent& event);
+    void FilesUpdateVolumeInformation(wxCommandEvent& event);
+    void FilesUpdateVolumeStatus(wxCommandEvent& event);
+    void FilesPopulateList(wxCommandEvent& event);
+    void FilesOnSkipRem(wxCommandEvent& event);
+    void FilesOnRescan(wxCommandEvent& event);
 
     // common routines
     int  CheckOption(const wxString& name);
@@ -533,6 +580,7 @@ private:
     void InitToolbar();
     void InitStatusBar();
     void InitVolList();
+    void InitFilesList();    //genBTC FilesList.cpp
     void ReadAppConfiguration();
     void ReadUserPreferences();
     void ReleasePause();
@@ -564,8 +612,10 @@ private:
 
     // list height
     int m_vListHeight;
+    int m_filesListHeight;  //genBTC FilesList.cpp
 
     wxFont *m_vListFont;
+    wxFont *m_filesListFont;  //genBTC FilesList.cpp
 
     wxString   *m_title;
     wxToolBar  *m_toolBar;
@@ -578,15 +628,16 @@ private:
     wxMenuItem *m_subMenuUpgrade;
     wxMenu     *m_menuLanguage;
 
-    wxNotebook* m_notebook1;
-    wxPanel* m_panel1;
-    wxSplitterWindow* m_splitter1;
-    wxPanel* m_panel2;
-    wxGrid* m_grid1;
+    wxNotebook* m_notebook1;        //genBTC New Tabs
+    wxPanel* m_panel1;              //genBTC New Tabs
+    wxSplitterWindow* m_splitter1;  //genBTC New Tabs
+    wxPanel* m_panel2;              //genBTC New Tabs
+    wxGrid* m_grid1;                //genBTC New Tabs
 
     wxSplitterWindow *m_splitter;
     DrivesList       *m_vList;
     ClusterMap       *m_cMap;
+    FilesList        *m_filesList;  //genBTC FilesList.cpp
 
     bool m_btdEnabled;
     BtdThread *m_btdThread;
@@ -594,6 +645,7 @@ private:
     ConfigThread    *m_configThread;
     CrashInfoThread *m_crashInfoThread;
     ListThread      *m_listThread;
+    ListFilesThread *m_listfilesThread;
     UpgradeThread   *m_upgradeThread;
 
     DECLARE_EVENT_TABLE()

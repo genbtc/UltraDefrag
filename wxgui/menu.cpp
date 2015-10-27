@@ -62,48 +62,48 @@ void MainFrame::InitMenu()
 {
     // create when done menu
     wxMenu *menuWhenDone = new wxMenu;
-    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneNone);
-    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneExit);
-    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneStandby);
-    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneHibernate);
-    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneLogoff);
-    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneReboot);
-    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneShutdown);
+    menuWhenDone->UD_AppendRadioItem(EventID_WhenDoneNone);
+    menuWhenDone->UD_AppendRadioItem(EventID_WhenDoneExit);
+    menuWhenDone->UD_AppendRadioItem(EventID_WhenDoneStandby);
+    menuWhenDone->UD_AppendRadioItem(EventID_WhenDoneHibernate);
+    menuWhenDone->UD_AppendRadioItem(EventID_WhenDoneLogoff);
+    menuWhenDone->UD_AppendRadioItem(EventID_WhenDoneReboot);
+    menuWhenDone->UD_AppendRadioItem(EventID_WhenDoneShutdown);
 
     // create action menu
     wxMenu *m_menuAction = new wxMenu;
-    m_menuAction->Append(ID_Analyze);
-    m_menuAction->Append(ID_Defrag);
-    m_menuAction->Append(ID_QuickOpt);
-    m_menuAction->Append(ID_FullOpt);
-    m_menuAction->Append(ID_MftOpt);
-    m_menuAction->UD_AppendCheckItem(ID_Pause);
-    m_menuAction->Append(ID_Stop);
+    m_menuAction->Append(EventID_Analyze);
+    m_menuAction->Append(EventID_Defrag);
+    m_menuAction->Append(EventID_QuickOpt);
+    m_menuAction->Append(EventID_FullOpt);
+    m_menuAction->Append(EventID_MftOpt);
+    m_menuAction->UD_AppendCheckItem(EventID_Pause);
+    m_menuAction->Append(EventID_Stop);
     m_menuAction->AppendSeparator();
-    m_menuAction->UD_AppendCheckItem(ID_Repeat);
+    m_menuAction->UD_AppendCheckItem(EventID_Repeat);
     m_menuAction->AppendSeparator();
-    m_menuAction->UD_AppendCheckItem(ID_SkipRem);
-    m_menuAction->Append(ID_Rescan);
+    m_menuAction->UD_AppendCheckItem(EventID_SkipRem);
+    m_menuAction->Append(EventID_Rescan);
     m_menuAction->AppendSeparator();
-    m_menuAction->Append(ID_Repair);
+    m_menuAction->Append(EventID_Repair);
     m_menuAction->AppendSeparator();
     m_subMenuWhenDone = \
         m_menuAction->AppendSubMenu(
             menuWhenDone, wxEmptyString
         );
     m_menuAction->AppendSeparator();
-    m_menuAction->Append(ID_Exit);
+    m_menuAction->Append(EventID_Exit);
 
     // create report menu
     wxMenu *menuReport = new wxMenu;
-    menuReport->Append(ID_ShowReport);
+    menuReport->Append(EventID_ShowReport);
 
     // create language menu
     m_menuLanguage = new wxMenu;
-    m_menuLanguage->Append(ID_LangShowLog);
-    m_menuLanguage->Append(ID_LangShowReport);
-    m_menuLanguage->Append(ID_LangOpenFolder);
-    m_menuLanguage->Append(ID_LangSubmit);
+    m_menuLanguage->Append(EventID_LangShowLog);
+    m_menuLanguage->Append(EventID_LangShowReport);
+    m_menuLanguage->Append(EventID_LangOpenFolder);
+    m_menuLanguage->Append(EventID_LangSubmit);
     m_menuLanguage->AppendSeparator();
 
     wxString AppLocaleDir(wxGetCwd());
@@ -123,7 +123,7 @@ void MainFrame::InitMenu()
     if(!dir.IsOpened()){
         etrace("can't open lang dir: %ls",AppLocaleDir.wc_str());
         info = g_locale->FindLanguageInfo(wxT("en_US"));
-        m_menuLanguage->AppendRadioItem(ID_LocaleChange \
+        m_menuLanguage->AppendRadioItem(EventID_LocaleChange \
             + info->Language, info->Description);
     } else {
         wxString folder;
@@ -159,7 +159,7 @@ void MainFrame::InitMenu()
             langArray.Count(), breakCnt, breakDelta);
         for(unsigned int i = 0;i < langArray.Count();i++){
             info = g_locale->FindLanguageInfo(langArray[i]);
-            m_menuLanguage->AppendRadioItem(ID_LocaleChange \
+            m_menuLanguage->AppendRadioItem(EventID_LocaleChange \
                 + info->Language, info->Description);
             if((i+1) % breakCnt == 0){
                 m_menuLanguage->Break();
@@ -170,19 +170,19 @@ void MainFrame::InitMenu()
 
     // create boot configuration menu
     wxMenu *menuBootConfig = new wxMenu;
-    menuBootConfig->UD_AppendCheckItem(ID_BootEnable);
-    menuBootConfig->Append(ID_BootScript);
+    menuBootConfig->UD_AppendCheckItem(EventID_BootEnable);
+    menuBootConfig->Append(EventID_BootScript);
 
     // create sorting configuration menu
     wxMenu *menuSortingConfig = new wxMenu;
-    menuSortingConfig->UD_AppendRadioItem(ID_SortByPath);
-    menuSortingConfig->UD_AppendRadioItem(ID_SortBySize);
-    menuSortingConfig->UD_AppendRadioItem(ID_SortByCreationDate);
-    menuSortingConfig->UD_AppendRadioItem(ID_SortByModificationDate);
-    menuSortingConfig->UD_AppendRadioItem(ID_SortByLastAccessDate);
+    menuSortingConfig->UD_AppendRadioItem(EventID_SortByPath);
+    menuSortingConfig->UD_AppendRadioItem(EventID_SortBySize);
+    menuSortingConfig->UD_AppendRadioItem(EventID_SortByCreationDate);
+    menuSortingConfig->UD_AppendRadioItem(EventID_SortByModificationDate);
+    menuSortingConfig->UD_AppendRadioItem(EventID_SortByLastAccessDate);
     menuSortingConfig->AppendSeparator();
-    menuSortingConfig->UD_AppendRadioItem(ID_SortAscending);
-    menuSortingConfig->UD_AppendRadioItem(ID_SortDescending);
+    menuSortingConfig->UD_AppendRadioItem(EventID_SortAscending);
+    menuSortingConfig->UD_AppendRadioItem(EventID_SortDescending);
 
     // create settings menu
     wxMenu *menuSettings = new wxMenu;
@@ -190,7 +190,7 @@ void MainFrame::InitMenu()
         menuSettings->AppendSubMenu(
             m_menuLanguage, wxEmptyString
         );
-    menuSettings->Append(ID_GuiOptions);
+    menuSettings->Append(EventID_GuiOptions);
     m_subMenuSortingConfig = \
         menuSettings->AppendSubMenu(
             menuSortingConfig, wxEmptyString
@@ -199,28 +199,28 @@ void MainFrame::InitMenu()
         menuSettings->AppendSubMenu(
             menuBootConfig, wxEmptyString
         );
-    menuSettings->Append(ID_ReportOptions);
+    menuSettings->Append(EventID_ReportOptions);
 
     // create debug menu
     wxMenu *menuDebug = new wxMenu;
-    menuDebug->Append(ID_DebugLog);
-    menuDebug->Append(ID_DebugSend);
+    menuDebug->Append(EventID_DebugLog);
+    menuDebug->Append(EventID_DebugSend);
 
     // create upgrade menu
     wxMenu *menuUpgrade = new wxMenu;
-    menuUpgrade->UD_AppendRadioItem(ID_HelpUpgradeNone);
-    menuUpgrade->UD_AppendRadioItem(ID_HelpUpgradeStable);
-    menuUpgrade->UD_AppendRadioItem(ID_HelpUpgradeAll);
+    menuUpgrade->UD_AppendRadioItem(EventID_HelpUpgradeNone);
+    menuUpgrade->UD_AppendRadioItem(EventID_HelpUpgradeStable);
+    menuUpgrade->UD_AppendRadioItem(EventID_HelpUpgradeAll);
     menuUpgrade->AppendSeparator();
-    menuUpgrade->Append(ID_HelpUpgradeCheck);
+    menuUpgrade->Append(EventID_HelpUpgradeCheck);
 
     // create help menu
     wxMenu *menuHelp = new wxMenu;
-    menuHelp->Append(ID_HelpContents);
+    menuHelp->Append(EventID_HelpContents);
     menuHelp->AppendSeparator();
-    menuHelp->Append(ID_HelpBestPractice);
-    menuHelp->Append(ID_HelpFaq);
-    menuHelp->Append(ID_HelpLegend);
+    menuHelp->Append(EventID_HelpBestPractice);
+    menuHelp->Append(EventID_HelpFaq);
+    menuHelp->Append(EventID_HelpLegend);
     menuHelp->AppendSeparator();
     m_subMenuDebug = \
         menuHelp->AppendSubMenu(
@@ -232,7 +232,7 @@ void MainFrame::InitMenu()
             menuUpgrade, wxEmptyString
         );
     menuHelp->AppendSeparator();
-    menuHelp->Append(ID_HelpAbout);
+    menuHelp->Append(EventID_HelpAbout);
 
     // create main menu
     m_menuBar = new wxMenuBar;
@@ -246,18 +246,18 @@ void MainFrame::InitMenu()
     // set menu icons
     if(CheckOption(wxT("UD_SHOW_MENU_ICONS"))){
         wxBitmap *pic; wxString string;
-        UD_SetMenuIcon(ID_Analyze         , glass )
-        UD_SetMenuIcon(ID_Defrag          , defrag)
-        UD_SetMenuIcon(ID_QuickOpt        , quick )
-        UD_SetMenuIcon(ID_FullOpt         , full  )
-        UD_SetMenuIcon(ID_MftOpt          , mft   )
-        UD_SetMenuIcon(ID_Stop            , stop  )
-        UD_SetMenuIcon(ID_ShowReport      , report)
-        UD_SetMenuIcon(ID_GuiOptions      , gear  )
-        UD_SetMenuIcon(ID_BootScript      , script)
-        UD_SetMenuIcon(ID_HelpContents    , help  )
-        UD_SetMenuIcon(ID_HelpBestPractice, light )
-        UD_SetMenuIcon(ID_HelpAbout       , star  )
+        UD_SetMenuIcon(EventID_Analyze         , glass )
+        UD_SetMenuIcon(EventID_Defrag          , defrag)
+        UD_SetMenuIcon(EventID_QuickOpt        , quick )
+        UD_SetMenuIcon(EventID_FullOpt         , full  )
+        UD_SetMenuIcon(EventID_MftOpt          , mft   )
+        UD_SetMenuIcon(EventID_Stop            , stop  )
+        UD_SetMenuIcon(EventID_ShowReport      , report)
+        UD_SetMenuIcon(EventID_GuiOptions      , gear  )
+        UD_SetMenuIcon(EventID_BootScript      , script)
+        UD_SetMenuIcon(EventID_HelpContents    , help  )
+        UD_SetMenuIcon(EventID_HelpBestPractice, light )
+        UD_SetMenuIcon(EventID_HelpAbout       , star  )
 
         wxMenuItemList list; size_t count, index;
         UD_SetMarginWidth(m_menuBar->GetMenu(0))
@@ -268,31 +268,31 @@ void MainFrame::InitMenu()
     }
 
     // initial settings
-    m_menuBar->FindItem(ID_Repeat)->Check(m_repeat);
-    m_menuBar->FindItem(ID_SkipRem)->Check(m_skipRem);
+    m_menuBar->FindItem(EventID_Repeat)->Check(m_repeat);
+    m_menuBar->FindItem(EventID_SkipRem)->Check(m_skipRem);
 
     int id = g_locale->GetLanguage();
-    wxMenuItem *item = m_menuBar->FindItem(ID_LocaleChange + id);
+    wxMenuItem *item = m_menuBar->FindItem(EventID_LocaleChange + id);
     if(item) item->Check(true);
 
     wxConfigBase *cfg = wxConfigBase::Get();
     wxString sorting = cfg->Read(wxT("/Algorithm/Sorting"),wxT("path"));
     if(sorting == wxT("path")){
-        m_menuBar->FindItem(ID_SortByPath)->Check();
+        m_menuBar->FindItem(EventID_SortByPath)->Check();
     } else if(sorting == wxT("size")){
-        m_menuBar->FindItem(ID_SortBySize)->Check();
+        m_menuBar->FindItem(EventID_SortBySize)->Check();
     } else if(sorting == wxT("c_time")){
-        m_menuBar->FindItem(ID_SortByCreationDate)->Check();
+        m_menuBar->FindItem(EventID_SortByCreationDate)->Check();
     } else if(sorting == wxT("m_time")){
-        m_menuBar->FindItem(ID_SortByModificationDate)->Check();
+        m_menuBar->FindItem(EventID_SortByModificationDate)->Check();
     } else if(sorting == wxT("a_time")){
-        m_menuBar->FindItem(ID_SortByLastAccessDate)->Check();
+        m_menuBar->FindItem(EventID_SortByLastAccessDate)->Check();
     }
     wxString order = cfg->Read(wxT("/Algorithm/SortingOrder"),wxT("asc"));
     if(order == wxT("asc")){
-        m_menuBar->FindItem(ID_SortAscending)->Check();
+        m_menuBar->FindItem(EventID_SortAscending)->Check();
     } else {
-        m_menuBar->FindItem(ID_SortDescending)->Check();
+        m_menuBar->FindItem(EventID_SortDescending)->Check();
     }
 }
 

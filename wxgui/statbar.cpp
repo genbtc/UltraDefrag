@@ -66,7 +66,7 @@ void MainFrame::InitStatusBar()
     UD_SetStatusIcon(3, compressed);
     UD_SetStatusIcon(4, mft);
 
-    ProcessCommandEvent(ID_UpdateStatusBar);
+    ProcessCommandEvent(EventID_UpdateStatusBar);
 }
 
 // =======================================================================

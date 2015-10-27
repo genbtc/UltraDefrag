@@ -65,6 +65,7 @@
 		<Unit filename="btd.cpp" />
 		<Unit filename="config.cpp" />
 		<Unit filename="crash.cpp" />
+		<Unit filename="fileslist.cpp" />
 		<Unit filename="i18n.cpp" />
 		<Unit filename="job.cpp" />
 		<Unit filename="log.cpp" />
@@ -97,6 +98,9 @@
 				<doxyfile_dot class_diagrams="1" have_dot="1" />
 				<general />
 			</DoxyBlocks>
+			<wxsmith version="1">
+				<gui name="wxWidgets" src="" main="" init_handlers="necessary" language="CPP" />
+			</wxsmith>
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>
