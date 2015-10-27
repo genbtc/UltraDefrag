@@ -64,20 +64,12 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="case-tables.h" />
-		<Unit filename="case-tables.h.bak.h" />
-		<Unit filename="commands.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="dbg.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="defrag.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="defrag_native.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="defrag_native.h" />
 		<Unit filename="entry.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -153,9 +145,6 @@
 		<Unit filename="reports.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="script.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="search.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -172,9 +161,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="udefrag-internals.h" />
-		<Unit filename="udefrag-native.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="udefrag-volume.c">
 			<Option compilerVar="CC" />
 		</Unit>

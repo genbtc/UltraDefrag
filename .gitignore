@@ -1,3 +1,9 @@
+#DOXY
+*/html/*
+*/doxygen/*
+rsc-1/*
+*.bak
+
 # Compiled Object files
 *.slo
 *.lo

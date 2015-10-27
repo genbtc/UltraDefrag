@@ -94,7 +94,7 @@
 				<doxyfile_build />
 				<doxyfile_warnings />
 				<doxyfile_output />
-				<doxyfile_dot />
+				<doxyfile_dot class_diagrams="1" have_dot="1" />
 				<general />
 			</DoxyBlocks>
 		</Extensions>
