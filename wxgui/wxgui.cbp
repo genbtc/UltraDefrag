@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="wxgui" />
+		<Option title="wxguiVC++" />
 		<Option platforms="Windows;" />
 		<Option makefile="makefile" />
 		<Option pch_mode="2" />
@@ -15,17 +15,39 @@
 				<Option object_output="../obj/" />
 				<Option type="0" />
 				<Option compiler="msvc10" />
-				<Option projectCompilerOptionsRelation="0" />
 				<Option projectLinkerOptionsRelation="0" />
 				<Option projectIncludeDirsRelation="0" />
 				<Option projectResourceIncludeDirsRelation="0" />
 				<Option projectLibDirsRelation="0" />
+				<Compiler>
+					<Add option="/Ox" />
+				</Compiler>
+			</Target>
+			<Target title="Debug">
+				<Option platforms="Windows;" />
+				<Option output="../bin/UltraDefrag" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../bin/" />
+				<Option object_output="../obj/" />
+				<Option type="0" />
+				<Option compiler="msvc10" />
+				<Option projectLinkerOptionsRelation="0" />
+				<Option projectIncludeDirsRelation="0" />
+				<Option projectResourceIncludeDirsRelation="0" />
+				<Option projectLibDirsRelation="0" />
+				<Compiler>
+					<Add option="/MT" />
+					<Add option="/Zi" />
+					<Add option="/DNDEBUG" />
+				</Compiler>
+				<Linker>
+					<Add option="/DEBUG" />
+					<Add option="/NODEFAULTLIB:libcmt" />
+				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
 			<Add option="/MT" />
 			<Add option="/arch:SSE2" />
-			<Add option="/Ox" />
 			<Add option="/W3" />
 			<Add directory="C:/Software/wxWidgets-2.8.12/include/" />
 			<Add directory="C:/Software/wxWidgets-2.8.12/lib/vc_libwinsdk-X86/mswu" />
@@ -85,22 +107,5 @@
 		<Unit filename="wxgui.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
-		<Extensions>
-			<code_completion />
-			<envvars />
-			<debugger />
-			<DoxyBlocks>
-				<comment_style block="0" line="0" />
-				<doxyfile_project />
-				<doxyfile_build />
-				<doxyfile_warnings />
-				<doxyfile_output />
-				<doxyfile_dot class_diagrams="1" have_dot="1" />
-				<general />
-			</DoxyBlocks>
-			<wxsmith version="1">
-				<gui name="wxWidgets" src="" main="" init_handlers="necessary" language="CPP" />
-			</wxsmith>
-		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

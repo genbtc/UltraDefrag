@@ -41,8 +41,8 @@ static void update_progress_counters(winx_file_info *f,udefrag_job_parameters *j
 struct fs {
     char *name; /* name in uppercase */
     file_system_type type;
-    /* 
-    * On fat the first clusters 
+    /*
+    * On fat the first clusters
     * of directories cannot be moved.
     */
     int is_fat;
@@ -86,7 +86,7 @@ void adjust_move_at_once_parameter(udefrag_job_parameters *jp)
 {
     ULONGLONG bytes_at_once;
     char buffer[32];
-    
+
     /* comply with "one half second to stop defragmentation" rule */
     if(jp->v_info.device_capacity < _20G){
         bytes_at_once = _256K;
@@ -118,13 +118,13 @@ int get_volume_information(udefrag_job_parameters *jp)
 {
     char fs_name[MAX_FS_NAME_LENGTH + 1];
     int i;
-    
+
     /* reset mft zone disposition */
     memset(&jp->mft_zone,0,sizeof(struct _mft_zone));
 
     /* reset v_info structure */
     memset(&jp->v_info,0,sizeof(winx_volume_information));
-    
+
     /* reset statistics */
     jp->pi.files = 0;
     jp->pi.directories = 0;
@@ -136,17 +136,17 @@ int get_volume_information(udefrag_job_parameters *jp)
     jp->pi.mft_size = 0;
     jp->pi.clusters_to_process = 0;
     jp->pi.processed_clusters = 0;
-    
+
     jp->fs_type = FS_UNKNOWN;
     jp->is_fat = 0;
-    
+
     /* reset file lists */
     destroy_lists(jp);
-    
+
     /* update global variables holding drive geometry */
     if(winx_get_volume_information(jp->volume_letter,&jp->v_info) < 0)
         return (-1);
-    
+
     /* don't touch dirty volumes */
     if(jp->v_info.is_dirty)
         return UDEFRAG_DIRTY_VOLUME;
@@ -177,10 +177,10 @@ int get_volume_information(udefrag_job_parameters *jp)
         etrace("file system type is not recognized");
         etrace("type independent routines will be used to defragment it");
     }
-    
+
     jp->pi.clusters_to_process = jp->v_info.total_clusters;
     jp->pi.processed_clusters = 0;
-    
+
     if(jp->udo.fragment_size_threshold){
         if(jp->udo.fragment_size_threshold <= jp->v_info.bytes_per_cluster){
             itrace("fragment size threshold is below the cluster size, so it will be ignored");
@@ -199,7 +199,7 @@ int get_volume_information(udefrag_job_parameters *jp)
 static int process_free_region(winx_volume_region *rgn,void *user_defined_data)
 {
     udefrag_job_parameters *jp = (udefrag_job_parameters *)user_defined_data;
-    
+
     if(jp->udo.dbgprint_level >= DBG_PARANOID)
         itrace("Free block start: %I64u len: %I64u",rgn->lcn,rgn->length);
     colorize_map_region(jp,rgn->lcn,rgn->length,FREE_SPACE,SYSTEM_SPACE);
@@ -218,11 +218,11 @@ static int get_free_space_layout(udefrag_job_parameters *jp)
 
     jp->free_regions = winx_get_free_volume_regions(jp->volume_letter,
         WINX_GVR_ALLOW_PARTIAL_SCAN,process_free_region,(void *)jp);
-    
+
     winx_bytes_to_hr(jp->v_info.free_bytes,1,buffer,sizeof(buffer));
     itrace("free space amount : %s",buffer);
     itrace("free regions count: %u",jp->free_regions_count);
-    
+
     /* let full disks to pass the analysis successfully */
     if(jp->free_regions == NULL || jp->free_regions_count == 0)
         etrace("disk is full or some error has been encountered");
@@ -230,7 +230,7 @@ static int get_free_space_layout(udefrag_job_parameters *jp)
 }
 
 /**
- * @brief Checks whether specified 
+ * @brief Checks whether specified
  * region is inside processed volume.
  */
 int check_region(udefrag_job_parameters *jp,ULONGLONG lcn,ULONGLONG length)
@@ -238,13 +238,13 @@ int check_region(udefrag_job_parameters *jp,ULONGLONG lcn,ULONGLONG length)
     if(lcn < jp->v_info.total_clusters \
       && (lcn + length) <= jp->v_info.total_clusters)
         return 1;
-    
+
     return 0;
 }
 
 /**
  * @brief Retrieves mft zones layout.
- * @note Since we have MFT optimization routine, 
+ * @note Since we have MFT optimization routine,
  * let's use MFT zone for files placement on XP
  * and more recent Windows editions.
  */
@@ -253,8 +253,8 @@ static void get_mft_zones_layout(udefrag_job_parameters *jp)
     ULONGLONG start,length,mirror_size;
 
     if(jp->fs_type != FS_NTFS) return;
-    
-    /* 
+
+    /*
     * Don't increment progress counters,
     * because mft zones are partially
     * inside already counted free space pool.
@@ -306,13 +306,13 @@ int exclude_by_fragment_size(winx_file_info *f,udefrag_job_parameters *jp)
 {
     winx_blockmap *block;
     ULONGLONG fragment_size = 0;
-    
+
     if(jp->udo.fragment_size_threshold == DEFAULT_FRAGMENT_SIZE_THRESHOLD) return 0;
     /* don't filter out files if threshold is set by algorithm */
     if(jp->udo.algorithm_defined_fst) return 0;
-    
+
     if(f->disp.blockmap == NULL) return 0;
-    
+
     for(block = f->disp.blockmap; block; block = block->next){
         if(block == f->disp.blockmap){
             fragment_size += block->length;
@@ -327,7 +327,7 @@ int exclude_by_fragment_size(winx_file_info *f,udefrag_job_parameters *jp)
         }
         if(block->next == f->disp.blockmap) break;
     }
-    
+
     if(fragment_size){
         if(fragment_size * jp->v_info.bytes_per_cluster < jp->udo.fragment_size_threshold)
             return 0; /* file contains little fragments */
@@ -359,7 +359,7 @@ int exclude_by_fragments(winx_file_info *f,udefrag_job_parameters *jp)
 int exclude_by_size(winx_file_info *f,udefrag_job_parameters *jp)
 {
     ULONGLONG filesize;
-    
+
     f->user_defined_flags &= ~UD_FILE_OVER_LIMIT;
     filesize = f->disp.clusters * jp->v_info.bytes_per_cluster;
     if(filesize > jp->udo.size_limit){
@@ -381,12 +381,12 @@ int exclude_by_path(winx_file_info *f,udefrag_job_parameters *jp)
     /* note that paths have \??\ internal prefix while patterns haven't */
     if(wcslen(f->path) < 0x4)
         return 1; /* path is invalid */
-    
+
     if(jp->udo.ex_filter.count){
         if(winx_patcmp(f->path + 0x4,&jp->udo.ex_filter))
             return 1;
     }
-    
+
     if(jp->udo.cut_filter.count){
         if(!winx_patcmp(f->path + 0x4,&jp->udo.cut_filter))
             return 1;
@@ -404,20 +404,20 @@ static int filter(winx_file_info *f,void *user_defined_data)
 {
     udefrag_job_parameters *jp = (udefrag_job_parameters *)user_defined_data;
     int length;
-    
+
     /* START OF AUX CODE */
-    
+
     /* skip entries with empty path, as well as their children */
     if(f->path == NULL) goto skip_file_and_children;
     if(f->path[0] == 0) goto skip_file_and_children;
-    
+
     /*
     * Skip resident streams, but not in context menu
     * handler, where they're needed for statistics.
     */
     if(f->disp.fragments == 0 && !(jp->udo.job_flags & UD_JOB_CONTEXT_MENU_HANDLER))
         return 0;
-    
+
     /*
     * Remove trailing dot from the root
     * directory path, otherwise we'll not
@@ -430,14 +430,14 @@ static int filter(winx_file_info *f,void *user_defined_data)
             f->path[length - 1] = 0;
         }
     }
-    
+
     /* skip resident streams in context menu handler, but count them */
     if(f->disp.fragments == 0){
         if(!exclude_by_path(f,jp))
             update_progress_counters(f,jp);
         return 0;
     }
-    
+
     /* show debugging information about interesting cases */
     if(is_sparse(f))
         dtrace("sparse file found: %ws",f->path);
@@ -449,9 +449,9 @@ static int filter(winx_file_info *f,void *user_defined_data)
     if(winx_wcsistr(f->path,L"$ATTRIBUTE_LIST"))
         dtrace("attribute list found: %ws",f->path);
     */
-    
+
     /* START OF FILTERING */
-    
+
     /* skip files with invalid map */
     if(f->disp.blockmap == NULL)
         goto skip_file;
@@ -471,7 +471,7 @@ static int filter(winx_file_info *f,void *user_defined_data)
     /* filter files by their fragment sizes */
     if(exclude_by_fragment_size(f,jp))
         goto skip_file;
-    
+
     /* filter files by their paths */
     if(exclude_by_path(f,jp)){
         f->user_defined_flags |= UD_FILE_EXCLUDED;
@@ -522,7 +522,7 @@ static void update_progress_counters(winx_file_info *f,udefrag_job_parameters *j
 static void progress_callback(winx_file_info *f,void *user_defined_data)
 {
     udefrag_job_parameters *jp = (udefrag_job_parameters *)user_defined_data;
-    
+
     /* don't count excluded files in context menu handler */
     if(!(jp->udo.job_flags & UD_JOB_CONTEXT_MENU_HANDLER))
         update_progress_counters(f,jp);
@@ -568,7 +568,7 @@ static int find_files(udefrag_job_parameters *jp)
     int flags = 0;
     winx_file_info *f;
     winx_blockmap *block;
-    
+
     /* check for context menu handler */
     if(jp->udo.job_flags & UD_JOB_CONTEXT_MENU_HANDLER){
         if(jp->udo.cut_filter.count > 0){
@@ -606,7 +606,7 @@ static int find_files(udefrag_job_parameters *jp)
     }
     if(jp->filelist == NULL && !jp->termination_router((void *)jp))
         return (-1);
-    
+
     /* calculate number of fragmented files; redraw map */
     for(f = jp->filelist; f; f = f->next){
         /* skip excluded files */
@@ -622,11 +622,11 @@ static int find_files(udefrag_job_parameters *jp)
             if(!is_excluded_by_path(f))
                 update_progress_counters(f,jp);
         }
-    
+
         /* redraw cluster map */
         colorize_file(jp,f,SYSTEM_SPACE);
         //trace(D"%ws",f->path);
-        
+
         /* add file blocks to the binary search tree - after winx_scan_disk! */
         for(block = f->disp.blockmap; block; block = block->next){
             if(add_block_to_file_blocks_tree(jp,f,block) < 0) break;
@@ -651,7 +651,7 @@ int is_file_locked(winx_file_info *f,udefrag_job_parameters *jp)
     NTSTATUS status;
     HANDLE hFile;
     int old_color;
-    
+
     /* check whether the file has been passed the check already */
     if(f->user_defined_flags & UD_FILE_NOT_LOCKED)
         return 0;
@@ -692,7 +692,7 @@ static int is_well_known_locked_file(winx_file_info *f,udefrag_job_parameters *j
         NULL
     };
     int i, length = (int)wcslen(f->path);
-    
+
     /* search for well known locked NTFS meta files */
     if(length >= 9){ /* ensure that we have at least \??\X:\$x */
         if(f->path[7] == '$'){
@@ -724,7 +724,7 @@ static void redraw_well_known_locked_files(udefrag_job_parameters *jp)
 
     winx_dbg_print_header(0,0,I"search for well known locked files...");
     time = winx_xtime();
-    
+
     for(f = jp->filelist; f; f = f->next){
         if(f->disp.blockmap){ /* otherwise nothing to redraw */
             if(is_well_known_locked_file(f,jp)){
@@ -752,7 +752,7 @@ static int fragmented_files_compare(const void *prb_a, const void *prb_b, void *
 {
     winx_file_info *a, *b;
     //udefrag_job_parameters *jp;
-    
+
     a = (winx_file_info *)prb_a;
     b = (winx_file_info *)prb_b;
     //jp = (udefrag_job_parameters *)prb_param;
@@ -772,12 +772,21 @@ static int fragmented_files_compare(const void *prb_a, const void *prb_b, void *
 int expand_fragmented_files_list(winx_file_info *f,udefrag_job_parameters *jp)
 {
     void **p;
-    
+
     /* don't include filtered out files, for better performance */
-    if(!is_excluded(f)){
-        p = prb_probe(jp->fragmented_files,(void *)f);
-        if(*p != f) etrace("a duplicate found for %ws",f->path);
-    }
+    //genBTC asks:
+    // Wouldnt this already be filtered out, since this is only called from:
+    // Analyze.C, produce_list_of_fragmented_files()
+    //   and
+    // Move.C, move_file() near the very end
+    // and in both functions, they are called from inside this if block:
+    //         if(is_fragmented(f) && !is_excluded(f)){
+    // so they should already be verified by !is_exluded(f)
+
+    //if(!is_excluded(f)){
+    p = prb_probe(jp->fragmented_files,(void *)f);
+    if(*p != f) etrace("a duplicate found for %ws",f->path);
+    //}
     return 0;
 }
 
@@ -797,7 +806,7 @@ static void produce_list_of_fragmented_files(udefrag_job_parameters *jp)
 {
     winx_file_info *f;
     ULONGLONG bad_fragments = 0;
-    
+
     itrace("started creation of fragmented files list");
     jp->fragmented_files = prb_create(fragmented_files_compare,(void *)jp,NULL);
     for(f = jp->filelist; f; f = f->next){
@@ -809,6 +818,9 @@ static void produce_list_of_fragmented_files(udefrag_job_parameters *jp)
         if(f->next == jp->filelist) break;
     }
     jp->pi.bad_fragments = bad_fragments;
+    //push the list of fragmented files to the progress-info.
+    //jp->pi.fragmented_files = jp->fragmented_files;//genBTC
+    jp->pi.fragmented_files = prb_copy(jp->fragmented_files,NULL,NULL,NULL);
     itrace("finished creation of fragmented files list");
 }
 
@@ -840,7 +852,7 @@ int check_fragmentation_level(udefrag_job_parameters *jp)
     double x, y;
     unsigned int ifr, it;
     double fragmentation;
-    
+
     x = (double)jp->pi.bad_fragments;
     y = (double)jp->pi.fragments;
     if(y == 0) fragmentation = 0.00;
@@ -865,26 +877,26 @@ int analyze(udefrag_job_parameters *jp)
 {
     ULONGLONG time;
     int result;
-    
+
     time = start_timing("analysis",jp);
     jp->pi.current_operation = VOLUME_ANALYSIS;
-    
+
     /* update volume information */
     result = get_volume_information(jp);
     if(result < 0)
         return result;
-    
+
     /* scan volume for free space areas */
     if(get_free_space_layout(jp) < 0)
         return (-1);
-    
+
     /* redraw mft zone in light magenta */
     get_mft_zones_layout(jp);
-    
+
     /* search for files */
     if(find_files(jp) < 0)
         return (-1);
-    
+
     /* redraw well known locked files in green */
     redraw_well_known_locked_files(jp);
 
@@ -895,7 +907,7 @@ int analyze(udefrag_job_parameters *jp)
     result = check_requested_action(jp);
     if(result < 0)
         return result;
-    
+
     jp->p_counters.analysis_time = winx_xtime() - time;
     stop_timing("analysis",time,jp);
     return 0;

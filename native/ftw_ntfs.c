@@ -133,14 +133,14 @@ static void randomize_file_record_data(char *record, unsigned long size)
 {
     long factors[] = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
     long factor, i;
-    
+
     /* randomize a half of records */
     if(rnd() % 2) return;
-    
+
     /* set amount of data to be corrupted */
     i = rnd() % (sizeof(factors) / sizeof(long));
     factor = factors[i];
-    
+
     /* randomize data, skip FileReferenceNumber and FileRecordLength */
     for(i = sizeof(ULONGLONG) + sizeof(ULONG); i < size; i++){
         if(i % factor == 0)
@@ -160,10 +160,10 @@ static int ftw_ntfs_check_for_termination(mft_scan_parameters *sp)
 {
     if(!(sp->flags & WINX_FTW_ALLOW_PARTIAL_SCAN) && sp->errors)
         return 1;
-    
+
     if(sp->t == NULL)
         return 0;
-    
+
     return sp->t(sp->user_defined_data);
 }
 
@@ -210,7 +210,7 @@ static NTSTATUS get_file_record(ULONGLONG mft_id,
 
     /* required by x64 system, otherwise it trashes stack */
     RtlZeroMemory(nfrob,sp->ml.file_record_buffer_size);
-    
+
     status = NtFsControlFile(winx_fileno(sp->f_volume),NULL,NULL,NULL,&iosb, \
             FSCTL_GET_NTFS_FILE_RECORD, \
             &nfrib,sizeof(nfrib), \
@@ -252,7 +252,7 @@ static void enumerate_attributes(FILE_RECORD_HEADER *frh,attribute_handler ah,mf
         /* is an attribute header inside a record bounds? */
         if(attr_offset + sizeof(ATTRIBUTE) > frh->BytesInUse || \
             attr_offset + sizeof(ATTRIBUTE) > sp->ml.file_record_size) break;
-        
+
         /* is it a valid attribute */
         if(pattr->AttributeType == 0xffffffff) break;
         if(pattr->AttributeType == 0x0) break;
@@ -261,7 +261,7 @@ static void enumerate_attributes(FILE_RECORD_HEADER *frh,attribute_handler ah,mf
         /* is an attribute inside a record bounds? */
         if(attr_offset + pattr->Length > frh->BytesInUse || \
             attr_offset + pattr->Length > sp->ml.file_record_size) break;
-        
+
         /* is an attribute length valid? */
         if(pattr->Nonresident){
             if(pattr->Length < (sizeof(NONRESIDENT_ATTRIBUTE) - sizeof(ULONGLONG))){
@@ -277,7 +277,7 @@ static void enumerate_attributes(FILE_RECORD_HEADER *frh,attribute_handler ah,mf
 
         /* call specified callback procedure */
         ah(pattr,sp);
-        
+
         /* go to the next attribute */
         attr_length = pattr->Length;
         attr_offset += (USHORT)(attr_length);
@@ -308,7 +308,7 @@ attribute_name default_attribute_names[] = {
 static wchar_t * get_default_attribute_name(ATTRIBUTE_TYPE attr_type)
 {
     int i;
-    
+
     for(i = 0;; i++){
         if(default_attribute_names[i].AttributeName == NULL) break;
         if(default_attribute_names[i].AttributeType == attr_type) break;
@@ -325,7 +325,7 @@ static wchar_t * get_attribute_name(ATTRIBUTE *attr,mft_scan_parameters *sp)
     /* get default name of the attribute */
     attr_type = attr->AttributeType;
     default_attr_name = get_default_attribute_name(attr_type);
-    
+
     /* skip attributes of unknown type */
     if(default_attr_name == NULL){
         if(attr_type != AttributeStandardInformation && \
@@ -338,10 +338,10 @@ static wchar_t * get_attribute_name(ATTRIBUTE *attr,mft_scan_parameters *sp)
         }
         return NULL;
     }
-    
+
     /* allocate memory */
     attr_name = winx_malloc((MAX_PATH + 1) * sizeof(wchar_t));
-    
+
     attr_name[0] = 0;
     if(attr->NameLength){
         /* NameLength is always less than MAX_PATH! */
@@ -349,7 +349,7 @@ static wchar_t * get_attribute_name(ATTRIBUTE *attr,mft_scan_parameters *sp)
             attr->NameLength);
         attr_name[attr->NameLength] = 0;
     }
-    
+
     if(attr_name[0] == 0){
         (void)wcsncpy(attr_name,default_attr_name,MAX_PATH);
         attr_name[MAX_PATH - 1] = 0;
@@ -358,13 +358,13 @@ static wchar_t * get_attribute_name(ATTRIBUTE *attr,mft_scan_parameters *sp)
     /* never append $DATA attribute name */
     if(wcscmp(attr_name,L"$DATA") == 0) attr_name[0] = 0;
     if(wcscmp(attr_name,L":$DATA") == 0) attr_name[0] = 0;
-    
+
     /* do not append index allocation attribute names - required by get_directory_information */
     if(wcscmp(attr_name,L"$I30") == 0) attr_name[0] = 0;
     if(wcscmp(attr_name,L":$I30") == 0) attr_name[0] = 0;
     if(wcscmp(attr_name,L"$INDEX_ALLOCATION") == 0) attr_name[0] = 0;
     if(wcscmp(attr_name,L":$INDEX_ALLOCATION") == 0) attr_name[0] = 0;
-    
+
     return attr_name;
 }
 
@@ -397,12 +397,12 @@ static int get_number_of_file_records(mft_scan_parameters *sp)
     NTFS_FILE_RECORD_OUTPUT_BUFFER *nfrob;
     FILE_RECORD_HEADER *frh;
     NTSTATUS status;
-    
+
     if(sp == NULL)
         return (-1);
-    
+
     sp->ml.number_of_file_records = 0;
-    
+
     /* allocate memory */
     nfrob = winx_tmalloc(sp->ml.file_record_buffer_size);
     if(nfrob == NULL){
@@ -410,7 +410,7 @@ static int get_number_of_file_records(mft_scan_parameters *sp)
             sp->ml.file_record_buffer_size);
         return (-1);
     }
-    
+
     /* get file record for $Mft */
     status = get_file_record(FILE_MFT,nfrob,sp);
     if(!NT_SUCCESS(status)){
@@ -423,7 +423,7 @@ static int get_number_of_file_records(mft_scan_parameters *sp)
         winx_free(nfrob);
         return (-1);
     }
-    
+
     /* validate file record */
     frh = (FILE_RECORD_HEADER *)nfrob->FileRecordBuffer;
     if(!is_file_record(frh)){
@@ -437,19 +437,19 @@ static int get_number_of_file_records(mft_scan_parameters *sp)
         winx_free(nfrob);
         return (-1);
     }
-    
+
     /* get actual number of mft entries */
     enumerate_attributes(frh,get_number_of_file_records_callback,sp);
-    
+
     /* free memory */
     winx_free(nfrob);
-    
+
     /* validate number of mft entries */
     if(sp->ml.number_of_file_records == 0){
         etrace("cannot get number of entries");
         return (-1);
     }
-    
+
     return 0;
 }
 
@@ -462,10 +462,10 @@ static int get_mft_layout(mft_scan_parameters *sp)
 {
     NTFS_DATA *ntfs_data;
     int length;
-    
+
     if(sp == NULL)
         return (-1);
-    
+
     /* reset sp->ml structure */
     memset(&sp->ml,0,sizeof(mft_layout));
 
@@ -485,7 +485,7 @@ static int get_mft_layout(mft_scan_parameters *sp)
         else if(length < sizeof(NTFS_DATA))
             etrace("more bytes read than needed?");
     }
-    
+
     sp->ml.file_record_size = ntfs_data->BytesPerFileRecordSegment;
     sp->ml.file_record_buffer_size = sizeof(NTFS_FILE_RECORD_OUTPUT_BUFFER) + \
         sp->ml.file_record_size - 1;
@@ -505,26 +505,26 @@ static int get_mft_layout(mft_scan_parameters *sp)
     itrace("sector size = %u",sp->ml.sector_size);
     itrace("each cluster consists of %u sectors",sp->ml.sectors_per_cluster);
     winx_free(ntfs_data);
-    
+
     if(sp->ml.file_record_size == 0){
         etrace("mft record size equal to zero is invalid");
         return (-1);
     }
-    
+
     if(sp->ml.cluster_size == 0){
         etrace("cluster size equal to zero is invalid");
         return (-1);
     }
-    
+
     if(sp->ml.sectors_per_cluster == 0){
         etrace("sp->ml.sectors_per_cluster equal to zero is invalid");
         return (-1);
     }
-    
+
     /* get number of mft entries */
     if(get_number_of_file_records(sp) < 0)
         return (-1);
-      
+
     return 0;
 }
 
@@ -553,7 +553,7 @@ static void analyze_single_attribute(ULONGLONG mft_id,FILE_RECORD_HEADER *frh,
         /* is an attribute header inside a record bounds? */
         if(attr_offset + sizeof(ATTRIBUTE) > frh->BytesInUse || \
             attr_offset + sizeof(ATTRIBUTE) > sp->ml.file_record_size) break;
-        
+
         /* is it a valid attribute */
         if(attr->AttributeType == 0xffffffff) break;
         if(attr->AttributeType == 0x0) break;
@@ -562,7 +562,7 @@ static void analyze_single_attribute(ULONGLONG mft_id,FILE_RECORD_HEADER *frh,
         /* is an attribute inside a record bounds? */
         if(attr_offset + attr->Length > frh->BytesInUse || \
             attr_offset + attr->Length > sp->ml.file_record_size) break;
-        
+
         /* is an attribute length valid? */
         if(attr->Nonresident){
             if(attr->Length < (sizeof(NONRESIDENT_ATTRIBUTE) - sizeof(ULONGLONG))){
@@ -597,7 +597,7 @@ static void analyze_single_attribute(ULONGLONG mft_id,FILE_RECORD_HEADER *frh,
                 }
             }
         }
-        
+
         if(attribute_found){
             /* uncomment next lines if you need debugging information on attribute list entries */
             /*if(attr->Nonresident) resident_status = "Nonresident";
@@ -610,7 +610,7 @@ static void analyze_single_attribute(ULONGLONG mft_id,FILE_RECORD_HEADER *frh,
             sp->processed_attr_list_entries ++;
             return;
         }
-        
+
         /* go to the next attribute */
         attr_length = attr->Length;
         attr_offset += (USHORT)(attr_length);
@@ -624,7 +624,7 @@ static void analyze_attribute_from_mft_record(ULONGLONG mft_id,ATTRIBUTE_TYPE at
     NTFS_FILE_RECORD_OUTPUT_BUFFER *nfrob = NULL;
     FILE_RECORD_HEADER *frh;
     NTSTATUS status;
-    
+
     /*
     * Skip attributes stored in the base mft record,
     * because they will be scanned anyway.
@@ -633,7 +633,7 @@ static void analyze_attribute_from_mft_record(ULONGLONG mft_id,ATTRIBUTE_TYPE at
         //trace(D"Attribute list entry points to 0x%x attribute of the base record",(UINT)attr_type);
         return;
     }
-    
+
     /* allocate memory for a single mft record */
     nfrob = winx_tmalloc(sp->ml.file_record_buffer_size);
     if(nfrob == NULL){
@@ -642,7 +642,7 @@ static void analyze_attribute_from_mft_record(ULONGLONG mft_id,ATTRIBUTE_TYPE at
         sp->errors ++;
         return;
     }
-    
+
     /* get specified mft record */
     status = get_file_record(mft_id,nfrob,sp);
     if(!NT_SUCCESS(status)){
@@ -658,7 +658,7 @@ static void analyze_attribute_from_mft_record(ULONGLONG mft_id,ATTRIBUTE_TYPE at
         /*sp->errors ++;*/
         return;
     }
-    
+
     /* validate file record */
     frh = (FILE_RECORD_HEADER *)nfrob->FileRecordBuffer;
     if(!is_file_record(frh)){
@@ -706,14 +706,14 @@ static void analyze_attribute_from_attribute_list(ATTRIBUTE_LIST *attr_list_entr
     /* 1. save the name of the attribute */
     length = attr_list_entry->NameLength;
     name_src = (wchar_t *)((char *)attr_list_entry + attr_list_entry->NameOffset);
-    
+
     if(length == 0)
         empty_name = 1; /* name has zero length */
     else if(attr_list_entry->NameOffset == 0)
         empty_name = 1; /* name location is invalid */
     else if(name_src[0] == 0)
         empty_name = 1; /* name is empty */
-    
+
     if(!empty_name){
         attr_name = winx_malloc((length + 1) * sizeof(wchar_t));
         wcsncpy(attr_name,name_src,length);
@@ -721,19 +721,19 @@ static void analyze_attribute_from_attribute_list(ATTRIBUTE_LIST *attr_list_entr
     }
 
     /* attr_name is NULL here for empty names */
-    
+
     /* 2. save the attribute type */
     attr_type = attr_list_entry->AttributeType;
-    
+
     /* 3. save the identifier of the child record containing the attribute */
     child_record_mft_id = GetMftIdFromFRN(attr_list_entry->FileReferenceNumber);
-    
+
     /* 4. save the AttributeNumber */
     attr_number = attr_list_entry->AttributeNumber;
-    
+
     /* 5. analyze a single attribute */
     analyze_attribute_from_mft_record(child_record_mft_id,attr_type,attr_name,attr_number,sp);
-    
+
     /* 6. free resources */
     winx_free(attr_name);
 }
@@ -742,11 +742,11 @@ static void analyze_resident_attribute_list(PRESIDENT_ATTRIBUTE pr_attr,mft_scan
 {
     ATTRIBUTE_LIST *entry;
     USHORT length;
-    
+
     entry = (ATTRIBUTE_LIST *)((char *)pr_attr + pr_attr->ValueOffset);
 
     while(!ftw_ntfs_check_for_termination(sp)){
-        if( ((char *)entry + sizeof(ATTRIBUTE_LIST) - sizeof(entry->AlignmentOrReserved)) > 
+        if( ((char *)entry + sizeof(ATTRIBUTE_LIST) - sizeof(entry->AlignmentOrReserved)) >
             ((char *)pr_attr + pr_attr->ValueOffset + pr_attr->ValueLength) ) break;
         /* is it a valid attribute */
         if(entry->AttributeType == 0xffffffff) break;
@@ -769,7 +769,7 @@ static void analyze_resident_attribute_list(PRESIDENT_ATTRIBUTE pr_attr,mft_scan
 static void get_file_flags(PRESIDENT_ATTRIBUTE pr_attr,mft_scan_parameters *sp)
 {
     STANDARD_INFORMATION *si;
-    
+
     si = (STANDARD_INFORMATION *)((char *)pr_attr + pr_attr->ValueOffset);
     if(pr_attr->ValueLength < 48) /* 48 = size of the shortest STANDARD_INFORMATION structure */
         etrace("STANDARD_INFORMATION attribute is too short");
@@ -780,7 +780,7 @@ static void get_file_flags(PRESIDENT_ATTRIBUTE pr_attr,mft_scan_parameters *sp)
 static void get_file_access_times(PRESIDENT_ATTRIBUTE pr_attr,mft_scan_parameters *sp)
 {
     STANDARD_INFORMATION *si;
-    
+
     si = (STANDARD_INFORMATION *)((char *)pr_attr + pr_attr->ValueOffset);
     if(pr_attr->ValueLength < 48){ /* 48 = size of the shortest STANDARD_INFORMATION structure */
         etrace("STANDARD_INFORMATION attribute is too short");
@@ -797,32 +797,32 @@ static void update_file_name(PRESIDENT_ATTRIBUTE pr_attr,mft_scan_parameters *sp
     ULONGLONG parent_mft_id;
     int update_name = 0;
     int length;
-    
+
     fn = (FILENAME_ATTRIBUTE *)((char *)pr_attr + pr_attr->ValueOffset);
     if(pr_attr->ValueLength < sizeof(FILENAME_ATTRIBUTE)){
         etrace("FILENAME_ATTRIBUTE is too short");
         return;
     }
-    
+
     if(fn->NameLength == 0){
         etrace("empty name found (1), mft index = %I64u",
             sp->mfi.BaseMftId);
         return;
     }
-    
+
     if(fn->Name[0] == 0){
         etrace("empty name found (2), mft index = %I64u",
             sp->mfi.BaseMftId);
         return;
     }
-    
+
     parent_mft_id = GetMftIdFromFRN(fn->DirectoryFileReferenceNumber);
     if(parent_mft_id == sp->mfi.BaseMftId && sp->mfi.BaseMftId != FILE_root){
         etrace("recursion found - file identifies themselves "
            "as a parent, mft index = %I64u",sp->mfi.BaseMftId);
         return;
     }
-    
+
     /* update sp->mfi */
     sp->mfi.ParentDirectoryMftId = parent_mft_id;
 
@@ -833,7 +833,7 @@ static void update_file_name(PRESIDENT_ATTRIBUTE pr_attr,mft_scan_parameters *sp
         update_name = 1; /* always update DOS names */
     else if((sp->mfi.NameType == FILENAME_WIN32) && (fn->NameType == FILENAME_POSIX))
         update_name = 1; /* always update Win32 names to POSIX names */
-    
+
     if(update_name){
         sp->mfi.NameType = fn->NameType;
         length = fn->NameLength;
@@ -851,10 +851,10 @@ static void handle_reparse_point(PRESIDENT_ATTRIBUTE pr_attr,mft_scan_parameters
 
     rp = (REPARSE_POINT *)((char *)pr_attr + pr_attr->ValueOffset);
     if(pr_attr->ValueLength >= sizeof(ULONG))
-        itrace("reparse tag = 0x%x",rp->ReparseTag);
+        dtrace("reparse tag = 0x%x",rp->ReparseTag);//genBTC changed to dtrace for DEBUG mode, very spammy.
     else
         etrace("REPARSE_POINT attribute is too short");
-    
+
     sp->mfi.Flags |= FILE_ATTRIBUTE_REPARSE_POINT;
 }
 
@@ -862,13 +862,13 @@ static void get_volume_information(PRESIDENT_ATTRIBUTE pr_attr,mft_scan_paramete
 {
     VOLUME_INFORMATION *vi;
     ULONG mj_ver, mn_ver;
-    
+
     vi = (VOLUME_INFORMATION *)((char *)pr_attr + pr_attr->ValueOffset);
     if(pr_attr->ValueLength < sizeof(VOLUME_INFORMATION)){
         etrace("VOLUME_INFORMATION attribute is too short");
         return;
     }
-    
+
     mj_ver = (ULONG)vi->MajorVersion;
     mn_ver = (ULONG)vi->MinorVersion;
     itrace("NTFS Version %u.%u",mj_ver,mn_ver);
@@ -879,14 +879,14 @@ static void get_volume_information(PRESIDENT_ATTRIBUTE pr_attr,mft_scan_paramete
 static void analyze_resident_stream(PRESIDENT_ATTRIBUTE pr_attr,mft_scan_parameters *sp)
 {
     wchar_t *attr_name;
-    
+
     /* add resident streams to sp->filelist */
     attr_name = get_attribute_name(&pr_attr->Attribute,sp);
     if(attr_name){
         (void)find_filelist_entry(attr_name,sp);
         winx_free(attr_name);
     }
-    
+
     if(pr_attr->ValueOffset == 0 || pr_attr->ValueLength == 0){
         /*
         * This is an ordinary case when some attribute data was truncated.
@@ -895,7 +895,7 @@ static void analyze_resident_stream(PRESIDENT_ATTRIBUTE pr_attr,mft_scan_paramet
         */
         return;
     }
-    
+
     switch(pr_attr->Attribute.AttributeType){
     case AttributeStandardInformation: /* always resident */
         get_file_flags(pr_attr,sp);
@@ -947,7 +947,7 @@ static void analyze_non_resident_attribute_list(winx_file_info *f,ULONGLONG list
         etrace("empty nonresident attribute list found");
         return;
     }
-    
+
     /* allocate memory for an integral number of cluster to hold a whole AttributeList */
     cluster_size = sp->ml.cluster_size;
     clusters_to_read = list_size / cluster_size;
@@ -959,7 +959,7 @@ static void analyze_non_resident_attribute_list(winx_file_info *f,ULONGLONG list
         sp->errors ++;
         return;
     }
-    
+
     /* loop through all blocks of file */
     current_cluster = cluster;
     for(block = f->disp.blockmap; block != NULL; block = block->next){
@@ -999,7 +999,7 @@ analyze_list:
     attr_list_entry = (PATTRIBUTE_LIST)cluster;
 
     while(!ftw_ntfs_check_for_termination(sp)){
-        if( ((char *)attr_list_entry + sizeof(ATTRIBUTE_LIST) - sizeof(attr_list_entry->AlignmentOrReserved)) > 
+        if( ((char *)attr_list_entry + sizeof(ATTRIBUTE_LIST) - sizeof(attr_list_entry->AlignmentOrReserved)) >
             ((char *)cluster + list_size) ) break;
         /* is it a valid attribute */
         if(attr_list_entry->AttributeType == 0xffffffff) break;
@@ -1015,7 +1015,7 @@ analyze_list:
     dtrace("attribute list analysis completed");
 #endif
 
-scan_done:    
+scan_done:
     /* free allocated resources */
     winx_free(cluster);
 }
@@ -1029,7 +1029,7 @@ scan_done:
 static winx_file_info * find_filelist_entry(wchar_t *attr_name,mft_scan_parameters *sp)
 {
     winx_file_info *f;
-    
+
     /* few streams may have the same mft id */
     for(f = *sp->filelist; f != NULL; f = f->next){
         /*
@@ -1046,7 +1046,7 @@ static winx_file_info * find_filelist_entry(wchar_t *attr_name,mft_scan_paramete
         //if(f->internal.BaseMftId == sp->mfi.BaseMftId) return f; /* safe? */
         if(f->next == *sp->filelist) break;
     }
-    
+
     f = (winx_file_info *)winx_list_insert((list_entry **)(void *)sp->filelist,NULL,sizeof(winx_file_info));
 
     /* initialize structure */
@@ -1058,7 +1058,7 @@ static winx_file_info * find_filelist_entry(wchar_t *attr_name,mft_scan_paramete
         sp->errors ++;
         return NULL;
     }
-    
+
     f->path = NULL;
     f->flags = 0;
     f->user_defined_flags = 0;
@@ -1074,20 +1074,20 @@ static winx_file_info * find_filelist_entry(wchar_t *attr_name,mft_scan_paramete
 static void process_run(winx_file_info *f,ULONGLONG vcn,ULONGLONG lcn,ULONGLONG length,mft_scan_parameters *sp)
 {
     winx_blockmap *block, *prev_block = NULL;
-    
+
     /* add information to f->disp */
     if(f->disp.blockmap) prev_block = f->disp.blockmap->prev;
     block = (winx_blockmap *)winx_list_insert((list_entry **)&f->disp.blockmap,
         (list_entry *)prev_block,sizeof(winx_blockmap));
-    
+
     block->vcn = vcn;
     block->lcn = lcn;
     block->length = length;
 
     f->disp.clusters += block->length;
-    
+
     /*
-    * Sometimes files have more than one fragment, 
+    * Sometimes files have more than one fragment,
     * but are not fragmented yet. In case of compressed
     * files this happens quite frequently.
     */
@@ -1101,7 +1101,7 @@ static int check_run(ULONGLONG lcn,ULONGLONG length,mft_scan_parameters *sp)
 {
     if((lcn < sp->ml.total_clusters) && (lcn + length <= sp->ml.total_clusters))
         return 1; /* run is inside volume bounds */
-    
+
     return 0;
 }
 
@@ -1120,7 +1120,7 @@ static LONGLONG RunLCN(PUCHAR run)
     UCHAR n1 = *run & 0xf;
     UCHAR n2 = (*run >> 4) & 0xf;
     LONGLONG lcn = (n2 == 0) ? 0 : (LONGLONG)(((signed char *)run)[n1 + n2]);
-    
+
     for(i = n1 + n2 - 1; i > n1; i--)
         lcn = (lcn << 8) + run[i];
     return lcn;
@@ -1133,7 +1133,7 @@ static ULONGLONG RunCount(PUCHAR run)
     ULONG i;
     UCHAR n = *run & 0xf;
     ULONGLONG count = 0;
-    
+
     for(i = n; i > 0; i--)
         count = (count << 8) + run[i];
     return count;
@@ -1145,28 +1145,28 @@ static void process_run_list(wchar_t *attr_name,PNONRESIDENT_ATTRIBUTE pnr_attr,
     ULONGLONG lcn, vcn, length;
     PUCHAR run;
     winx_file_info *f;
-    
+
 /*  if(pnr_attr->Attribute.Flags & 0x1)
         DbgPrint("[CMP] %ws VCN %I64u - %I64u",attr_name,pnr_attr->LowVcn,pnr_attr->HighVcn);
     else
         DbgPrint("[ORD] %ws VCN %I64u - %I64u",attr_name,pnr_attr->LowVcn,pnr_attr->HighVcn);
-*/    
+*/
 
     /* add file stream to the file list */
     f = find_filelist_entry(attr_name,sp);
     if(f == NULL)
         return;
-    
+
     if(pnr_attr->Attribute.Flags & 0x1)
         f->flags |= FILE_ATTRIBUTE_COMPRESSED;
-    
+
     /* don't analyze $BadClus file - it often has wrong number of clusters */
     if(winx_wcsistr(sp->mfi.Name,L"$BadClus")){
         /* this file always exists, regardless of file system state */
         itrace("$BadClus file detected");
         return;
     }
-    
+
     if(is_attr_list || (sp->flags & WINX_FTW_DUMP_FILES)){
         /* loop through runs */
         lcn = 0; vcn = pnr_attr->LowVcn;
@@ -1174,7 +1174,7 @@ static void process_run_list(wchar_t *attr_name,PNONRESIDENT_ATTRIBUTE pnr_attr,
         while(*run){
             lcn += RunLCN(run);
             length = RunCount(run);
-            
+
             /* skip virtual runs */
             if(RunLCN(run)){
                 /* check for data consistency */
@@ -1184,13 +1184,13 @@ static void process_run_list(wchar_t *attr_name,PNONRESIDENT_ATTRIBUTE pnr_attr,
                 }
                 process_run(f,vcn,lcn,length,sp);
             }
-            
+
             /* go to the next run */
             run += RunLength(run);
             vcn += length;
         }
     }
-    
+
     /* analyze nonresident attribute lists */
     if(is_attr_list) analyze_non_resident_attribute_list(f,pnr_attr->InitializedSize,sp);
 }
@@ -1203,7 +1203,7 @@ static void analyze_non_resident_stream(PNONRESIDENT_ATTRIBUTE pnr_attr,mft_scan
     ATTRIBUTE_TYPE attr_type;
     wchar_t *attr_name;
     BOOLEAN NonResidentAttrListFound = FALSE;
-    
+
     /* handle the type of the attribute */
     attr_type = pnr_attr->Attribute.AttributeType;
     if(attr_type == AttributeAttributeList){
@@ -1215,11 +1215,11 @@ static void analyze_non_resident_stream(PNONRESIDENT_ATTRIBUTE pnr_attr,mft_scan
 
     if(attr_type == AttributeReparsePoint)
         sp->mfi.Flags |= FILE_ATTRIBUTE_REPARSE_POINT;
-    
+
     attr_name = get_attribute_name(&pnr_attr->Attribute,sp);
     if(attr_name == NULL)
         return;
-    
+
 #ifdef SHOW_ATTR_LISTS_INFO
     if(NonResidentAttrListFound)
         dtrace("%ws:%ws",sp->mfi.Name,attr_name);
@@ -1241,16 +1241,16 @@ static int update_stream_name(winx_file_info *f,mft_scan_parameters *sp)
 {
     wchar_t *new_name;
     int length;
-    
+
     length = (int)wcslen(f->name) + (int)wcslen(sp->mfi.Name) + 1;
     new_name = winx_malloc((length + 1) * sizeof(wchar_t));
-    
+
     if(f->name[0]) /* stream name is not empty */
         _snwprintf(new_name,length + 1,L"%ws:%ws",sp->mfi.Name,f->name);
     else
         wcsncpy(new_name,sp->mfi.Name,length);
     new_name[length] = 0;
-    
+
     winx_free(f->name);
     f->name = new_name;
     return 0;
@@ -1286,22 +1286,22 @@ static void analyze_file_record(NTFS_FILE_RECORD_OUTPUT_BUFFER *nfrob,
 {
     FILE_RECORD_HEADER *frh;
     winx_file_info *f, *next, *head;
-    
+
     /* validate header */
     frh = (FILE_RECORD_HEADER *)nfrob->FileRecordBuffer;
     if(!is_file_record(frh))
         return;
     if(!(frh->Flags & 0x1))
         return; /* skip free records */
-    
+
     /*if(frh->Flags & 0x2)
         dtrace("directory"); // may be wrong?
     */
-    
+
     /* skip child records, we'll scan them later */
     if(frh->BaseFileRecord)
         return;
-    
+
     /*
     * Here we have found a new file, so let's
     * walk throuh all file records belonging to it.
@@ -1315,7 +1315,7 @@ static void analyze_file_record(NTFS_FILE_RECORD_OUTPUT_BUFFER *nfrob,
     * All information about file streams found will be
     * added to the list pointed by sp->filelist.
     */
-    
+
     /* initialize mfi structure */
     sp->mfi.BaseMftId = GetMftIdFromFRN(nfrob->FileReferenceNumber);
     sp->mfi.ParentDirectoryMftId = FILE_root;
@@ -1327,15 +1327,15 @@ static void analyze_file_record(NTFS_FILE_RECORD_OUTPUT_BUFFER *nfrob,
     sp->mfi.CreationTime = 0;
     sp->mfi.LastWriteTime = 0;
     sp->mfi.LastAccessTime = 0;
-    
+
     /* skip attribute lists */
     enumerate_attributes(frh,analyze_attribute_callback,sp);
-    
+
     /* analyze attribute lists */
     enumerate_attributes(frh,analyze_attribute_list_callback,sp);
-    
+
     //trace(D"%ws",sp->mfi.Name);
-    
+
     /*
     * Here sp->mfi structure contains
     * name of the file and file flags.
@@ -1453,24 +1453,24 @@ static int get_directory_information(ULONGLONG mft_id,wchar_t **path,ULONGLONG *
     file_entry *f_array,unsigned long n_entries,mft_scan_parameters *sp)
 {
     winx_file_info *f;
-    
+
     *path = NULL;
     *parent_mft_id = FILE_root;
-    
+
     f = find_directory_by_mft_id(mft_id,f_array,n_entries,sp);
     if(f == NULL){
         etrace("%I64u directory not found",mft_id);
         sp->errors ++;
         return 0;
     }
-    
+
     *parent_mft_id = f->internal.ParentDirectoryMftId;
-    
+
     if(f->path){
         *path = f->path;
         return 1;
     }
-    
+
     if(f->name){
         *path = f->name;
     }
@@ -1489,11 +1489,11 @@ static void build_file_path(winx_file_info *f,file_entry *f_array,
     ULONGLONG mft_id,parent_mft_id;
     int full_path_retrieved = 0;
     wchar_t *parent_path,*src;
-    
+
     /* initialize p->child by filename */
     wcsncpy(p->child,f->name,MAX_PATH - 1);
     p->child[MAX_PATH - 1] = 0;
-    
+
     /* loop through parent directories */
     parent_mft_id = f->internal.ParentDirectoryMftId;
     while(parent_mft_id != FILE_root && !full_path_retrieved){
@@ -1508,7 +1508,7 @@ static void build_file_path(winx_file_info *f,file_entry *f_array,
         p->buffer[MAX_PATH - 1] = 0;
         wcscpy(p->child,p->buffer);
     }
-    
+
     /* append root directory path, if not appended yet */
     if(p->child[1] == '?'){
         src = p->child;
@@ -1517,7 +1517,7 @@ static void build_file_path(winx_file_info *f,file_entry *f_array,
         p->buffer[MAX_PATH - 1] = 0;
         src = p->buffer;
     }
-    
+
     /* update f->path */
     f->path = winx_wcsdup(src);
     if(f->path == NULL){
@@ -1543,10 +1543,10 @@ static int build_full_paths(mft_scan_parameters *sp)
     winx_file_info *f;
     ULONG i;
     ULONGLONG time;
-    
+
     itrace("build_full_paths started...");
     time = winx_xtime();
-    
+
     /* allocate memory */
     p = winx_malloc(sizeof(path_parts));
 
@@ -1570,7 +1570,7 @@ static int build_full_paths(mft_scan_parameters *sp)
         for(f = *sp->filelist; f != NULL; f = f->next){
             f_array[i].mft_id = f->internal.BaseMftId;
             f_array[i].f = f;
-            if(i == (n_entries - 1)){ 
+            if(i == (n_entries - 1)){
                 if(f->next != *sp->filelist)
                     etrace("???");
                 break;
@@ -1582,13 +1582,13 @@ static int build_full_paths(mft_scan_parameters *sp)
     } else {
         itrace("slow linear search will be used");
     }
-    
+
     for(f = *sp->filelist; f != NULL; f = f->next){
         if(ftw_ntfs_check_for_termination(sp)) break;
         build_file_path(f,f_array,n_entries,p,sp);
         if(f->next == *sp->filelist) break;
     }
-    
+
     /* free allocated resources */
     winx_free(f_array);
     winx_free(p);
@@ -1616,15 +1616,15 @@ static int scan_mft(mft_scan_parameters *sp)
     ULONGLONG mft_id, ret_mft_id;
     NTSTATUS status;
     int result;
-    
+
     itrace("mft scan started");
     start_time = winx_xtime();
-    
+
 #ifdef TEST_NTFS_SCANNER
     dtrace("NTFS SCANNER TEST STARTED");
     srnd(1);
 #endif
-    
+
     /* get mft layout */
     if(get_mft_layout(sp) < 0){
 fail:
@@ -1639,7 +1639,7 @@ fail:
             sp->ml.file_record_buffer_size);
         return (-1);
     }
-    
+
     /* scan all file records sequentially */
     mft_id = sp->ml.number_of_file_records - 1;
     sp->mft_scan_direction = MFT_SCAN_RTL;
@@ -1677,7 +1677,7 @@ fail:
         sp->processed_attr_list_entries);
     itrace("file records scan completed in %I64u ms",
         winx_xtime() - start_time);
-    
+
     /* build full paths */
     result = build_full_paths(sp);
 
@@ -1708,7 +1708,7 @@ static int ntfs_scan_disk_helper(char volume_letter,
     int result;
     mft_scan_parameters sp;
     winx_file_info *f;
-    
+
     sp.filelist = filelist;
     sp.volume_letter = volume_letter;
     sp.processed_attr_list_entries = 0;
@@ -1718,20 +1718,20 @@ static int ntfs_scan_disk_helper(char volume_letter,
     sp.pcb = pcb;
     sp.t = t;
     sp.user_defined_data = user_defined_data;
-    
+
     /* open the volume for read access */
     path[4] = winx_toupper(volume_letter);
     sp.f_volume = winx_fopen(path,"r");
     if(sp.f_volume == NULL)
         return (-1);
-    
+
     /* scan mft directly -> add all files to the list */
     result = scan_mft(&sp);
     if(result < 0){
         winx_fclose(sp.f_volume);
         return result;
     }
-    
+
     /* call filter callback for each file found */
     for(f = *filelist; f != NULL; f = f->next){
         if(ftw_ntfs_check_for_termination(&sp)) break;
@@ -1739,12 +1739,12 @@ static int ntfs_scan_disk_helper(char volume_letter,
         if(fcb) (void)fcb(f,sp.user_defined_data);
         if(f->next == *filelist) break;
     }
-    
+
     winx_fclose(sp.f_volume);
-    
+
     if(!(sp.flags & WINX_FTW_ALLOW_PARTIAL_SCAN) && sp.errors)
         return (-1);
-    
+
     return 0;
 }
 
@@ -1756,18 +1756,18 @@ static int ntfs_scan_disk_helper(char volume_letter,
  * information about directories not scanned yet.
  */
 winx_file_info *ntfs_scan_disk(char volume_letter,
-    int flags, ftw_filter_callback fcb, ftw_progress_callback pcb, 
+    int flags, ftw_filter_callback fcb, ftw_progress_callback pcb,
     ftw_terminator t, void *user_defined_data)
 {
     winx_file_info *filelist = NULL;
-    
+
     if(ntfs_scan_disk_helper(volume_letter,flags,fcb,pcb,t,user_defined_data,&filelist) == (-1) && \
       !(flags & WINX_FTW_ALLOW_PARTIAL_SCAN)){
         /* destroy list */
         winx_ftw_release(filelist);
         return NULL;
     }
-        
+
     return filelist;
 }
 

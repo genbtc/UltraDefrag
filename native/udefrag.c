@@ -86,7 +86,7 @@ int udefrag_init_library(void)
 }
 
 /**
- * @brief Releases resources 
+ * @brief Releases resources
  * acquired by udefrag library.
  * @note
  * - Releases zenwinx resources as well.
@@ -102,7 +102,7 @@ void udefrag_unload_library(void)
 
 /**
  * @brief Delivers progress information to the caller.
- * @note 
+ * @note
  * - completion_status parameter becomes delivered to the caller
  * instead of the appropriate field of jp->pi structure.
  * - If cluster map cell is occupied entirely by MFT zone
@@ -118,28 +118,28 @@ static void deliver_progress_info(udefrag_job_parameters *jp,int completion_stat
     int mft_zone_detected;
     int free_cell_detected;
     ULONGLONG maximum, n;
-    
+
     if(jp->cb == NULL)
         return;
 
     /* make a copy of jp->pi */
     memcpy(&pi,&jp->pi,sizeof(udefrag_progress_info));
-    
+
     /* replace completion status */
     pi.completion_status = completion_status;
-    
+
     /* calculate progress percentage */
     x = (double)pi.processed_clusters;
     y = (double)pi.clusters_to_process;
     if(y == 0) pi.percentage = 0.00;
     else pi.percentage = (x / y) * 100.00;
-    
+
     /* calculate fragmentation percentage */
     x = (double)pi.bad_fragments;
     y = (double)pi.fragments;
     if(y == 0) pi.fragmentation = 0.00;
     else pi.fragmentation = (x / y) * 100.00;
-    
+
     /* refill cluster map */
     if(jp->pi.cluster_map && jp->cluster_map.array \
       && jp->pi.cluster_map_size == jp->cluster_map.map_size){
@@ -178,18 +178,18 @@ static void deliver_progress_info(udefrag_job_parameters *jp,int completion_stat
             }
         }
     }
-    
+
     /* deliver information to the caller */
     jp->cb(&pi,jp->p);
     jp->progress_refresh_time = winx_xtime();
     if(jp->udo.dbgprint_level >= DBG_PARANOID)
         winx_dbg_print_header(0x20,0,D"progress update");
-        
+
     if(jp->udo.dbgprint_level >= DBG_DETAILED){
         p1 = (int)(__int64)(pi.percentage * 100.00);
         p2 = p1 % 100;
         p1 = p1 / 100;
-        
+
         if(p1 >= jp->progress_trigger){
             winx_dbg_print_header('>',0,D"progress %3u.%02u%% completed, "
                 "trigger %3u", p1, p2, jp->progress_trigger);
@@ -241,7 +241,7 @@ static DWORD WINAPI start_job(LPVOID p)
     /* check job flags */
     if(jp->udo.job_flags & UD_JOB_REPEAT)
         itrace("repeat action until nothing left to move");
-    
+
     /* do the job */
     if(jp->job_type == DEFRAGMENTATION_JOB) action = "Defragmentation";
     else if(jp->job_type == FULL_OPTIMIZATION_JOB) action = "Full optimization";
@@ -250,7 +250,7 @@ static DWORD WINAPI start_job(LPVOID p)
     winx_dbg_print_header(0,0,I"%s of disk %c: started",action,jp->volume_letter);
     remove_fragmentation_report(jp);
     (void)winx_vflush(jp->volume_letter); /* flush all file buffers */
-    
+
     /* speedup file searching in optimization */
     if(jp->job_type == FULL_OPTIMIZATION_JOB \
       || jp->job_type == QUICK_OPTIMIZATION_JOB \
@@ -280,18 +280,18 @@ static DWORD WINAPI start_job(LPVOID p)
     if(jp->job_type != ANALYSIS_JOB)
         release_temp_space_regions(jp);
     (void)save_fragmentation_report(jp);
-    
+
     /* now it is safe to adjust the completion status */
     jp->pi.completion_status = result;
     if(jp->pi.completion_status == 0)
     jp->pi.completion_status ++; /* success */
-    
+
     winx_exit_thread(0); /* 8k/12k memory leak here? */
     return 0;
 }
 
 /**
- * @brief Destroys list of free regions, 
+ * @brief Destroys list of free regions,
  * list of files and list of fragmented files.
  */
 void destroy_lists(udefrag_job_parameters *jp)
@@ -327,20 +327,20 @@ int udefrag_start_job(char volume_letter,udefrag_job_type job_type,int flags,
     int use_limit = 0;
     int result = -1;
     int win_version = winx_get_os_version();
-    
+
     /* initialize the job */
     dbg_print_header(&jp);
 
     /* convert volume letter to uppercase */
     volume_letter = winx_toupper(volume_letter);
-    
+
     memset(&jp,0,sizeof(udefrag_job_parameters));
-    jp.win_version = winx_get_os_version();
+    jp.win_version = win_version;   //genBTC -replaced a 2nd call to winx_get_os_version()
     jp.filelist = NULL;
     jp.fragmented_files = NULL;
     jp.free_regions = NULL;
     jp.progress_refresh_time = 0;
-    
+
     jp.volume_letter = volume_letter;
     jp.job_type = job_type;
     jp.cb = cb;
@@ -350,32 +350,32 @@ int udefrag_start_job(char volume_letter,udefrag_job_type job_type,int flags,
     /*
     * We deliver the progress information from
     * the current thread as well as decide whether
-    * to terminate the job or not here. This 
+    * to terminate the job or not here. This
     * multi-threaded technique works quite smoothly.
     */
     jp.termination_router = terminator;
 
     jp.start_time = jp.p_counters.overall_time = winx_xtime();
     jp.pi.completion_status = 0;
-    
+
     if(get_options(&jp) < 0)
         goto done;
-    
+
     jp.udo.job_flags = flags;
 
     if(allocate_map(cluster_map_size,&jp) < 0){
         release_options(&jp);
         goto done;
     }
-    
+
     /* set additional privileges for Vista and above */
     if(win_version >= WINDOWS_VISTA){
         (void)winx_enable_privilege(SE_BACKUP_PRIVILEGE);
-        
+
         if(win_version >= WINDOWS_7)
             (void)winx_enable_privilege(SE_MANAGE_VOLUME_PRIVILEGE);
     }
-    
+
     /* run the job in separate thread */
     if(winx_create_thread(start_job,(PVOID)&jp) < 0){
         free_map(&jp);
@@ -413,7 +413,7 @@ int udefrag_start_job(char volume_letter,udefrag_job_type job_type,int flags,
                         time = 0;
                 } else {
                     /* this method gives not so fine results, but requires no winx_xtime calls */
-                    time -= jp.udo.refresh_interval; 
+                    time -= jp.udo.refresh_interval;
                 }
             }
         }
@@ -424,7 +424,7 @@ int udefrag_start_job(char volume_letter,udefrag_job_type job_type,int flags,
     destroy_lists(&jp);
     free_map(&jp);
     release_options(&jp);
-    
+
 done:
     jp.p_counters.overall_time = winx_xtime() - jp.p_counters.overall_time;
     dbg_print_performance_counters(&jp);
@@ -437,7 +437,7 @@ done:
 }
 
 /**
- * @brief Retrieves default formatted results 
+ * @brief Retrieves default formatted results
  * of the completed disk defragmentation job.
  * @param[in] pi pointer to udefrag_progress_info structure.
  * @return A string containing default formatted results
@@ -452,7 +452,7 @@ char *udefrag_get_results(udefrag_progress_info *pi)
     char free_space[68];
     double p;
     unsigned int ip, ifr;
-    
+
     /* allocate memory */
     msg = winx_malloc(MSG_LENGTH + 1);
 
@@ -593,14 +593,14 @@ int udefrag_set_log_file_path(void)
 {
     wchar_t *path, *native_path, *path_copy, *filename;
     int result;
-    
+
     path = winx_getenv(L"UD_LOG_FILE_PATH");
     if(path == NULL){
         /* empty variable forces to disable log */
         winx_disable_dbg_log();
         return 0;
     }
-    
+
     /* convert to native path */
     native_path = winx_swprintf(L"\\??\\%ws",path);
     winx_free(path);
@@ -608,10 +608,10 @@ int udefrag_set_log_file_path(void)
         etrace("cannot build native path");
         return (-1);
     }
-    
+
     /* delete old logfile */
     winx_delete_file(native_path);
-    
+
     /* ensure that target path exists */
     result = 0;
     path_copy = winx_wcsdup(native_path);
@@ -622,7 +622,7 @@ int udefrag_set_log_file_path(void)
         result = winx_create_path(path_copy);
         winx_free(path_copy);
     }
-    
+
     /* if target path cannot be created, use %tmp%\UltraDefrag_Logs */
     if(result < 0){
         path = winx_getenv(L"TMP");
@@ -647,7 +647,7 @@ int udefrag_set_log_file_path(void)
             winx_free(path);
         }
     }
-    
+
     if(native_path){
         /* write header to the log file */
         write_log_file_header(native_path);

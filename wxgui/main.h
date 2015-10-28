@@ -86,7 +86,11 @@ typedef enum {
 #include "../include/version.h"
 #include "../native/zenwinx.h"
 #include "../native/udefrag.h"
-
+//#include "../native/udefrag-internals.h"
+//VOLUME_IS_DIRTY
+//_PARTITION_INFORMATION
+//_MEDIA_TYPE
+//_DISK_GEOMETRY
 // =======================================================================
 //                              Constants
 // =======================================================================
@@ -191,8 +195,7 @@ enum {
     EventID_UpdateStatusBar,
     EventID_UpdateVolumeInformation,
     EventID_UpdateVolumeStatus,
-    EventID_UpdateFilesVolumeInformation,    //genBTC
-    EventID_UpdateFilesVolumeStatus,         //genBTC
+    EventID_FilesAnalyzedUpdateFilesList,    //genBTC
 
     // tray icon menu identifiers
     EventID_ShowHideMenu,
@@ -546,8 +549,7 @@ public:
     void FilesAdjustListHeight(wxCommandEvent& event);
     void FilesOnSplitChanged(wxSplitterEvent& event);
     void FilesOnListSize(wxSizeEvent& event);
-    void FilesUpdateVolumeInformation(wxCommandEvent& event);
-    void FilesUpdateVolumeStatus(wxCommandEvent& event);
+    void FilesAnalyzedUpdateFilesList(wxCommandEvent& event);
     void FilesPopulateList(wxCommandEvent& event);
     void FilesOnSkipRem(wxCommandEvent& event);
     void FilesOnRescan(wxCommandEvent& event);

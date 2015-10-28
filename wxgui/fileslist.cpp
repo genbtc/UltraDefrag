@@ -167,6 +167,7 @@ void FilesList::OnSelectionChange(wxListEvent& event)
             g_mainFrame->m_currentJob = currentJob;
             PostCommandEvent(g_mainFrame,EventID_RedrawMap);
             PostCommandEvent(g_mainFrame,EventID_UpdateStatusBar);
+            PostCommandEvent(g_mainFrame,EventID_FilesAnalyzedUpdateFilesList);
         }
     }
     event.Skip();
@@ -316,117 +317,156 @@ void *ListFilesThread::Entry()
     return NULL;
 }
 
-void MainFrame::FilesUpdateVolumeInformation(wxCommandEvent& event)
+//genBTC
+/**
+ * @brief Gets called everytime a DiskDrive is detected (from FilesPopulateList)
+*/
+void MainFrame::FilesAnalyzedUpdateFilesList (wxCommandEvent& event)
 {
-    int index = event.GetInt();
-    volume_info *v = (volume_info *)event.GetClientData();
+    TraceEnter;
+    //m_filesList->DeleteAllItems();
 
-    if(!v){ // the request has been made from the running job
-        int i;
-        for(i = 0; i < m_filesList->GetItemCount(); i++){
-            char letter = (char)m_filesList->GetItemText(i)[0];
-            if((char)index == letter) break;
-        }
+    //was volume information
+//    int vindex = event.GetInt();
+//    char letter = (char)vindex;
+//    //volume_info *v = (volume_info *)event.GetClientData();
+    //winx_volume_information volume_info;
+//    int success = winx_get_volume_information(letter,&volume_info);
+//    dtrace("Got Volume Info for: %s",letter);
+//    if (success == 0){
+//        etrace("exiting because no Get_Volume_info could exist for exists for %s",letter);
+//        return;
+//    }
+//            v = new volume_info;
+//            int result = udefrag_get_volume_information((char)index,v);
+//
+    long i = m_vList->GetFirstSelected();
+    wxString letter = m_vList->GetItemText(i);
+    wchar_t charletter;
+    wxStrncpy(&charletter,letter,1);
+    dtrace("printing out letter wchar_t %c",charletter);
 
-        if(i < m_filesList->GetItemCount()){
-            v = new volume_info;
-            int result = udefrag_get_volume_information((char)index,v);
-            if(result < 0){ delete v; return; }
-            index = i;
-        }
+    wchar_t *path = NULL;
+    struct prb_traverser t;
+    winx_file_info *file;
+    char *comment;
+    char *status;
+
+    JobsCacheEntry *cacheEntry = m_jobsCache[int(charletter)];
+    if(!cacheEntry){
+        etrace("exiting because no CacheEntry exists");
+        return;
     }
+    dtrace("cache entry's number of files: %u",cacheEntry->pi.files);
+    //prb_table *fragfileslist = m_currentJob->pi.fragmented_files;
+    //prb_table *fragfileslist = cacheEntry->pi.fragmented_files;
+    struct prb_table *fragfileslist = prb_copy(cacheEntry->pi.fragmented_files,NULL,NULL,NULL);
+    dtrace("Got to the part where it stored the fragfileslist");
+    /* Iterate through PRB_Table, filling the m_filesList as we go*/
+    prb_t_init(&t,cacheEntry->pi.fragmented_files);
+    dtrace("Got to Initialize the Traverser");
+    //file = prb_t_first(&t,cacheEntry->pi.fragmented_files);
+    //file = prb_t_first(&t,fragfileslist);
+    file = (winx_file_info *)prb_t_first(&t,fragfileslist);
+    if (file != NULL)
+        dtrace("Got to the part where it casted void to winx_file_info");
+    else
+        dtrace("FILE WAS NULL!!!!");
+    int prbindex = 0;
+    //wxString thestring(file->name);
+    dtrace("Printing file CTime %d",(file)->name);
+    while(file){
+        dtrace("Got to the part where it starts the loop");
+        if(is_directory(file))
+            comment = "[DIR]";
+        else if(is_compressed(file))
+            comment = "[CMP]";
+//        else if(is_over_limit(file))
+//            comment = "[SKIP]";
+//        else if(is_essential_boot_file(file))
+//            comment = "[BOOT]";
+//        else if(is_mft_file(file))
+//            comment = "[MFT]";
+        else
+            comment = "OK";
+        status = "OK";
 
-    if(v->is_dirty){
-        if(v->is_removable) m_filesList->SetItemImage(index,f_removableDirtyIcon);
-        else m_filesList->SetItemImage(index,f_fixedDirtyIcon);
-        m_filesList->SetItem(index,1,_("Disk needs to be repaired"));
-    } else {
-        if(v->is_removable) m_filesList->SetItemImage(index,f_removableIcon);
-        else m_filesList->SetItemImage(index,f_fixedIcon);
+
+        /*
+        * On change of status strings don't forget
+        * also to adjust write_file_status routine
+        * in udreportcnv.lua file.
+        */
+//        if(is_locked(file))
+//            status = "locked";
+//        else if(is_moving_failed(file))
+//            status = "move failed";
+//        else if(is_in_improper_state(file))
+//            status = "invalid";
+//        else
+//            status = " - ";
+
+//        (void)_snprintf(buffer, sizeof(buffer),
+//            "\t{fragments = %u,"
+//            "size = %I64u,"
+//            "comment = \"%s\","
+//            "status = \"%s\","
+//            "path = \"",
+//            (UINT)file->disp.fragments,
+//            file->disp.clusters * volume_info.bytes_per_cluster,
+//            comment,
+//            status
+//            );
+
+//        char s[32];
+//        wxString thestring;
+//        ::winx_bytes_to_hr((volume_info.total_bytes),2,s,sizeof(s));
+//        thestring.Printf(wxT("%hs"),s);
+        wchar_t name;
+        wxStrncpy(&name,file->name,255);
+        dtrace("printing out letter wchar_t %c",name);
+
+        m_filesList->InsertItem(0,wxT("Random # File"),0);
+        dtrace("Got after the part where it inserts a random item");
+        m_filesList->SetItem(prbindex,3,name);
+        dtrace("Got after part where it sets a data");
+
+        //file = prb_t_next(&t);
+        file = (winx_file_info *)prb_t_next(&t);
+        prbindex++;
     }
+    ProcessCommandEvent(EventID_AdjustFilesListHeight);
 
-    char s[32]; wxString string;
-    ::winx_bytes_to_hr((ULONGLONG)(v->total_space.QuadPart),2,s,sizeof(s));
-    string.Printf(wxT("%hs"),s); m_filesList->SetItem(index,3,string);
 
-    ::winx_bytes_to_hr((ULONGLONG)(v->free_space.QuadPart),2,s,sizeof(s));
-    string.Printf(wxT("%hs"),s); m_filesList->SetItem(index,4,string);
 
-    double total = (double)v->total_space.QuadPart;
-    double free = (double)v->free_space.QuadPart;
-    double d = (total > 0) ? free / total : 0;
-    int p = (int)(100 * d);
-    string.Printf(wxT("%u %%"),p); m_filesList->SetItem(index,5,string);
-
-    delete v;
+//
+//    for(index = 0; index < m_filesList->GetItemCount(); index++){
+//        if(letter == (char)m_filesList->GetItemText(index)[0]) break;
+//    }
+//    if(index >= m_filesList->GetItemCount()) return;
+//
+//    wxString status;
+//    int skip = 0;
+//    if(cacheEntry->pi.completion_status == 0 || cacheEntry->stopped){
+//        if(cacheEntry->pi.current_operation == VOLUME_ANALYSIS)
+//            skip++;
+//
+//    } else {
+//        if(cacheEntry->jobType == ANALYSIS_JOB)
+//            skip++;
+//    }
+//    m_filesList->SetItem(index,1,status);
+//
+//    wxString fragmentation = wxString::Format(wxT("%5.2lf %%"),
+//        cacheEntry->pi.fragmentation);
+//    m_filesList->SetItem(index,2,fragmentation);
+//
+//    delete v;
 }
 
-void MainFrame::FilesUpdateVolumeStatus(wxCommandEvent& event)
-{
-    char letter = (char)event.GetInt();
-    JobsCacheEntry *cacheEntry = m_jobsCache[(int)letter];
-    if(!cacheEntry) return;
-
-    int index;
-    for(index = 0; index < m_filesList->GetItemCount(); index++){
-        if(letter == (char)m_filesList->GetItemText(index)[0]) break;
-    }
-    if(index >= m_filesList->GetItemCount()) return;
-
-    wxString status;
-    if(cacheEntry->pi.completion_status == 0 || cacheEntry->stopped){
-        if(cacheEntry->pi.current_operation == VOLUME_ANALYSIS){
-            //: Status of the running disk analysis,
-            //: expands to "10 % analyzed".
-            //: Make sure that "%5.2lf" is included in the
-            //: translated string at the correct position.
-            status.Printf(_("%5.2lf %% analyzed"),cacheEntry->pi.percentage);
-        } else if(cacheEntry->jobType == DEFRAGMENTATION_JOB){
-            //: Status of the running disk defragmentation,
-            //: expands to "10 % defragmented, pass 5".
-            //: Make sure that "%5.2lf" and "%d" are included
-            //: in the translated string at the correct positions.
-            status.Printf(_("%5.2lf %% defragmented, pass %d"),
-                cacheEntry->pi.percentage,cacheEntry->pi.pass_number
-            );
-        } else {
-            //: Status of the running disk optimization, expands to
-            //: "10 % optimized, pass 5, 1024 moves total".
-            //: Make sure that "%5.2lf", "%d" and "%I64u" are included
-            //: in the translated string at the correct positions.
-            status.Printf(_("%5.2lf %% optimized, pass %d, %I64u moves total"),
-                cacheEntry->pi.percentage,cacheEntry->pi.pass_number,cacheEntry->pi.total_moves
-            );
-        }
-    } else {
-        if(cacheEntry->jobType == ANALYSIS_JOB){
-            //: Status of the completed disk analysis.
-            status = _("Analyzed");
-        } else if(cacheEntry->jobType == DEFRAGMENTATION_JOB){
-            //: Status of the completed disk defragmentation,
-            //: expands to "Defragmented, in 5 passes".
-            //: Make sure that "%d" is included in the
-            //: translated string at the correct position.
-            status.Printf(_("Defragmented, in %d passes"),
-                cacheEntry->pi.pass_number
-            );
-        } else {
-            //: Status of the completed disk optimization, expands to
-            //: "Optimized, in 5 passes, 1024 moves total".
-            //: Make sure that "%d" and "%I64u" are included
-            //: in the translated string at the correct positions.
-            status.Printf(_("Optimized, in %d passes, %I64u moves total"),
-                cacheEntry->pi.pass_number,cacheEntry->pi.total_moves
-            );
-        }
-    }
-    m_filesList->SetItem(index,1,status);
-
-    wxString fragmentation = wxString::Format(wxT("%5.2lf %%"),
-        cacheEntry->pi.fragmentation);
-    m_filesList->SetItem(index,2,fragmentation);
-}
-
+/**
+ * @brief Only called Once. Deletes the list and re-populates.
+*/
 void MainFrame::FilesPopulateList(wxCommandEvent& event)
 {
     volume_info *v = ::udefrag_get_vollist(m_skipRem);
@@ -442,15 +482,15 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
             v[i].label);
         m_filesList->InsertItem(i,label);
 
-        wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED,EventID_UpdateFilesVolumeInformation);
+        wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED,EventID_FilesAnalyzedUpdateFilesList);
         volume_info *v_copy = new volume_info;
         memcpy(v_copy,&v[i],sizeof(volume_info));
         e.SetInt(i); e.SetClientData((void *)v_copy);
         ProcessEvent(e);
 
-        e.SetId(EventID_UpdateFilesVolumeStatus);
+        e.SetId(EventID_FilesAnalyzedUpdateFilesList);
         e.SetInt((int)v[i].letter);
-        ProcessEvent(e);
+        //ProcessEvent(e);
     }
 
     ProcessCommandEvent(EventID_AdjustFilesListColumns);

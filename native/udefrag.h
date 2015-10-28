@@ -18,7 +18,7 @@
  */
 
 /*
-* Udefrag.dll interface header.
+* Udefrag part of native.dll interface header.
 */
 
 #ifndef _UDEFRAG_H_
@@ -83,13 +83,13 @@ typedef enum {
 /* flags triggering algorithm features */
 #define UD_JOB_REPEAT                     0x1
 /*
-* 0x2, 0x4, 0x8 flags have been used 
+* 0x2, 0x4, 0x8 flags have been used
 * in the past for experimental options
 */
 #define UD_JOB_CONTEXT_MENU_HANDLER       0x10
 
 /*
-* MFT_ZONE_SPACE has special meaning - 
+* MFT_ZONE_SPACE has special meaning -
 * it is used as a marker for MFT Zone space.
 */
 enum {
@@ -124,7 +124,7 @@ typedef struct _udefrag_progress_info {
     ULONGLONG free_space;             /* free space amount, in bytes */
     ULONGLONG mft_size;               /* mft size, in bytes */
     udefrag_operation_type current_operation;  /* identifies currently running operation */
-    unsigned long pass_number;        /* the current disk processing pass, increases 
+    unsigned long pass_number;        /* the current disk processing pass, increases
                                          immediately after the pass completion */
     ULONGLONG clusters_to_process;    /* number of clusters to process */
     ULONGLONG processed_clusters;     /* number of already processed clusters */
@@ -134,6 +134,7 @@ typedef struct _udefrag_progress_info {
     int cluster_map_size;             /* size of the cluster map buffer, in bytes */
     ULONGLONG moved_clusters;         /* number of moved clusters */
     ULONGLONG total_moves;            /* number of moves by move_files_to_front/back functions */
+    struct prb_table *fragmented_files;         /* list of fragmented files; does not contain filtered out files */
 } udefrag_progress_info;
 
 typedef void  (*udefrag_progress_callback)(udefrag_progress_info *pi, void *p);

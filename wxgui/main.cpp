@@ -520,8 +520,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(EventID_UpdateStatusBar,   MainFrame::UpdateStatusBar)
     EVT_MENU(EventID_UpdateVolumeInformation, MainFrame::UpdateVolumeInformation)
     EVT_MENU(EventID_UpdateVolumeStatus,      MainFrame::UpdateVolumeStatus)
-    EVT_MENU(EventID_UpdateFilesVolumeInformation, MainFrame::FilesUpdateVolumeInformation)//genBTC
-    EVT_MENU(EventID_UpdateFilesVolumeStatus,      MainFrame::FilesUpdateVolumeStatus)//genBTC
+    EVT_MENU(EventID_FilesAnalyzedUpdateFilesList, MainFrame::FilesAnalyzedUpdateFilesList)//genBTC
 END_EVENT_TABLE()
 
 // =======================================================================
