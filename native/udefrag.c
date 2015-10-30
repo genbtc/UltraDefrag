@@ -377,6 +377,7 @@ int udefrag_start_job(char volume_letter,udefrag_job_type job_type,int flags,
     }
 
     /* run the job in separate thread */
+    //if <0 this must mean that the job creation failed, so gracefully go to done.
     if(winx_create_thread(start_job,(PVOID)&jp) < 0){
         free_map(&jp);
         release_options(&jp);
@@ -421,7 +422,7 @@ int udefrag_start_job(char volume_letter,udefrag_job_type job_type,int flags,
 
     /* cleanup */
     deliver_progress_info(&jp,jp.pi.completion_status);
-    destroy_lists(&jp);
+//    destroy_lists(&jp);
     free_map(&jp);
     release_options(&jp);
 

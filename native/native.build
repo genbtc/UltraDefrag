@@ -1,0 +1,9 @@
+-- this is the native library build options
+name        = "nativegcc"
+target_type = "dll"
+nativedll   = 1
+
+-- list of directories containing headers the library relies on
+includes = { "include", "native" }
+
+libs = { "ntdll" }

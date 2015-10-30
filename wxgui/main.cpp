@@ -337,7 +337,7 @@ MainFrame::MainFrame()
     m_filesList = new FilesList(m_panel2,wxLC_REPORT | \
         wxLC_HRULES | wxLC_VRULES | wxBORDER_NONE);
     InitFilesList();
-    m_listfilesThread = new ListFilesThread();//genBTC
+    //m_listfilesThread = new ListFilesThread();//genBTC
 
 	//make sizer3 to Fit the page2list, and initialize it.
 	wxBoxSizer* bSizer3;
@@ -373,7 +373,7 @@ MainFrame::MainFrame()
     // launch threads for time consuming operations
     m_btdThread = btd ? new BtdThread() : NULL;
     m_configThread = new ConfigThread();
-    m_crashInfoThread = new CrashInfoThread();
+    //m_crashInfoThread = new CrashInfoThread();    //genBTC disabled crash-info-thread. was causing debugging issues.
 
     wxConfigBase *cfg = wxConfigBase::Get();
     int ulevel = (int)cfg->Read(wxT("/Upgrade/Level"),1);
@@ -408,7 +408,7 @@ MainFrame::~MainFrame()
     ::SetEvent(g_synchEvent);
     delete m_btdThread;
     delete m_configThread;
-    delete m_crashInfoThread;
+    //delete m_crashInfoThread;//genBTC stopped the crashinfo thread.
     delete m_jobThread;
     delete m_listThread;
     delete m_listfilesThread;//genbtc

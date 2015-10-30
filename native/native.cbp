@@ -27,6 +27,7 @@
 			<Add option="/arch:SSE2" />
 			<Add option="/Ox" />
 			<Add option="/W3" />
+			<Add option="/Zc:wchar_t" />
 			<Add option="/nologo /W3 /GS- /Gd /O2 /c" />
 			<Add option="/DBUILD_DLL" />
 			<Add option="/DWIN32" />
@@ -52,7 +53,7 @@
 			<Add option="/subsystem:console" />
 			<Add option='/entry:&quot;DllMain&quot;' />
 			<Add option="/dll" />
-			<Add option="/def:native.def" />
+			<Add option="/def:native-vc.def" />
 			<Add option="/implib:..\lib\native.lib" />
 			<Add option="/MANIFEST:NO" />
 			<Add library="ntdll.lib" />

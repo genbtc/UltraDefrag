@@ -17,6 +17,7 @@
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
+					<Add option="-Wall" />
 					<Add option="-g" />
 				</Compiler>
 			</Target>
@@ -28,13 +29,16 @@
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-march=corei7" />
+					<Add option="-O3" />
+				</Compiler>
 				<Linker>
 					<Add option="-s" />
 				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="-mwindows" />
 			<Add directory="$(WXWIDGETSDIR)/include" />
 			<Add directory="$(WXWIDGETSDIR)/lib/gcc_libmingw-X86/mswu" />
 		</Compiler>
@@ -42,7 +46,6 @@
 			<Add directory="$(WXWIDGETSDIR)/include" />
 		</ResourceCompiler>
 		<Linker>
-			<Add option="-mwindows" />
 			<Add library="libnativegcc.dll.a" />
 			<Add library="liblua5.1a.dll.a" />
 			<Add library="libwxmsw28u_adv.a" />
@@ -67,6 +70,9 @@
 			<Add directory="../lib" />
 			<Add directory="$(WXWIDGETSDIR)/lib/gcc_libmingw-X86" />
 		</Linker>
+		<ExtraCommands>
+			<Add before="mingw32-make --directory C:\Software\udefrag\native\ -f Makefile.mingw" />
+		</ExtraCommands>
 		<Unit filename="about.cpp" />
 		<Unit filename="btd.cpp" />
 		<Unit filename="config.cpp" />

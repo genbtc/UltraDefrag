@@ -418,4 +418,38 @@ void Utils::ShowError(const wxChar* format, ...)
     }
 }
 
+wxString Utils::ConvertChartoWxString(char* input)
+{
+    #if wxUSE_UNICODE
+        int size = sizeof(input) + 1;
+        wchar_t *buffer = new wchar_t[size*4];  // 32bit chars?
+        wxEncodingConverter wxec;
+        wxec.Init(wxFONTENCODING_ISO8859_1, wxFONTENCODING_UNICODE, wxCONVERT_SUBSTITUTE);
+        wxec.Convert(input, buffer);
+        winx_free(input);
+        wxString temp(buffer);
+        delete buffer;
+        return temp;
+    #else
+        return wxString(input.c_str());
+    #endif
+}
+char* Utils::wxStringToChar(wxString input)
+{
+#if (wxUSE_UNICODE)
+   size_t size = input.size() + 1;
+   char *buffer = new char[size];//No need to multiply by 4, converting to 1 byte char only.
+   memset(buffer, 0, size); //Good Practice, Can use buffer[0] = '\0' also.
+   wxEncodingConverter wxec;
+   wxec.Init(wxFONTENCODING_ISO8859_1, wxFONTENCODING_ISO8859_1, wxCONVERT_SUBSTITUTE);
+   wxec.Convert(input.mb_str(), buffer);
+   return buffer; //To free this buffer memory is user responsibility.
+#else
+   return (char *)(input.c_str());
+#endif
+//Other way:
+// convert wxString to const char *
+//wxString eh = huh->GetValue();
+//const wxCharBuffer eheheh = eh.ToAscii();
+}
 /** @} */

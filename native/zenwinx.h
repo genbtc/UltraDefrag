@@ -199,15 +199,15 @@ typedef struct _winx_file_internal_info {
 typedef struct _winx_file_info {
     struct _winx_file_info *next;      /* pointer to the next item */
     struct _winx_file_info *prev;      /* pointer to the previous item */
-    wchar_t *name;                     /* name of the file */
     wchar_t *path;                     /* full native path */
+    wchar_t *name;                     /* name of the file */
     unsigned long flags;               /* combination of FILE_ATTRIBUTE_xxx flags defined in winnt.h */
-    winx_file_disposition disp;        /* information about file fragments and their disposition */
     unsigned long user_defined_flags;  /* combination of flags defined by the caller */
-    winx_file_internal_info internal;  /* internal information used by ftw_scan_disk support routines */
     ULONGLONG creation_time;           /* the file creation time */
     ULONGLONG last_modification_time;  /* the time of the last file modification */
     ULONGLONG last_access_time;        /* the time of the last file access */
+    winx_file_disposition disp;        /* information about file fragments and their disposition */
+    winx_file_internal_info internal;  /* internal information used by ftw_scan_disk support routines */
 } winx_file_info;
 
 typedef int  (*ftw_filter_callback)(winx_file_info *f,void *user_defined_data);

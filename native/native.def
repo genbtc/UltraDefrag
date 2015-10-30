@@ -1,4 +1,4 @@
-LIBRARY native.dll
+LIBRARY nativegcc.dll
 
 EXPORTS
     udefrag_get_error_description

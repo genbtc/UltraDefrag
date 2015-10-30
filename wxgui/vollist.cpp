@@ -128,8 +128,9 @@ void DrivesList::OnKeyDown(wxKeyEvent& event)
 void DrivesList::OnKeyUp(wxKeyEvent& event)
 {
     if(!g_mainFrame->m_busy){
-        // dtrace("Modifier: %d ... KeyCode: %d", \
-        //    event.GetModifiers(), event.GetKeyCode());
+/*         dtrace("Modifier: %d ... KeyCode: %d", \
+ *             event.GetModifiers(), event.GetKeyCode());
+ */
         switch(event.GetKeyCode()){
         case WXK_RETURN:
         case WXK_NUMPAD_ENTER:
@@ -311,6 +312,7 @@ void *ListThread::Entry()
 
 void MainFrame::UpdateVolumeInformation(wxCommandEvent& event)
 {
+    TraceEnter;
     int index = event.GetInt();
     volume_info *v = (volume_info *)event.GetClientData();
 
@@ -325,6 +327,7 @@ void MainFrame::UpdateVolumeInformation(wxCommandEvent& event)
             v = new volume_info;
             int result = udefrag_get_volume_information((char)index,v);
             if(result < 0){ delete v; return; }
+            m_volinfocache = *v;    //genBTC, make a copy/cache of the volume info.(for fileslist.cpp)
             index = i;
         }
     }
@@ -356,6 +359,7 @@ void MainFrame::UpdateVolumeInformation(wxCommandEvent& event)
 
 void MainFrame::UpdateVolumeStatus(wxCommandEvent& event)
 {
+    TraceEnter;
     char letter = (char)event.GetInt();
     JobsCacheEntry *cacheEntry = m_jobsCache[(int)letter];
     if(!cacheEntry) return;

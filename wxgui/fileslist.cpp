@@ -63,7 +63,8 @@ void MainFrame::InitFilesList()
     //int border = wxSystemSettings::GetMetric(wxSYS_BORDER_X);//genBTC
 
     // adjust widths so all the columns will fit to the window
-    int width = m_filesList->GetClientSize().GetWidth();// - border*4;//genBTC
+    //int width = m_filesList->GetClientSize().GetWidth();
+    int width = m_vList->GetClientSize().GetWidth();
     int lastColumnWidth = width;
 
     dtrace("INIT - client width ......... %d", width);
@@ -74,16 +75,25 @@ void MainFrame::InitFilesList()
         wxLIST_FORMAT_RIGHT, wxLIST_FORMAT_RIGHT
     };
 
+    double ratios[LIST_COLUMNS] = {
+            320.0/640, 80.0/640, 80.0/640,
+            80.0/640, 79.0/640, 1.0/640
+    };
+
     for(int i = 0; i < LIST_COLUMNS - 1; i++) {
-        int w = m_w[i] = (int)floor(m_r[i] * width);
+        m_fcolsr[i] = ratios[i];    //initialize with fixed values from above
+        int w = m_fcolsw[i] = (int)floor(m_fcolsr[i] * width);        //genBTC - set to default ratios.
         m_filesList->InsertColumn(i, wxEmptyString, format[i], w);
         dtrace("FilesList column %d width ....... %d", i, w);
         lastColumnWidth -= w;
     }
 
-    int w = (int)floor(m_r[LIST_COLUMNS - 1] * width);
+    //initialize with values (needed because the loop above goes 1 column less on purpose
+    m_fcolsr[LIST_COLUMNS - 1] = ratios[LIST_COLUMNS - 1];
+    //adjust the last column to be the precise size needed.
+    int w = (int)floor(m_fcolsr[LIST_COLUMNS - 1] * width);
     if(w > 0) w = lastColumnWidth;
-    m_w[LIST_COLUMNS - 1] = w;
+    m_fcolsw[LIST_COLUMNS - 1] = w;
     m_filesList->InsertColumn(LIST_COLUMNS - 1,
         wxEmptyString, format[LIST_COLUMNS - 1], w
     );
@@ -128,8 +138,9 @@ void FilesList::OnKeyDown(wxKeyEvent& event)
 void FilesList::OnKeyUp(wxKeyEvent& event)
 {
     if(!g_mainFrame->m_busy){
-        // dtrace("Modifier: %d ... KeyCode: %d", \
-        //    event.GetModifiers(), event.GetKeyCode());
+/*         dtrace("Modifier: %d ... KeyCode: %d", \
+ *             event.GetModifiers(), event.GetKeyCode());
+ */
         switch(event.GetKeyCode()){
         case WXK_RETURN:
         case WXK_NUMPAD_ENTER:
@@ -159,17 +170,17 @@ void FilesList::OnMouse(wxMouseEvent& event)
 
 void FilesList::OnSelectionChange(wxListEvent& event)
 {
-    long i = GetFirstSelected();
-    if(i != -1){
-        char letter = (char)GetItemText(i)[0];
-        JobsCacheEntry *currentJob = g_mainFrame->m_jobsCache[(int)letter];
-        if(g_mainFrame->m_currentJob != currentJob){
-            g_mainFrame->m_currentJob = currentJob;
-            PostCommandEvent(g_mainFrame,EventID_RedrawMap);
-            PostCommandEvent(g_mainFrame,EventID_UpdateStatusBar);
-            PostCommandEvent(g_mainFrame,EventID_FilesAnalyzedUpdateFilesList);
-        }
-    }
+//    long i = GetFirstSelected();
+//    if(i != -1){
+//        char letter = (char)GetItemText(i)[0];
+//        JobsCacheEntry *currentJob = g_mainFrame->m_jobsCache[(int)letter];
+//        if(g_mainFrame->m_currentJob != currentJob){
+//            g_mainFrame->m_currentJob = currentJob;
+//            PostCommandEvent(g_mainFrame,EventID_UpdateStatusBar);
+//            PostCommandEvent(g_mainFrame,EventID_FilesAnalyzedUpdateFilesList);
+//        }
+//    }
+    PostCommandEvent(g_mainFrame,EventID_FilesAnalyzedUpdateFilesList);
     event.Skip();
 }
 
@@ -189,13 +200,13 @@ void MainFrame::FilesAdjustListColumns(wxCommandEvent& event)
     for(int i = 0; i < LIST_COLUMNS; i++){
         int w = m_filesList->GetColumnWidth(i);
         cwidth += w;
-        if(w != m_w[i])
+        if(w != m_fcolsw[i])
             changed = true;
     }
 
     if(changed){
         for(int i = 0; i < LIST_COLUMNS; i++)
-            m_r[i] = (double)m_filesList->GetColumnWidth(i) / (double)cwidth;
+            m_fcolsr[i] = (double)m_filesList->GetColumnWidth(i) / (double)cwidth;
     }
     else{
         return;
@@ -210,15 +221,15 @@ void MainFrame::FilesAdjustListColumns(wxCommandEvent& event)
     dtrace("FilesList total column width ... %d", cwidth);
 
     for(int i = 0; i < (LIST_COLUMNS - 1); i++) {
-        int w = m_w[i] = (int)floor(m_r[i] * width);
+        int w = m_fcolsw[i] = (int)floor(m_fcolsr[i] * width);
         m_filesList->SetColumnWidth(i, w);
         dtrace("column %d width ....... %d", i, w);
         lastColumnWidth -= w;
     }
 
-    int w = (int)floor(m_r[LIST_COLUMNS - 1] * width);
+    int w = (int)floor(m_fcolsr[LIST_COLUMNS - 1] * width);
     if(w > 0) w = lastColumnWidth;
-    m_w[LIST_COLUMNS - 1] = w;
+    m_fcolsw[LIST_COLUMNS - 1] = w;
 
     m_filesList->SetColumnWidth(LIST_COLUMNS - 1, w);
     dtrace("column %d width ....... %d", LIST_COLUMNS - 1, w);
@@ -234,7 +245,7 @@ void MainFrame::FilesAdjustListHeight(wxCommandEvent& WXUNUSED(event))
 
     // avoid recursion
     if(height == m_filesListHeight) return;
-    bool expand = (height > m_filesListHeight) ? true : false;
+    //bool expand = (height > m_filesListHeight) ? true : false;    //unused variable as of now.
     m_filesListHeight = height;
 
     if(!m_filesList->GetColumnCount()) return;
@@ -277,7 +288,6 @@ void MainFrame::FilesOnSplitChanged(wxSplitterEvent& event)
 {
     PostCommandEvent(this,EventID_AdjustFilesListHeight);
     PostCommandEvent(this,EventID_AdjustFilesListColumns);
-    PostCommandEvent(this,EventID_RedrawMap);
 
     event.Skip();
 }
@@ -309,7 +319,7 @@ void *ListFilesThread::Entry()
 {
     while(!g_mainFrame->CheckForTermination(200)){
         if(m_rescan){
-            PostCommandEvent(g_mainFrame,EventID_PopulateFilesList);
+            //PostCommandEvent(g_mainFrame,EventID_PopulateFilesList);
             m_rescan = false;
         }
     }
@@ -324,6 +334,60 @@ void *ListFilesThread::Entry()
 void MainFrame::FilesAnalyzedUpdateFilesList (wxCommandEvent& event)
 {
     TraceEnter;
+//    #define MAX_UTF8_PATH_LENGTH (256 * 1024)
+//    long i = m_vList->GetFirstSelected();
+//    wxString letter = m_vList->GetItemText(i);
+//    wchar_t charletter;
+//    wxStrncpy(&charletter,letter,1);
+//    dtrace("DRIVE LETTER %c (wchar_t)",charletter);
+//
+//    struct prb_traverser trav,t;
+//    winx_file_info *file;
+//    winx_file_info *fileprb;
+//
+//    int length;
+//    char *cnv_path = NULL;
+//    char *utf8_path;
+//    dtrace("fileslist.cpp letter was %d",int(charletter));
+//    JobsCacheEntry *cacheEntry = m_jobsCache[int(charletter)];
+//    if(!cacheEntry){
+//        etrace("exiting because no CacheEntry exists");
+//        return;
+//    }
+//
+////    dtrace("cache entry's number of files: %u",cacheEntry->pi.files);
+////    prb_t_init(&t,cacheEntry->pi.fragmented_files_prb);
+////    dtrace("Got to Initialize the Traverser");
+////    fileprb = (winx_file_info *)prb_t_first(&t,cacheEntry->pi.fragmented_files_prb);
+////    dtrace("Successfully retrieved the file's winx_file_info.");
+////    while(fileprb){
+////        //file = *fileprb;
+////        dtrace("Did a loop.");
+////        dtrace("Some other thing: %d",fileprb->creation_time);
+////        fileprb = (winx_file_info *)prb_t_next(&t);
+////    }
+//    dtrace("Got to inside the fileslist.cpp complettion status.");
+//    //cacheEntry->pi.fragmented_files_prb = prb_copy(pi->fragmented_files_prb,NULL,NULL,NULL);
+//    //dtrace("Copied the PRB inside fileslist.cpp");
+//    //pi->isfragfileslist = 1;
+//
+//    prb_t_init(&trav,cacheEntry->pi.fragmented_files_prb);
+//    file = (winx_file_info *)prb_t_first(&trav,cacheEntry->pi.fragmented_files_prb);
+//
+//    while (file){
+//        //jp->pi.fragmented_files[copycount] = file;
+////        temparray[copycount] = *file;
+//        length = ((int)wcslen((wchar_t *)file->path) + 1) * sizeof(wchar_t) * 2;/* enough to hold UTF-8 string */
+//        cnv_path = (char *)winx_tmalloc(length);
+//        winx_to_utf8(cnv_path,length,file->path);
+//        etrace("File->Path: %s",cnv_path);
+//        etrace("File->CTIME: %d",file->creation_time);
+//        //memcpy(&jp->pi.fragmented_files[copycount],file,sizeof(winx_file_info));
+//        //copycount++;
+//        file = (winx_file_info *)prb_t_next(&trav);
+//        winx_free(cnv_path);
+//    }
+}
     //m_filesList->DeleteAllItems();
 
     //was volume information
@@ -340,63 +404,144 @@ void MainFrame::FilesAnalyzedUpdateFilesList (wxCommandEvent& event)
 //            v = new volume_info;
 //            int result = udefrag_get_volume_information((char)index,v);
 //
-    long i = m_vList->GetFirstSelected();
-    wxString letter = m_vList->GetItemText(i);
-    wchar_t charletter;
-    wxStrncpy(&charletter,letter,1);
-    dtrace("printing out letter wchar_t %c",charletter);
+//    char *comment;
+//    char *status;
+//    udefrag_progress_info pi;
+//    wchar_t *path = NULL;
+//    char utf8_name[(length + 1) * 4];
+//    char filepathname[512];
+//    char *utf8_path;
+    //utf8_path = winx_tmalloc(MAX_UTF8_PATH_LENGTH);
+//    winx_to_utf8(utf8_compname,sizeof(file.path),compname);
 
-    wchar_t *path = NULL;
-    struct prb_traverser t;
-    winx_file_info *file;
-    char *comment;
-    char *status;
+    //winx_file_info* ptr = cacheEntry->pi.fragmented_files;
+//    if(cacheEntry->pi.isfragfileslist == 1){
+//        for (int i=0; i < cacheEntry->pi.fragmented_files_count; i++){
+//            dtrace("Entered the for Loop. Run %d",i);
+//        //while (ptr){
+//            file = cacheEntry->pi.fragmented_files[i];
+//            dtrace("Successfully retrieved the file's winx_file_info.");
+//            if(file.path != NULL){
+//                /* skip \??\ sequence in the beginning of the path */
+//                length = (int)wcslen(file.path);
+//                if(length > 4){
+//                    convert_to_utf8_path(utf8_path,MAX_UTF8_PATH_LENGTH,file.path + 4);
+//                } else {
+//                    convert_to_utf8_path(utf8_path,MAX_UTF8_PATH_LENGTH,file.path);
+//                }
+//                dtrace("Successfully did UTF-8 path conversions");
+//                //dtrace("The Filename was: %hs",utf8_path);
+//                int itemscount = m_filesList->GetItemCount();
+//                //m_filesList->InsertItem(itemscount,utf8_path);
+//                wxString filepathname = wxString::FromUTF8(cnv_path);
+//                dtrace("Trying to print filename before adding item: %hs",filepathname.wc_str());
+//                m_filesList->InsertItem(itemscount,filepathname,2);
+//                winx_free(utf8_path);
+//                return;
+//                //dtrace("Successfully added the file to the list");
+//            }
+//        }
+//    }
+//}
+            //wchar_t name;
+            //wxStrncpy(&name,file.name,255);
 
-    JobsCacheEntry *cacheEntry = m_jobsCache[int(charletter)];
-    if(!cacheEntry){
-        etrace("exiting because no CacheEntry exists");
-        return;
-    }
-    dtrace("cache entry's number of files: %u",cacheEntry->pi.files);
-    //prb_table *fragfileslist = m_currentJob->pi.fragmented_files;
+//            length = ((int)wcslen((wchar_t *)file.path) + 1) * sizeof(wchar_t);
+//            length *= 2;     /* enough to hold UTF-8 string */
+//            cnv_path = (char *)winx_tmalloc(length);
+//            winx_to_utf8(cnv_path,length,file.path);
+//
+//            dtrace("The cnv_file is: %hs",cnv_path);
+
+//            dtrace("Successfully added the file to the list");
+
+            //winx_dbg_print(0,"%s",filepathname);
+            //wxString filepathname;
+            //filepathname.Printf(wxT("%ls"),wxString::Format(wxT("%hs"),cnv_path).wc_str());
+
+//            filepathname.Printf(wxT("%-10ls %ls"),
+//                wxString::Format(wxT("%c: [%hs]"),
+//                'ABC ',cnv_path).wc_str(),
+//                file.name);
+
+//        label.Printf(
+//             wxT("%-10ls %ls"),    wxString::Format(wxT("%c: [%hs]"),v[i].letter,v[i].fsname).wc_str(),      v[i].label );
+//                                                                        char        char                    wchar_t
+            //m_filesList->InsertItem(i,label);
+            //m_filesList->InsertItem(0,filepathname,0);
+            //winx_free(cnv_path);
+            //trace(D"%ws",file.name);
+            //ptr++;
+
+
+    //cacheEntry->jobType.ANALYSIS_JOB
+    //cacheEntry->pi.completion_status
+    //memcpy(&pi,&cacheEntry->pi,sizeof(udefrag_progress_info));
+
+//    //prb_table *fragfileslist = m_currentJob->pi.fragmented_files;
     //prb_table *fragfileslist = cacheEntry->pi.fragmented_files;
-    struct prb_table *fragfileslist = prb_copy(cacheEntry->pi.fragmented_files,NULL,NULL,NULL);
-    dtrace("Got to the part where it stored the fragfileslist");
-    /* Iterate through PRB_Table, filling the m_filesList as we go*/
-    prb_t_init(&t,cacheEntry->pi.fragmented_files);
-    dtrace("Got to Initialize the Traverser");
-    //file = prb_t_first(&t,cacheEntry->pi.fragmented_files);
-    //file = prb_t_first(&t,fragfileslist);
-    file = (winx_file_info *)prb_t_first(&t,fragfileslist);
-    if (file != NULL)
-        dtrace("Got to the part where it casted void to winx_file_info");
-    else
-        dtrace("FILE WAS NULL!!!!");
-    int prbindex = 0;
-    //wxString thestring(file->name);
-    dtrace("Printing file CTime %d",(file)->name);
-    while(file){
-        dtrace("Got to the part where it starts the loop");
-        if(is_directory(file))
-            comment = "[DIR]";
-        else if(is_compressed(file))
-            comment = "[CMP]";
-//        else if(is_over_limit(file))
-//            comment = "[SKIP]";
-//        else if(is_essential_boot_file(file))
-//            comment = "[BOOT]";
-//        else if(is_mft_file(file))
-//            comment = "[MFT]";
-        else
-            comment = "OK";
-        status = "OK";
+//    //struct prb_table *fragfileslist = prb_copy(cacheEntry->pi.fragmented_files,NULL,NULL,NULL);
+//    dtrace("Got to the part where it stored the fragfileslist");
+//    /* Iterate through PRB_Table, filling the m_filesList as we go*/
 
 
-        /*
-        * On change of status strings don't forget
-        * also to adjust write_file_status routine
-        * in udreportcnv.lua file.
-        */
+//    file = prb_t_first(&t,cacheEntry->pi.fragmented_files);
+//    file = prb_t_first(&t,fragfileslist);
+
+//    fileprb = prb_t_first(&t,cacheEntry->pi.fragmented_files_prb);
+
+    //wxString thestring(fileprb->name);
+    //dtrace("Printing file->name %d",(fileprb)->name);
+    //utf8_path = (char *)winx_tmalloc(MAX_UTF8_PATH_LENGTH);
+
+//    while (fileprb){
+        //length = (wcslen(fileprb->path) + 1) * sizeof(wchar_t) * 2;/* enough to hold UTF-8 string */
+        //cnv_path = (char *)winx_tmalloc(length);
+        //winx_to_utf8(utf8_path,MAX_UTF8_PATH_LENGTH,fileprb->path);
+        //dtrace("File->Path: %d",length);
+        //winx_free(cnv_path);
+//        length = ((int)wcslen((wchar_t *)fileprb->name) + 1) * sizeof(wchar_t) * 2;/* enough to hold UTF-8 string */
+//        cnv_path = (char *)winx_tmalloc(length);
+//        winx_to_utf8(cnv_path,length,fileprb->name);
+//        etrace("File->name: %hs",cnv_path);
+//        fileprb = (winx_file_info *)prb_t_next(&t);
+//        winx_free(cnv_path);
+//    }
+//    while (fileprb){
+//        //file = (winx_file_info *)prb_t_first(&t,fragfileslist);
+//        if (fileprb == NULL){
+//            dtrace("FILE WAS NULL!!!! exiting.");
+//            return;
+//        }
+//        else {
+//            /* skip \??\ sequence in the beginning of the path */
+//            length = (int)wcslen(fileprb->path);
+//            if(length > 4){
+//                convert_to_utf8_path(utf8_path,MAX_UTF8_PATH_LENGTH,fileprb->path + 4);
+//            } else {
+//                convert_to_utf8_path(utf8_path,MAX_UTF8_PATH_LENGTH,fileprb->path);
+//            }
+//            dtrace("Successfully did UTF-8 path conversions");
+//            dtrace("The Filename was: %hs",utf8_path);
+//            //int itemscount = m_filesList->GetItemCount();
+//            //m_filesList->InsertItem(itemscount,utf8_path);
+//            //wxString filepathname = wxString::FromUTF8(utf8_path);
+//            //dtrace("Trying to print filename before adding item: %hs",filepathname.wc_str());
+//            //m_filesList->InsertItem(itemscount,filepathname,2);
+//            //winx_free(utf8_path);
+//            //return;
+//        }
+//        fileprb = (winx_file_info *)prb_t_next(&t);
+//    }
+//}
+        //dtrace("Successfully added the file to the list");
+//    int prbindex = 0;
+//    //wxString thestring(file->name);
+//    dtrace("Printing file CTime %d",(file)->name);
+//    while(file){
+
+
+
 //        if(is_locked(file))
 //            status = "locked";
 //        else if(is_moving_failed(file))
@@ -422,24 +567,24 @@ void MainFrame::FilesAnalyzedUpdateFilesList (wxCommandEvent& event)
 //        wxString thestring;
 //        ::winx_bytes_to_hr((volume_info.total_bytes),2,s,sizeof(s));
 //        thestring.Printf(wxT("%hs"),s);
-        wchar_t name;
-        wxStrncpy(&name,file->name,255);
-        dtrace("printing out letter wchar_t %c",name);
-
-        m_filesList->InsertItem(0,wxT("Random # File"),0);
-        dtrace("Got after the part where it inserts a random item");
-        m_filesList->SetItem(prbindex,3,name);
-        dtrace("Got after part where it sets a data");
-
-        //file = prb_t_next(&t);
-        file = (winx_file_info *)prb_t_next(&t);
-        prbindex++;
-    }
-    ProcessCommandEvent(EventID_AdjustFilesListHeight);
-
-
-
+//        wchar_t name;
+//        wxStrncpy(&name,file->name,255);
+//        dtrace("printing out letter wchar_t %c",name);
 //
+//        m_filesList->InsertItem(0,wxT("Random # File"),0);
+//        dtrace("Got after the part where it inserts a random item");
+//        m_filesList->SetItem(prbindex,3,name);
+//        dtrace("Got after part where it sets a data");
+//
+//        //file = prb_t_next(&t);
+//        file = (winx_file_info *)prb_t_next(&t);
+//        prbindex++;
+//    }
+//    ProcessCommandEvent(EventID_AdjustFilesListHeight);
+
+
+
+
 //    for(index = 0; index < m_filesList->GetItemCount(); index++){
 //        if(letter == (char)m_filesList->GetItemText(index)[0]) break;
 //    }
@@ -462,48 +607,168 @@ void MainFrame::FilesAnalyzedUpdateFilesList (wxCommandEvent& event)
 //    m_filesList->SetItem(index,2,fragmentation);
 //
 //    delete v;
-}
+
 
 /**
- * @brief Only called Once. Deletes the list and re-populates.
+ * @brief Should Only called Once. Deletes the list and re-populates.
 */
 void MainFrame::FilesPopulateList(wxCommandEvent& event)
 {
-    volume_info *v = ::udefrag_get_vollist(m_skipRem);
-    if(!v) return;
+    TraceEnter;
+    struct prb_traverser trav;
+    int length;
+    char *cnv_path = NULL;
+    //char *utf8_path = NULL;
+    winx_file_info *file;
+    wxString comment, status;
 
-    m_filesList->DeleteAllItems();
-
-    for(int i = 0; v[i].letter; i++){
-        wxString label;
-        label.Printf(wxT("%-10ls %ls"),
-            wxString::Format(wxT("%c: [%hs]"),
-            v[i].letter,v[i].fsname).wc_str(),
-            v[i].label);
-        m_filesList->InsertItem(i,label);
-
-        wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED,EventID_FilesAnalyzedUpdateFilesList);
-        volume_info *v_copy = new volume_info;
-        memcpy(v_copy,&v[i],sizeof(volume_info));
-        e.SetInt(i); e.SetClientData((void *)v_copy);
-        ProcessEvent(e);
-
-        e.SetId(EventID_FilesAnalyzedUpdateFilesList);
-        e.SetInt((int)v[i].letter);
-        //ProcessEvent(e);
+    char letter = (char)event.GetInt();
+    JobsCacheEntry *cacheEntry = m_jobsCache[(int)letter];
+    if(!cacheEntry){
+      etrace("FAILED to obtain currentJob CacheEntry!!");
+      return;
     }
+    if (cacheEntry->pi.completion_status <= 0){
+        etrace("For some odd reason, Completion status was NOT complete.");
+        return;
+    }
+    //JobsCacheEntry *newEntry = (JobsCacheEntry *)event.GetClientData();
+    else {
+    //if (cacheEntry->pi.completion_status > 0){
+        dtrace("Job complete, Starting adding fragmented files to tab2.");
+//        if (winx_get_volume_information(letter,m_volinfocache) < 0){
+//            etrace("Winx_Get_volume_information for drive %c FAILED!",letter);
+//            return;
+//        }
+        m_filesList->DeleteAllItems();
 
-    ProcessCommandEvent(EventID_AdjustFilesListColumns);
+        prb_t_init(&trav,cacheEntry->pi.fragmented_files_prb);
+        file = (winx_file_info *)prb_t_first(&trav,cacheEntry->pi.fragmented_files_prb);
+        int loopcount = 0;
+        while (file){
+//            wchar_t *filepath;
+//            filepath = file->path;
+            dtrace("Starting loop # %i",loopcount);
+            int itemscount = m_filesList->GetItemCount();
+            dtrace("Passed get-itemscount()");
+//            length = (wcslen(file->path) + 1) * sizeof(wchar_t) * 2;/* enough to hold UTF-8 string */
+//            dtrace("Passed length-size op. # %i",loopcount);
+//            cnv_path = (char *)winx_tmalloc(length);
+//            if (cnv_path == 0){
+//                dtrace("Cnv_path was 0");
+//                return;
+//            }
+//            //memset(cnv_path, 0, length); //Good Practice, Can use buffer[0] = '\0' also.
+//            dtrace("Passed memset(malloc) # %i",loopcount);
+//            winx_to_utf8(cnv_path,length,file->path);
+//            length = ((int)wcslen((wchar_t *)filepath) + 1) * sizeof(wchar_t);
+//            length *= 2; /* enough to hold UTF-8 string */
+//            etrace("File->Path Length: %i",length);
+//            cnv_path = (char *)winx_tmalloc(length);
+//            if(cnv_path){
+//                /* write message to log in UTF-8 encoding */
+//                winx_to_utf8(cnv_path,length,(wchar_t *)filepath);
+//                dtrace("Passed WINX UTF8 CONV %i",loopcount);
+//            }
+//            wxString filepathname = Utils::ConvertChartoWxString(cnv_path);
+//            dtrace("Passed wxstring of convert to wxstring of WINX UTF8 CONV %i",loopcount);
 
-    m_filesList->Select(0);
-    m_filesList->Focus(0);
+//            wxEncodingConverter wxec;
+//            bool canconvert = wxec.Init(wxFONTENCODING_ISO8859_2, wxFONTENCODING_ISO8859_2, wxCONVERT_SUBSTITUTE);
+//            if (!canconvert){
+//                dtrace("COULD NOT CONVERT BECAUSE WX ERROR.");
+//                return;
+//            }
+//            char *buffer = new char[length * 2];
+//            memset(buffer, 0, length); //Good Practice, Can use buffer[0] = '\0' also.
+//            wxec.Convert(file->path, buffer);
+//            wxString temp;
+//            temp.Printf(wxT("%hs"),&buffer);
+//            delete buffer;
+//            wxString test = wxPrintf(L"%s", (wchar_t *)filepath);
+            wxString test((const wchar_t *)(file->path));
+            m_filesList->InsertItem(itemscount,test,2);
+            //m_filesList->InsertItem(itemscount,wxString::FromUTF8(cnv_path,length),2);
+            //dtrace("Passed inserting the converted wxstring. %i",loopcount);
 
-    m_currentJob = m_jobsCache[(int)v[0].letter];
-    ProcessCommandEvent(EventID_RedrawMap);
-    ProcessCommandEvent(EventID_UpdateStatusBar);
+            wxString numfragments = wxString::Format(wxT("%d"),file->disp.fragments);
+            m_filesList->SetItem(itemscount,1,numfragments);
 
-    ::udefrag_release_vollist(v);
+            int bpc = m_volinfocache.bytes_per_cluster;
+            ULONGLONG filesizebytes = file->disp.clusters * bpc;
+            char filesize_hr[32];
+            winx_bytes_to_hr(filesizebytes,2,filesize_hr,sizeof(filesize_hr));
+            wxString filename;
+            filename.Printf(wxT("%hs"),filesize_hr);
+            m_filesList->SetItem(itemscount,2,filename);
+
+            if(is_directory(file))
+                comment = wxT("[DIR]");
+            else if(is_compressed(file))
+                comment = wxT("[CMP]");
+    //        else if(is_over_limit(file))
+    //            comment = "[SKIP]";
+    //        else if(is_essential_boot_file(file))
+    //            comment = "[BOOT]";
+    //        else if(is_mft_file(file))
+    //            comment = "[MFT]";
+            else
+                comment = wxT("OK");
+            status = wxT("OK");
+
+            m_filesList->SetItem(itemscount,3,comment);
+            m_filesList->SetItem(itemscount,4,status);
+
+            //wxString commentstr;
+            //commentstr.Printf(wxT("\"%hs\""),comment);
+            //wxString statusstr;
+            //statusstr.Printf(wxT("\"%hs\""),status);
+
+            loopcount++;
+            winx_free(cnv_path);
+            //if (loopcount > 9)
+            //    return;
+            file = (winx_file_info *)prb_t_next(&trav);
+        }
+    }
+//    if (m_volinfocache != NULL)
+//        winx_free(m_volinfocache);
+    dtrace("Successfully finished with the Populate List Loop");
 }
+
+//    if(!v) return;
+//
+//    m_filesList->DeleteAllItems();
+//
+//    for(int i = 0; v[i].letter; i++){
+//        wxString label;
+//        label.Printf(wxT("%-10ls %ls"),
+//            wxString::Format(wxT("%c: [%hs]"),
+//            v[i].letter,v[i].fsname).wc_str(),
+//            v[i].label);
+//        m_filesList->InsertItem(i,label);
+//
+//        wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED,EventID_FilesAnalyzedUpdateFilesList);
+//        volume_info *v_copy = new volume_info;
+//        memcpy(v_copy,&v[i],sizeof(volume_info));
+//        e.SetInt(i); e.SetClientData((void *)v_copy);
+//        ProcessEvent(e);
+//
+//        e.SetId(EventID_FilesAnalyzedUpdateFilesList);
+//        e.SetInt((int)v[i].letter);
+//        //ProcessEvent(e);
+//    }
+//
+//    ProcessCommandEvent(EventID_AdjustFilesListColumns);
+//
+//    m_filesList->Select(0);
+//    m_filesList->Focus(0);
+//
+//    m_currentJob = m_jobsCache[(int)v[0].letter];
+//    ProcessCommandEvent(EventID_UpdateStatusBar);
+//
+//    ::udefrag_release_vollist(v);
+//}
 
 void MainFrame::FilesOnSkipRem(wxCommandEvent& WXUNUSED(event))
 {

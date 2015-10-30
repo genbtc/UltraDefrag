@@ -108,11 +108,9 @@ WARN_LOGFILE           = "C:\Software\udefrag\native\doxygen\doxygen.log"
 INPUT                  = "analyze.c" \
                          "auxiliary.c" \
                          "case-tables.h" \
-                         "commands.c" \
                          "dbg.c" \
                          "defrag.c" \
                          "defrag_native.c" \
-                         "defrag_native.h" \
                          "entry.c" \
                          "env.c" \
                          "event.c" \
@@ -140,7 +138,6 @@ INPUT                  = "analyze.c" \
                          "privilege.c" \
                          "reg.c" \
                          "reports.c" \
-                         "script.c" \
                          "search.c" \
                          "stdio.c" \
                          "string.c" \
@@ -149,7 +146,6 @@ INPUT                  = "analyze.c" \
                          "udefrag.c" \
                          "udefrag.h" \
                          "udefrag-internals.h" \
-                         "udefrag-native.c" \
                          "udefrag-volume.c" \
                          "volume.c" \
                          "zenwinx.c" \
@@ -349,7 +345,7 @@ TEMPLATE_RELATIONS     = YES
 INCLUDE_GRAPH          = YES
 INCLUDED_BY_GRAPH      = YES
 CALL_GRAPH             = YES
-CALLER_GRAPH           = YES 
+CALLER_GRAPH           = YES
 GRAPHICAL_HIERARCHY    = YES
 DIRECTORY_GRAPH        = YES
 DOT_IMAGE_FORMAT       = png

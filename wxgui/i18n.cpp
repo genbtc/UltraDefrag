@@ -223,9 +223,9 @@ void MainFrame::OnLocaleChange(wxCommandEvent& event)
     //xgettext:no-c-format
     item.SetText(_("% free"));        m_vList->SetColumn(5,item);
 
-    item.SetText(_("Fragments"));     m_filesList->SetColumn(0,item);
-    item.SetText(_("Size"));          m_filesList->SetColumn(1,item);
-    item.SetText(_("Filename"));      m_filesList->SetColumn(2,item);
+    item.SetText(_("Filename"));      m_filesList->SetColumn(0,item);
+    item.SetText(_("Fragments"));     m_filesList->SetColumn(1,item);
+    item.SetText(_("Size"));          m_filesList->SetColumn(2,item);
     item.SetText(_("Comment"));       m_filesList->SetColumn(3,item);
     item.SetText(_("Status"));        m_filesList->SetColumn(4,item);
     item.SetText(_(""));              m_filesList->SetColumn(5,item);

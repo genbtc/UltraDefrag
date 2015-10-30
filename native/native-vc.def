@@ -1,6 +1,19 @@
-LIBRARY zenwinx.dll
+LIBRARY native.dll
 
 EXPORTS
+    udefrag_get_error_description
+    udefrag_get_results
+    udefrag_get_vollist
+    udefrag_get_volume_information
+    udefrag_init_library
+    udefrag_release_results
+    udefrag_release_vollist
+    udefrag_set_log_file_path
+    udefrag_start_job
+    udefrag_unload_library
+    udefrag_validate_volume
+
+    
     prb_create
     prb_copy
     prb_destroy
@@ -138,3 +151,4 @@ EXPORTS
     winx_wcsupr
     winx_windows_in_safe_mode
     winx_xtime
+    

@@ -117,8 +117,11 @@ void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
     // save progress information to the jobs cache
     int letter = (int)(g_mainFrame->m_jobThread->m_letter);
     JobsCacheEntry *cacheEntry = new JobsCacheEntry;
+
     cacheEntry->jobType = g_mainFrame->m_jobThread->m_jobType;
+
     memcpy(&cacheEntry->pi,pi,sizeof(udefrag_progress_info));
+
     cacheEntry->clusterMap = new char[pi->cluster_map_size];
     if(pi->cluster_map_size){
         memcpy(cacheEntry->clusterMap,
@@ -126,17 +129,32 @@ void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
             pi->cluster_map_size
         );
     }
+
     cacheEntry->stopped = g_mainFrame->m_stopped;
     event.SetId(EventID_CacheJob);
     event.SetInt(letter);
     event.SetClientData((void *)cacheEntry);
     wxPostEvent(g_mainFrame,event);
 
-    // update progress indicators
+    if ((pi->completion_status > 0) && (pi->isfragfileslist = 1)){
+        cacheEntry->pi.fragmented_files_prb = pi->fragmented_files_prb;
+        //populate the fragmented files-list tab.
+        event.SetId(EventID_PopulateFilesList);
+        event.SetInt(letter);
+        event.SetClientData((void *)cacheEntry);
+        wxPostEvent(g_mainFrame,event);
+        dtrace("Successfully sent Fragmented Files list over to MainFrame::FilesPopulateList()");
+    }
+
+    // update Volume status
     event.SetId(EventID_UpdateVolumeStatus);
-    event.SetInt(letter); wxPostEvent(g_mainFrame,event);
+    event.SetInt(letter);
+    wxPostEvent(g_mainFrame,event);
+    // Update Clustermap and Statusbar.
     PostCommandEvent(g_mainFrame,EventID_RedrawMap);
     PostCommandEvent(g_mainFrame,EventID_UpdateStatusBar);
+    //after this, it finishes udefrag_start_job @ udefrag.c line 423.
+    //after that, it goes back to line 182 of this file, and line 187 calls EventID_UpdateVolumeInformation.
 }
 
 int JobThread::Terminator(void *p)

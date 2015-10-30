@@ -58,7 +58,7 @@ volume_info *udefrag_get_vollist(int skip_removable)
     volume_info *v;
     ULONG i, index;
     char letter;
-    
+
     /* allocate memory */
     v = winx_malloc((MAX_DOS_DRIVES + 1) * sizeof(volume_info));
 
@@ -99,7 +99,7 @@ void udefrag_release_vollist(volume_info *v)
 int udefrag_get_volume_information(char volume_letter,volume_info *v)
 {
     int result;
-    
+
     /* set error mode to ignore missing removable drives */
     if(winx_set_system_error_mode(INTERNAL_SEM_FAILCRITICALERRORS) < 0)
         return (-1);
@@ -114,10 +114,10 @@ int udefrag_get_volume_information(char volume_letter,volume_info *v)
 /**
  * @brief Checks a volume for the defragmentation possibility.
  * @param[in] volume_letter the volume letter.
- * @param[in] skip_removable the boolean value 
+ * @param[in] skip_removable the boolean value
  * defining, must removable drives be skipped or not.
  * @return Zero for success, negative value otherwise.
- * @note if skip_removable is equal to FALSE and you want 
+ * @note if skip_removable is equal to FALSE and you want
  * to validate a floppy drive without a floppy disk
  * then you will hear noise :))
  */
@@ -145,7 +145,7 @@ int udefrag_validate_volume(char volume_letter,int skip_removable)
  * @return Zero for success, negative value otherwise.
  * @note
  * - Internal use only.
- * - if skip_removable is equal to FALSE and you want 
+ * - if skip_removable is equal to FALSE and you want
  *   to validate a floppy drive without a floppy disk
  *   then you will hear noise :))
  */
@@ -153,13 +153,13 @@ static int internal_validate_volume(char volume_letter,int skip_removable,volume
 {
     winx_volume_information volume_info;
     int type;
-    
+
     if(v == NULL)
         return (-1);
 
     /* convert volume letter to uppercase */
     volume_letter = winx_toupper(volume_letter);
-    
+
     v->letter = volume_letter;
     v->is_removable = FALSE;
     v->is_dirty = FALSE;
@@ -186,12 +186,12 @@ static int internal_validate_volume(char volume_letter,int skip_removable,volume
     }
 
     /*
-    * Get volume information; it is strongly 
+    * Get volume information; it is strongly
     * required to exclude missing floppies.
     */
     if(winx_get_volume_information(volume_letter,&volume_info) < 0)
         return (-1);
-    
+
     v->total_space.QuadPart = volume_info.total_bytes;
     v->free_space.QuadPart = volume_info.free_bytes;
     strncpy(v->fsname,volume_info.fs_name,MAXFSNAME - 1);
@@ -199,6 +199,7 @@ static int internal_validate_volume(char volume_letter,int skip_removable,volume
     wcsncpy(v->label,volume_info.label,MAX_PATH);
     v->label[MAX_PATH] = 0;
     v->is_dirty = volume_info.is_dirty;
+    v->bytes_per_cluster = volume_info.bytes_per_cluster;
     return 0;
 }
 

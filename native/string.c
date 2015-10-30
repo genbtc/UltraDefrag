@@ -51,7 +51,7 @@
 void winx_init_case_tables(void)
 {
     int i;
-    
+
     for(i = 0; i < sizeof(u16_uppercase) / sizeof(wchar_t); i++){
         if(u16_uppercase[i] == 0) u16_uppercase[i] = (wchar_t)i;
         if(u16_lowercase[i] == 0) u16_lowercase[i] = (wchar_t)i;
@@ -118,7 +118,7 @@ wchar_t winx_towlower(wchar_t c)
 wchar_t *winx_wcsupr(wchar_t *s)
 {
     wchar_t *cp;
-    
+
     if(s){
         for(cp = s; *cp; cp++)
             *cp = fast_towupper(*cp);
@@ -136,7 +136,7 @@ wchar_t *winx_wcsupr(wchar_t *s)
 wchar_t *winx_wcslwr(wchar_t *s)
 {
     wchar_t *cp;
-    
+
     if(s){
         for(cp = s; *cp; cp++)
             *cp = fast_towlower(*cp);
@@ -151,10 +151,10 @@ char *winx_strdup(const char *s)
 {
     int length;
     char *cp;
-    
+
     if(s == NULL)
         return NULL;
-    
+
     length = (int)strlen(s);
     cp = winx_tmalloc((length + 1) * sizeof(char));
     if(cp) strcpy(cp,s);
@@ -168,10 +168,10 @@ wchar_t *winx_wcsdup(const wchar_t *s)
 {
     int length;
     wchar_t *cp;
-    
+
     if(s == NULL)
         return NULL;
-    
+
     length = (int)wcslen(s);
     cp = winx_tmalloc((length + 1) * sizeof(wchar_t));
     if(cp) wcscpy(cp,s);
@@ -188,10 +188,10 @@ wchar_t *winx_wcsdup(const wchar_t *s)
 int winx_wcsicmp(const wchar_t *s1, const wchar_t *s2)
 {
     int result = 0;
-    
+
     if(s1 == NULL || s2 == NULL)
         return (!s1 && !s2) ? 0 : 1;
-    
+
     do {
         result = (int)(fast_towlower(*s1) - fast_towlower(*s2));
         if(result != 0) break;
@@ -215,17 +215,17 @@ wchar_t *winx_wcsistr(const wchar_t *s1, const wchar_t *s2)
     wchar_t *_s1, *_s2;
 
     if(s1 == NULL || s2 == NULL) return NULL;
-    
+
     while(*cp){
         _s1 = cp;
         _s2 = (wchar_t *)s2;
-        
+
         while(*_s1 && *_s2 && !( fast_towlower(*_s1) \
             - fast_towlower(*_s2) )){ _s1++, _s2++; }
         if(!*_s2) return cp;
         cp++;
     }
-    
+
     return NULL;
 }
 
@@ -239,17 +239,17 @@ char *winx_stristr(const char *s1, const char *s2)
     char *_s1, *_s2;
 
     if(s1 == NULL || s2 == NULL) return NULL;
-    
+
     while(*cp){
         _s1 = cp;
         _s2 = (char *)s2;
-        
+
         while(*_s1 && *_s2 && !( fast_tolower(*_s1) \
             - fast_tolower(*_s2) )){ _s1++, _s2++; }
         if(!*_s2) return cp;
         cp++;
     }
-    
+
     return NULL;
 }
 
@@ -260,7 +260,7 @@ char *winx_stristr(const char *s1, const char *s2)
 static int wcsmatch_helper(wchar_t *string, wchar_t *mask)
 {
     wchar_t cs, cm;
-    
+
     while(*string && *mask){
         cs = *string; cm = *mask;
         if(cs != cm && cm != '?'){
@@ -292,7 +292,7 @@ static int wcsmatch_helper(wchar_t *string, wchar_t *mask)
         string ++;
         mask ++;
     }
-    
+
     while(*mask == '*') mask ++;
     return (*string == 0 && *mask == 0) ? 1 : 0;
 }
@@ -304,7 +304,7 @@ static int wcsmatch_helper(wchar_t *string, wchar_t *mask)
 static int wcsmatch_icase_helper(wchar_t *string, wchar_t *mask)
 {
     wchar_t cs, cm;
-    
+
     while(*string && *mask){
         cs = fast_towlower(*string);
         cm = fast_towlower(*mask);
@@ -337,7 +337,7 @@ static int wcsmatch_icase_helper(wchar_t *string, wchar_t *mask)
         string ++;
         mask ++;
     }
-    
+
     while(*mask == '*') mask ++;
     return (*string == 0 && *mask == 0) ? 1 : 0;
 }
@@ -355,10 +355,10 @@ int winx_wcsmatch(wchar_t *string, wchar_t *mask, int flags)
 {
     if(string == NULL || mask == NULL)
         return 0;
-    
+
     if(wcscmp(mask,L"*") == 0)
         return 1;
-    
+
     if(flags & WINX_PAT_ICASE)
         return wcsmatch_icase_helper(string,mask);
     return wcsmatch_helper(string,mask);
@@ -378,15 +378,15 @@ char *winx_vsprintf(const char *format,va_list arg)
     char *buffer;
     int size;
     int result;
-    
+
     /*
     * Avoid winx_dbg_xxx calls here
     * to avoid recursion.
     */
-    
+
     if(format == NULL)
         return NULL;
-    
+
     /* set the initial buffer size */
     size = WINX_VSPRINTF_BUFFER_SIZE;
     do {
@@ -400,7 +400,7 @@ char *winx_vsprintf(const char *format,va_list arg)
         winx_free(buffer);
         size <<= 1;
     } while(size > 0);
-    
+
     return NULL;
 }
 
@@ -416,12 +416,12 @@ char *winx_vsprintf(const char *format,va_list arg)
 char *winx_sprintf(const char *format, ...)
 {
     va_list arg;
-    
+
     if(format){
         va_start(arg,format);
         return winx_vsprintf(format,arg);
     }
-    
+
     return NULL;
 }
 
@@ -439,10 +439,10 @@ wchar_t *winx_vswprintf(const wchar_t *format,va_list arg)
     wchar_t *buffer;
     int size;
     int result;
-    
+
     if(format == NULL)
         return NULL;
-    
+
     /* set the initial buffer size */
     size = WINX_VSPRINTF_BUFFER_SIZE;
     do {
@@ -456,7 +456,7 @@ wchar_t *winx_vswprintf(const wchar_t *format,va_list arg)
         winx_free(buffer);
         size <<= 1;
     } while(size > 0);
-    
+
     return NULL;
 }
 
@@ -472,12 +472,12 @@ wchar_t *winx_vswprintf(const wchar_t *format,va_list arg)
 wchar_t *winx_swprintf(const wchar_t *format, ...)
 {
     va_list arg;
-    
+
     if(format){
         va_start(arg,format);
         return winx_vswprintf(format,arg);
     }
-    
+
     return NULL;
 }
 
@@ -501,19 +501,19 @@ int winx_patcomp(winx_patlist *patterns,wchar_t *string,wchar_t *delim,int flags
     int pattern_detected;
     int i, j, n;
     wchar_t *s;
-    
+
     if(patterns == NULL || string == NULL || delim == NULL)
         return (-1);
-    
+
     /* reset patterns structure */
     patterns->flags = flags;
     patterns->count = 0;
     patterns->array = NULL;
     patterns->string = NULL;
-    
+
     if(string[0] == 0)
         return 0; /* empty list of patterns */
-    
+
     /* make a copy of the string */
     s = winx_wcsdup(string);
     if(s == NULL){
@@ -521,13 +521,13 @@ int winx_patcomp(winx_patlist *patterns,wchar_t *string,wchar_t *delim,int flags
             (wcslen(string) + 1) * sizeof(wchar_t));
         return (-1);
     }
-    
+
     /* replace all delimiters by zeros */
     for(n = 0; s[n]; n++){
         if(wcschr(delim,s[n]))
             s[n] = 0;
     }
-    
+
     /* count all patterns */
     pattern_detected = 0;
     for(i = 0; i < n; i++){
@@ -540,7 +540,7 @@ int winx_patcomp(winx_patlist *patterns,wchar_t *string,wchar_t *delim,int flags
             pattern_detected = 0;
         }
     }
-    
+
     /* build array of patterns */
     patterns->array = winx_malloc(patterns->count * sizeof(wchar_t *));
     pattern_detected = 0;
@@ -572,10 +572,10 @@ int winx_patfind(wchar_t *string,winx_patlist *patterns)
 {
     int i;
     wchar_t *result;
-    
+
     if(patterns == NULL || string == NULL)
         return 0;
-    
+
     for(i = 0; i < patterns->count; i++){
         if(patterns->flags & WINX_PAT_ICASE)
             result = winx_wcsistr(string,patterns->array[i]);
@@ -600,10 +600,10 @@ int winx_patfind(wchar_t *string,winx_patlist *patterns)
 int winx_patcmp(wchar_t *string,winx_patlist *patterns)
 {
     int i;
-    
+
     if(string == NULL || patterns == NULL)
         return 0;
-    
+
     for(i = 0; i < patterns->count; i++){
         if(winx_wcsmatch(string, patterns->array[i], patterns->flags))
             return 1;
@@ -620,11 +620,11 @@ void winx_patfree(winx_patlist *patterns)
 {
     if(patterns == NULL)
         return;
-    
+
     /* free allocated memory */
     winx_free(patterns->string);
     winx_free(patterns->array);
-    
+
     /* reset all fields of the structure */
     patterns->flags = 0;
     patterns->count = 0;
@@ -644,9 +644,9 @@ void winx_patfree(winx_patlist *patterns)
  * @param[out] buffer pointer to string receiving
  * the converted number of bytes.
  * @param[in] length the length of the buffer, in characters.
- * @return The number of characters stored, not counting the 
+ * @return The number of characters stored, not counting the
  * terminating null character. If the number of characters
- * required to store the data exceeds length, then length 
+ * required to store the data exceeds length, then length
  * characters are stored in the buffer and a negative value is returned.
  */
 int winx_bytes_to_hr(ULONGLONG bytes, int digits, char *buffer, int length)
@@ -659,17 +659,17 @@ int winx_bytes_to_hr(ULONGLONG bytes, int digits, char *buffer, int length)
     double rd;
     char spec[] = "%I64u.%00I64u %s";
     int result;
-    
+
     DbgCheck3(digits >= 0, buffer != NULL, length > 0, -1);
 
     for(n = bytes, m = 1, i = 0; n >> 10; n >>= 10, m <<= 10, i++){}
     r = bytes - n * m;
-    
+
     rd = (double)r / (double)m;
     if(rd >= 1) rd = 0.999999999999999;
     rd *= pow(10, digits);
     r = (ULONGLONG)rd;
-    
+
     if(digits == 0){
         result = _snprintf(buffer, length - 1, "%I64u %s", n, suffixes[i]);
     } else {
@@ -701,7 +701,7 @@ ULONGLONG winx_hr_to_bytes(char *string)
     int i;           /* index for the suffixes array */
     int z;           /* number of zeros after the dot */
     double rd;
-    
+
     DbgCheck1(string, 0);
 
     n = (ULONGLONG)_atoi64(string);
@@ -723,7 +723,7 @@ ULONGLONG winx_hr_to_bytes(char *string)
         /* convertion to LONGLONG is needed for MinGW */
         r = (ULONGLONG)(LONGLONG)((double)(LONGLONG)m * rd * pow(10, -z));
     }
-    
+
     return n * m + r;
 }
 
@@ -741,9 +741,9 @@ void winx_to_utf8(char *dst,int size,wchar_t *src)
     int i; /* src index */
     int j; /* dst index */
     wchar_t c, b1, b2, b3;
-    
+
     if(!src || !dst || size <= 0) return;
-    
+
     for(i = j = 0; src[i]; i++){
         c = src[i];
         if(c < 0x80){

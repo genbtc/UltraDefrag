@@ -58,6 +58,7 @@
 #include <wx/panel.h>//genbtc
 #include <wx/grid.h>//genbtc
 #include <wx/sizer.h>//genbtc
+#include <wx/encconv.h> //genbtc for encodings
 
 #if wxUSE_UNICODE
 #define wxCharStringFmtSpec "%ls"
@@ -87,19 +88,22 @@ typedef enum {
 #include "../native/zenwinx.h"
 #include "../native/udefrag.h"
 //#include "../native/udefrag-internals.h"
+//i wanted to include that to gain access to jp-> but i can't because:
+//The following errors occur when including that file: Duplicate/already defined:
 //VOLUME_IS_DIRTY
 //_PARTITION_INFORMATION
 //_MEDIA_TYPE
 //_DISK_GEOMETRY
+
 // =======================================================================
 //                              Constants
 // =======================================================================
 
+#define MAX_UTF8_PATH_LENGTH (256 * 1024)
 #define LIST_COLUMNS 6 // number of columns in the list of volumes
 
 enum {
     // file menu identifiers
-
     // NOTE: they share a single event handler
     EventID_Analyze = 1,
     EventID_Defrag,
@@ -131,7 +135,6 @@ enum {
     EventID_ShowReport,
 
     // settings menu identifiers
-
     // NOTE: they share a single event handler
     EventID_LangShowLog,
     EventID_LangShowReport,
@@ -206,8 +209,8 @@ enum {
     EventID_LocaleChange
 };
 
-#define MAIN_WINDOW_DEFAULT_WIDTH  640
-#define MAIN_WINDOW_DEFAULT_HEIGHT 480
+#define MAIN_WINDOW_DEFAULT_WIDTH  800
+#define MAIN_WINDOW_DEFAULT_HEIGHT 600
 #define MAIN_WINDOW_MIN_WIDTH      500
 #define MAIN_WINDOW_MIN_HEIGHT     375
 #define DEFAULT_LIST_HEIGHT        130
@@ -481,8 +484,7 @@ public:
 
     void OnRepeat(wxCommandEvent& event);
 
-    void OnSkipRem(wxCommandEvent& event);
-    void OnRescan(wxCommandEvent& event);
+
 
     void OnRepair(wxCommandEvent& event);
 
@@ -519,9 +521,6 @@ public:
     void OnMove(wxMoveEvent& event);
     void OnSize(wxSizeEvent& event);
 
-    //Volume List (mixed)
-    void AdjustListColumns(wxCommandEvent& event);
-    void AdjustListHeight(wxCommandEvent& event);
     void AdjustSystemTrayIcon(wxCommandEvent& event);
     void AdjustTaskbarIconOverlay(wxCommandEvent& event);
     void CacheJob(wxCommandEvent& event);
@@ -529,30 +528,36 @@ public:
     void OnDefaultAction(wxCommandEvent& event);
     void OnDiskProcessingFailure(wxCommandEvent& event);
     void OnJobCompletion(wxCommandEvent& event);
-    void OnListSize(wxSizeEvent& event);
     void OnLocaleChange(wxCommandEvent& event);
-    void OnSplitChanged(wxSplitterEvent& event);
-    void PopulateList(wxCommandEvent& event);
     void ReadUserPreferences(wxCommandEvent& event);
     void RedrawMap(wxCommandEvent& event);
-    void SelectAll(wxCommandEvent& event);
     void SetWindowTitle(wxCommandEvent& event);
     void ShowUpgradeDialog(wxCommandEvent& event);
     void Shutdown(wxCommandEvent& event);
     void UpdateStatusBar(wxCommandEvent& event);
+
+    //Volume List (mixed)
+    void AdjustListColumns(wxCommandEvent& event);
+    void AdjustListHeight(wxCommandEvent& event);
+    void OnListSize(wxSizeEvent& event);
+    void OnSplitChanged(wxSplitterEvent& event);
+    void OnSkipRem(wxCommandEvent& event);
+    void OnRescan(wxCommandEvent& event);
+    void PopulateList(wxCommandEvent& event);
+    void SelectAll(wxCommandEvent& event);
     void UpdateVolumeInformation(wxCommandEvent& event);
     void UpdateVolumeStatus(wxCommandEvent& event);
 
     // Files List (new) genBTC
-    void FilesSelectAll(wxCommandEvent& event);
     void FilesAdjustListColumns(wxCommandEvent& event);
     void FilesAdjustListHeight(wxCommandEvent& event);
-    void FilesOnSplitChanged(wxSplitterEvent& event);
     void FilesOnListSize(wxSizeEvent& event);
-    void FilesAnalyzedUpdateFilesList(wxCommandEvent& event);
-    void FilesPopulateList(wxCommandEvent& event);
+    void FilesOnSplitChanged(wxSplitterEvent& event);
     void FilesOnSkipRem(wxCommandEvent& event);
     void FilesOnRescan(wxCommandEvent& event);
+    void FilesAnalyzedUpdateFilesList(wxCommandEvent& event);
+    void FilesPopulateList(wxCommandEvent& event);
+    void FilesSelectAll(wxCommandEvent& event);
 
     // common routines
     int  CheckOption(const wxString& name);
@@ -606,11 +611,13 @@ private:
     // 0.5 means that a column acquires
     // a half of the entire list width
     double m_r[LIST_COLUMNS];
+    double m_fcolsr[LIST_COLUMNS]; //file-list column ratios //genbtc
 
     // list column widths:
     // used to check whether the user
     // has changed them or not
     int m_w[LIST_COLUMNS];
+    int m_fcolsw[LIST_COLUMNS]; //file-list column widths //genbtc
 
     // list height
     int m_vListHeight;
@@ -640,6 +647,7 @@ private:
     DrivesList       *m_vList;
     ClusterMap       *m_cMap;
     FilesList        *m_filesList;  //genBTC FilesList.cpp
+    volume_info      m_volinfocache; //genBTC
 
     bool m_btdEnabled;
     BtdThread *m_btdThread;
@@ -671,6 +679,8 @@ public:
         const wxString& parameters = wxEmptyString,
         int show = SW_SHOW, int flags = 0);
     static void ShowError(const wxChar* format, ...);
+    static wxString ConvertChartoWxString(char* input);
+    static char* wxStringToChar(wxString input);
 };
 
 /* flags for Utils::ShellExec */

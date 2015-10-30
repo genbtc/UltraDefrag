@@ -439,12 +439,13 @@ static int filter(winx_file_info *f,void *user_defined_data)
     }
 
     /* show debugging information about interesting cases */
+    /* comment it out after testing to speed things up */
+    /*
     if(is_sparse(f))
         dtrace("sparse file found: %ws",f->path);
     if(is_reparse_point(f))
         dtrace("reparse point found: %ws",f->path);
-    /* comment it out after testing to speed things up */
-    /*if(winx_wcsistr(f->path,L"$BITMAP"))
+    if(winx_wcsistr(f->path,L"$BITMAP"))
         dtrace("bitmap found: %ws",f->path);
     if(winx_wcsistr(f->path,L"$ATTRIBUTE_LIST"))
         dtrace("attribute list found: %ws",f->path);
@@ -708,6 +709,9 @@ static int is_well_known_locked_file(winx_file_info *f,udefrag_job_parameters *j
         return 1;
     if(winx_wcsistr(f->name,L"hiberfil.sys"))
         return 1;
+    // Win10 has created a swapfile.sys
+    if(winx_wcsistr(f->name,L"swapfile.sys"))
+        return 1;
     return 0;
 }
 
@@ -804,23 +808,55 @@ void truncate_fragmented_files_list(winx_file_info *f,udefrag_job_parameters *jp
  */
 static void produce_list_of_fragmented_files(udefrag_job_parameters *jp)
 {
-    winx_file_info *f;
+    winx_file_info *f,*file;
     ULONGLONG bad_fragments = 0;
+    int count = 0;
+    struct prb_traverser trav;
+    int fragcount=0;
+    int length;
+    char *cnv_path = NULL;
 
     itrace("started creation of fragmented files list");
+
     jp->fragmented_files = prb_create(fragmented_files_compare,(void *)jp,NULL);
+
     for(f = jp->filelist; f; f = f->next){
         if(is_fragmented(f) && !is_excluded(f)){
             expand_fragmented_files_list(f,jp);
             /* more precise calculation seems to be too slow */
+            count++;
             bad_fragments += f->disp.fragments;
         }
         if(f->next == jp->filelist) break;
     }
     jp->pi.bad_fragments = bad_fragments;
-    //push the list of fragmented files to the progress-info.
-    //jp->pi.fragmented_files = jp->fragmented_files;//genBTC
-    jp->pi.fragmented_files = prb_copy(jp->fragmented_files,NULL,NULL,NULL);
+
+//    jp->pi.fragmented_files_prb = prb_copy(jp->fragmented_files,NULL,NULL,NULL);
+/* The above line is there from before as an example on how to copy a PRB, because:
+ * previously could not do pointer assignment operation, because when lists gets freed
+ * in destroy_lists() in Udefrag.c @ Line 297ish, it will leave holes because
+ * even though the destroy list is acting on ->filelist, it will even corrupt
+ * other lists, such as fragmented_files_prb, due to pointers. This took me forever to realize.
+ * Now the code has been changed to only free the lists upon a new Analyze operation @ Line 144.
+ */
+    jp->pi.fragmented_files_prb = jp->fragmented_files;
+    jp->pi.isfragfileslist = 1;
+
+    prb_t_init(&trav,jp->fragmented_files);
+    file = prb_t_first(&trav,jp->fragmented_files);
+
+    while (file){
+        length = ((int)wcslen((wchar_t *)file->path) + 1) * sizeof(wchar_t) * 2;/* enough to hold UTF-8 string */
+        cnv_path = (char *)winx_tmalloc(length);
+        //should really check tmalloc for success. but it hasnt failed me yet.
+        winx_to_utf8(cnv_path,length,(wchar_t *)file->path);
+        //dtrace("File->Path: %s",cnv_path);
+        //dtrace("File->Path Length: %i",length);
+        fragcount++;
+        file = prb_t_next(&trav);
+        winx_free(cnv_path);
+    }
+    jp->pi.fragmented_files_count = fragcount;
     itrace("finished creation of fragmented files list");
 }
 

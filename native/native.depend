@@ -1,1 +1,68 @@
 # depslib dependency file v1.0
+1361365202 source:c:\software\udefrag\native\auxiliary.c
+	"udefrag-internals.h"
+
+1446002191 c:\software\udefrag\native\udefrag-internals.h
+	"ntndk.h"
+	"zenwinx.h"
+	"udefrag.h"
+	"../include/version.h"
+
+1359574503 c:\software\udefrag\native\ntndk.h
+	<windows.h>
+	<stdio.h>
+	<stdarg.h>
+	<stdlib.h>
+	<ctype.h>
+
+1446002193 c:\software\udefrag\native\zenwinx.h
+	"../include/dbg.h"
+	"prb.h"
+
+1359549793 c:\software\udefrag\include\dbg.h
+
+1359549802 c:\software\udefrag\native\prb.h
+	<stddef.h>
+
+1446100462 c:\software\udefrag\native\udefrag.h
+
+1445678168 c:\software\udefrag\include\version.h
+
+1359840222 source:c:\software\udefrag\native\dbg.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1361660691 source:c:\software\udefrag\native\defrag.c
+	"udefrag-internals.h"
+
+1359549802 source:c:\software\udefrag\native\entry.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1359733744 source:c:\software\udefrag\native\env.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1359549802 source:c:\software\udefrag\native\event.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1359839158 source:c:\software\udefrag\native\file.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1361365439 source:c:\software\udefrag\native\ftw.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1445996592 source:c:\software\udefrag\native\ftw_ntfs.c
+	"ntndk.h"
+	"zenwinx.h"
+	"ntfs.h"
+
+1359549802 c:\software\udefrag\native\ntfs.h
+
+1359549802 source:c:\software\udefrag\native\int64.c
+	"ntndk.h"
+	"zenwinx.h"
+

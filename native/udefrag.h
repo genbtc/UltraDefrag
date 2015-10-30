@@ -59,6 +59,7 @@ typedef struct _volume_info {
     LARGE_INTEGER free_space;
     int is_removable;
     int is_dirty;
+    ULONGLONG bytes_per_cluster;
 } volume_info;
 
 volume_info *udefrag_get_vollist(int skip_removable);
@@ -134,7 +135,9 @@ typedef struct _udefrag_progress_info {
     int cluster_map_size;             /* size of the cluster map buffer, in bytes */
     ULONGLONG moved_clusters;         /* number of moved clusters */
     ULONGLONG total_moves;            /* number of moves by move_files_to_front/back functions */
-    struct prb_table *fragmented_files;         /* list of fragmented files; does not contain filtered out files */
+    int isfragfileslist;             /* Bool to prove that the fragmented files list has been filled by Analyze.c */
+    int fragmented_files_count;       /*stores how long the list is to make it easy to iterate, yes i know i suck */
+    struct prb_table *fragmented_files_prb; /* list of fragmented files; does not contain filtered out files */
 } udefrag_progress_info;
 
 typedef void  (*udefrag_progress_callback)(udefrag_progress_info *pi, void *p);

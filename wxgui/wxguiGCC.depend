@@ -2,7 +2,7 @@
 1366121468 source:c:\software\udefrag\wxgui\about.cpp
 	"main.h"
 
-1446003666 c:\software\udefrag\wxgui\main.h
+1446220434 c:\software\udefrag\wxgui\main.h
 	<wx/wxprec.h>
 	<wx/wx.h>
 	<wx/artprov.h>
@@ -30,6 +30,7 @@
 	<wx/panel.h>
 	<wx/grid.h>
 	<wx/sizer.h>
+	<wx/encconv.h>
 	<commctrl.h>
 	"../include/version.h"
 	"../native/zenwinx.h"
@@ -1919,7 +1920,7 @@
 
 1445678168 c:\software\udefrag\include\version.h
 
-1446002193 c:\software\udefrag\native\zenwinx.h
+1446219617 c:\software\udefrag\native\zenwinx.h
 	"../include/dbg.h"
 	"prb.h"
 
@@ -1928,12 +1929,12 @@
 1359549802 c:\software\udefrag\native\prb.h
 	<stddef.h>
 
-1445997563 c:\software\udefrag\native\udefrag.h
+1446203882 c:\software\udefrag\native\udefrag.h
 
 1445950340 source:c:\software\udefrag\wxgui\btd.cpp
 	"main.h"
 
-1445950340 source:c:\software\udefrag\wxgui\config.cpp
+1446095644 source:c:\software\udefrag\wxgui\config.cpp
 	"main.h"
 	"../lua5.1/lua.h"
 	"../lua5.1/lauxlib.h"
@@ -1968,19 +1969,19 @@
 1412944865 source:c:\software\udefrag\wxgui\crash.cpp
 	"main.h"
 
-1446027306 source:c:\software\udefrag\wxgui\fileslist.cpp
+1446220434 source:c:\software\udefrag\wxgui\fileslist.cpp
 	"main.h"
 
-1445950339 source:c:\software\udefrag\wxgui\i18n.cpp
+1446195287 source:c:\software\udefrag\wxgui\i18n.cpp
 	"main.h"
 
-1445950340 source:c:\software\udefrag\wxgui\job.cpp
+1446219333 source:c:\software\udefrag\wxgui\job.cpp
 	"main.h"
 
 1445847909 source:c:\software\udefrag\wxgui\log.cpp
 	"main.h"
 
-1445998757 source:c:\software\udefrag\wxgui\main.cpp
+1446219617 source:c:\software\udefrag\wxgui\main.cpp
 	"main.h"
 	<new.h>
 
@@ -2012,10 +2013,10 @@
 1445950340 source:c:\software\udefrag\wxgui\upgrade.cpp
 	"main.h"
 
-1445950151 source:c:\software\udefrag\wxgui\utils.cpp
+1446210891 source:c:\software\udefrag\wxgui\utils.cpp
 	"main.h"
 
-1445950340 source:c:\software\udefrag\wxgui\vollist.cpp
+1446220483 source:c:\software\udefrag\wxgui\vollist.cpp
 	"main.h"
 
 1445841988 source:c:\software\udefrag\wxgui\wxgui.rc
@@ -2039,4 +2040,10 @@
 1186432848 c:\software\wxwidgets-2.8.12\include\wx\msw\wince\resources.h
 
 1186432852 c:\software\wxwidgets-2.8.12\include\wx\msw\rcdefs.h
+
+1186432892 c:\software\wxwidgets-2.8.12\include\wx\encconv.h
+	"wx/defs.h"
+	"wx/object.h"
+	"wx/fontenc.h"
+	"wx/dynarray.h"
 
