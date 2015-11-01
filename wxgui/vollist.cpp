@@ -160,6 +160,7 @@ void DrivesList::OnMouse(wxMouseEvent& event)
 
 void DrivesList::OnSelectionChange(wxListEvent& event)
 {
+    TraceEnter;
     long i = GetFirstSelected();
     if(i != -1){
         char letter = (char)GetItemText(i)[0];
@@ -171,12 +172,6 @@ void DrivesList::OnSelectionChange(wxListEvent& event)
         }
     }
     event.Skip();
-}
-
-void MainFrame::SelectAll(wxCommandEvent& WXUNUSED(event))
-{
-    for(int i = 0; i < m_vList->GetItemCount(); i++)
-        m_vList->Select(i); m_vList->Focus(0);
 }
 
 void MainFrame::AdjustListColumns(wxCommandEvent& event)
@@ -268,6 +263,7 @@ void MainFrame::AdjustListHeight(wxCommandEvent& WXUNUSED(event))
 
 void MainFrame::OnSplitChanged(wxSplitterEvent& event)
 {
+    TraceEnter;
     PostCommandEvent(this,EventID_AdjustListHeight);
     PostCommandEvent(this,EventID_AdjustListColumns);
     PostCommandEvent(this,EventID_RedrawMap);
@@ -300,8 +296,10 @@ void MainFrame::OnListSize(wxSizeEvent& event)
 
 void *ListThread::Entry()
 {
+    TraceEnter;
     while(!g_mainFrame->CheckForTermination(200)){
         if(m_rescan){
+            dtrace("About to repopulate list from ListThread Scanner in vollist.cpp");
             PostCommandEvent(g_mainFrame,EventID_PopulateList);
             m_rescan = false;
         }
@@ -316,7 +314,7 @@ void MainFrame::UpdateVolumeInformation(wxCommandEvent& event)
     int index = event.GetInt();
     volume_info *v = (volume_info *)event.GetClientData();
 
-    if(!v){ // the request has been made from the running job
+    if(!v){ // the request has been made from the running job (job.cpp@ProcessVolume)
         int i;
         for(i = 0; i < m_vList->GetItemCount(); i++){
             char letter = (char)m_vList->GetItemText(i)[0];
@@ -325,6 +323,7 @@ void MainFrame::UpdateVolumeInformation(wxCommandEvent& event)
 
         if(i < m_vList->GetItemCount()){
             v = new volume_info;
+            dtrace("The running job wants to refresh volume information for Drive: %c",(char)index);
             int result = udefrag_get_volume_information((char)index,v);
             if(result < 0){ delete v; return; }
             m_volinfocache = *v;    //genBTC, make a copy/cache of the volume info.(for fileslist.cpp)
@@ -340,7 +339,7 @@ void MainFrame::UpdateVolumeInformation(wxCommandEvent& event)
         if(v->is_removable) m_vList->SetItemImage(index,g_removableIcon);
         else m_vList->SetItemImage(index,g_fixedIcon);
     }
-
+    dtrace("Updated Volume Information for Drive: %c", v->letter);
     char s[32]; wxString string;
     ::winx_bytes_to_hr((ULONGLONG)(v->total_space.QuadPart),2,s,sizeof(s));
     string.Printf(wxT("%hs"),s); m_vList->SetItem(index,3,string);
@@ -355,6 +354,7 @@ void MainFrame::UpdateVolumeInformation(wxCommandEvent& event)
     string.Printf(wxT("%u %%"),p); m_vList->SetItem(index,5,string);
 
     delete v;
+    TraceExit;
 }
 
 void MainFrame::UpdateVolumeStatus(wxCommandEvent& event)
@@ -426,6 +426,7 @@ void MainFrame::UpdateVolumeStatus(wxCommandEvent& event)
 
 void MainFrame::PopulateList(wxCommandEvent& event)
 {
+    TraceEnter;//should only happen once.
     volume_info *v = ::udefrag_get_vollist(m_skipRem);
     if(!v) return;
 

@@ -4,7 +4,7 @@ CC = gcc.exe
 WINDRES = windres.exe
 
 TARGET = ..\bin\nativegcc.dll
-CFLAGS = -pipe  -Wall -g0 -O3
+CFLAGS = -pipe -Wall -g
 RCFLAGS = 
 C_INCLUDE_DIRS = -I"$(WXWIDGETS_INC2_PATH)" -I"$(WXWIDGETS_INC_PATH)"
 C_PREPROC = 

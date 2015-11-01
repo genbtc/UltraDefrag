@@ -112,6 +112,7 @@ void udefrag_unload_library(void)
  */
 static void deliver_progress_info(udefrag_job_parameters *jp,int completion_status)
 {
+    //TraceEnter;
     udefrag_progress_info pi;
     double x, y;
     int i, k, index, p1, p2;
@@ -200,28 +201,6 @@ static void deliver_progress_info(udefrag_job_parameters *jp,int completion_stat
 
 /**
  */
-static int terminator(void *p)
-{
-    udefrag_job_parameters *jp = (udefrag_job_parameters *)p;
-    int result;
-
-    /* ask caller */
-    if(jp->t){
-        result = jp->t(jp->p);
-        if(result){
-            winx_dbg_print_header(0,0,I"*");
-            winx_dbg_print_header(0x20,0,I"termination requested by caller");
-            winx_dbg_print_header(0,0,I"*");
-        }
-        return result;
-    }
-
-    /* continue */
-    return 0;
-}
-
-/**
- */
 static int killer(void *p)
 {
     winx_dbg_print_header(0,0,I"*");
@@ -232,10 +211,29 @@ static int killer(void *p)
 
 /**
  */
+static int terminator(void *p)
+{
+    udefrag_job_parameters *jp = (udefrag_job_parameters *)p;
+    int result;
+
+    /* ask caller */
+    if(jp->t){
+        result = jp->t(jp->p);
+        if(result)
+            killer(jp->p);
+        return result;
+    }
+
+    /* continue */
+    return 0;
+}
+
+/**
+ */
 static DWORD WINAPI start_job(LPVOID p)
 {
     udefrag_job_parameters *jp = (udefrag_job_parameters *)p;
-    char *action = "analyzing";
+    char *action = "Analyzing";
     int result = 0;
 
     /* check job flags */
@@ -284,10 +282,11 @@ static DWORD WINAPI start_job(LPVOID p)
     /* now it is safe to adjust the completion status */
     jp->pi.completion_status = result;
     if(jp->pi.completion_status == 0)
-    jp->pi.completion_status ++; /* success */
+        jp->pi.completion_status ++; /* success */
 
     winx_exit_thread(0); /* 8k/12k memory leak here? */
     return 0;
+    //Goes back to udefrag_start_job@line401
 }
 
 /**
@@ -296,9 +295,38 @@ static DWORD WINAPI start_job(LPVOID p)
  */
 void destroy_lists(udefrag_job_parameters *jp)
 {
+    ULONGLONG start = winx_xtime();
+    dtrace("Destroying list of free regions, list of files and list of fragmented files...");
+    dtrace("Volume letter was: %c",jp->volume_letter);
     winx_scan_disk_release(jp->filelist);
     winx_release_free_volume_regions(jp->free_regions);
-    if(jp->fragmented_files) prb_destroy(jp->fragmented_files,NULL);
+    if(jp->fragmented_files){
+        dtrace("Deleting jp->fragmented_files");
+        winx_free(jp->fragmented_files);
+        //prb_destroy(jp->fragmented_files,NULL);
+    }
+    if(jp->pi.fragmented_files_prb){
+        dtrace("Deleting jp->pi.fragmented_files_prb");
+        winx_free(jp->pi.fragmented_files_prb);
+        // prb_destroy(jp->pi.fragmented_files_prb,NULL);
+    }
+    ULONGLONG end = winx_xtime();
+    dtrace("The list-deletion took: %d msec.",end-start);
+}
+
+static DWORD WINAPI wait_delete_lists(LPVOID p)
+{
+    winx_sleep(4000);
+    destroy_lists((udefrag_job_parameters *)p);
+    winx_exit_thread(0); /* 8k/12k memory leak here? */
+    return 0;
+}
+
+/**
+ * @brief Passthrough so the GUI can destroy the lists.
+ */
+void udefraggui_destroy_lists(PVOID jpPtr){
+    destroy_lists((udefrag_job_parameters *)jpPtr);
 }
 
 /**
@@ -346,7 +374,8 @@ int udefrag_start_job(char volume_letter,udefrag_job_type job_type,int flags,
     jp.cb = cb;
     jp.t = t;
     jp.p = p;
-
+    jp.pi.jp = (PVOID)&jp; //back reference to the pointer of Jp, so the progress info has the pointer to JP,
+                    // because the GUI will not have access to anything but pi.
     /*
     * We deliver the progress information from
     * the current thread as well as decide whether
@@ -422,10 +451,8 @@ int udefrag_start_job(char volume_letter,udefrag_job_type job_type,int flags,
 
     /* cleanup */
     deliver_progress_info(&jp,jp.pi.completion_status);
-//    destroy_lists(&jp);
     free_map(&jp);
     release_options(&jp);
-
 done:
     jp.p_counters.overall_time = winx_xtime() - jp.p_counters.overall_time;
     dbg_print_performance_counters(&jp);
@@ -434,8 +461,13 @@ done:
         result = 0;
     else if(jp.pi.completion_status < 0)
         result = jp.pi.completion_status;
+    winx_create_thread(wait_delete_lists,(PVOID)&jp);
+    winx_sleep(5000);
+    TraceExit;
     return result;
 }
+
+
 
 /**
  * @brief Retrieves default formatted results
@@ -443,7 +475,8 @@ done:
  * @param[in] pi pointer to udefrag_progress_info structure.
  * @return A string containing default formatted results
  * of the disk defragmentation job. NULL indicates failure.
- * @note This function is used in console and native applications.
+ * @note This function is used in console and native applications
+ * NOT the gui.
  */
 char *udefrag_get_results(udefrag_progress_info *pi)
 {

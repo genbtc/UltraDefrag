@@ -2,7 +2,7 @@
 1366121468 source:c:\software\udefrag\wxgui\about.cpp
 	"main.h"
 
-1446220434 c:\software\udefrag\wxgui\main.h
+1446337447 c:\software\udefrag\wxgui\main.h
 	<wx/wxprec.h>
 	<wx/wx.h>
 	<wx/artprov.h>
@@ -1929,7 +1929,7 @@
 1359549802 c:\software\udefrag\native\prb.h
 	<stddef.h>
 
-1446203882 c:\software\udefrag\native\udefrag.h
+1446309016 c:\software\udefrag\native\udefrag.h
 
 1445950340 source:c:\software\udefrag\wxgui\btd.cpp
 	"main.h"
@@ -1969,23 +1969,23 @@
 1412944865 source:c:\software\udefrag\wxgui\crash.cpp
 	"main.h"
 
-1446220434 source:c:\software\udefrag\wxgui\fileslist.cpp
+1446345614 source:c:\software\udefrag\wxgui\fileslist.cpp
 	"main.h"
 
 1446195287 source:c:\software\udefrag\wxgui\i18n.cpp
 	"main.h"
 
-1446219333 source:c:\software\udefrag\wxgui\job.cpp
+1446346583 source:c:\software\udefrag\wxgui\job.cpp
 	"main.h"
 
-1445847909 source:c:\software\udefrag\wxgui\log.cpp
+1446340530 source:c:\software\udefrag\wxgui\log.cpp
 	"main.h"
 
-1446219617 source:c:\software\udefrag\wxgui\main.cpp
+1446336515 source:c:\software\udefrag\wxgui\main.cpp
 	"main.h"
 	<new.h>
 
-1445855981 source:c:\software\udefrag\wxgui\map.cpp
+1446332758 source:c:\software\udefrag\wxgui\map.cpp
 	"main.h"
 
 1445950340 source:c:\software\udefrag\wxgui\menu.cpp
@@ -1994,11 +1994,11 @@
 1365025268 source:c:\software\udefrag\wxgui\report.cpp
 	"main.h"
 
-1445950151 source:c:\software\udefrag\wxgui\shutdown.cpp
+1446334701 source:c:\software\udefrag\wxgui\shutdown.cpp
 	"main.h"
 	<powrprof.h>
 
-1445994432 source:c:\software\udefrag\wxgui\statbar.cpp
+1446332758 source:c:\software\udefrag\wxgui\statbar.cpp
 	"main.h"
 
 1366162454 source:c:\software\udefrag\wxgui\taskbar.cpp
@@ -2013,10 +2013,10 @@
 1445950340 source:c:\software\udefrag\wxgui\upgrade.cpp
 	"main.h"
 
-1446210891 source:c:\software\udefrag\wxgui\utils.cpp
+1446236231 source:c:\software\udefrag\wxgui\utils.cpp
 	"main.h"
 
-1446220483 source:c:\software\udefrag\wxgui\vollist.cpp
+1446332418 source:c:\software\udefrag\wxgui\vollist.cpp
 	"main.h"
 
 1445841988 source:c:\software\udefrag\wxgui\wxgui.rc
@@ -2046,4 +2046,17 @@
 	"wx/object.h"
 	"wx/fontenc.h"
 	"wx/dynarray.h"
+
+1446296885 c:\software\udefrag\native\udefrag-internals.h
+	"ntndk.h"
+	"zenwinx.h"
+	"udefrag.h"
+	"../include/version.h"
+
+1359574503 c:\software\udefrag\native\ntndk.h
+	<windows.h>
+	<stdio.h>
+	<stdarg.h>
+	<stdlib.h>
+	<ctype.h>
 

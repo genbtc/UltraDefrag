@@ -49,6 +49,7 @@ double g_scaleFactor = 1.0f;   // DPI-aware scaling factor
 int g_iconSize;                // small icon size
 HANDLE g_synchEvent = NULL;    // synchronization for threads
 UINT g_TaskbarIconMsg;         // taskbar icon overlay setup on shell restart
+PVOID g_jpPtr = NULL;       //pointer back to the udefrag-internals jp-> variable.
 
 // =======================================================================
 //                             Web statistics
@@ -411,7 +412,7 @@ MainFrame::~MainFrame()
     //delete m_crashInfoThread;//genBTC stopped the crashinfo thread.
     delete m_jobThread;
     delete m_listThread;
-    delete m_listfilesThread;//genbtc
+    //delete m_listfilesThread;//genbtc
 
     // save configuration
     SaveAppConfiguration();
@@ -607,6 +608,16 @@ void MainFrame::OnHelpFaq(wxCommandEvent& WXUNUSED(event))
 void MainFrame::OnHelpLegend(wxCommandEvent& WXUNUSED(event))
 {
     Utils::OpenHandbook(wxT("GUI.html"),wxT("cluster_map_legend"));
+}
+
+void MainFrame::SelectAll(wxCommandEvent& WXUNUSED(event))
+{
+    for(int i = 0; i < m_filesList->GetItemCount(); i++)
+        m_filesList->Select(i);
+    m_filesList->Focus(0);
+    for(int i = 0; i < m_vList->GetItemCount(); i++)
+        m_vList->Select(i);
+    m_vList->Focus(0);
 }
 
 /** @} */

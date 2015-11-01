@@ -1,0 +1,34 @@
+STEPS:
+
+udefrag.h @ 140: 
+    PVOID jp;
+    
+udefrag.c @ 355: 
+    jp.pi.jp = (PVOID)&jp;
+
+main.h @ 704: 
+    extern PVOID g_jpPtr;
+    
+main.cpp @ 52:  
+    PVOID g_jpPtr = NULL;
+    
+job.cpp @ 140: 
+    g_jpPtr = pi->jp;
+    
+fileslist.cpp @ 727: 
+    udefraggui_destroy_lists(g_jpPtr);
+    
+udefrag.h @ 157: 
+    void udefraggui_destroy_lists(PVOID jpPtr);
+    
+udefrag.C @ 306-308:
+    void udefraggui_destroy_lists(PVOID jpPtr){
+        destroy_lists((udefrag_job_parameters *)jpPtr);
+    }
+    
+udefrag.C @ 294-301:    
+    void destroy_lists(udefrag_job_parameters *jp)
+    {
+        dtrace("Volume letter was: %c",jp->volume_letter);
+        dtrace("Destroying list of free regions, list of files and list of fragmented files...");        
+    }    

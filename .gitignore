@@ -84,3 +84,4 @@ $RECYCLE.BIN/
 bin/gui.ini
 bin/logs/ultradefrag.log
 *.po
+bin/logs/ultradefrag.log

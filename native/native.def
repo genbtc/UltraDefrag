@@ -12,7 +12,7 @@ EXPORTS
     udefrag_start_job
     udefrag_unload_library
     udefrag_validate_volume
-
+    udefraggui_destroy_lists
     
     prb_create
     prb_copy

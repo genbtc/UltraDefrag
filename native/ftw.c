@@ -38,7 +38,7 @@
  * @brief Size of the buffer dedicated
  * to list file fragments into.
  * @details It is large enough to hold
- * GET_RETRIEVAL_DESCRIPTOR structure 
+ * GET_RETRIEVAL_DESCRIPTOR structure
  * as well as 512 MAPPING_PAIR structures.
  */
 #define FILE_MAP_SIZE (sizeof(GET_RETRIEVAL_DESCRIPTOR) - sizeof(MAPPING_PAIR) + 512 * sizeof(MAPPING_PAIR))
@@ -51,7 +51,7 @@
 
 /* external functions prototypes */
 winx_file_info *ntfs_scan_disk(char volume_letter,
-    int flags, ftw_filter_callback fcb, ftw_progress_callback pcb, 
+    int flags, ftw_filter_callback fcb, ftw_progress_callback pcb,
     ftw_terminator t, void *user_defined_data);
 
 /**
@@ -65,7 +65,7 @@ static int ftw_check_for_termination(ftw_terminator t,void *user_defined_data)
 {
     if(t == NULL)
         return 0;
-    
+
     return t(user_defined_data);
 }
 
@@ -77,7 +77,7 @@ static int ftw_check_for_termination(ftw_terminator t,void *user_defined_data)
 void validate_blockmap(winx_file_info *f)
 {
     winx_blockmap *b1 = NULL, *b2 = NULL;
-    
+
 #if 0
     /* seems to be too slow */
     for(b1 = f->disp.blockmap; b1; b1 = b1->next){
@@ -123,7 +123,7 @@ void validate_blockmap(winx_file_info *f)
  * passed to the registered terminator.
  * @return Zero for success,
  * negative value otherwise.
- * @note 
+ * @note
  * - The callback procedure should complete as quickly
  * as possible to avoid slowdown of the scan.
  * - For resident NTFS streams (small files and
@@ -142,24 +142,24 @@ int winx_ftw_dump_file(winx_file_info *f,
     NTSTATUS status;
     int i;
     winx_blockmap *block = NULL;
-    
+
     DbgCheck1(f,-1);
-    
+
     /* reset disposition related fields */
     f->disp.clusters = 0;
     f->disp.fragments = 0;
     winx_list_destroy((list_entry **)(void *)&f->disp.blockmap);
-    
+
     /* open the file */
     status = winx_defrag_fopen(f,WINX_OPEN_FOR_DUMP,&hFile);
     if(status != STATUS_SUCCESS){
         strace(status,"cannot open %ws",f->path);
         return 0; /* file is locked by system */
     }
-    
+
     /* allocate memory */
     filemap = winx_malloc(FILE_MAP_SIZE);
-    
+
     /* dump the file */
     startVcn = 0;
     counter = 0;
@@ -187,38 +187,38 @@ int winx_ftw_dump_file(winx_file_info *f,
             /* reset incomplete map */
             goto cleanup;
         }
-        
+
         /* check for an empty map */
         if(!filemap->NumberOfPairs && status != STATUS_SUCCESS){
             etrace("%ws: empty map of file detected",f->path);
             goto empty_map_detected;
         }
-        
+
         /* loop through the buffer of number/cluster pairs */
         startVcn = filemap->StartVcn;
         for(i = 0; i < (ULONGLONG)filemap->NumberOfPairs; startVcn = filemap->Pair[i].Vcn, i++){
             /* compressed virtual runs (0-filled) are identified with LCN == -1    */
             if(filemap->Pair[i].Lcn == LLINVALID)
                 continue;
-            
+
             /* the following is usual for 3.99 GB files on FAT32 under XP */
             if(filemap->Pair[i].Vcn == 0){
                 etrace("%ws: wrong map of file detected",f->path);
                 goto dump_failed;
             }
-            
+
             block = (winx_blockmap *)winx_list_insert((list_entry **)&f->disp.blockmap,
                 (list_entry *)block,sizeof(winx_blockmap));
             block->lcn = filemap->Pair[i].Lcn;
             block->length = filemap->Pair[i].Vcn - startVcn;
             block->vcn = startVcn;
-            
+
             //trace(D"VCN = %I64u, LCN = %I64u, LENGTH = %I64u",
             //    block->vcn,block->lcn,block->length);
             f->disp.clusters += block->length;
-            
+
             /*
-            * Sometimes files have more than one fragment, 
+            * Sometimes files have more than one fragment,
             * but are not fragmented yet. In case of compressed
             * files this happens quite frequently.
             */
@@ -235,7 +235,7 @@ int winx_ftw_dump_file(winx_file_info *f,
     winx_free(filemap);
     winx_defrag_fclose(hFile);
     return 0;
-    
+
 cleanup:
 empty_map_detected:
     f->disp.clusters = 0;
@@ -269,19 +269,19 @@ static winx_file_info * ftw_add_entry_to_filelist(wchar_t *path,
     winx_file_info *f;
     int length;
     int is_rootdir = 0;
-    
+
     if(path == NULL || file_entry == NULL)
         return NULL;
-    
+
     if(path[0] == 0){
         etrace("path is empty");
         return NULL;
     }
-    
+
     /* insert new item to the file list */
     f = (winx_file_info *)winx_list_insert((list_entry **)(void *)filelist,
         NULL,sizeof(winx_file_info));
-    
+
     /* extract filename */
     f->name = winx_tmalloc(file_entry->FileNameLength + sizeof(wchar_t));
     if(f->name == NULL){
@@ -292,12 +292,12 @@ static winx_file_info * ftw_add_entry_to_filelist(wchar_t *path,
     }
     memset(f->name,0,file_entry->FileNameLength + sizeof(wchar_t));
     memcpy(f->name,file_entry->FileName,file_entry->FileNameLength);
-    
+
     /* detect whether we are in root directory or not */
     length = (int)wcslen(path);
     if(path[length - 1] == '\\')
         is_rootdir = 1; /* only root directory contains trailing backslash */
-    
+
     /* build path */
     length += (int)wcslen(f->name) + 1;
     if(!is_rootdir)
@@ -315,21 +315,21 @@ static winx_file_info * ftw_add_entry_to_filelist(wchar_t *path,
     else
         (void)_snwprintf(f->path,length,L"%ws\\%ws",path,f->name);
     f->path[length - 1] = 0;
-    
+
     /* save file attributes and access times */
     f->flags = file_entry->FileAttributes;
     f->creation_time = file_entry->CreationTime.QuadPart;
     f->last_modification_time = file_entry->LastWriteTime.QuadPart;
     f->last_access_time = file_entry->LastAccessTime.QuadPart;
-    
+
     /* reset user defined flags */
     f->user_defined_flags = 0;
-    
+
     //trace(D"%ws",f->path);
-    
+
     /* reset internal data fields */
     memset(&f->internal,0,sizeof(winx_file_internal_info));
-    
+
     /* reset file disposition */
     memset(&f->disp,0,sizeof(winx_file_disposition));
 
@@ -341,8 +341,8 @@ static winx_file_info * ftw_add_entry_to_filelist(wchar_t *path,
             winx_list_remove((list_entry **)(void *)filelist,(list_entry *)f);
             return NULL;
         }
-    }    
-    
+    }
+
     return f;
 }
 
@@ -352,7 +352,7 @@ static winx_file_info * ftw_add_entry_to_filelist(wchar_t *path,
  * root directory to file list.
  */
 static int ftw_add_root_directory(wchar_t *path, int flags,
-    ftw_filter_callback fcb, ftw_progress_callback pcb, 
+    ftw_filter_callback fcb, ftw_progress_callback pcb,
     ftw_terminator t, void *user_defined_data,
     winx_file_info **filelist)
 {
@@ -362,29 +362,29 @@ static int ftw_add_root_directory(wchar_t *path, int flags,
     HANDLE hDir;
     IO_STATUS_BLOCK iosb;
     NTSTATUS status;
-    
+
     if(path == NULL)
         return (-1);
-    
+
     if(path[0] == 0){
         etrace("path is empty");
         return (-1);
     }
-    
+
     /* insert new item to the file list */
     f = (winx_file_info *)winx_list_insert((list_entry **)(void *)filelist,
         NULL,sizeof(winx_file_info));
-    
+
     /* build path */
     length = (int)wcslen(path) + 1;
     f->path = winx_malloc(length * sizeof(wchar_t));
     wcscpy(f->path,path);
-    
+
     /* save . filename */
     f->name = winx_malloc(2 * sizeof(wchar_t));
     f->name[0] = '.';
     f->name[1] = 0;
-    
+
     /* get file attributes and access times */
     f->flags = FILE_ATTRIBUTE_DIRECTORY;
     f->creation_time = 0;
@@ -409,13 +409,13 @@ static int ftw_add_root_directory(wchar_t *path, int flags,
     } else {
         strace(status,"cannot open %ws",f->path);
     }
-    
+
     /* reset user defined flags */
     f->user_defined_flags = 0;
-    
+
     /* reset internal data fields */
     memset(&f->internal,0,sizeof(winx_file_internal_info));
-    
+
     /* reset file disposition */
     memset(&f->disp,0,sizeof(winx_file_disposition));
 
@@ -428,13 +428,13 @@ static int ftw_add_root_directory(wchar_t *path, int flags,
             return (-1);
         }
     }
-    
+
     /* call callbacks */
     if(pcb != NULL)
         pcb(f,user_defined_data);
     if(fcb != NULL)
         fcb(f,user_defined_data);
-    
+
     return 0;
 }
 
@@ -451,10 +451,10 @@ static HANDLE ftw_open_directory(wchar_t *path)
     IO_STATUS_BLOCK iosb;
     NTSTATUS status;
     HANDLE hDir;
-    
+
     if(path == NULL)
         return NULL;
-    
+
     RtlInitUnicodeString(&us,path);
     InitializeObjectAttributes(&oa,&us,0,NULL,NULL);
     status = NtCreateFile(&hDir, FILE_LIST_DIRECTORY | FILE_RESERVE_OPFILTER,
@@ -465,7 +465,7 @@ static HANDLE ftw_open_directory(wchar_t *path)
         strace(status,"cannot open %ws",path);
         return NULL;
     }
-    
+
     return hDir;
 }
 
@@ -488,15 +488,15 @@ static int ftw_helper(wchar_t *path, int flags,
     NTSTATUS status;
     winx_file_info *f;
     int skip_children, result;
-    
+
     /* open directory */
     hDir = ftw_open_directory(path);
     if(hDir == NULL)
         return 0; /* directory is locked by system, skip it */
-    
+
     /* allocate memory */
     file_listing = winx_malloc(FILE_LISTING_SIZE);
-    
+
     /* reset buffer */
     memset((void *)file_listing,0,FILE_LISTING_SIZE);
     file_entry = file_listing;
@@ -528,7 +528,7 @@ static int ftw_helper(wchar_t *path, int flags,
             }
             file_entry = file_listing;
         }
-        
+
         /* skip . and .. entries */
         if(file_entry->FileNameLength == sizeof(wchar_t)){
             if(file_entry->FileName[0] == '.')
@@ -542,7 +542,7 @@ static int ftw_helper(wchar_t *path, int flags,
         /* validate entry */
         if(file_entry->FileNameLength == 0)
             continue;
-        
+
         /* add entry to the file list */
         f = ftw_add_entry_to_filelist(path,flags,fcb,pcb,t,
                 user_defined_data,filelist,file_entry);
@@ -551,9 +551,9 @@ static int ftw_helper(wchar_t *path, int flags,
             NtClose(hDir);
             return (-1);
         }
-        
+
         //trace(D"%ws\n%ws",f->name,f->path);
-        
+
         /* check for termination */
         if(ftw_check_for_termination(t,user_defined_data)){
             itrace("terminated by user");
@@ -561,11 +561,11 @@ static int ftw_helper(wchar_t *path, int flags,
             NtClose(hDir);
             return (-2);
         }
-        
+
         /* call the callback routines */
         if(pcb != NULL)
             pcb(f,user_defined_data);
-        
+
         skip_children = 0;
         if(fcb != NULL)
             skip_children = fcb(f,user_defined_data);
@@ -583,7 +583,7 @@ static int ftw_helper(wchar_t *path, int flags,
             }
         }
     }
-    
+
     /* terminated */
     winx_free(file_listing);
     NtClose(hDir);
@@ -652,7 +652,7 @@ static void ftw_remove_invalid_streams(winx_file_info **filelist)
  * @param[in] fcb the address of the callback routine
  * to be called for each file; if it returns
  * nonzero value, all the file's children will be
- * skipped. Zero value forces to continue the 
+ * skipped. Zero value forces to continue the
  * subdirectory scan. Note that the filter callback
  * is called when the complete information is gathered
  * for the file.
@@ -672,7 +672,7 @@ static void ftw_remove_invalid_streams(winx_file_info **filelist)
  * @param[in] user_defined_data pointer to data
  * passed to all the registered callbacks.
  * @return List of files, NULL indicates failure.
- * @note 
+ * @note
  * - Optimized for little directories scan.
  * - To scan root directory, add trailing backslash
  *   to the path.
@@ -728,9 +728,9 @@ winx_file_info *winx_ftw(wchar_t *path, int flags,
         ftw_terminator t, void *user_defined_data)
 {
     winx_file_info *filelist = NULL;
-    
+
     DbgCheck1(path,NULL);
-    
+
     if(flags & WINX_FTW_SKIP_RESIDENT_STREAMS){
         if(!(flags & WINX_FTW_DUMP_FILES)){
             etrace("WINX_FTW_DUMP_FILES flag must be set"
@@ -738,17 +738,17 @@ winx_file_info *winx_ftw(wchar_t *path, int flags,
             flags &= ~WINX_FTW_SKIP_RESIDENT_STREAMS;
         }
     }
-    
+
     if(ftw_helper(path,flags,fcb,pcb,t,user_defined_data,&filelist) == (-1) && \
       !(flags & WINX_FTW_ALLOW_PARTIAL_SCAN)){
         /* destroy list */
         winx_ftw_release(filelist);
         return NULL;
     }
-      
+
     if(flags & WINX_FTW_SKIP_RESIDENT_STREAMS)
         ftw_remove_resident_streams(&filelist);
-    
+
     /* get rid of invalid entries */
     ftw_remove_invalid_streams(&filelist);
     return filelist;
@@ -774,13 +774,13 @@ winx_file_info *winx_scan_disk(char volume_letter, int flags,
     wchar_t rootpath[] = L"\\??\\A:\\";
     winx_volume_information v;
     ULONGLONG time;
-    
+
     /* ensure that it will work on w2k */
     volume_letter = winx_toupper(volume_letter);
-    
+
     time = winx_xtime();
     winx_dbg_print_header(0,0,I"winx_scan_disk started");
-    
+
     if(flags & WINX_FTW_SKIP_RESIDENT_STREAMS){
         if(!(flags & WINX_FTW_DUMP_FILES)){
             etrace("WINX_FTW_DUMP_FILES flag must be set"
@@ -788,7 +788,7 @@ winx_file_info *winx_scan_disk(char volume_letter, int flags,
             flags &= ~WINX_FTW_SKIP_RESIDENT_STREAMS;
         }
     }
-    
+
     if(winx_get_volume_information(volume_letter,&v) >= 0){
         itrace("file system is %s",v.fs_name);
         if(!strcmp(v.fs_name,"NTFS")){
@@ -796,7 +796,7 @@ winx_file_info *winx_scan_disk(char volume_letter, int flags,
             goto cleanup;
         }
     }
-    
+
     /* collect information about root directory */
     rootpath[4] = (wchar_t)volume_letter;
     if(ftw_add_root_directory(rootpath,flags,fcb,pcb,t,user_defined_data,&filelist) == (-1) && \
@@ -822,7 +822,7 @@ cleanup:
         ftw_remove_resident_streams(&filelist);
     /* get rid of invalid entries */
     ftw_remove_invalid_streams(&filelist);
-        
+
 done:
     winx_dbg_print_header(0,0,I"winx_scan_disk completed in %I64u ms",
         winx_xtime() - time);

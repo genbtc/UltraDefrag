@@ -76,8 +76,8 @@ void MainFrame::InitFilesList()
     };
 
     double ratios[LIST_COLUMNS] = {
-            320.0/640, 80.0/640, 80.0/640,
-            80.0/640, 79.0/640, 1.0/640
+            375.0/640, 65.0/640, 70.0/640,
+            65.0/640, 64.0/640, 1.0/640
     };
 
     for(int i = 0; i < LIST_COLUMNS - 1; i++) {
@@ -116,6 +116,22 @@ void MainFrame::InitFilesList()
     Connect(wxEVT_SIZE,wxSizeEventHandler(MainFrame::FilesOnListSize),NULL,this);
 //    m_splitter->Connect(wxEVT_COMMAND_SPLITTER_SASH_POS_CHANGED,
 //        wxSplitterEventHandler(MainFrame::FilesOnSplitChanged),NULL,this);
+}
+
+//=======================================================================
+//                           scanner thread
+//=======================================================================
+//currently mostly-disabled.
+void *ListFilesThread::Entry()
+{
+    while(!g_mainFrame->CheckForTermination(200)){
+        if(m_rescan){
+            //PostCommandEvent(g_mainFrame,EventID_PopulateFilesList);
+            m_rescan = false;
+        }
+    }
+
+    return NULL;
 }
 
 // =======================================================================
@@ -180,14 +196,8 @@ void FilesList::OnSelectionChange(wxListEvent& event)
 //            PostCommandEvent(g_mainFrame,EventID_FilesAnalyzedUpdateFilesList);
 //        }
 //    }
-    PostCommandEvent(g_mainFrame,EventID_FilesAnalyzedUpdateFilesList);
+//    PostCommandEvent(g_mainFrame,EventID_FilesAnalyzedUpdateFilesList);
     event.Skip();
-}
-
-void MainFrame::FilesSelectAll(wxCommandEvent& WXUNUSED(event))
-{
-    for(int i = 0; i < m_filesList->GetItemCount(); i++)
-        m_filesList->Select(i); m_filesList->Focus(0);
 }
 
 void MainFrame::FilesAdjustListColumns(wxCommandEvent& event)
@@ -309,22 +319,6 @@ void MainFrame::FilesOnListSize(wxSizeEvent& event)
         wxPostEvent(this,evt);
 
     event.Skip();
-}
-
-//=======================================================================
-//                           Drives scanner
-//=======================================================================
-
-void *ListFilesThread::Entry()
-{
-    while(!g_mainFrame->CheckForTermination(200)){
-        if(m_rescan){
-            //PostCommandEvent(g_mainFrame,EventID_PopulateFilesList);
-            m_rescan = false;
-        }
-    }
-
-    return NULL;
 }
 
 //genBTC
@@ -615,42 +609,44 @@ void MainFrame::FilesAnalyzedUpdateFilesList (wxCommandEvent& event)
 void MainFrame::FilesPopulateList(wxCommandEvent& event)
 {
     TraceEnter;
+    //udefraggui_destroy_lists(g_jpPtr);
+
     struct prb_traverser trav;
-    int length;
-    char *cnv_path = NULL;
+//    int length;
+//    char *cnv_path = NULL;
     //char *utf8_path = NULL;
     winx_file_info *file;
     wxString comment, status;
+    int loopcount = 0;
 
-    char letter = (char)event.GetInt();
-    JobsCacheEntry *cacheEntry = m_jobsCache[(int)letter];
-    if(!cacheEntry){
+    if(!&m_jobsCache){
       etrace("FAILED to obtain currentJob CacheEntry!!");
       return;
     }
-    if (cacheEntry->pi.completion_status <= 0){
+    //JobsCacheEntry *newEntry = (JobsCacheEntry *)event.GetClientData();
+    char letter = (char)event.GetInt();
+    JobsCacheEntry cacheEntry = *m_jobsCache[(int)letter];
+
+    if (cacheEntry.pi.completion_status <= 0){
         etrace("For some odd reason, Completion status was NOT complete.");
         return;
     }
-    //JobsCacheEntry *newEntry = (JobsCacheEntry *)event.GetClientData();
     else {
-    //if (cacheEntry->pi.completion_status > 0){
-        dtrace("Job complete, Starting adding fragmented files to tab2.");
-//        if (winx_get_volume_information(letter,m_volinfocache) < 0){
-//            etrace("Winx_Get_volume_information for drive %c FAILED!",letter);
-//            return;
-//        }
         m_filesList->DeleteAllItems();
 
-        prb_t_init(&trav,cacheEntry->pi.fragmented_files_prb);
-        file = (winx_file_info *)prb_t_first(&trav,cacheEntry->pi.fragmented_files_prb);
-        int loopcount = 0;
+        prb_t_init(&trav,cacheEntry.pi.fragmented_files_prb);
+        file = (winx_file_info *)prb_t_first(&trav,cacheEntry.pi.fragmented_files_prb);
+        if (!file){
+            etrace("Fragmented Files List File Not Found.");
+            return;
+        }
+
         while (file){
 //            wchar_t *filepath;
 //            filepath = file->path;
-            dtrace("Starting loop # %i",loopcount);
+            //dtrace("Starting loop # %i",loopcount);
             int itemscount = m_filesList->GetItemCount();
-            dtrace("Passed get-itemscount()");
+            //dtrace("Passed get-itemscount()");
 //            length = (wcslen(file->path) + 1) * sizeof(wchar_t) * 2;/* enough to hold UTF-8 string */
 //            dtrace("Passed length-size op. # %i",loopcount);
 //            cnv_path = (char *)winx_tmalloc(length);
@@ -686,7 +682,7 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
 //            temp.Printf(wxT("%hs"),&buffer);
 //            delete buffer;
 //            wxString test = wxPrintf(L"%s", (wchar_t *)filepath);
-            wxString test((const wchar_t *)(file->path));
+            wxString test((const wchar_t *)(file->path + 4));
             m_filesList->InsertItem(itemscount,test,2);
             //m_filesList->InsertItem(itemscount,wxString::FromUTF8(cnv_path,length),2);
             //dtrace("Passed inserting the converted wxstring. %i",loopcount);
@@ -695,6 +691,10 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
             m_filesList->SetItem(itemscount,1,numfragments);
 
             int bpc = m_volinfocache.bytes_per_cluster;
+            if (bpc > 32768 || bpc < 512){
+                etrace("m_volinfocache was not available!");
+                return;
+            }
             ULONGLONG filesizebytes = file->disp.clusters * bpc;
             char filesize_hr[32];
             winx_bytes_to_hr(filesizebytes,2,filesize_hr,sizeof(filesize_hr));
@@ -725,15 +725,26 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
             //statusstr.Printf(wxT("\"%hs\""),status);
 
             loopcount++;
-            winx_free(cnv_path);
+            //winx_free(cnv_path);
             //if (loopcount > 9)
             //    return;
             file = (winx_file_info *)prb_t_next(&trav);
         }
     }
-//    if (m_volinfocache != NULL)
-//        winx_free(m_volinfocache);
-    dtrace("Successfully finished with the Populate List Loop");
+    if (loopcount > 0)
+        dtrace("Successfully finished with the Populate List Loop");
+
+    else
+        dtrace("While Loop Did not run, no files were added.");
+//    m_filesList->Layout();
+    if(cacheEntry.pi.fragmented_files_prb){
+        dtrace("Deleting cacheEntry.pi.fragmented_files_prb");
+        winx_free(cacheEntry.pi.fragmented_files_prb);
+        //prb_destroy(cacheEntry.pi.fragmented_files_prb,NULL);
+        delete &cacheEntry;
+    }
+
+
 }
 
 //    if(!v) return;

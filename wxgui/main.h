@@ -87,7 +87,12 @@ typedef enum {
 #include "../include/version.h"
 #include "../native/zenwinx.h"
 #include "../native/udefrag.h"
+//#define __MINGW_EXTENSION
+//typedef ULONG_PTR KAFFINITY;
+//typedef KAFFINITY *PKAFFINITY;
+//#define _NTSECAPI_H
 //#include "../native/udefrag-internals.h"
+
 //i wanted to include that to gain access to jp-> but i can't because:
 //The following errors occur when including that file: Duplicate/already defined:
 //VOLUME_IS_DIRTY
@@ -209,12 +214,12 @@ enum {
     EventID_LocaleChange
 };
 
-#define MAIN_WINDOW_DEFAULT_WIDTH  800
-#define MAIN_WINDOW_DEFAULT_HEIGHT 600
-#define MAIN_WINDOW_MIN_WIDTH      500
-#define MAIN_WINDOW_MIN_HEIGHT     375
-#define DEFAULT_LIST_HEIGHT        130
-#define MIN_PANEL_HEIGHT            40
+#define MAIN_WINDOW_DEFAULT_WIDTH  1280
+#define MAIN_WINDOW_DEFAULT_HEIGHT 720
+#define MAIN_WINDOW_MIN_WIDTH      640
+#define MAIN_WINDOW_MIN_HEIGHT     480
+#define DEFAULT_LIST_HEIGHT        133
+#define MIN_PANEL_HEIGHT            42
 
 // dialog layout constants
 #define SMALL_SPACING  DPI(5)
@@ -481,10 +486,7 @@ public:
     void OnStartJob(wxCommandEvent& event);
     void OnPause(wxCommandEvent& event);
     void OnStop(wxCommandEvent& event);
-
     void OnRepeat(wxCommandEvent& event);
-
-
 
     void OnRepair(wxCommandEvent& event);
 
@@ -531,6 +533,7 @@ public:
     void OnLocaleChange(wxCommandEvent& event);
     void ReadUserPreferences(wxCommandEvent& event);
     void RedrawMap(wxCommandEvent& event);
+    void SelectAll(wxCommandEvent& event);
     void SetWindowTitle(wxCommandEvent& event);
     void ShowUpgradeDialog(wxCommandEvent& event);
     void Shutdown(wxCommandEvent& event);
@@ -544,7 +547,6 @@ public:
     void OnSkipRem(wxCommandEvent& event);
     void OnRescan(wxCommandEvent& event);
     void PopulateList(wxCommandEvent& event);
-    void SelectAll(wxCommandEvent& event);
     void UpdateVolumeInformation(wxCommandEvent& event);
     void UpdateVolumeStatus(wxCommandEvent& event);
 
@@ -557,7 +559,6 @@ public:
     void FilesOnRescan(wxCommandEvent& event);
     void FilesAnalyzedUpdateFilesList(wxCommandEvent& event);
     void FilesPopulateList(wxCommandEvent& event);
-    void FilesSelectAll(wxCommandEvent& event);
 
     // common routines
     int  CheckOption(const wxString& name);
@@ -681,6 +682,7 @@ public:
     static void ShowError(const wxChar* format, ...);
     static wxString ConvertChartoWxString(char* input);
     static char* wxStringToChar(wxString input);
+    static void DrawSingleRectangleBorder(HDC m_cacheDC,int xblock,int yblock,int line_width,int cell_size,HBRUSH border,HBRUSH infill);
 };
 
 /* flags for Utils::ShellExec */
@@ -696,5 +698,6 @@ extern wxLocale *g_locale;
 extern double g_scaleFactor;
 extern int g_iconSize;
 extern HANDLE g_synchEvent;
+extern PVOID g_jpPtr;
 
 #endif /* _UDEFRAG_GUI_MAIN_H_ */

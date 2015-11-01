@@ -570,7 +570,7 @@ static int find_files(udefrag_job_parameters *jp)
     winx_file_info *f;
     winx_blockmap *block;
 
-    /* check for context menu handler */
+    /* check for context menu handler (single files/directories)*/
     if(jp->udo.job_flags & UD_JOB_CONTEXT_MENU_HANDLER){
         if(jp->udo.cut_filter.count > 0){
             if(wcslen(jp->udo.cut_filter.array[0]) >= wcslen(L"C:\\"))
@@ -578,7 +578,7 @@ static int find_files(udefrag_job_parameters *jp)
         }
     }
 
-    /* speed up the context menu handler */
+    /* speed up the context menu handler (single files/directories)*/
     if(jp->fs_type != FS_NTFS && context_menu_handler){
         /* in case of c:\* or c:\ scan entire disk */
         c = jp->udo.cut_filter.array[0][3];
@@ -786,6 +786,7 @@ int expand_fragmented_files_list(winx_file_info *f,udefrag_job_parameters *jp)
     // and in both functions, they are called from inside this if block:
     //         if(is_fragmented(f) && !is_excluded(f)){
     // so they should already be verified by !is_exluded(f)
+    //I guess this was put in for future expansion?
 
     //if(!is_excluded(f)){
     p = prb_probe(jp->fragmented_files,(void *)f);
@@ -808,13 +809,13 @@ void truncate_fragmented_files_list(winx_file_info *f,udefrag_job_parameters *jp
  */
 static void produce_list_of_fragmented_files(udefrag_job_parameters *jp)
 {
-    winx_file_info *f,*file;
+    winx_file_info *f;
     ULONGLONG bad_fragments = 0;
-    int count = 0;
-    struct prb_traverser trav;
     int fragcount=0;
-    int length;
-    char *cnv_path = NULL;
+//    winx_file_info *file;
+//    struct prb_traverser trav;
+//    int length;
+//    char *cnv_path = NULL;
 
     itrace("started creation of fragmented files list");
 
@@ -823,15 +824,17 @@ static void produce_list_of_fragmented_files(udefrag_job_parameters *jp)
     for(f = jp->filelist; f; f = f->next){
         if(is_fragmented(f) && !is_excluded(f)){
             expand_fragmented_files_list(f,jp);
-            /* more precise calculation seems to be too slow */
-            count++;
+            /* more precise calculation seems to be too slow */ // ?
+            fragcount++;
             bad_fragments += f->disp.fragments;
         }
         if(f->next == jp->filelist) break;
     }
+    jp->pi.fragmented_files_count = fragcount;
     jp->pi.bad_fragments = bad_fragments;
 
-//    jp->pi.fragmented_files_prb = prb_copy(jp->fragmented_files,NULL,NULL,NULL);
+    jp->pi.fragmented_files_prb = jp->fragmented_files;
+    //jp->pi.fragmented_files_prb = prb_copy(jp->fragmented_files,NULL,NULL,NULL);
 /* The above line is there from before as an example on how to copy a PRB, because:
  * previously could not do pointer assignment operation, because when lists gets freed
  * in destroy_lists() in Udefrag.c @ Line 297ish, it will leave holes because
@@ -839,24 +842,23 @@ static void produce_list_of_fragmented_files(udefrag_job_parameters *jp)
  * other lists, such as fragmented_files_prb, due to pointers. This took me forever to realize.
  * Now the code has been changed to only free the lists upon a new Analyze operation @ Line 144.
  */
-    jp->pi.fragmented_files_prb = jp->fragmented_files;
+/* This will output a list of fragmented files directly to the debug window.
+ *
+ *  prb_t_init(&trav,jp->fragmented_files);
+ *  file = prb_t_first(&trav,jp->fragmented_files);
+ *
+ *     while (file){
+ *         length = ((int)wcslen((wchar_t *)file->path) + 1) * sizeof(wchar_t) * 2; // enough to hold UTF-8 string
+ *         cnv_path = (char *)winx_tmalloc(length);
+ *         //should really check tmalloc for success. but it hasnt failed me yet.
+ *         winx_to_utf8(cnv_path,length,(wchar_t *)file->path);
+ *         dtrace("File->Path: %s",cnv_path);
+ *         //dtrace("File->Path Length: %i",length);
+ *         file = prb_t_next(&trav);
+ *         winx_free(cnv_path);
+ *     }
+ */
     jp->pi.isfragfileslist = 1;
-
-    prb_t_init(&trav,jp->fragmented_files);
-    file = prb_t_first(&trav,jp->fragmented_files);
-
-    while (file){
-        length = ((int)wcslen((wchar_t *)file->path) + 1) * sizeof(wchar_t) * 2;/* enough to hold UTF-8 string */
-        cnv_path = (char *)winx_tmalloc(length);
-        //should really check tmalloc for success. but it hasnt failed me yet.
-        winx_to_utf8(cnv_path,length,(wchar_t *)file->path);
-        //dtrace("File->Path: %s",cnv_path);
-        //dtrace("File->Path Length: %i",length);
-        fragcount++;
-        file = prb_t_next(&trav);
-        winx_free(cnv_path);
-    }
-    jp->pi.fragmented_files_count = fragcount;
     itrace("finished creation of fragmented files list");
 }
 

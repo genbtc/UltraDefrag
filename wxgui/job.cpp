@@ -56,6 +56,7 @@
 
 void MainFrame::CacheJob(wxCommandEvent& event)
 {
+    TraceEnter;
     int index = event.GetInt();
     JobsCacheEntry *cacheEntry = m_jobsCache[index];
     JobsCacheEntry *newEntry = (JobsCacheEntry *)event.GetClientData();
@@ -64,6 +65,7 @@ void MainFrame::CacheJob(wxCommandEvent& event)
         m_jobsCache[index] = newEntry;
     } else {
         delete [] cacheEntry->clusterMap;
+        //dtrace("Old Cache Entry updated.");
         memcpy(cacheEntry,newEntry,sizeof(JobsCacheEntry));
         delete newEntry;
     }
@@ -77,6 +79,7 @@ void MainFrame::CacheJob(wxCommandEvent& event)
 
 void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
 {
+    TraceEnter;
     // update window title and tray icon tooltip
     char op = 'O';
     if(pi->current_operation == VOLUME_ANALYSIS) op = 'A';
@@ -137,15 +140,19 @@ void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
     wxPostEvent(g_mainFrame,event);
 
     if ((pi->completion_status > 0) && (pi->isfragfileslist = 1)){
-        cacheEntry->pi.fragmented_files_prb = pi->fragmented_files_prb;
+        g_jpPtr = pi->jp;   //set Global Pointer back to JP. will be cleared soon.
+        //cacheEntry->pi.fragmented_files_prb = pi->fragmented_files_prb;
+        cacheEntry->pi.fragmented_files_prb = prb_copy(pi->fragmented_files_prb,NULL,NULL,NULL);
+//        prb_destroy(pi->fragmented_files_prb,NULL);
         //populate the fragmented files-list tab.
         event.SetId(EventID_PopulateFilesList);
         event.SetInt(letter);
-        event.SetClientData((void *)cacheEntry);
+        //event.SetClientData((void *)cacheEntry);
         wxPostEvent(g_mainFrame,event);
         dtrace("Successfully sent Fragmented Files list over to MainFrame::FilesPopulateList()");
+        return;
     }
-
+    dtrace("Updating Volume Status,Redrawing Map, and Updating StatusBar.");
     // update Volume status
     event.SetId(EventID_UpdateVolumeStatus);
     event.SetInt(letter);
@@ -153,7 +160,7 @@ void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
     // Update Clustermap and Statusbar.
     PostCommandEvent(g_mainFrame,EventID_RedrawMap);
     PostCommandEvent(g_mainFrame,EventID_UpdateStatusBar);
-    //after this, it finishes udefrag_start_job @ udefrag.c line 423.
+    //after this, it finishes udefrag_start_job @ udefrag.c line 431.
     //after that, it goes back to line 182 of this file, and line 187 calls EventID_UpdateVolumeInformation.
 }
 
@@ -180,12 +187,15 @@ void JobThread::ProcessVolume(int index)
     }
 
     if(result < 0 && !g_mainFrame->m_stopped){
+        etrace("Disk Processing Failure.");
         wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,EventID_DiskProcessingFailure);
-        event.SetInt(result); event.SetString((*m_volumes)[index]); wxPostEvent(g_mainFrame,event);
+        event.SetInt(result);
+        event.SetString((*m_volumes)[index]);
+        wxPostEvent(g_mainFrame,event);
     }
-
     // update volume dirty status
     wxPostEvent(g_mainFrame,event);
+    TraceExit;
 }
 
 void *JobThread::Entry()
@@ -197,29 +207,37 @@ void *JobThread::Entry()
             g_mainFrame->m_processed = 0;
 
             for(int i = 0; i < g_mainFrame->m_selected; i++){
-                if(g_mainFrame->m_stopped) break;
+                if(g_mainFrame->m_stopped){
+                  dtrace("Forloop flow Broken!!!!!!, because m_stopped.");
+                  break;
+                }
 
                 m_letter = (char)((*m_volumes)[i][0]);
+                dtrace("About to process volume: %c",m_letter);
                 ProcessVolume(i);
-
+                //g_jpPtr pointer is OK HERE (Maybe Line 188 Dirty Volume status?
+                //::Sleep(900);   //needed to preserve the thread long enough so pointer survives for Fileslist.cpp to finish.
                 /* advance overall progress to processed/selected */
-                g_mainFrame->m_processed ++;
+                g_mainFrame->m_processed++;
                 if(g_mainFrame->CheckOption(wxT("UD_SHOW_PROGRESS_IN_TASKBAR"))){
+//                    if (g_jpPtr)
+//                        dtrace("LOOK@Job.cpp224 Volume letter was: %c",((udefrag_job_parameters *)g_jpPtr)->volume_letter);
                     g_mainFrame->SetTaskbarProgressState(TBPF_NORMAL);
-                    g_mainFrame->SetTaskbarProgressValue(
-                        g_mainFrame->m_processed, g_mainFrame->m_selected
-                    );
+//                    if (g_jpPtr)
+//                        dtrace("LOOK@Job.cpp227 Volume letter was: %c",((udefrag_job_parameters *)g_jpPtr)->volume_letter);
+                        //This is where the pointer g_jpPtr gets deleted/corrupted!!!!!!!!!!!!!!!!......WHY!?.....
+                    g_mainFrame->SetTaskbarProgressValue(g_mainFrame->m_processed, g_mainFrame->m_selected);
                 } else {
                     g_mainFrame->SetTaskbarProgressState(TBPF_NOPROGRESS);
                 }
             }
-
             // complete the job
+            TraceSource;
             PostCommandEvent(g_mainFrame,EventID_JobCompletion);
-            delete m_volumes; m_launch = false;
+            delete m_volumes;
+            m_launch = false;
         }
     }
-
     return NULL;
 }
 
@@ -332,9 +350,20 @@ void MainFrame::OnJobCompletion(wxCommandEvent& WXUNUSED(event))
     ProcessCommandEvent(EventID_SetWindowTitle);
     ProcessCommandEvent(EventID_AdjustTaskbarIconOverlay);
     SetTaskbarProgressState(TBPF_NOPROGRESS);
-
     // shutdown when requested
     if(!m_stopped) ProcessCommandEvent(EventID_Shutdown);
+    dtrace("The GUI knows a job Has Completed");
+    if (g_jpPtr){
+        //::Sleep(1000);   //needed to preserve the thread long enough so pointer survives for Fileslist.cpp to finish.
+//        dtrace("Calling udefraggui_destroy_lists for Drive: %c",((udefrag_job_parameters *)g_jpPtr)->volume_letter);
+        if (g_mainFrame->m_currentJob->pi.fragmented_files_prb){
+            dtrace("Deleting g_mainFrame->m_currentJob->pi.fragmented_files_prb");
+            winx_free(g_mainFrame->m_currentJob->pi.fragmented_files_prb);
+            //prb_destroy(g_mainFrame->m_currentJob->pi.fragmented_files_prb,NULL);
+        }
+        //udefraggui_destroy_lists(g_jpPtr);
+        delete g_jpPtr;
+    }
 }
 
 void MainFrame::SetPause()

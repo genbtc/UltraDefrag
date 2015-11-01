@@ -82,12 +82,12 @@ int winx_get_drive_type(char letter)
         etrace("invalid letter %c",letter);
         return (-1);
     }
-    
+
     /* check for the drive existence */
     link_name[4] = (wchar_t)letter;
     if(winx_query_symbolic_link(link_name,link_target,MAX_TARGET_LENGTH) < 0)
         return (-1);
-    
+
     /* check for an assignment made by subst command */
     if(wcsstr(link_target,L"\\??\\") == (wchar_t *)link_target)
         return DRIVE_ASSIGNED_BY_SUBST_COMMAND;
@@ -95,7 +95,7 @@ int winx_get_drive_type(char letter)
     /* check for classical floppies */
     if(wcsstr(link_target,L"Floppy"))
         return DRIVE_REMOVABLE;
-    
+
     /* try to define exactly which type has the specified drive */
     RtlZeroMemory(&pdi,sizeof(PROCESS_DEVICEMAP_INFORMATION));
     status = NtQueryInformationProcess(NtCurrentProcess(),
@@ -118,7 +118,7 @@ int winx_get_drive_type(char letter)
         strace(status,"cannot get device map");
         return (-1);
     }
-    
+
     /* try to define exactly again which type has the specified drive */
     /* note that the drive motor can be powered on during this check */
     hRoot = OpenRootDirectory(letter);
@@ -168,7 +168,7 @@ int winx_get_drive_type(char letter)
     default:
         break;
     }
-    
+
     /* nothing detected => drive type is unknown */
     return DRIVE_UNKNOWN;
 }
@@ -191,7 +191,7 @@ static int get_drive_geometry(HANDLE hRoot,winx_volume_information *v)
     WINX_FILE *f;
     DISK_GEOMETRY dg;
     char buffer[32];
-    
+
     /* get drive geometry */
     RtlZeroMemory(&ffs,sizeof(FILE_FS_SIZE_INFORMATION));
     status = NtQueryVolumeInformationFile(hRoot,&IoStatusBlock,&ffs,
@@ -200,7 +200,7 @@ static int get_drive_geometry(HANDLE hRoot,winx_volume_information *v)
         strace(status,"cannot get geometry of drive %c:",v->volume_letter);
         return (-1);
     }
-    
+
     /* fill all geometry related fields of the output structure */
     v->total_bytes = (ULONGLONG)ffs.TotalAllocationUnits.QuadPart * \
         ffs.SectorsPerAllocationUnit * ffs.BytesPerSector;
@@ -210,7 +210,7 @@ static int get_drive_geometry(HANDLE hRoot,winx_volume_information *v)
     v->bytes_per_cluster = ffs.SectorsPerAllocationUnit * ffs.BytesPerSector;
     v->sectors_per_cluster = ffs.SectorsPerAllocationUnit;
     v->bytes_per_sector = ffs.BytesPerSector;
-    
+
     /* optional: get device capacity */
     v->device_capacity = 0;
     f = winx_vopen(v->volume_letter);
@@ -235,7 +235,7 @@ static int get_drive_geometry(HANDLE hRoot,winx_volume_information *v)
  * @param[out] pointer to the structure receiving
  * the filesystem name.
  * @return Zero for success, negative value otherwise.
- * @note We could analyze the first sector of the 
+ * @note We could analyze the first sector of the
  * partition directly, but this method is not so swift
  * as it accesses the disk physically.
  */
@@ -250,7 +250,7 @@ static int get_filesystem_name(HANDLE hRoot,winx_volume_information *v)
 
     fs_attr_info_size = MAX_PATH * sizeof(WCHAR) + sizeof(FILE_FS_ATTRIBUTE_INFORMATION);
     pfa = winx_malloc(fs_attr_info_size);
-    
+
     RtlZeroMemory(pfa,fs_attr_info_size);
     status = NtQueryVolumeInformationFile(hRoot,&IoStatusBlock,pfa,
                 fs_attr_info_size,FileFsAttributeInformation);
@@ -259,7 +259,7 @@ static int get_filesystem_name(HANDLE hRoot,winx_volume_information *v)
         winx_free(pfa);
         return (-1);
     }
-    
+
     /*
     * pfa->FileSystemName.Buffer may be not NULL terminated
     * (theoretically), so name extraction is more tricky
@@ -287,12 +287,12 @@ static int get_ntfs_data(winx_volume_information *v)
 {
     WINX_FILE *f;
     int result;
-    
+
     /* open the volume */
     f = winx_vopen(v->volume_letter);
     if(f == NULL)
         return (-1);
-    
+
     /* get ntfs data */
     result = winx_ioctl(f,FSCTL_GET_NTFS_VOLUME_DATA,
       "get_ntfs_data: ntfs data request",NULL,0,
@@ -315,14 +315,14 @@ static void get_volume_label(HANDLE hRoot,winx_volume_information *v)
     int buffer_size;
     IO_STATUS_BLOCK IoStatusBlock;
     NTSTATUS status;
-    
+
     /* reset label */
     v->label[0] = 0;
-    
+
     /* allocate memory */
     buffer_size = (sizeof(FILE_FS_VOLUME_INFORMATION) - sizeof(wchar_t)) + (MAX_PATH + 1) * sizeof(wchar_t);
     ffvi = winx_malloc(buffer_size);
-    
+
     /* try to get actual label */
     RtlZeroMemory(ffvi,buffer_size);
     status = NtQueryVolumeInformationFile(hRoot,&IoStatusBlock,ffvi,
@@ -349,11 +349,11 @@ static void get_volume_dirty_flag(winx_volume_information *v)
     WINX_FILE *f;
     ULONG dirty_flag;
     int result;
-    
+
     /* open the volume */
     f = winx_vopen(v->volume_letter);
     if(f == NULL) return;
-    
+
     /* get dirty flag */
     result = winx_ioctl(f,FSCTL_IS_VOLUME_DIRTY,
         "get_volume_dirty_flag: dirty flag request",
@@ -378,38 +378,38 @@ static void get_volume_dirty_flag(winx_volume_information *v)
 int winx_get_volume_information(char volume_letter,winx_volume_information *v)
 {
     HANDLE hRoot;
-    
+
     /* check input data correctness */
     if(v == NULL)
         return (-1);
 
     /* ensure that it will work on w2k */
     volume_letter = winx_toupper(volume_letter);
-    
+
     /* reset all fields of the structure, except of volume_letter */
     memset(v,0,sizeof(winx_volume_information));
     v->volume_letter = volume_letter;
 
     if(volume_letter < 'A' || volume_letter > 'Z')
         return (-1);
-    
+
     /* open root directory */
     hRoot = OpenRootDirectory(volume_letter);
     if(hRoot == NULL)
         return (-1);
-    
+
     /* get drive geometry */
     if(get_drive_geometry(hRoot,v) < 0){
         NtClose(hRoot);
         return (-1);
     }
-    
+
     /* get the name of contained file system */
     if(get_filesystem_name(hRoot,v) < 0){
         NtClose(hRoot);
         return (-1);
     }
-    
+
     /* get name of the volume */
     get_volume_label(hRoot,v);
 
@@ -421,10 +421,10 @@ int winx_get_volume_information(char volume_letter,winx_volume_information *v)
                 volume_letter);
         }
     }
-    
+
     /* get dirty flag */
     get_volume_dirty_flag(v);
-    
+
     NtClose(hRoot);
     return 0;
 }
@@ -450,7 +450,7 @@ int winx_vflush(char volume_letter)
     wchar_t path[] = L"\\??\\A:";
     WINX_FILE *f;
     int result = -1;
-    
+
     path[4] = winx_toupper(volume_letter);
     f = winx_fopen(path,"r+");
     if(f){
@@ -494,20 +494,20 @@ winx_volume_region *winx_get_free_volume_regions(char volume_letter,
     ULONGLONG i, start, next, free_rgn_start;
     IO_STATUS_BLOCK iosb;
     NTSTATUS status;
-    
+
     /* ensure that it will work on w2k */
     volume_letter = winx_toupper(volume_letter);
-    
+
     /* allocate memory */
     bitmap = winx_malloc(BITMAPSIZE);
-    
+
     /* open volume */
     f = winx_vopen(volume_letter);
     if(f == NULL){
         winx_free(bitmap);
         return NULL;
     }
-    
+
     /* get volume bitmap */
     next = 0, free_rgn_start = LLINVALID;
     do {
@@ -531,7 +531,7 @@ winx_volume_region *winx_get_free_volume_regions(char volume_letter,
                 return NULL;
             }
         }
-        
+
         /* scan through the returned bitmap info */
         start = bitmap->StartLcn;
         for(i = 0; i < min(bitmap->ClustersToEndOfVol, 8 * BITMAPBYTES); i++){
@@ -555,7 +555,7 @@ winx_volume_region *winx_get_free_volume_regions(char volume_letter,
                 }
             }
         }
-        
+
         /* go to the next portion of data */
         next = bitmap->StartLcn + i;
     } while(status != STATUS_SUCCESS);
@@ -573,7 +573,7 @@ winx_volume_region *winx_get_free_volume_regions(char volume_letter,
         free_rgn_start = LLINVALID;
     }
 
-done:    
+done:
     /* cleanup */
     winx_fclose(f);
     winx_free(bitmap);
@@ -593,10 +593,10 @@ winx_volume_region *winx_add_volume_region(winx_volume_region *rlist,
         ULONGLONG lcn,ULONGLONG length)
 {
     winx_volume_region *r, *rnext, *rprev = NULL;
-    
+
     /* don't insert regions of zero length */
     if(length == 0) return rlist;
-    
+
     for(r = rlist; r; r = r->next){
         if(r->lcn > lcn){
             if(r != rlist) rprev = r->prev;
@@ -620,7 +620,7 @@ winx_volume_region *winx_add_volume_region(winx_volume_region *rlist,
             return rlist;
         }
     }
-    
+
     /* hits the new region the next one? */
     if(rlist){
         if(rprev == NULL) rnext = rlist;
@@ -631,7 +631,7 @@ winx_volume_region *winx_add_volume_region(winx_volume_region *rlist,
             return rlist;
         }
     }
-    
+
     r = (winx_volume_region *)winx_list_insert((list_entry **)(void *)&rlist,
         (list_entry *)rprev,sizeof(winx_volume_region));
     r->lcn = lcn;

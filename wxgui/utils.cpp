@@ -452,4 +452,15 @@ char* Utils::wxStringToChar(wxString input)
 //wxString eh = huh->GetValue();
 //const wxCharBuffer eheheh = eh.ToAscii();
 }
+void Utils::DrawSingleRectangleBorder(HDC m_cacheDC,int xblock,int yblock,int line_width,int cell_size,HBRUSH brush,HBRUSH infill){
+    int x = xblock*cell_size;
+    int y = yblock*cell_size;
+    int w,r;
+    w = r = line_width;
+    for (int q=0;q <=1; q++,r--){
+        RECT rc={x+q*w,y+q*w,x+cell_size+w*r,y+cell_size+w*r};
+        ::FillRect(m_cacheDC,&rc,brush);
+        brush = infill;
+    }
+}
 /** @} */

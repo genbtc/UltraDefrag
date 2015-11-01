@@ -85,6 +85,7 @@ void MainFrame::OnDebugLog(wxCommandEvent& WXUNUSED(event))
     }
 }
 
+
 void MainFrame::OnDebugSend(wxCommandEvent& WXUNUSED(event))
 {
     wxString url(wxT("http://sourceforge.net/p/ultradefrag/bugs/"));
