@@ -154,8 +154,7 @@ char *udefrag_get_error_description(int error_code);
 
 int udefrag_set_log_file_path(void);
 
-void udefraggui_destroy_lists(PVOID jpPtr);
-
+void gui_fileslist_finished(void);
 #if defined(__cplusplus)
 }
 #endif

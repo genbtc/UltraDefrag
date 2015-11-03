@@ -54,7 +54,7 @@ int winx_init_library(void)
 }
 
 /**
- * @brief Releases resources 
+ * @brief Releases resources
  * acquired by zenwinx library.
  * @note Call it ONLY if you know
  * what you're doing.
@@ -95,7 +95,7 @@ static void print_post_scriptum(char *msg,NTSTATUS Status)
 void winx_exit(int exit_code)
 {
     NTSTATUS Status;
-    
+
     kb_close();
     winx_flush_dbg_log(0);
     Status = NtTerminateProcess(NtCurrentProcess(),exit_code);
@@ -107,13 +107,13 @@ void winx_exit(int exit_code)
 /**
  * @brief Reboots the computer.
  * @note If SE_SHUTDOWN privilege adjusting fails
- * then the computer will not be rebooted and the program 
+ * then the computer will not be rebooted and the program
  * will continue the execution after this call.
  */
 void winx_reboot(void)
 {
     NTSTATUS Status;
-    
+
     kb_close();
     MarkWindowsBootAsSuccessful();
     (void)winx_enable_privilege(SE_SHUTDOWN_PRIVILEGE);
@@ -127,13 +127,13 @@ void winx_reboot(void)
 /**
  * @brief Shuts down the computer.
  * @note If SE_SHUTDOWN privilege adjusting fails
- * then the computer will not be shut down and the program 
+ * then the computer will not be shut down and the program
  * will continue the execution after this call.
  */
 void winx_shutdown(void)
 {
     NTSTATUS Status;
-    
+
     kb_close();
     MarkWindowsBootAsSuccessful();
     (void)winx_enable_privilege(SE_SHUTDOWN_PRIVILEGE);

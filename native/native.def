@@ -12,7 +12,7 @@ EXPORTS
     udefrag_start_job
     udefrag_unload_library
     udefrag_validate_volume
-    udefraggui_destroy_lists
+    gui_fileslist_finished
     
     prb_create
     prb_copy
@@ -151,4 +151,8 @@ EXPORTS
     winx_wcsupr
     winx_windows_in_safe_mode
     winx_xtime
+    
+    winx_filetime2timefields
+    winx_timefields2winxtime
+    winx_filetime2winxtime
     

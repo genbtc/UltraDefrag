@@ -112,7 +112,7 @@ void udefrag_unload_library(void)
  */
 static void deliver_progress_info(udefrag_job_parameters *jp,int completion_status)
 {
-    //TraceEnter;
+    //
     udefrag_progress_info pi;
     double x, y;
     int i, k, index, p1, p2;
@@ -284,9 +284,9 @@ static DWORD WINAPI start_job(LPVOID p)
     if(jp->pi.completion_status == 0)
         jp->pi.completion_status ++; /* success */
 
-    winx_exit_thread(0); /* 8k/12k memory leak here? */
+    winx_exit_thread(0); /* 8k/12k memory leak here?   ???whocares... */
     return 0;
-    //Goes back to udefrag_start_job@line401
+    //Goes back to udefrag_start_job@line422
 }
 
 /**
@@ -295,38 +295,45 @@ static DWORD WINAPI start_job(LPVOID p)
  */
 void destroy_lists(udefrag_job_parameters *jp)
 {
-    ULONGLONG start = winx_xtime();
+    ULONGLONG start,end;
+    start = winx_xtime();
     dtrace("Destroying list of free regions, list of files and list of fragmented files...");
     dtrace("Volume letter was: %c",jp->volume_letter);
-    winx_scan_disk_release(jp->filelist);
-    winx_release_free_volume_regions(jp->free_regions);
     if(jp->fragmented_files){
         dtrace("Deleting jp->fragmented_files");
-        winx_free(jp->fragmented_files);
-        //prb_destroy(jp->fragmented_files,NULL);
+        prb_destroy(jp->fragmented_files,NULL);
     }
-    if(jp->pi.fragmented_files_prb){
-        dtrace("Deleting jp->pi.fragmented_files_prb");
-        winx_free(jp->pi.fragmented_files_prb);
-        // prb_destroy(jp->pi.fragmented_files_prb,NULL);
-    }
-    ULONGLONG end = winx_xtime();
+    winx_scan_disk_release(jp->filelist);
+    winx_release_free_volume_regions(jp->free_regions);
+    end = winx_xtime();
     dtrace("The list-deletion took: %d msec.",end-start);
 }
 
-static DWORD WINAPI wait_delete_lists(LPVOID p)
+BOOL gui_finished = FALSE;
+BOOL wait_delete_thread_finished = FALSE;
+
+static DWORD WINAPI wait_delete_lists_thread(LPVOID p)
 {
-    winx_sleep(4000);
+    //not sure why deletion of lists fails sometimes.
+    //maybe when the start_job thread exits, pointer gets corrupted it seems?
+    //or there is some kind of battle between auto-garbage collection and this.
+    while(!gui_finished){
+        winx_sleep(333);
+    }
     destroy_lists((udefrag_job_parameters *)p);
-    winx_exit_thread(0); /* 8k/12k memory leak here? */
+    wait_delete_thread_finished = TRUE;
+    winx_exit_thread(0);
     return 0;
 }
 
+
 /**
  * @brief Passthrough so the GUI can destroy the lists.
+ * Sentinel/Flag so the GUI can say when its done
+ * so the job thread can cleanup and exit.
  */
-void udefraggui_destroy_lists(PVOID jpPtr){
-    destroy_lists((udefrag_job_parameters *)jpPtr);
+void gui_fileslist_finished(void){
+    gui_finished = TRUE;
 }
 
 /**
@@ -461,9 +468,12 @@ done:
         result = 0;
     else if(jp.pi.completion_status < 0)
         result = jp.pi.completion_status;
-    winx_create_thread(wait_delete_lists,(PVOID)&jp);
-    winx_sleep(5000);
-    TraceExit;
+    winx_create_thread(wait_delete_lists_thread,(PVOID)&jp);
+    while(!gui_finished || !wait_delete_thread_finished){
+        winx_sleep(500);
+    }
+    gui_finished = FALSE;
+    wait_delete_thread_finished = FALSE;
     return result;
 }
 

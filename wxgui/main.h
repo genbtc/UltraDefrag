@@ -20,17 +20,20 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
+
 #ifndef _UDEFRAG_GUI_MAIN_H_
 #define _UDEFRAG_GUI_MAIN_H_
 
 // =======================================================================
 //                               Headers
 // =======================================================================
+#include <string>
 
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include <wx/wx.h>
+    #include <wx/wx.h>
+	#include <wx/frame.h>
 #endif
 
 #include <wx/artprov.h>
@@ -59,6 +62,7 @@
 #include <wx/grid.h>//genbtc
 #include <wx/sizer.h>//genbtc
 #include <wx/encconv.h> //genbtc for encodings
+#include <wx/menu.h>//genbtc (right-click menu)
 
 #if wxUSE_UNICODE
 #define wxCharStringFmtSpec "%ls"
@@ -214,8 +218,8 @@ enum {
     EventID_LocaleChange
 };
 
-#define MAIN_WINDOW_DEFAULT_WIDTH  1280
-#define MAIN_WINDOW_DEFAULT_HEIGHT 720
+#define MAIN_WINDOW_DEFAULT_WIDTH  900
+#define MAIN_WINDOW_DEFAULT_HEIGHT 600
 #define MAIN_WINDOW_MIN_WIDTH      640
 #define MAIN_WINDOW_MIN_HEIGHT     480
 #define DEFAULT_LIST_HEIGHT        133
@@ -426,6 +430,7 @@ public:
     DECLARE_EVENT_TABLE()
 };
 
+#define FilesListRightClickMenuFrm_STYLE wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX
 //genBTC FilesList.cpp
 class FilesList: public wxListView {
 public:
@@ -436,10 +441,15 @@ public:
 
     void OnKeyDown(wxKeyEvent& event);
     void OnKeyUp(wxKeyEvent& event);
-    void OnMouse(wxMouseEvent& event);
+    void OnMouseLDClick(wxMouseEvent& event);
+    void OnMouseRClick(wxMouseEvent& event);
     void OnSelectionChange(wxListEvent& event);
-
+    void RClickMoveFile(wxCommandEvent& event);
+    void InitMembers();
     DECLARE_EVENT_TABLE()
+private:
+    wxMenu *WxPopupMenu1;
+    long currentlyselected;
 };
 
 class ClusterMap: public wxWindow {
@@ -660,6 +670,7 @@ private:
     UpgradeThread   *m_upgradeThread;
 
     DECLARE_EVENT_TABLE()
+
 };
 
 class Utils {
@@ -683,7 +694,9 @@ public:
     static wxString ConvertChartoWxString(char* input);
     static char* wxStringToChar(wxString input);
     static void DrawSingleRectangleBorder(HDC m_cacheDC,int xblock,int yblock,int line_width,int cell_size,HBRUSH border,HBRUSH infill);
+    static void createDirectoryRecursively(const std::wstring &directory);
 };
+
 
 /* flags for Utils::ShellExec */
 #define SHELLEX_SILENT  0x1
@@ -701,3 +714,8 @@ extern HANDLE g_synchEvent;
 extern PVOID g_jpPtr;
 
 #endif /* _UDEFRAG_GUI_MAIN_H_ */
+
+#define WINDOWS_TICK 10000000
+#define SEC_TO_UNIX_EPOCH 11644473600LL
+
+unsigned WindowsTickToUnixSeconds(ULONGLONG windowsTicks);

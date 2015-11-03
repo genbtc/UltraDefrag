@@ -551,6 +551,8 @@ void winx_shutdown(void);
 /* Red-black trees with parent pointers */
 #include "prb.h"
 
+int winx_filetime2winxtime(ULONGLONG input,winx_time *output);//genBTC
+
 #if defined(__cplusplus)
 }
 #endif

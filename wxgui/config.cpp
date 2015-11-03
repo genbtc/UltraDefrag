@@ -89,8 +89,8 @@ void MainFrame::ReadAppConfiguration()
     );
 
     double r[LIST_COLUMNS] = {
-        110.0/615, 110.0/615, 110.0/615,
-        110.0/615, 110.0/615, 65.0/615
+        250.0/900, 280.0/900, 108.0/900,
+        98.0/900, 97.0/900, 67.0/900
     };
     for(int i = 0; i < LIST_COLUMNS; i++){
         cfg->Read(wxString::Format(wxT("/DrivesList/width%d"),i),

@@ -226,9 +226,9 @@ void MainFrame::OnLocaleChange(wxCommandEvent& event)
     item.SetText(_("Filename"));      m_filesList->SetColumn(0,item);
     item.SetText(_("Fragments"));     m_filesList->SetColumn(1,item);
     item.SetText(_("Size"));          m_filesList->SetColumn(2,item);
-    item.SetText(_("Comment"));       m_filesList->SetColumn(3,item);
+    item.SetText(_("Info"));          m_filesList->SetColumn(3,item);
     item.SetText(_("Status"));        m_filesList->SetColumn(4,item);
-    item.SetText(_(""));              m_filesList->SetColumn(5,item);
+    item.SetText(_("Last Modified")); m_filesList->SetColumn(5,item);
 
     // set mono-space font for the list unless Burmese translation is selected
     if(g_locale->GetCanonicalName().Left(2) != wxT("my")){

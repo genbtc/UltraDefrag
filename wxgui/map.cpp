@@ -288,9 +288,9 @@ void ClusterMap::OnPaint(wxPaintEvent& WXUNUSED(event))
 
 void MainFrame::RedrawMap(wxCommandEvent& WXUNUSED(event))
 {
-    TraceEnter;
+
     m_cMap->Refresh();
-    TraceExit;
+
 }
 
 /** @} */

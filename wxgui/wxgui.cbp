@@ -36,6 +36,7 @@
 				<Option projectLibDirsRelation="0" />
 				<Compiler>
 					<Add option="/MT" />
+					<Add option="/W3" />
 					<Add option="/Zi" />
 					<Add option="/DNDEBUG" />
 				</Compiler>
@@ -107,5 +108,11 @@
 		<Unit filename="wxgui.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

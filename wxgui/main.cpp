@@ -345,15 +345,14 @@ MainFrame::MainFrame()
 	bSizer3 = new wxBoxSizer( wxVERTICAL );
 	bSizer3->Add( m_filesList, 1, wxEXPAND, 1 );
 	m_panel2->SetSizer( bSizer3 );
+    bSizer3->Fit( m_panel2 );
 
-	bSizer3->Fit( m_panel2 );
 	//Finish Tab 2 - Add the Panel2(page2list+sizer3) to the notebook.
 	m_notebook1->AddPage( m_panel2, wxT("Files"), false );
 
     //Finish Notebook & initialize
 	bSizer1->Add( m_notebook1, 1, wxEXPAND, 1 );
 	this->SetSizer( bSizer1 );
-
 
     // check the boot time defragmenter presence
     wxFileName btdFile(wxT("%SystemRoot%\\system32\\defrag_native.exe"));
@@ -621,3 +620,14 @@ void MainFrame::SelectAll(wxCommandEvent& WXUNUSED(event))
 }
 
 /** @} */
+unsigned WindowsTickToUnixSeconds(ULONGLONG windowsTicks)
+{
+   ULONGLONG secs;
+   time_t t;
+
+   secs = (windowsTicks / WINDOWS_TICK - SEC_TO_UNIX_EPOCH);
+   t = (time_t) secs;
+   if (secs != (ULONGLONG) t)    // checks for truncation/overflow/underflow
+      return (time_t) -1;   // value not representable as a POSIX time
+   return t;
+}

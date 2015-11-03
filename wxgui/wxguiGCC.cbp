@@ -30,12 +30,9 @@
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
-					<Add option="-march=corei7" />
+					<Add option="-march=prescott" />
 					<Add option="-O3" />
 					<Add option="-Wall" />
-					<Add option="-DWIN32" />
-					<Add option="-D_MBCS" />
-					<Add option="-D_CRT_SECURE_NO_WARNINGS" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -95,6 +92,7 @@
 		<Unit filename="taskbar.cpp" />
 		<Unit filename="toolbar.cpp" />
 		<Unit filename="tray.cpp" />
+		<Unit filename="udefrag-internals_flags.h" />
 		<Unit filename="upgrade.cpp" />
 		<Unit filename="utils.cpp" />
 		<Unit filename="vollist.cpp" />

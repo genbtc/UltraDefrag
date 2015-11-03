@@ -59,14 +59,13 @@ void MainFrame::InitVolList()
         }
     }
 
-    //account for the borders
-    //int border = wxSystemSettings::GetMetric(wxSYS_BORDER_X);//genBTC
-
     // adjust widths so all the columns will fit to the window
-    int width = m_vList->GetClientSize().GetWidth();// - border*4;//genBTC
-    int lastColumnWidth = width;
+    int width = this->GetClientSize().GetWidth();
+    int borderx = wxSystemSettings::GetMetric(wxSYS_BORDER_X);
+    int lastColumnWidth = width - borderx*4;
 
     dtrace("INIT - client width ......... %d", width);
+    dtrace("INIT - borderx width ......... %d", borderx);
 
     int format[] = {
         wxLIST_FORMAT_LEFT, wxLIST_FORMAT_LEFT,
@@ -115,14 +114,15 @@ void MainFrame::InitVolList()
 BEGIN_EVENT_TABLE(DrivesList, wxListView)
     EVT_KEY_DOWN(DrivesList::OnKeyDown)
     EVT_KEY_UP(DrivesList::OnKeyUp)
-    EVT_MOUSE_EVENTS(DrivesList::OnMouse)
+    EVT_LEFT_DCLICK(DrivesList::OnMouse)
     EVT_LIST_ITEM_SELECTED(wxID_ANY,DrivesList::OnSelectionChange)
     EVT_LIST_ITEM_DESELECTED(wxID_ANY,DrivesList::OnSelectionChange)
 END_EVENT_TABLE()
 
 void DrivesList::OnKeyDown(wxKeyEvent& event)
 {
-    if(!g_mainFrame->m_busy) event.Skip();
+    if(!g_mainFrame->m_busy)
+        event.Skip();
 }
 
 void DrivesList::OnKeyUp(wxKeyEvent& event)
@@ -151,16 +151,13 @@ void DrivesList::OnKeyUp(wxKeyEvent& event)
 void DrivesList::OnMouse(wxMouseEvent& event)
 {
     if(!g_mainFrame->m_busy){
-        // left double click starts default action
-        if(event.GetEventType() == wxEVT_LEFT_DCLICK)
-            PostCommandEvent(g_mainFrame,EventID_DefaultAction);
+        PostCommandEvent(g_mainFrame,EventID_DefaultAction);
         event.Skip();
     }
 }
 
 void DrivesList::OnSelectionChange(wxListEvent& event)
 {
-    TraceEnter;
     long i = GetFirstSelected();
     if(i != -1){
         char letter = (char)GetItemText(i)[0];
@@ -192,14 +189,12 @@ void MainFrame::AdjustListColumns(wxCommandEvent& event)
         for(int i = 0; i < LIST_COLUMNS; i++)
             m_r[i] = (double)m_vList->GetColumnWidth(i) / (double)cwidth;
     }
-//genBTC - this stops dynamic column adjusting when you resize the windowframe
-//     else{
+//    else{
 //        return;
-//     }
-
-    int lastColumnWidth = width;
+//    }
 
     int border = wxSystemSettings::GetMetric(wxSYS_BORDER_X);
+    int lastColumnWidth = width - border*4;
 
     dtrace("border width ......... %d", border);
     dtrace("client width ......... %d", width);
@@ -263,7 +258,6 @@ void MainFrame::AdjustListHeight(wxCommandEvent& WXUNUSED(event))
 
 void MainFrame::OnSplitChanged(wxSplitterEvent& event)
 {
-    TraceEnter;
     PostCommandEvent(this,EventID_AdjustListHeight);
     PostCommandEvent(this,EventID_AdjustListColumns);
     PostCommandEvent(this,EventID_RedrawMap);
@@ -296,7 +290,7 @@ void MainFrame::OnListSize(wxSizeEvent& event)
 
 void *ListThread::Entry()
 {
-    TraceEnter;
+
     while(!g_mainFrame->CheckForTermination(200)){
         if(m_rescan){
             dtrace("About to repopulate list from ListThread Scanner in vollist.cpp");
@@ -310,7 +304,6 @@ void *ListThread::Entry()
 
 void MainFrame::UpdateVolumeInformation(wxCommandEvent& event)
 {
-    TraceEnter;
     int index = event.GetInt();
     volume_info *v = (volume_info *)event.GetClientData();
 
@@ -354,12 +347,11 @@ void MainFrame::UpdateVolumeInformation(wxCommandEvent& event)
     string.Printf(wxT("%u %%"),p); m_vList->SetItem(index,5,string);
 
     delete v;
-    TraceExit;
 }
 
 void MainFrame::UpdateVolumeStatus(wxCommandEvent& event)
 {
-    TraceEnter;
+
     char letter = (char)event.GetInt();
     JobsCacheEntry *cacheEntry = m_jobsCache[(int)letter];
     if(!cacheEntry) return;
@@ -426,7 +418,7 @@ void MainFrame::UpdateVolumeStatus(wxCommandEvent& event)
 
 void MainFrame::PopulateList(wxCommandEvent& event)
 {
-    TraceEnter;//should only happen once.
+    //should only happen once.
     volume_info *v = ::udefrag_get_vollist(m_skipRem);
     if(!v) return;
 

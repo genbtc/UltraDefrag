@@ -726,7 +726,7 @@ static void redraw_well_known_locked_files(udefrag_job_parameters *jp)
     ULONGLONG time;
     ULONGLONG n = 0;
 
-    winx_dbg_print_header(0,0,I"search for well known locked files...");
+    winx_dbg_print_header(0,0,I"searching for well known locked files...");
     time = winx_xtime();
 
     for(f = jp->filelist; f; f = f->next){
@@ -734,9 +734,9 @@ static void redraw_well_known_locked_files(udefrag_job_parameters *jp)
             if(is_well_known_locked_file(f,jp)){
                 if(!is_file_locked(f,jp)){
                     /* possibility of this case should be reduced */
-                    itrace("false detection: %ws",f->path);
+                    itrace("file was not locked: %ws",f->path);
                 } else {
-                    itrace("true detection:  %ws",f->path);
+                    itrace("locked file detected:  %ws",f->path);
                     n ++;
                 }
             }
