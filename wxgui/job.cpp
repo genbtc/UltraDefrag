@@ -150,6 +150,8 @@ void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
         //event.SetClientData((void *)cacheEntry);
         wxPostEvent(g_mainFrame,event);
         dtrace("Successfully sent Fragmented Files list over to MainFrame::FilesPopulateList()");
+        event.SetId(EventID_UpdateVolumeStatus);
+        wxPostEvent(g_mainFrame,event);
         return;
     }
     //dtrace("Updating Volume Status,Redrawing Map, and Updating StatusBar.");

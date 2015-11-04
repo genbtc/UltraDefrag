@@ -50,7 +50,7 @@ enum
     ID_MNU_MENUITEMONE_1003 = 1003,
     ID_MNU_MENUITEMTWO_1004 = 1004,
     ID_MNU_YETANOTHERMENUITEM_1005 = 1005,
-    ID_MNU_YETANOTHERMENUITEM_1006 = 1006,
+    ID_RPOPMENU_MOVE_FILE_1006 = 1006,
 
     ID_DUMMY_VALUE_ //don't remove this value unless you have other enum values
 };
@@ -76,12 +76,11 @@ void MainFrame::InitFilesList()
 
     // adjust widths so all the columns will fit to the window
     //int width = m_filesList->GetClientSize().GetWidth();
-    int width = m_vList->GetClientSize().GetWidth();
-    //account for the borders
-    int border = wxSystemSettings::GetMetric(wxSYS_BORDER_X);
-    int lastColumnWidth = width - border*4;
+    int borderx = wxSystemSettings::GetMetric(wxSYS_BORDER_X);
+    int width = this->GetClientSize().GetWidth() - borderx * 8;
+    int lastColumnWidth = width;
     dtrace("INIT - client width ......... %d", width);
-    dtrace("INIT - border width ......... %d", border);
+    dtrace("INIT - border width ......... %d", borderx);
 
     int format[] = {
         wxLIST_FORMAT_LEFT, wxLIST_FORMAT_LEFT,
@@ -124,7 +123,7 @@ void MainFrame::InitFilesList()
 
     // ensure that the list will cover integral number of items
     m_filesListHeight = 0xFFFFFFFF; // prevent expansion of the list
-    m_filesList->InsertItem(0,wxT("hi"),0);
+    //m_filesList->InsertItem(0,wxT("hi"),0);
     ProcessCommandEvent(EventID_AdjustFilesListHeight);
 
     Connect(wxEVT_SIZE,wxSizeEventHandler(MainFrame::FilesOnListSize),NULL,this);
@@ -143,7 +142,7 @@ void MainFrame::InitFilesList()
  * Disk: Force a dismount of the volume (by removing the drive letter or etc.) so you can re-order all the files with no chance of unexpected changes.
  * GUI: Make currently worked on sector be highlighted in green, or maybe even two colors (read/write).
  * GUI: Click files and have them display which blocks its occupying in the clustermap (later add support for multiple-selected-files)
- *
+ *       (might be hard when the block or cluster map has been already freed up, and only the DC/BMP is left).
  *
  *
  *
@@ -153,7 +152,7 @@ void FilesList::InitMembers(){
 	WxPopupMenu1->Append(ID_MNU_MENUITEMONE_1003, wxT("Defragment Now"), wxT(""), wxITEM_NORMAL);
 	WxPopupMenu1->Append(ID_MNU_MENUITEMTWO_1004, wxT("Open in Explorer"), wxT(""), wxITEM_NORMAL);
 	WxPopupMenu1->Append(ID_MNU_YETANOTHERMENUITEM_1005, wxT("Copy path to clipboard..."), wxT(""), wxITEM_NORMAL);
-	WxPopupMenu1->Append(ID_MNU_YETANOTHERMENUITEM_1006, wxT("Move file from E: to C:..."), wxT(""), wxITEM_NORMAL);
+	WxPopupMenu1->Append(ID_RPOPMENU_MOVE_FILE_1006, wxT("Move file from E: to C:..."), wxT(""), wxITEM_NORMAL);
 
 }
 //=======================================================================
@@ -182,7 +181,7 @@ BEGIN_EVENT_TABLE(FilesList, wxListView)
     EVT_RIGHT_DOWN(FilesList::OnMouseRClick)
     EVT_LIST_ITEM_SELECTED(wxID_ANY,FilesList::OnSelectionChange)
     EVT_LIST_ITEM_DESELECTED(wxID_ANY,FilesList::OnSelectionChange)
-    EVT_MENU(ID_MNU_YETANOTHERMENUITEM_1006,FilesList::RClickMoveFile)
+    EVT_MENU(ID_RPOPMENU_MOVE_FILE_1006,FilesList::RClickMoveFile)
 END_EVENT_TABLE()
 
 
@@ -195,11 +194,11 @@ void FilesList::RClickMoveFile(wxCommandEvent& event)
     GetItem(theitem);
     wxString itemtext = theitem.m_text;
 
-    const wchar_t *srcfilename = (const wchar_t *)wcsdup(itemtext.wc_str());
+    wchar_t *srcfilename = wcsdup(itemtext.wc_str());
     dtrace("srcfilename was %ws",srcfilename);
 
     itemtext.Replace(wxT("E:\\"),wxT("C:\\"));
-    const wchar_t *dstfilename = (const wchar_t *)wcsdup(itemtext.wc_str());
+    wchar_t *dstfilename = wcsdup(itemtext.wc_str());
     dtrace("dstfilename was %ws",dstfilename);
 
     const wchar_t *dstpath = itemtext.wc_str();
@@ -209,8 +208,8 @@ void FilesList::RClickMoveFile(wxCommandEvent& event)
     Utils::createDirectoryRecursively(dstpath);
 
     CopyFile(srcfilename,dstfilename,1);
-    winx_free(srcfilename); //since wcsdup calls malloc
-    winx_free(dstfilename); // ^^^
+//    winx_free(srcfilename); //since wcsdup calls malloc
+//    winx_free(dstfilename); // ^^^
     //works.
 }
 
@@ -290,13 +289,13 @@ void MainFrame::FilesAdjustListColumns(wxCommandEvent& event)
     if(width == 0)
         width = m_filesList->GetClientSize().GetWidth();
 
+    //int border = wxSystemSettings::GetMetric(wxSYS_BORDER_X);
 
-    int border = wxSystemSettings::GetMetric(wxSYS_BORDER_Y);
-
-    dtrace("FilesList border width ......... %d", border);
+    //dtrace("FilesList border width ......... %d", border);
     dtrace("FilesList client width ......... %d", width);
 
-    int firstwidth = width - border*4;
+    //int firstwidth = width - border*2;
+    int firstwidth = width;
     for(int i = LIST_COLUMNS - 1; i > 0; i--){
         firstwidth -= m_filesList->GetColumnWidth(i);
     }
@@ -364,17 +363,21 @@ void MainFrame::FilesOnListSize(wxSizeEvent& event)
 {
     int old_width = m_filesList->GetClientSize().GetWidth();
     int new_width = this->GetClientSize().GetWidth();
-    new_width -= 2 * wxSystemSettings::GetMetric(wxSYS_EDGE_X);
+    new_width -= 4 * wxSystemSettings::GetMetric(wxSYS_EDGE_X);
     if(m_filesList->GetCountPerPage() < m_filesList->GetItemCount())
         new_width -= wxSystemSettings::GetMetric(wxSYS_VSCROLL_X);
 
     // scale list columns; avoid horizontal scrollbar appearance
     wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED,EventID_AdjustFilesListColumns);
     evt.SetInt(new_width);
-    if(new_width <= old_width)
+    if(new_width < old_width){
         ProcessEvent(evt);
-    else
+        //dtrace("Files new_width %d was < %d", new_width,old_width);
+    }
+    else if(new_width > old_width){
         wxPostEvent(this,evt);
+        //dtrace("Files new_width %d was > %d", new_width,old_width);
+    }
 
     event.Skip();
 }
@@ -409,7 +412,6 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
         file = (winx_file_info *)prb_t_first(&trav,cacheEntry.pi.fragmented_files_prb);
         if (!file){
             etrace("Fragmented Files List File Not Found.");
-            return;
         }
 
         while (file){
@@ -474,11 +476,11 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
     }
     if (currentitem > 0)
         dtrace("Successfully finished with the Populate List Loop");
-
     else
         dtrace("Populate List Loop Did not run, no files were added.");
+
     PostCommandEvent(this,EventID_AdjustFilesListColumns);
-    gui_fileslist_finished();
+    gui_fileslist_finished();   //signal to the job-thread that the GUI has finished processing files, so it can clear the lists and exit.
 }
 
 void MainFrame::FilesAnalyzedUpdateFilesList (wxCommandEvent& event)

@@ -222,7 +222,7 @@ enum {
 #define MAIN_WINDOW_DEFAULT_HEIGHT 600
 #define MAIN_WINDOW_MIN_WIDTH      640
 #define MAIN_WINDOW_MIN_HEIGHT     480
-#define DEFAULT_LIST_HEIGHT        133
+#define DEFAULT_LIST_HEIGHT        145
 #define MIN_PANEL_HEIGHT            42
 
 // dialog layout constants

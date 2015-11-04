@@ -59,8 +59,14 @@
 
 #include "udefrag-internals.h"
 
+//Globals
+//-----------------------------------------------
 HANDLE hMutex = NULL;
 
+//see functions below for reason/meanings:
+BOOL gui_finished = FALSE;      //related to gui_fileslist_finished()
+BOOL wait_delete_thread_finished = FALSE; //related to wait_delete_lists_thread()
+//------------------------------------------------
 /**
  * @brief Initializes udefrag library.
  * @details This routine needs to be called
@@ -96,7 +102,6 @@ void udefrag_unload_library(void)
 {
     /* allow installation/upgrade */
     winx_destroy_mutex(hMutex);
-
     winx_unload_library();
 }
 
@@ -206,6 +211,7 @@ static int killer(void *p)
     winx_dbg_print_header(0,0,I"*");
     winx_dbg_print_header(0x20,0,I"termination requested by caller");
     winx_dbg_print_header(0,0,I"*");
+    gui_finished = TRUE;
     return 1;
 }
 
@@ -308,9 +314,6 @@ void destroy_lists(udefrag_job_parameters *jp)
     end = winx_xtime();
     dtrace("The list-deletion took: %d msec.",end-start);
 }
-
-BOOL gui_finished = FALSE;
-BOOL wait_delete_thread_finished = FALSE;
 
 static DWORD WINAPI wait_delete_lists_thread(LPVOID p)
 {

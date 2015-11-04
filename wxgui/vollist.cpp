@@ -60,10 +60,9 @@ void MainFrame::InitVolList()
     }
 
     // adjust widths so all the columns will fit to the window
-    int width = this->GetClientSize().GetWidth();
     int borderx = wxSystemSettings::GetMetric(wxSYS_BORDER_X);
-    int lastColumnWidth = width - borderx*4;
-
+    int width = this->GetClientSize().GetWidth() - borderx * 8;
+    int lastColumnWidth = width;
     dtrace("INIT - client width ......... %d", width);
     dtrace("INIT - borderx width ......... %d", borderx);
 
@@ -174,7 +173,8 @@ void DrivesList::OnSelectionChange(wxListEvent& event)
 void MainFrame::AdjustListColumns(wxCommandEvent& event)
 {
     int width = event.GetInt();
-    if(width == 0) width = m_vList->GetClientSize().GetWidth();
+    if(width == 0)
+        width = m_vList->GetClientSize().GetWidth();
 
     // get current column widths, since user could have changed them
     int cwidth = 0; bool changed = false;
@@ -186,17 +186,15 @@ void MainFrame::AdjustListColumns(wxCommandEvent& event)
     }
 
     if(changed){
+        dtrace("DETECTED COLUMNS CHANGED!");
         for(int i = 0; i < LIST_COLUMNS; i++)
             m_r[i] = (double)m_vList->GetColumnWidth(i) / (double)cwidth;
-    }
-//    else{
-//        return;
-//    }
+    }else if (cwidth == width)
+        return;
 
-    int border = wxSystemSettings::GetMetric(wxSYS_BORDER_X);
-    int lastColumnWidth = width - border*4;
+    int lastColumnWidth = width;
 
-    dtrace("border width ......... %d", border);
+    //dtrace("border width ......... %d", border);
     dtrace("client width ......... %d", width);
     dtrace("total column width ... %d", cwidth);
 
@@ -269,17 +267,21 @@ void MainFrame::OnListSize(wxSizeEvent& event)
 {
     int old_width = m_vList->GetClientSize().GetWidth();
     int new_width = this->GetClientSize().GetWidth();
-    new_width -= 2 * wxSystemSettings::GetMetric(wxSYS_EDGE_X);
+    new_width -= 4 * wxSystemSettings::GetMetric(wxSYS_EDGE_X);
     if(m_vList->GetCountPerPage() < m_vList->GetItemCount())
         new_width -= wxSystemSettings::GetMetric(wxSYS_VSCROLL_X);
 
     // scale list columns; avoid horizontal scrollbar appearance
     wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED,EventID_AdjustListColumns);
     evt.SetInt(new_width);
-    if(new_width <= old_width)
+    if(new_width < old_width){
         ProcessEvent(evt);
-    else
+        //dtrace("Vols. new_width %d was < %d", new_width,old_width);
+    }
+    else if(new_width > old_width){
         wxPostEvent(this,evt);
+        //dtrace("Vols. new_width %d was > %d", new_width,old_width);
+    }
 
     event.Skip();
 }
