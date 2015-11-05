@@ -1,0 +1,10 @@
+-- this is the "Hibernate for Windows" program build options
+name        = "hibernate"
+target_type = "console"
+
+-- list of directories containing headers the program relies on
+includes = { "include", "lua5.1" }
+
+libs = { "kernel32", "msvcrt", "advapi32", "powrprof" }
+adlibs = { "$(UDEFRAG_LIB_PATH)\\zenwinx" }
+umentry = "main"

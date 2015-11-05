@@ -1,0 +1,16 @@
+\.svn
+\CVS
+\bin
+\lib
+\obj
+\pre-release
+\src_package
+\doxy-doc
+.7z
+.bk
+\thumbs.db
+.exe
+.com
+\internal-doc
+.layout
+.depend
