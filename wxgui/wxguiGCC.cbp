@@ -33,9 +33,12 @@
 					<Add option="-march=prescott" />
 					<Add option="-O3" />
 					<Add option="-Wall" />
+					<Add option="-D_M_IX86" />
+					<Add option="-DUNICODE" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add directory="C:/Program Files (x86)/CodeBlocks/MinGW/lib" />
 				</Linker>
 			</Target>
 		</Build>
@@ -47,6 +50,7 @@
 			<Add directory="$(WXWIDGETSDIR)/include" />
 		</ResourceCompiler>
 		<Linker>
+			<Add library="libshell32.a" />
 			<Add library="libnativegcc.dll.a" />
 			<Add library="liblua5.1a.dll.a" />
 			<Add library="libwxmsw28u_adv.a" />
@@ -60,7 +64,6 @@
 			<Add library="libwinspool.a" />
 			<Add library="libcomdlg32.a" />
 			<Add library="libadvapi32.a" />
-			<Add library="libshell32.a" />
 			<Add library="libole32.a" />
 			<Add library="liboleaut32.a" />
 			<Add library="libuuid.a" />
@@ -70,10 +73,8 @@
 			<Add library="libodbc32.a" />
 			<Add directory="../lib" />
 			<Add directory="$(WXWIDGETSDIR)/lib/gcc_libmingw-X86" />
+			<Add directory="C:/Program Files (x86)/CodeBlocks/MinGW/lib" />
 		</Linker>
-		<ExtraCommands>
-			<Add before="mingw32-make --directory C:\Software\udefrag\native\ -f Makefile.mingw" />
-		</ExtraCommands>
 		<Unit filename="about.cpp" />
 		<Unit filename="btd.cpp" />
 		<Unit filename="config.cpp" />

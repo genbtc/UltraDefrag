@@ -1,17 +1,17 @@
 PROJECT = nativegcc
 CC = gcc.exe
 
-WINDRES = windres.exe
+WINDRES = "$(COMPILER_BIN)windres.exe"
 
 TARGET = ..\bin\nativegcc.dll
-CFLAGS = -pipe -Wall -g
+CFLAGS = -pipe  -Wall -g0 -O2
 RCFLAGS = 
 C_INCLUDE_DIRS = -I"$(WXWIDGETS_INC2_PATH)" -I"$(WXWIDGETS_INC_PATH)"
 C_PREPROC = 
 RC_INCLUDE_DIRS = -I"$(WXWIDGETS_INC2_PATH)" -I"$(WXWIDGETS_INC_PATH)"
 RC_PREPROC = 
 LDFLAGS = -pipe -shared -nostartfiles -nodefaultlibs native.def -Wl,--kill-at,--entry,_DllMain@12,--strip-all
-LIBS = -lntdll 
+LIBS = -lntdll -lshell32 -lntdll -lshell32 
 LIB_DIRS = 
 
 SRC_OBJS = analyze.o auxiliary.o dbg.o defrag.o entry.o env.o event.o file.o ftw.o ftw_ntfs.o int64.o keyboard.o keytrans.o ldr.o list.o lock.o map.o mem.o misc.o move.o mutex.o optimize.o options.o path.o prb.o privilege.o reg.o reports.o search.o stdio.o string.o thread.o time.o udefrag-volume.o udefrag.o volume.o zenwinx.o 
@@ -507,3 +507,4 @@ C:\Software\udefrag\native\ntfs.h \
 C:\Software\udefrag\native\case-tables.h \
 C:\Software\udefrag\native\prb.h 
 	$(compile_resource)
+

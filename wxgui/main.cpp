@@ -449,6 +449,9 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     // file menu
     EVT_MENU_RANGE(EventID_Analyze, EventID_MftOpt,
                    MainFrame::OnStartJob)
+    // includes: EventID_Analyze = 1,    EventID_Defrag,
+    //      EventID_QuickOpt,    EventID_FullOpt,    EventID_MftOpt,
+
     EVT_MENU(EventID_Pause, MainFrame::OnPause)
     EVT_MENU(EventID_Stop,  MainFrame::OnStop)
 

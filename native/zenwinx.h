@@ -553,6 +553,7 @@ void winx_shutdown(void);
 
 int winx_filetime2winxtime(ULONGLONG input,winx_time *output);//genBTC
 
+
 #if defined(__cplusplus)
 }
 #endif

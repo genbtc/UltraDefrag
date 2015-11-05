@@ -63,7 +63,7 @@
 #include <wx/sizer.h>//genbtc
 #include <wx/encconv.h> //genbtc for encodings
 #include <wx/menu.h>//genbtc (right-click menu)
-
+#include <wx/clipbrd.h>//genBTC (right-click menu) copy to clipboard
 #if wxUSE_UNICODE
 #define wxCharStringFmtSpec "%ls"
 #else
@@ -352,6 +352,8 @@ public:
     wxArrayString *m_volumes;
     udefrag_job_type m_jobType;
     int m_mapSize;
+    int m_flags;
+    bool singlefile;
 
 private:
     void ProcessVolume(int index);
@@ -445,6 +447,11 @@ public:
     void OnMouseRClick(wxMouseEvent& event);
     void OnSelectionChange(wxListEvent& event);
     void RClickMoveFile(wxCommandEvent& event);
+    void RClickOpenExplorer(wxCommandEvent& event);
+    void RClickCopyClipboard(wxCommandEvent& event);
+    void RClickDefragSingleEntry(wxCommandEvent& event);
+
+    wxListItem GetListItem();
     void InitMembers();
     DECLARE_EVENT_TABLE()
 private:
@@ -719,3 +726,4 @@ extern PVOID g_jpPtr;
 #define SEC_TO_UNIX_EPOCH 11644473600LL
 
 unsigned WindowsTickToUnixSeconds(ULONGLONG windowsTicks);
+//#include <shellapi.h>

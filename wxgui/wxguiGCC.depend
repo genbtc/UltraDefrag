@@ -2,7 +2,8 @@
 1366117868 source:c:\software\udefrag\wxgui\about.cpp
 	"main.h"
 
-1446536956 c:\software\udefrag\wxgui\main.h
+1446608511 c:\software\udefrag\wxgui\main.h
+	<string>
 	<wx/wxprec.h>
 	<wx/wx.h>
 	<wx/frame.h>
@@ -1971,16 +1972,15 @@
 1412941265 source:c:\software\udefrag\wxgui\crash.cpp
 	"main.h"
 
-1446537674 source:c:\software\udefrag\wxgui\fileslist.cpp
+1446609174 source:c:\software\udefrag\wxgui\fileslist.cpp
 	"main.h"
 	"udefrag-internals_flags.h"
 	"windows.h"
-	<string>
 
 1446441132 source:c:\software\udefrag\wxgui\i18n.cpp
 	"main.h"
 
-1446502610 source:c:\software\udefrag\wxgui\job.cpp
+1446604220 source:c:\software\udefrag\wxgui\job.cpp
 	"main.h"
 
 1446336930 source:c:\software\udefrag\wxgui\log.cpp
@@ -2018,10 +2018,11 @@
 1445946740 source:c:\software\udefrag\wxgui\upgrade.cpp
 	"main.h"
 
-1446232631 source:c:\software\udefrag\wxgui\utils.cpp
+1446608931 source:c:\software\udefrag\wxgui\utils.cpp
 	"main.h"
+	<stdexcept>
 
-1446443414 source:c:\software\udefrag\wxgui\vollist.cpp
+1446601105 source:c:\software\udefrag\wxgui\vollist.cpp
 	"main.h"
 
 1445838388 source:c:\software\udefrag\wxgui\wxgui.rc

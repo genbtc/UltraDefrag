@@ -579,6 +579,7 @@ static int find_files(udefrag_job_parameters *jp)
     }
 
     /* speed up the context menu handler (single files/directories)*/
+    //First ifblock only runs if Filesystem is not NTFS. context_menu_handler is a red herring.
     if(jp->fs_type != FS_NTFS && context_menu_handler){
         /* in case of c:\* or c:\ scan entire disk */
         c = jp->udo.cut_filter.array[0][3];
@@ -636,7 +637,7 @@ static int find_files(udefrag_job_parameters *jp)
 
         if(f->next == jp->filelist) break;
     }
-
+    dtrace("Analyze.c find_files() finished");
     dbg_print_file_counters(jp);
     return 0;
 }
@@ -734,9 +735,9 @@ static void redraw_well_known_locked_files(udefrag_job_parameters *jp)
             if(is_well_known_locked_file(f,jp)){
                 if(!is_file_locked(f,jp)){
                     /* possibility of this case should be reduced */
-                    itrace("file was not locked: %ws",f->path);
+                    itrace("file wasn't locked: %ws",f->path);
                 } else {
-                    itrace("locked file detected:  %ws",f->path);
+                    itrace("locked file DETECTED:  %ws",f->path);
                     n ++;
                 }
             }

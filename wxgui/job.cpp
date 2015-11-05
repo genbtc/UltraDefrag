@@ -181,8 +181,8 @@ void JobThread::ProcessVolume(int index)
     // process volume
     int result = udefrag_validate_volume(m_letter,FALSE);
     if(result == 0){
-        result = udefrag_start_job(m_letter,m_jobType,
-            g_mainFrame->m_repeat ? UD_JOB_REPEAT : 0,m_mapSize,
+        m_flags |= g_mainFrame->m_repeat ? UD_JOB_REPEAT : 0;
+        result = udefrag_start_job(m_letter,m_jobType,m_flags,m_mapSize,
             reinterpret_cast<udefrag_progress_callback>(ProgressCallback),
             reinterpret_cast<udefrag_terminator>(Terminator),NULL
         );
@@ -298,6 +298,10 @@ void MainFrame::OnStartJob(wxCommandEvent& event)
         wxSetEnv(wxT("UD_SORTING_ORDER"),wxT("desc"));
     }
 
+    if (m_jobThread->singlefile){
+        m_jobThread->m_flags |= UD_JOB_CONTEXT_MENU_HANDLER;
+    }
+
     // launch the job
     switch(event.GetId()){
     case EventID_Analyze:
@@ -352,6 +356,9 @@ void MainFrame::OnJobCompletion(wxCommandEvent& WXUNUSED(event))
     if(!m_stopped)
         ProcessCommandEvent(EventID_Shutdown);
     dtrace("The Job Has Completed Fully.");
+    m_jobThread->m_flags = 0;
+    m_jobThread->singlefile = FALSE;
+    wxUnsetEnv(L"UD_CUT_FILTER");
 }
 
 void MainFrame::SetPause()

@@ -499,4 +499,5 @@ void Utils::createDirectoryRecursively(const std::wstring &directory) {
 
   }
 }
+
 /** @} */

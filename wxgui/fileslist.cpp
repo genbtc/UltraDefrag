@@ -36,7 +36,7 @@
 
 #include "main.h"
 #include "udefrag-internals_flags.h"
-#include "windows.h"
+#include "utils_win32.h"
 //#include <string>
 
 int f_fixedIcon;
@@ -47,9 +47,9 @@ int f_removableDirtyIcon;
 //genBTC fileslist.cpp right click menu
 enum
 {
-    ID_MNU_MENUITEMONE_1003 = 1003,
-    ID_MNU_MENUITEMTWO_1004 = 1004,
-    ID_MNU_YETANOTHERMENUITEM_1005 = 1005,
+    ID_RPOPMENU_DEFRAG_SINGLE_1003 = 1003,
+    ID_RPOPMENU_OPEN_EXPLORER_1004 = 1004,
+    ID_RPOPMENU_COPY_CLIPBOARD_1005 = 1005,
     ID_RPOPMENU_MOVE_FILE_1006 = 1006,
 
     ID_DUMMY_VALUE_ //don't remove this value unless you have other enum values
@@ -149,10 +149,10 @@ void MainFrame::InitFilesList()
 */
 void FilesList::InitMembers(){
 	WxPopupMenu1 = new wxMenu(wxT(""));
-	WxPopupMenu1->Append(ID_MNU_MENUITEMONE_1003, wxT("Defragment Now"), wxT(""), wxITEM_NORMAL);
-	WxPopupMenu1->Append(ID_MNU_MENUITEMTWO_1004, wxT("Open in Explorer"), wxT(""), wxITEM_NORMAL);
-	WxPopupMenu1->Append(ID_MNU_YETANOTHERMENUITEM_1005, wxT("Copy path to clipboard..."), wxT(""), wxITEM_NORMAL);
-	WxPopupMenu1->Append(ID_RPOPMENU_MOVE_FILE_1006, wxT("Move file from E: to C:..."), wxT(""), wxITEM_NORMAL);
+	WxPopupMenu1->Append(ID_RPOPMENU_DEFRAG_SINGLE_1003, wxT("Defragment Now"), wxT(""), wxITEM_NORMAL);
+	WxPopupMenu1->Append(ID_RPOPMENU_OPEN_EXPLORER_1004, wxT("Open in Explorer"), wxT(""), wxITEM_NORMAL);
+	WxPopupMenu1->Append(ID_RPOPMENU_COPY_CLIPBOARD_1005, wxT("Copy path to clipboard"), wxT(""), wxITEM_NORMAL);
+	WxPopupMenu1->Append(ID_RPOPMENU_MOVE_FILE_1006, wxT("Move file from E: to C:"), wxT(""), wxITEM_NORMAL);
 
 }
 //=======================================================================
@@ -179,26 +179,86 @@ BEGIN_EVENT_TABLE(FilesList, wxListView)
     EVT_KEY_UP(FilesList::OnKeyUp)
     EVT_LEFT_DCLICK(FilesList::OnMouseLDClick)
     EVT_RIGHT_DOWN(FilesList::OnMouseRClick)
+
     EVT_LIST_ITEM_SELECTED(wxID_ANY,FilesList::OnSelectionChange)
     EVT_LIST_ITEM_DESELECTED(wxID_ANY,FilesList::OnSelectionChange)
+
+    EVT_MENU(ID_RPOPMENU_DEFRAG_SINGLE_1003,FilesList::RClickDefragSingleEntry)
+    EVT_MENU(ID_RPOPMENU_OPEN_EXPLORER_1004,FilesList::RClickOpenExplorer)
+    EVT_MENU(ID_RPOPMENU_COPY_CLIPBOARD_1005,FilesList::RClickCopyClipboard)
     EVT_MENU(ID_RPOPMENU_MOVE_FILE_1006,FilesList::RClickMoveFile)
 END_EVENT_TABLE()
 
-
-void FilesList::RClickMoveFile(wxCommandEvent& event)
+wxListItem FilesList::GetListItem()
 {
+    //Currently gets column 0, of what is currently selected.
     wxListItem theitem;
     theitem.m_itemId = currentlyselected;
     theitem.m_col = 0;
     theitem.m_mask = wxLIST_MASK_TEXT;
     GetItem(theitem);
+    return theitem;
+}
+
+void FilesList::RClickDefragSingleEntry(wxCommandEvent& event)
+{
+    //See Code in
+    wxListItem theitem = GetListItem();
+    wxString itemtext;
+    itemtext.Printf(L"\"%s\";",theitem.m_text);
+    winx_setenv(L"UD_CUT_FILTER",itemtext.wchar_str());
+    dtrace("Cut Filter currently stands at: %ws",winx_getenv(L"UD_CUT_FILTER"));
+    g_mainFrame->m_jobThread->singlefile = TRUE;
+    ProcessCommandEvent(EventID_Defrag);
+    //Job.cpp @ MainFrame::OnJobCompletion @ Line 301-303 handles single-file mode.
+    //Job.cpp @ MainFrame::OnJobCompletion @ Line 358-361 handles cleanup.
+    //works but needs two considerations:
+    //1. The fragmented files list goes away after you finish defragmenting.
+    //  This causes you to have to analyze again just to get the list back.
+    //2. After you get the list back, defragging another file causes ANOTHER analysis before the defrag.
+    //  we have to cut down on the number of these analyses.
+}
+
+void FilesList::RClickCopyClipboard(wxCommandEvent& event)
+{
+    wxListItem theitem = GetListItem();
+    wxString itemtext = theitem.m_text;
+    //std::string stlstring = std::string(itemtext.mb_str());
+    UtilsWin32::toClipboard(std::string(itemtext.mb_str()));
+//    if (wxTheClipboard->Open()){
+//        // This data objects are held by the clipboard,
+//        // so do not delete them in the app.
+//        wxTheClipboard->SetData( new wxTextDataObject(itemtext) );
+//        wxTheClipboard->Close();
+//        // This is stupid because when the app exits,
+//        // the clipboard loses its contents...
+//    }
+//    wxTheClipboard->Flush();  //this is the way to persist data on exit.
+}
+
+void FilesList::RClickOpenExplorer(wxCommandEvent& event)
+{
+    wxListItem theitem = GetListItem();
+    wxString itemtext = theitem.m_text;
+    //UtilsWin32::BrowseToFile(itemtext.wc_str());  //this has typedef issues. works on VC++, not working on G++
+    //Utils::ShellExec(wxT("explorer.exe"),wxT("open"),itemtext); //This OPENS the file itself using the default handler.
+    wxString xec;
+    xec.Printf(L"/select,\"%s\"",itemtext.wc_str());
+//    system(xec.mb_str().data());  // this does work but it quickly flashes open a black command prompt, and looks really sketchy
+    ShellExecuteW(0, L"open", L"explorer.exe", xec.wc_str(), 0, SW_NORMAL);
+    //this actually works, wish i found this earlier.
+}
+
+void FilesList::RClickMoveFile(wxCommandEvent& event)
+{
+    wxListItem theitem = GetListItem();
     wxString itemtext = theitem.m_text;
 
-    wchar_t *srcfilename = wcsdup(itemtext.wc_str());
+    wchar_t *srcfilename = _wcsdup(itemtext.wc_str());
     dtrace("srcfilename was %ws",srcfilename);
 
     itemtext.Replace(wxT("E:\\"),wxT("C:\\"));
-    wchar_t *dstfilename = wcsdup(itemtext.wc_str());
+    wchar_t *dstfilename = _wcsdup(itemtext.wc_str());
     dtrace("dstfilename was %ws",dstfilename);
 
     const wchar_t *dstpath = itemtext.wc_str();
@@ -207,10 +267,10 @@ void FilesList::RClickMoveFile(wxCommandEvent& event)
 
     Utils::createDirectoryRecursively(dstpath);
 
-    CopyFile(srcfilename,dstfilename,1);
+    CopyFile(srcfilename,dstfilename,1);    //works.
 //    winx_free(srcfilename); //since wcsdup calls malloc
 //    winx_free(dstfilename); // ^^^
-    //works.
+//      calling these crash the program.
 }
 
 void FilesList::OnKeyDown(wxKeyEvent& event)
@@ -307,49 +367,6 @@ void MainFrame::FilesAdjustListHeight(wxCommandEvent& WXUNUSED(event))
 {
     //Commented out, because its not needed.
 }
-//    // get client height of the list
-//    int height = m_filesList->GetClientSize().GetHeight();
-//    dtrace("FilesList getclient.getheight  of the list ......... %d", height);
-//
-//    // avoid recursion
-//    if(height == m_filesListHeight)
-//        return;
-//    m_filesListHeight = height;
-//
-//    if(!m_filesList->GetColumnCount())
-//        return;
-//
-//    // get height of the list header
-//    HWND header = ListView_GetHeader((HWND)m_filesList->GetHandle());
-//    if(!header){
-//        letrace("cannot get list header");
-//        return;
-//    }
-//
-//    RECT rc;
-//    if(!Header_GetItemRect(header,0,&rc)){
-//        letrace("cannot get list header size");
-//        return;
-//    }
-//    int header_height = rc.bottom - rc.top;
-//
-//    // get height of a single row
-//    wxRect rect;
-//    if(!m_filesList->GetItemRect(0,rect))
-//        return;
-//    int item_height = rect.GetHeight();
-//    dtrace("FilesList one itemheight ......... %d", item_height);
-//
-//    //genBTC
-//    int items = m_filesList->GetItemCount();
-//    int new_height = items * item_height + header_height;
-//    m_filesListHeight = new_height;
-//
-//    dtrace("FilesList mfileslistheight-end......... %d", m_filesListHeight);
-//    // adjust client height of the list
-//    new_height += 2 * wxSystemSettings::GetMetric(wxSYS_BORDER_Y);
-////    m_splitter->SetSashPosition(new_height);
-//}
 
 void MainFrame::FilesOnSplitChanged(wxSplitterEvent& event)
 {
@@ -456,7 +473,7 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
             winx_time lmt;             //Last Modified time:
             winx_filetime2winxtime(file->last_modification_time,&lmt);
 
-            char lmtbuffer[64];
+            char lmtbuffer[30];
             (void)_snprintf(lmtbuffer,sizeof(lmtbuffer),
                 "%02i/%02i/%04i"
                 " "
@@ -480,7 +497,8 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
         dtrace("Populate List Loop Did not run, no files were added.");
 
     PostCommandEvent(this,EventID_AdjustFilesListColumns);
-    gui_fileslist_finished();   //signal to the job-thread that the GUI has finished processing files, so it can clear the lists and exit.
+    //signal to the job-thread that the GUI has finished processing files, so it can clear the lists and exit.
+    gui_fileslist_finished();   //very important.
 }
 
 void MainFrame::FilesAnalyzedUpdateFilesList (wxCommandEvent& event)
