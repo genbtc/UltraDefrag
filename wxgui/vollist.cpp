@@ -53,17 +53,18 @@ void MainFrame::InitVolList()
     // set mono-space font for the list unless Burmese translation is selected
     if(g_locale->GetCanonicalName().Left(2) != wxT("my")){
         wxFont font = m_vList->GetFont();
-        if(font.SetFaceName(wxT("Courier New"))){
+        if(font.SetFaceName(wxT("Lucida Console"))){
             font.SetPointSize(DPI(9));
             m_vList->SetFont(font);
         }
     }
 
     // adjust widths so all the columns will fit to the window
-    int width = m_vList->GetClientSize().GetWidth();
+    int borderx = wxSystemSettings::GetMetric(wxSYS_BORDER_X);
+    int width = this->GetClientSize().GetWidth() - borderx * 8;
     int lastColumnWidth = width;
-
-    dtrace("client width ......... %d", width);
+    dtrace("INIT - client width ......... %d", width);
+    dtrace("INIT - borderx width ......... %d", borderx);
 
     int format[] = {
         wxLIST_FORMAT_LEFT, wxLIST_FORMAT_LEFT,
@@ -112,7 +113,7 @@ void MainFrame::InitVolList()
 BEGIN_EVENT_TABLE(DrivesList, wxListView)
     EVT_KEY_DOWN(DrivesList::OnKeyDown)
     EVT_KEY_UP(DrivesList::OnKeyUp)
-    EVT_MOUSE_EVENTS(DrivesList::OnMouse)
+    EVT_LEFT_DCLICK(DrivesList::OnMouse)
     EVT_LIST_ITEM_SELECTED(wxID_ANY,DrivesList::OnSelectionChange)
     EVT_LIST_ITEM_DESELECTED(wxID_ANY,DrivesList::OnSelectionChange)
 END_EVENT_TABLE()
@@ -125,8 +126,9 @@ void DrivesList::OnKeyDown(wxKeyEvent& event)
 void DrivesList::OnKeyUp(wxKeyEvent& event)
 {
     if(!g_mainFrame->m_busy){
-        // dtrace("Modifier: %d ... KeyCode: %d", \
-        //    event.GetModifiers(), event.GetKeyCode());
+/*         dtrace("Modifier: %d ... KeyCode: %d", \
+ *             event.GetModifiers(), event.GetKeyCode());
+ */
         switch(event.GetKeyCode()){
         case WXK_RETURN:
         case WXK_NUMPAD_ENTER:
@@ -147,9 +149,7 @@ void DrivesList::OnKeyUp(wxKeyEvent& event)
 void DrivesList::OnMouse(wxMouseEvent& event)
 {
     if(!g_mainFrame->m_busy){
-        // left double click starts default action
-        if(event.GetEventType() == wxEVT_LEFT_DCLICK)
-            PostCommandEvent(g_mainFrame,ID_DefaultAction);
+        PostCommandEvent(g_mainFrame,ID_DefaultAction);
         event.Skip();
     }
 }
@@ -169,16 +169,11 @@ void DrivesList::OnSelectionChange(wxListEvent& event)
     event.Skip();
 }
 
-void MainFrame::SelectAll(wxCommandEvent& WXUNUSED(event))
-{
-    for(int i = 0; i < m_vList->GetItemCount(); i++)
-        m_vList->Select(i); m_vList->Focus(0);
-}
-
 void MainFrame::AdjustListColumns(wxCommandEvent& event)
 {
     int width = event.GetInt();
-    if(width == 0) width = m_vList->GetClientSize().GetWidth();
+    if(width == 0)
+        width = m_vList->GetClientSize().GetWidth();
 
     // get current column widths, since user could have changed them
     int cwidth = 0; bool changed = false;
@@ -190,15 +185,15 @@ void MainFrame::AdjustListColumns(wxCommandEvent& event)
     }
 
     if(changed){
+        dtrace("DETECTED COLUMNS CHANGED!");
         for(int i = 0; i < LIST_COLUMNS; i++)
             m_r[i] = (double)m_vList->GetColumnWidth(i) / (double)cwidth;
-    }
+    }else if (cwidth == width)
+        return;
 
     int lastColumnWidth = width;
 
-    int border = wxSystemSettings::GetMetric(wxSYS_BORDER_X);
-
-    dtrace("border width ......... %d", border);
+    //dtrace("border width ......... %d", border);
     dtrace("client width ......... %d", width);
     dtrace("total column width ... %d", cwidth);
 
@@ -271,17 +266,21 @@ void MainFrame::OnListSize(wxSizeEvent& event)
 {
     int old_width = m_vList->GetClientSize().GetWidth();
     int new_width = this->GetClientSize().GetWidth();
-    new_width -= 2 * wxSystemSettings::GetMetric(wxSYS_EDGE_X);
+    new_width -= 4 * wxSystemSettings::GetMetric(wxSYS_EDGE_X);
     if(m_vList->GetCountPerPage() < m_vList->GetItemCount())
         new_width -= wxSystemSettings::GetMetric(wxSYS_VSCROLL_X);
 
     // scale list columns; avoid horizontal scrollbar appearance
     wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED,ID_AdjustListColumns);
     evt.SetInt(new_width);
-    if(new_width <= old_width)
+    if(new_width < old_width){
         ProcessEvent(evt);
-    else
+        //dtrace("Vols. new_width %d was < %d", new_width,old_width);
+    }
+    else if(new_width > old_width){
         wxPostEvent(this,evt);
+        //dtrace("Vols. new_width %d was > %d", new_width,old_width);
+    }
 
     event.Skip();
 }
@@ -292,8 +291,10 @@ void MainFrame::OnListSize(wxSizeEvent& event)
 
 void *ListThread::Entry()
 {
+
     while(!g_mainFrame->CheckForTermination(200)){
         if(m_rescan){
+            dtrace("About to repopulate list from ListThread Scanner in vollist.cpp");
             PostCommandEvent(g_mainFrame,ID_PopulateList);
             m_rescan = false;
         }
@@ -307,7 +308,7 @@ void MainFrame::UpdateVolumeInformation(wxCommandEvent& event)
     int index = event.GetInt();
     volume_info *v = (volume_info *)event.GetClientData();
 
-    if(!v){ // the request has been made from the running job
+    if(!v){ // the request has been made from the running job (job.cpp@ProcessVolume)
         int i;
         for(i = 0; i < m_vList->GetItemCount(); i++){
             char letter = (char)m_vList->GetItemText(i)[0];
@@ -316,8 +317,10 @@ void MainFrame::UpdateVolumeInformation(wxCommandEvent& event)
 
         if(i < m_vList->GetItemCount()){
             v = new volume_info;
+            dtrace("The running job wants to refresh volume information for Drive: %c",(char)index);
             int result = udefrag_get_volume_information((char)index,v);
             if(result < 0){ delete v; return; }
+            m_volinfocache = *v;    //genBTC, make a copy/cache of the volume info.(for fileslist.cpp)
             index = i;
         }
     }
@@ -330,7 +333,7 @@ void MainFrame::UpdateVolumeInformation(wxCommandEvent& event)
         if(v->is_removable) m_vList->SetItemImage(index,g_removableIcon);
         else m_vList->SetItemImage(index,g_fixedIcon);
     }
-
+    dtrace("Updated Volume Information for Drive: %c", v->letter);
     char s[32]; wxString string;
     ::winx_bytes_to_hr((ULONGLONG)(v->total_space.QuadPart),2,s,sizeof(s));
     string.Printf(wxT("%hs"),s); m_vList->SetItem(index,3,string);
@@ -349,6 +352,7 @@ void MainFrame::UpdateVolumeInformation(wxCommandEvent& event)
 
 void MainFrame::UpdateVolumeStatus(wxCommandEvent& event)
 {
+
     char letter = (char)event.GetInt();
     JobsCacheEntry *cacheEntry = m_jobsCache[(int)letter];
     if(!cacheEntry) return;
@@ -415,6 +419,7 @@ void MainFrame::UpdateVolumeStatus(wxCommandEvent& event)
 
 void MainFrame::PopulateList(wxCommandEvent& event)
 {
+    //should only happen once.
     volume_info *v = ::udefrag_get_vollist(m_skipRem);
     if(!v) return;
 

@@ -2,8 +2,9 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="wxgui" />
+		<Option title="wxguiGCC" />
 		<Option platforms="Windows;" />
+		<Option makefile="makefile" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
@@ -16,6 +17,7 @@
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
+					<Add option="-Wall" />
 					<Add option="-g" />
 				</Compiler>
 			</Target>
@@ -27,13 +29,20 @@
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-march=prescott" />
+					<Add option="-O3" />
+					<Add option="-Wall" />
+					<Add option="-D_M_IX86" />
+					<Add option="-DUNICODE" />
+				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add directory="C:/Program Files (x86)/CodeBlocks/MinGW/lib" />
 				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="-mwindows" />
 			<Add directory="$(WXWIDGETSDIR)/include" />
 			<Add directory="$(WXWIDGETSDIR)/lib/gcc_libmingw-X86/mswu" />
 		</Compiler>
@@ -41,9 +50,8 @@
 			<Add directory="$(WXWIDGETSDIR)/include" />
 		</ResourceCompiler>
 		<Linker>
-			<Add option="-mwindows" />
-			<Add library="libzenwinx.dll.a" />
-			<Add library="libudefrag.dll.a" />
+			<Add library="libshell32.a" />
+			<Add library="libnativegcc.dll.a" />
 			<Add library="liblua5.1a.dll.a" />
 			<Add library="libwxmsw28u_adv.a" />
 			<Add library="libwxmsw28u_core.a" />
@@ -56,7 +64,6 @@
 			<Add library="libwinspool.a" />
 			<Add library="libcomdlg32.a" />
 			<Add library="libadvapi32.a" />
-			<Add library="libshell32.a" />
 			<Add library="libole32.a" />
 			<Add library="liboleaut32.a" />
 			<Add library="libuuid.a" />
@@ -66,11 +73,16 @@
 			<Add library="libodbc32.a" />
 			<Add directory="../lib" />
 			<Add directory="$(WXWIDGETSDIR)/lib/gcc_libmingw-X86" />
+			<Add directory="C:/Program Files (x86)/CodeBlocks/MinGW/lib" />
 		</Linker>
+		<ExtraCommands>
+			<Add before="mingw32-make --directory C:\Software\udefrag\native\ -f Makefile.mingw" />
+		</ExtraCommands>
 		<Unit filename="about.cpp" />
 		<Unit filename="btd.cpp" />
 		<Unit filename="config.cpp" />
 		<Unit filename="crash.cpp" />
+		<Unit filename="fileslist.cpp" />
 		<Unit filename="i18n.cpp" />
 		<Unit filename="job.cpp" />
 		<Unit filename="log.cpp" />
@@ -84,6 +96,7 @@
 		<Unit filename="taskbar.cpp" />
 		<Unit filename="toolbar.cpp" />
 		<Unit filename="tray.cpp" />
+		<Unit filename="udefrag-internals_flags.h" />
 		<Unit filename="upgrade.cpp" />
 		<Unit filename="utils.cpp" />
 		<Unit filename="vollist.cpp" />

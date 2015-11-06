@@ -64,6 +64,7 @@ void MainFrame::CacheJob(wxCommandEvent& event)
         m_jobsCache[index] = newEntry;
     } else {
         delete [] cacheEntry->clusterMap;
+        //dtrace("Old Cache Entry updated.");
         memcpy(cacheEntry,newEntry,sizeof(JobsCacheEntry));
         delete newEntry;
     }
@@ -85,7 +86,7 @@ void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
     wxString title = wxString::Format(wxT("%c:  %c %6.2lf %%"),
         winx_toupper(g_mainFrame->m_jobThread->m_letter),op,pi->percentage
     );
-    if(g_mainFrame->CheckOption(wxT("UD_DRY_RUN"))) title += wxT(" (dry run)");
+    if(g_mainFrame->CheckOption(wxT("UD_DRY_RUN"))) title += wxT(" (Dry Run)");
 
     wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,ID_SetWindowTitle);
     event.SetString(title); wxPostEvent(g_mainFrame,event);
@@ -132,11 +133,29 @@ void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
     event.SetClientData((void *)cacheEntry);
     wxPostEvent(g_mainFrame,event);
 
-    // update progress indicators
+    if ((pi->completion_status > 0) && (pi->isfragfileslist = 1)){
+        //g_jpPtr = pi->jp;   //set Global Pointer back to &jp->
+        cacheEntry->pi.fragmented_files_prb = pi->fragmented_files_prb;
+
+        event.SetId(ID_PopulateFilesList); //populate the fragmented-files-list tab's listview.
+        event.SetInt(letter);
+        //event.SetClientData((void *)cacheEntry); //instead of sending this, the target is using cacheEntry instead.
+        wxPostEvent(g_mainFrame,event);
+        dtrace("Successfully sent Fragmented Files list over to MainFrame::FilesPopulateList()");
+        event.SetId(ID_UpdateVolumeStatus);//updates status column with "Analyzed.", etc (on finished)
+        wxPostEvent(g_mainFrame,event);
+        return; //shortcut past a redundant redrawmap and updatestatusbar
+    }
+    //dtrace("Updating Volume Status,Redrawing Map, and Updating StatusBar.");
+    // update Volume status
     event.SetId(ID_UpdateVolumeStatus);
-    event.SetInt(letter); wxPostEvent(g_mainFrame,event);
+    event.SetInt(letter);
+    wxPostEvent(g_mainFrame,event);
+    // Update Clustermap and Statusbar.
     PostCommandEvent(g_mainFrame,ID_RedrawMap);
     PostCommandEvent(g_mainFrame,ID_UpdateStatusBar);
+    //after this, it finishes udefrag_start_job @ udefrag.c line 421.
+    //after that, it goes back to line 182 of this file, and line 197 calls ID_UpdateVolumeInformation.
 }
 
 int JobThread::Terminator(void *p)
@@ -154,16 +173,20 @@ void JobThread::ProcessVolume(int index)
     // process volume
     int result = udefrag_validate_volume(m_letter,FALSE);
     if(result == 0){
-        result = udefrag_start_job(m_letter,m_jobType,
-            g_mainFrame->m_repeat ? UD_JOB_REPEAT : 0,m_mapSize,
+        //created a flags variable to hold custom flags on-the-fly such as ContextMenuHandler
+        m_flags |= g_mainFrame->m_repeat ? UD_JOB_REPEAT : 0;
+        result = udefrag_start_job(m_letter,m_jobType,m_flags,m_mapSize,
             reinterpret_cast<udefrag_progress_callback>(ProgressCallback),
             reinterpret_cast<udefrag_terminator>(Terminator),NULL
         );
     }
 
     if(result < 0 && !g_mainFrame->m_stopped){
+        etrace("Disk Processing Failure.");
         wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,ID_DiskProcessingFailure);
-        event.SetInt(result); event.SetString((*m_volumes)[index]); wxPostEvent(g_mainFrame,event);
+        event.SetInt(result);
+        event.SetString((*m_volumes)[index]);
+        wxPostEvent(g_mainFrame,event);
     }
 
     // update volume dirty status
@@ -179,9 +202,12 @@ void *JobThread::Entry()
             g_mainFrame->m_processed = 0;
 
             for(int i = 0; i < g_mainFrame->m_selected; i++){
-                if(g_mainFrame->m_stopped) break;
-
+                if(g_mainFrame->m_stopped){
+                  dtrace("JobThread stopping!!!!!!, because m_stopped.");
+                  break;
+                }
                 m_letter = (char)((*m_volumes)[i][0]);
+                //dtrace("About to process volume: %c",m_letter);
                 ProcessVolume(i);
 
                 /* advance overall progress to processed/selected */
@@ -195,13 +221,12 @@ void *JobThread::Entry()
                     g_mainFrame->SetTaskbarProgressState(TBPF_NOPROGRESS);
                 }
             }
-
-            // complete the job
+            // complete the job,very important.
             PostCommandEvent(g_mainFrame,ID_JobCompletion);
-            delete m_volumes; m_launch = false;
+            delete m_volumes;
+            m_launch = false;
         }
     }
-
     return NULL;
 }
 
@@ -264,6 +289,12 @@ void MainFrame::OnStartJob(wxCommandEvent& event)
         wxSetEnv(wxT("UD_SORTING_ORDER"),wxT("desc"));
     }
 
+    //handle single file defragmenting launched from the right click context menu
+    // as if it was launched from the explorer shell context menu handler.
+    if (m_jobThread->singlefile){
+        m_jobThread->m_flags |= UD_JOB_CONTEXT_MENU_HANDLER;
+    }
+
     // launch the job
     switch(event.GetId()){
     case ID_Analyze:
@@ -314,9 +345,15 @@ void MainFrame::OnJobCompletion(wxCommandEvent& WXUNUSED(event))
     ProcessCommandEvent(ID_SetWindowTitle);
     ProcessCommandEvent(ID_AdjustTaskbarIconOverlay);
     SetTaskbarProgressState(TBPF_NOPROGRESS);
-
     // shutdown when requested
-    if(!m_stopped) ProcessCommandEvent(ID_Shutdown);
+    if(!m_stopped)
+        ProcessCommandEvent(ID_Shutdown);
+
+    dtrace("The Job Has Completed Fully."); //Final Complete Message.
+    //Handle cleanup of any single file defragmenting vars.
+    m_jobThread->m_flags = 0;
+    m_jobThread->singlefile = FALSE;
+    wxUnsetEnv(L"UD_CUT_FILTER");
 }
 
 void MainFrame::SetPause()

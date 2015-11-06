@@ -56,7 +56,7 @@
 // =======================================================================
 
 /**
- * @brief Initializes main menu.
+ * @brief Initializes main menu. Uses i18n.cpp for localization strings
  */
 void MainFrame::InitMenu()
 {

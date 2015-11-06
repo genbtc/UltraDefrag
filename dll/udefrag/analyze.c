@@ -439,12 +439,13 @@ static int filter(winx_file_info *f,void *user_defined_data)
     }
     
     /* show debugging information about interesting cases */
+    /* comment it out after testing to speed things up */
+    /*
     if(is_sparse(f))
         dtrace("sparse file found: %ws",f->path);
     if(is_reparse_point(f))
         dtrace("reparse point found: %ws",f->path);
-    /* comment it out after testing to speed things up */
-    /*if(winx_wcsistr(f->path,L"$BITMAP"))
+    if(winx_wcsistr(f->path,L"$BITMAP"))
         dtrace("bitmap found: %ws",f->path);
     if(winx_wcsistr(f->path,L"$ATTRIBUTE_LIST"))
         dtrace("attribute list found: %ws",f->path);
@@ -568,8 +569,8 @@ static int find_files(udefrag_job_parameters *jp)
     int flags = 0;
     winx_file_info *f;
     winx_blockmap *block;
-    
-    /* check for context menu handler */
+
+    /* check for context menu handler (single files/directories)*/
     if(jp->udo.job_flags & UD_JOB_CONTEXT_MENU_HANDLER){
         if(jp->udo.cut_filter.count > 0){
             if(wcslen(jp->udo.cut_filter.array[0]) >= wcslen(L"C:\\"))
@@ -577,7 +578,8 @@ static int find_files(udefrag_job_parameters *jp)
         }
     }
 
-    /* speed up the context menu handler */
+    /* speed up the context menu handler (single files/directories)*/
+    //First ifblock only runs if Filesystem is not NTFS. context_menu_handler is a red herring.
     if(jp->fs_type != FS_NTFS && context_menu_handler){
         /* in case of c:\* or c:\ scan entire disk */
         c = jp->udo.cut_filter.array[0][3];
@@ -635,7 +637,7 @@ static int find_files(udefrag_job_parameters *jp)
 
         if(f->next == jp->filelist) break;
     }
-
+    dtrace("Analyze.c find_files() finished");
     dbg_print_file_counters(jp);
     return 0;
 }
@@ -708,6 +710,9 @@ static int is_well_known_locked_file(winx_file_info *f,udefrag_job_parameters *j
         return 1;
     if(winx_wcsistr(f->name,L"hiberfil.sys"))
         return 1;
+    // Win10 has created a swapfile.sys
+    if(winx_wcsistr(f->name,L"swapfile.sys"))
+        return 1;
     return 0;
 }
 
@@ -722,7 +727,7 @@ static void redraw_well_known_locked_files(udefrag_job_parameters *jp)
     ULONGLONG time;
     ULONGLONG n = 0;
 
-    winx_dbg_print_header(0,0,I"search for well known locked files...");
+    winx_dbg_print_header(0,0,I"searching for well known locked files...");
     time = winx_xtime();
     
     for(f = jp->filelist; f; f = f->next){
@@ -730,9 +735,9 @@ static void redraw_well_known_locked_files(udefrag_job_parameters *jp)
             if(is_well_known_locked_file(f,jp)){
                 if(!is_file_locked(f,jp)){
                     /* possibility of this case should be reduced */
-                    itrace("false detection: %ws",f->path);
+                    itrace("file wasn't locked: %ws",f->path);
                 } else {
-                    itrace("true detection:  %ws",f->path);
+                    itrace("locked file DETECTED:  %ws",f->path);
                     n ++;
                 }
             }
@@ -774,10 +779,20 @@ int expand_fragmented_files_list(winx_file_info *f,udefrag_job_parameters *jp)
     void **p;
     
     /* don't include filtered out files, for better performance */
-    if(!is_excluded(f)){
-        p = prb_probe(jp->fragmented_files,(void *)f);
-        if(*p != f) etrace("a duplicate found for %ws",f->path);
-    }
+    //genBTC asks:
+    // Wouldnt this already be filtered out, since this is only called from:
+    // Analyze.C, produce_list_of_fragmented_files()
+    //   and
+    // Move.C, move_file() near the very end
+    // and in both functions, they are called from inside this if block:
+    //         if(is_fragmented(f) && !is_excluded(f)){
+    // so they should already be verified by !is_exluded(f)
+    //I guess this was put in for future expansion?
+
+    //if(!is_excluded(f)){
+    p = prb_probe(jp->fragmented_files,(void *)f);
+    if(*p != f) etrace("a duplicate found for %ws",f->path);
+    //}
     return 0;
 }
 
@@ -798,17 +813,56 @@ static void produce_list_of_fragmented_files(udefrag_job_parameters *jp)
     winx_file_info *f;
     ULONGLONG bad_fragments = 0;
     
+//    int fragcount=0;
+//    winx_file_info *file;
+//    struct prb_traverser trav;
+//    int length;
+//    char *cnv_path = NULL;
+
     itrace("started creation of fragmented files list");
+
     jp->fragmented_files = prb_create(fragmented_files_compare,(void *)jp,NULL);
+
     for(f = jp->filelist; f; f = f->next){
         if(is_fragmented(f) && !is_excluded(f)){
             expand_fragmented_files_list(f,jp);
-            /* more precise calculation seems to be too slow */
+            /* more precise calculation seems to be too slow */ // ????
+//            fragcount++;
             bad_fragments += f->disp.fragments;
         }
         if(f->next == jp->filelist) break;
     }
+//    jp->pi.fragmented_files_count = fragcount;
     jp->pi.bad_fragments = bad_fragments;
+
+    jp->pi.fragmented_files_prb = jp->fragmented_files;
+    //jp->pi.fragmented_files_prb = prb_copy(jp->fragmented_files,NULL,NULL,NULL);
+/* The above line is there from before as an example on how to copy a PRB, because:
+ * previously could not do pointer assignment operation, because when lists gets freed
+ * in destroy_lists() in Udefrag.c @ Line 297ish, it will leave holes because
+ * even though the destroy list is acting on ->filelist, it will even corrupt
+ * other lists, such as fragmented_files_prb, due to pointers. This took me forever to realize.
+ * Now the code has been changed to only free the lists when FilesList.cpp finishes with the list.
+ * when OnJobCompletion in job.cpp finishes.
+ * (and for thoroughness - from before - upon a new Analyze operation @ Line 144.)
+ */
+/* This will output a list of fragmented files directly to the debug window.
+ *
+ *  prb_t_init(&trav,jp->fragmented_files);
+ *  file = prb_t_first(&trav,jp->fragmented_files);
+ *
+ *     while (file){
+ *         length = ((int)wcslen((wchar_t *)file->path) + 1) * sizeof(wchar_t) * 2; // enough to hold UTF-8 string
+ *         cnv_path = (char *)winx_tmalloc(length);
+ *         //should really check tmalloc for success. but it hasnt failed me yet.
+ *         winx_to_utf8(cnv_path,length,(wchar_t *)file->path);
+ *         dtrace("File->Path: %s",cnv_path);
+ *         //dtrace("File->Path Length: %i",length);
+ *         file = prb_t_next(&trav);
+ *         winx_free(cnv_path);
+ *     }
+ */
+    jp->pi.isfragfileslist = 1;
     itrace("finished creation of fragmented files list");
 }
 

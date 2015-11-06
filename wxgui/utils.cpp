@@ -35,6 +35,7 @@
 // =======================================================================
 
 #include "main.h"
+#include <stdexcept>
 
 typedef HRESULT (__stdcall *URLMON_PROCEDURE)(
     /* LPUNKNOWN */ void *lpUnkcaller,
@@ -416,6 +417,87 @@ void Utils::ShowError(const wxChar* format, ...)
     {
         PostCommandEvent(g_mainFrame,ID_DebugLog);
     }
+}
+
+wxString Utils::ConvertChartoWxString(char* input)
+{
+    #if wxUSE_UNICODE
+        int size = sizeof(input) + 1;
+        wchar_t *buffer = new wchar_t[size*4];  // 32bit chars?
+        wxEncodingConverter wxec;
+        wxec.Init(wxFONTENCODING_ISO8859_1, wxFONTENCODING_UNICODE, wxCONVERT_SUBSTITUTE);
+        wxec.Convert(input, buffer);
+        winx_free(input);
+        wxString temp(buffer);
+        delete buffer;
+        return temp;
+    #else
+        return wxString(input.c_str());
+    #endif
+}
+char* Utils::wxStringToChar(wxString input)
+{
+#if (wxUSE_UNICODE)
+   size_t size = input.size() + 1;
+   char *buffer = new char[size];//No need to multiply by 4, converting to 1 byte char only.
+   memset(buffer, 0, size); //Good Practice, Can use buffer[0] = '\0' also.
+   wxEncodingConverter wxec;
+   wxec.Init(wxFONTENCODING_ISO8859_1, wxFONTENCODING_ISO8859_1, wxCONVERT_SUBSTITUTE);
+   wxec.Convert(input.mb_str(), buffer);
+   return buffer; //To free this buffer memory is user responsibility.
+#else
+   return (char *)(input.c_str());
+#endif
+//Other way:
+// convert wxString to const char *
+//wxString eh = huh->GetValue();
+//const wxCharBuffer eheheh = eh.ToAscii();
+}
+void Utils::DrawSingleRectangleBorder(HDC m_cacheDC,int xblock,int yblock,int line_width,int cell_size,HBRUSH brush,HBRUSH infill){
+    int x = xblock*cell_size;
+    int y = yblock*cell_size;
+    int w,r;
+    w = r = line_width;
+    for (int q=0;q <=1; q++,r--){
+        RECT rc={x+q*w,y+q*w,x+cell_size+w*r,y+cell_size+w*r};
+        ::FillRect(m_cacheDC,&rc,brush);
+        brush = infill;
+    }
+}
+
+void Utils::createDirectoryRecursively(const std::wstring &directory) {
+  static const std::wstring separators(L"\\/");
+
+  // If the specified directory name doesn't exist, do our thing
+  DWORD fileAttributes = ::GetFileAttributesW(directory.c_str());
+  if(fileAttributes == INVALID_FILE_ATTRIBUTES) {
+
+    // Recursively do it all again for the parent directory, if any
+    std::size_t slashIndex = directory.find_last_of(separators);
+    if(slashIndex != std::wstring::npos) {
+      createDirectoryRecursively(directory.substr(0, slashIndex));
+    }
+
+    // Create the last directory on the path (the recursive calls will have taken
+    // care of the parent directories by now)
+    BOOL result = ::CreateDirectoryW(directory.c_str(), NULL);
+    if(result == FALSE) {
+      throw std::runtime_error("Could not create directory");
+    }
+
+  } else { // Specified directory name already exists as a file or directory
+
+    bool isDirectoryOrJunction =
+      ((fileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) ||
+      ((fileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != 0);
+
+    if(!isDirectoryOrJunction) {
+      throw std::runtime_error(
+        "Could not create directory because a file with the same name exists"
+      );
+    }
+
+  }
 }
 
 /** @} */

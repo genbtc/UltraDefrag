@@ -847,12 +847,17 @@ static void update_file_name(PRESIDENT_ATTRIBUTE pr_attr,mft_scan_parameters *sp
 
 static void handle_reparse_point(PRESIDENT_ATTRIBUTE pr_attr,mft_scan_parameters *sp)
 {
-    REPARSE_POINT *rp;
+    /* show debugging information about interesting cases */
+    /* comment it out after testing to speed things up */
+//    REPARSE_POINT *rp;
+//    rp = (REPARSE_POINT *)((char *)pr_attr + pr_attr->ValueOffset);
+//    if(pr_attr->ValueLength >= sizeof(ULONG))
+//        dtrace("reparse tag = 0x%x",rp->ReparseTag);
+//    else
+//        etrace("REPARSE_POINT attribute is too short");
 
-    rp = (REPARSE_POINT *)((char *)pr_attr + pr_attr->ValueOffset);
-    if(pr_attr->ValueLength >= sizeof(ULONG))
-        itrace("reparse tag = 0x%x",rp->ReparseTag);
-    else
+//genBTC changed the above - gives hardly any useful info is very spammy.
+    if(pr_attr->ValueLength < sizeof(ULONG))
         etrace("REPARSE_POINT attribute is too short");
     
     sp->mfi.Flags |= FILE_ATTRIBUTE_REPARSE_POINT;
