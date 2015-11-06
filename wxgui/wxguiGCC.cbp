@@ -50,7 +50,6 @@
 			<Add directory="$(WXWIDGETSDIR)/include" />
 		</ResourceCompiler>
 		<Linker>
-			<Add library="libshell32.a" />
 			<Add library="libnativegcc.dll.a" />
 			<Add library="liblua5.1a.dll.a" />
 			<Add library="libwxmsw28u_adv.a" />
@@ -71,10 +70,13 @@
 			<Add library="libcomctl32.a" />
 			<Add library="libwsock32.a" />
 			<Add library="libodbc32.a" />
+            <Add library="libshell32.a" />
 			<Add directory="../lib" />
 			<Add directory="$(WXWIDGETSDIR)/lib/gcc_libmingw-X86" />
-			<Add directory="C:/Program Files (x86)/CodeBlocks/MinGW/lib" />
 		</Linker>
+		<ExtraCommands>
+			<Add before="mingw32-make --directory C:\Software\udefrag\native\ -f Makefile.mingw" />
+		</ExtraCommands>
 		<Unit filename="about.cpp" />
 		<Unit filename="btd.cpp" />
 		<Unit filename="config.cpp" />
@@ -104,15 +106,6 @@
 			<code_completion />
 			<envvars />
 			<debugger />
-			<DoxyBlocks>
-				<comment_style block="0" line="0" />
-				<doxyfile_project />
-				<doxyfile_build />
-				<doxyfile_warnings />
-				<doxyfile_output />
-				<doxyfile_dot />
-				<general />
-			</DoxyBlocks>
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

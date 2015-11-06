@@ -292,7 +292,7 @@ static DWORD WINAPI start_job(LPVOID p)
 
     winx_exit_thread(0); /* 8k/12k memory leak here?   ???whocares... */
     return 0;
-    //Goes back to udefrag_start_job@line422
+    //Goes back to udefrag_start_job@line420
 }
 
 /**
@@ -317,12 +317,8 @@ void destroy_lists(udefrag_job_parameters *jp)
 
 static DWORD WINAPI wait_delete_lists_thread(LPVOID p)
 {
-    //not sure why deletion of lists fails sometimes.
-    //maybe when the start_job thread exits, pointer gets corrupted it seems?
-    //or there is some kind of battle between auto-garbage collection and this.
-    while(!gui_finished){
-        winx_sleep(333);
-    }
+    while(!gui_finished)
+        winx_sleep(250);
     destroy_lists((udefrag_job_parameters *)p);
     wait_delete_thread_finished = TRUE;
     winx_exit_thread(0);
@@ -384,7 +380,7 @@ int udefrag_start_job(char volume_letter,udefrag_job_type job_type,int flags,
     jp.cb = cb;
     jp.t = t;
     jp.p = p;
-    jp.pi.jp = (PVOID)&jp; //back reference to the pointer of Jp, so the progress info has the pointer to JP,
+    //jp.pi.jp = (PVOID)&jp; //back reference to the pointer of Jp, so the progress info has the pointer to JP,
                     // because the GUI will not have access to anything but pi.
     /*
     * We deliver the progress information from
@@ -471,10 +467,14 @@ done:
         result = 0;
     else if(jp.pi.completion_status < 0)
         result = jp.pi.completion_status;
+
+    //Code to handle the filelists deletion after GUI finishes.
+    // Needs to wait until it gets a response. If this thread exits too soon
+    // without clearing the memory, deletion of lists will fail/break/segfault.
+    // This has to be kept in mind in the terminator also, to reset variables.
     winx_create_thread(wait_delete_lists_thread,(PVOID)&jp);
-    while(!gui_finished || !wait_delete_thread_finished){
-        winx_sleep(500);
-    }
+    while(!gui_finished || !wait_delete_thread_finished)
+        winx_sleep(333);
     gui_finished = FALSE;
     wait_delete_thread_finished = FALSE;
     return result;

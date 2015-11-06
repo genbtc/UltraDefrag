@@ -106,10 +106,9 @@
 		<Unit filename="taskbar.cpp" />
 		<Unit filename="toolbar.cpp" />
 		<Unit filename="tray.cpp" />
+		<Unit filename="udefrag-internals_flags.h" />
 		<Unit filename="upgrade.cpp" />
 		<Unit filename="utils.cpp" />
-		<Unit filename="utils_win32.cpp" />
-		<Unit filename="utils_win32.h" />
 		<Unit filename="vollist.cpp" />
 		<Unit filename="wxgui.rc">
 			<Option compilerVar="WINDRES" />
@@ -119,6 +118,9 @@
 			<envvars />
 			<debugger />
 			<lib_finder disable_auto="1" />
+			<wxsmith version="1">
+				<gui name="wxWidgets" src="main.cpp" main="-- None --" init_handlers="necessary" language="CPP" />
+			</wxsmith>
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

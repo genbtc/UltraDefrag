@@ -88,7 +88,7 @@ void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
     wxString title = wxString::Format(wxT("%c:  %c %6.2lf %%"),
         winx_toupper(g_mainFrame->m_jobThread->m_letter),op,pi->percentage
     );
-    if(g_mainFrame->CheckOption(wxT("UD_DRY_RUN"))) title += wxT(" (dry run)");
+    if(g_mainFrame->CheckOption(wxT("UD_DRY_RUN"))) title += wxT(" (Dry Run)");
 
     wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,EventID_SetWindowTitle);
     event.SetString(title); wxPostEvent(g_mainFrame,event);
@@ -140,19 +140,17 @@ void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
     wxPostEvent(g_mainFrame,event);
 
     if ((pi->completion_status > 0) && (pi->isfragfileslist = 1)){
-        g_jpPtr = pi->jp;   //set Global Pointer back to JP. will be cleared soon.
+        //g_jpPtr = pi->jp;   //set Global Pointer back to &jp->
         cacheEntry->pi.fragmented_files_prb = pi->fragmented_files_prb;
-        //cacheEntry->pi.fragmented_files_prb = prb_copy(pi->fragmented_files_prb,NULL,NULL,NULL);
-//        prb_destroy(pi->fragmented_files_prb,NULL);
-        //populate the fragmented files-list tab.
-        event.SetId(EventID_PopulateFilesList);
+
+        event.SetId(EventID_PopulateFilesList); //populate the fragmented-files-list tab's listview.
         event.SetInt(letter);
-        //event.SetClientData((void *)cacheEntry);
+        //event.SetClientData((void *)cacheEntry); //instead of sending this, the target is using cacheEntry instead.
         wxPostEvent(g_mainFrame,event);
         dtrace("Successfully sent Fragmented Files list over to MainFrame::FilesPopulateList()");
-        event.SetId(EventID_UpdateVolumeStatus);
+        event.SetId(EventID_UpdateVolumeStatus);//updates status column with "Analyzed.", etc (on finished)
         wxPostEvent(g_mainFrame,event);
-        return;
+        return; //shortcut past a redundant redrawmap and updatestatusbar
     }
     //dtrace("Updating Volume Status,Redrawing Map, and Updating StatusBar.");
     // update Volume status
@@ -181,6 +179,7 @@ void JobThread::ProcessVolume(int index)
     // process volume
     int result = udefrag_validate_volume(m_letter,FALSE);
     if(result == 0){
+        //created a flags variable to hold custom flags on-the-fly such as ContextMenuHandler
         m_flags |= g_mainFrame->m_repeat ? UD_JOB_REPEAT : 0;
         result = udefrag_start_job(m_letter,m_jobType,m_flags,m_mapSize,
             reinterpret_cast<udefrag_progress_callback>(ProgressCallback),
@@ -213,24 +212,19 @@ void *JobThread::Entry()
                   dtrace("JobThread stopping!!!!!!, because m_stopped.");
                   break;
                 }
-
                 m_letter = (char)((*m_volumes)[i][0]);
                 //dtrace("About to process volume: %c",m_letter);
                 ProcessVolume(i);
-
                 /* advance overall progress to processed/selected */
                 g_mainFrame->m_processed++;
                 if(g_mainFrame->CheckOption(wxT("UD_SHOW_PROGRESS_IN_TASKBAR"))){
-
                     g_mainFrame->SetTaskbarProgressState(TBPF_NORMAL);
-
                     g_mainFrame->SetTaskbarProgressValue(g_mainFrame->m_processed, g_mainFrame->m_selected);
                 } else {
                     g_mainFrame->SetTaskbarProgressState(TBPF_NOPROGRESS);
                 }
             }
-            // complete the job
-            //TraceSource;
+            // complete the job,very important.
             PostCommandEvent(g_mainFrame,EventID_JobCompletion);
             delete m_volumes;
             m_launch = false;
@@ -298,6 +292,8 @@ void MainFrame::OnStartJob(wxCommandEvent& event)
         wxSetEnv(wxT("UD_SORTING_ORDER"),wxT("desc"));
     }
 
+    //handle single file defragmenting launched from the right click context menu
+    // as if it was launched from the explorer shell context menu handler.
     if (m_jobThread->singlefile){
         m_jobThread->m_flags |= UD_JOB_CONTEXT_MENU_HANDLER;
     }
@@ -355,7 +351,9 @@ void MainFrame::OnJobCompletion(wxCommandEvent& WXUNUSED(event))
     // shutdown when requested
     if(!m_stopped)
         ProcessCommandEvent(EventID_Shutdown);
-    dtrace("The Job Has Completed Fully.");
+
+    dtrace("The Job Has Completed Fully."); //Final Complete Message.
+    //Handle cleanup of any single file defragmenting vars.
     m_jobThread->m_flags = 0;
     m_jobThread->singlefile = FALSE;
     wxUnsetEnv(L"UD_CUT_FILTER");

@@ -831,7 +831,7 @@ static void produce_list_of_fragmented_files(udefrag_job_parameters *jp)
         }
         if(f->next == jp->filelist) break;
     }
-    jp->pi.fragmented_files_count = fragcount;
+//    jp->pi.fragmented_files_count = fragcount;
     jp->pi.bad_fragments = bad_fragments;
 
     jp->pi.fragmented_files_prb = jp->fragmented_files;
@@ -841,7 +841,9 @@ static void produce_list_of_fragmented_files(udefrag_job_parameters *jp)
  * in destroy_lists() in Udefrag.c @ Line 297ish, it will leave holes because
  * even though the destroy list is acting on ->filelist, it will even corrupt
  * other lists, such as fragmented_files_prb, due to pointers. This took me forever to realize.
- * Now the code has been changed to only free the lists upon a new Analyze operation @ Line 144.
+ * Now the code has been changed to only free the lists when FilesList.cpp finishes with the list.
+ * when OnJobCompletion in job.cpp finishes.
+ * (and for thoroughness - from before - upon a new Analyze operation @ Line 144.)
  */
 /* This will output a list of fragmented files directly to the debug window.
  *

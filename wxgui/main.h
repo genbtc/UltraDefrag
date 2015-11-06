@@ -718,12 +718,11 @@ extern wxLocale *g_locale;
 extern double g_scaleFactor;
 extern int g_iconSize;
 extern HANDLE g_synchEvent;
-extern PVOID g_jpPtr;
+//extern PVOID g_jpPtr;
 
 #endif /* _UDEFRAG_GUI_MAIN_H_ */
 
+//unused (was part of fileslist.cpp)
 #define WINDOWS_TICK 10000000
 #define SEC_TO_UNIX_EPOCH 11644473600LL
-
 unsigned WindowsTickToUnixSeconds(ULONGLONG windowsTicks);
-//#include <shellapi.h>

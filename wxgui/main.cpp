@@ -49,7 +49,7 @@ double g_scaleFactor = 1.0f;   // DPI-aware scaling factor
 int g_iconSize;                // small icon size
 HANDLE g_synchEvent = NULL;    // synchronization for threads
 UINT g_TaskbarIconMsg;         // taskbar icon overlay setup on shell restart
-PVOID g_jpPtr = NULL;       //pointer back to the udefrag-internals jp-> variable.
+//PVOID g_jpPtr = NULL;       //pointer back to the udefrag-internals jp-> variable.
 
 // =======================================================================
 //                             Web statistics

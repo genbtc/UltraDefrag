@@ -36,7 +36,6 @@
 
 #include "main.h"
 #include "udefrag-internals_flags.h"
-#include "utils_win32.h"
 //#include <string>
 
 int f_fixedIcon;
@@ -205,9 +204,11 @@ void FilesList::RClickDefragSingleEntry(wxCommandEvent& event)
     //See Code in
     wxListItem theitem = GetListItem();
     wxString itemtext;
-    itemtext.Printf(L"\"%s\";",theitem.m_text);
-    winx_setenv(L"UD_CUT_FILTER",itemtext.wchar_str());
-    dtrace("Cut Filter currently stands at: %ws",winx_getenv(L"UD_CUT_FILTER"));
+    itemtext << L"\"" << theitem.m_text << L"\";";
+    //itemtext.Printf(L"\"%ws\";",theitem.m_text);
+    //winx_setenv(L"UD_CUT_FILTER",itemtext.wchar_str());
+    wxSetEnv(L"UD_CUT_FILTER",itemtext);
+    //dtrace("Cut Filter currently stands at: %ws",winx_getenv(L"UD_CUT_FILTER"));
     g_mainFrame->m_jobThread->singlefile = TRUE;
     ProcessCommandEvent(EventID_Defrag);
     //Job.cpp @ MainFrame::OnJobCompletion @ Line 301-303 handles single-file mode.
@@ -224,16 +225,16 @@ void FilesList::RClickCopyClipboard(wxCommandEvent& event)
     wxListItem theitem = GetListItem();
     wxString itemtext = theitem.m_text;
     //std::string stlstring = std::string(itemtext.mb_str());
-    UtilsWin32::toClipboard(std::string(itemtext.mb_str()));
-//    if (wxTheClipboard->Open()){
-//        // This data objects are held by the clipboard,
-//        // so do not delete them in the app.
-//        wxTheClipboard->SetData( new wxTextDataObject(itemtext) );
-//        wxTheClipboard->Close();
-//        // This is stupid because when the app exits,
-//        // the clipboard loses its contents...
-//    }
-//    wxTheClipboard->Flush();  //this is the way to persist data on exit.
+    //UtilsWin32::toClipboard(std::string(itemtext.mb_str()));
+    if (wxTheClipboard->Open()){
+        // This data objects are held by the clipboard,
+        // so do not delete them in the app.
+        wxTheClipboard->SetData( new wxTextDataObject(itemtext) );
+        wxTheClipboard->Close();
+        // This is stupid because when the app exits,
+        // the clipboard loses its contents...
+        wxTheClipboard->Flush();  //this is the way to persist data on exit.
+    }
 }
 
 void FilesList::RClickOpenExplorer(wxCommandEvent& event)
@@ -243,7 +244,8 @@ void FilesList::RClickOpenExplorer(wxCommandEvent& event)
     //UtilsWin32::BrowseToFile(itemtext.wc_str());  //this has typedef issues. works on VC++, not working on G++
     //Utils::ShellExec(wxT("explorer.exe"),wxT("open"),itemtext); //This OPENS the file itself using the default handler.
     wxString xec;
-    xec.Printf(L"/select,\"%s\"",itemtext.wc_str());
+    xec << L"/select,\"" << itemtext.wc_str() << L"\"";
+    //xec.Printf(L"/select,\"%s\"",itemtext.wc_str());
 //    system(xec.mb_str().data());  // this does work but it quickly flashes open a black command prompt, and looks really sketchy
     ShellExecuteW(0, L"open", L"explorer.exe", xec.wc_str(), 0, SW_NORMAL);
     //this actually works, wish i found this earlier.
@@ -255,15 +257,15 @@ void FilesList::RClickMoveFile(wxCommandEvent& event)
     wxString itemtext = theitem.m_text;
 
     wchar_t *srcfilename = _wcsdup(itemtext.wc_str());
-    dtrace("srcfilename was %ws",srcfilename);
+    //dtrace("srcfilename was %ws",srcfilename);
 
     itemtext.Replace(wxT("E:\\"),wxT("C:\\"));
     wchar_t *dstfilename = _wcsdup(itemtext.wc_str());
-    dtrace("dstfilename was %ws",dstfilename);
+    //dtrace("dstfilename was %ws",dstfilename);
 
     const wchar_t *dstpath = itemtext.wc_str();
     winx_path_remove_filename((wchar_t *)dstpath);
-    dtrace("dst path was %ws",dstpath);
+    //dtrace("dst path was %ws",dstpath);
 
     Utils::createDirectoryRecursively(dstpath);
 
@@ -349,18 +351,14 @@ void MainFrame::FilesAdjustListColumns(wxCommandEvent& event)
     if(width == 0)
         width = m_filesList->GetClientSize().GetWidth();
 
-    //int border = wxSystemSettings::GetMetric(wxSYS_BORDER_X);
-
-    //dtrace("FilesList border width ......... %d", border);
     dtrace("FilesList client width ......... %d", width);
 
-    //int firstwidth = width - border*2;
-    int firstwidth = width;
     for(int i = LIST_COLUMNS - 1; i > 0; i--){
-        firstwidth -= m_filesList->GetColumnWidth(i);
+        width -= m_filesList->GetColumnWidth(i);
     }
-    m_filesList->SetColumnWidth(0, firstwidth);
-    dtrace("column %d width ....... %d", 0, firstwidth);
+
+    m_filesList->SetColumnWidth(0, width);
+    dtrace("column %d width ....... %d", 0, width);
 }
 
 void MainFrame::FilesAdjustListHeight(wxCommandEvent& WXUNUSED(event))
@@ -423,12 +421,14 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
         return;
     }
     else {
-        m_filesList->DeleteAllItems();
 
         prb_t_init(&trav,cacheEntry.pi.fragmented_files_prb);
         file = (winx_file_info *)prb_t_first(&trav,cacheEntry.pi.fragmented_files_prb);
         if (!file){
             etrace("Fragmented Files List File Not Found.");
+        }
+        else{
+            m_filesList->DeleteAllItems();
         }
 
         while (file){
@@ -455,7 +455,7 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
                 comment = wxT("[DIR]");
             else if(is_compressed(file))
                 comment = wxT("Compressed");
-            else if(is_essential_boot_file(file))
+            else if(is_essential_boot_file(file)) //needed a flag
                 comment = wxT("[BOOT]");
             else if(is_mft_file(file))
                 comment = wxT("[MFT]");
@@ -469,7 +469,7 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
             m_filesList->SetItem(currentitem,4,status);
 
             // ULONGLONG time is stored in how many of 100 nanoseconds (0.1 microseconds) or (0.0001 milliseconds) or 0.0000001 seconds.
-            //WindowsTickToUnixSeconds() (alternate way.)
+            //WindowsTickToUnixSeconds() (alternate way. unused.)
             winx_time lmt;             //Last Modified time:
             winx_filetime2winxtime(file->last_modification_time,&lmt);
 
@@ -481,7 +481,7 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
                 (int)lmt.month,(int)lmt.day,(int)lmt.year,
                 (int)lmt.hour,(int)lmt.minute,(int)lmt.second
             );
-            lmtbuffer[sizeof(lmtbuffer) - 1] = 0; //terminate witha 0.
+            lmtbuffer[sizeof(lmtbuffer) - 1] = 0; //terminate with a 0.
             wxString lastmodtime;
             lastmodtime.Printf(wxT("%hs"),lmtbuffer);
             m_filesList->SetItem(currentitem,5,lastmodtime);
@@ -497,8 +497,9 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
         dtrace("Populate List Loop Did not run, no files were added.");
 
     PostCommandEvent(this,EventID_AdjustFilesListColumns);
-    //signal to the job-thread that the GUI has finished processing files, so it can clear the lists and exit.
-    gui_fileslist_finished();   //very important.
+    //signal to the INTERNALS native job-thread that the GUI has finished
+    //  processing files, so it can clear the lists and exit.
+    gui_fileslist_finished();   //very important cleanup.
 }
 
 void MainFrame::FilesAnalyzedUpdateFilesList (wxCommandEvent& event)

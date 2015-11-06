@@ -136,8 +136,8 @@ typedef struct _udefrag_progress_info {
     ULONGLONG moved_clusters;         /* number of moved clusters */
     ULONGLONG total_moves;            /* number of moves by move_files_to_front/back functions */
     int isfragfileslist;             /* Bool to prove that the fragmented files list has been filled by Analyze.c */
-    int fragmented_files_count;       /*stores how long the list is to make it easy to iterate, yes i know i suck */
-    PVOID jp;                          /* pointer to the jp-> backreference, passed to both callbacks, so GUI can destroy it. */
+    //int fragmented_files_count;       /*stores how long the list is to make it easy to iterate, yes i know i suck */
+    //PVOID jp;                          /* pointer to the jp-> backreference, passed to both callbacks, so GUI can destroy it. */
     struct prb_table *fragmented_files_prb; /* list of fragmented files; does not contain filtered out files */
 } udefrag_progress_info;
 
