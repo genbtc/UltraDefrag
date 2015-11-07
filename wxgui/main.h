@@ -418,19 +418,20 @@ public:
     ~FilesList() {}
 
     void OnMouseLDClick(wxMouseEvent& event);
-    void OnMouseRClick(wxMouseEvent& event);
-    void OnSelectionChange(wxListEvent& event);
+    void OnItemRClick(wxListEvent& event);
+    void OnSelect(wxListEvent& event);
+    void OnDeSelect(wxListEvent& event);
     //void RClickMoveFile(wxCommandEvent& event);
     void RClickOpenExplorer(wxCommandEvent& event);
     void RClickCopyClipboard(wxCommandEvent& event);
     void RClickDefragSingleEntry(wxCommandEvent& event);
     void RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event);
 
-    wxListItem GetListItem();
-
+    wxListItem GetListItem(int id,int col);
+    long currentlyselected;
     DECLARE_EVENT_TABLE()
 private:
-    long currentlyselected;
+
 };
 
 class ClusterMap: public wxWindow {

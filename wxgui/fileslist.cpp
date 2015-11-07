@@ -60,6 +60,7 @@ enum
 
 void MainFrame::InitFilesList()
 {
+    m_filesList->currentlyselected = -1;
     // save default font used for the list
     m_filesListFont = new wxFont(m_filesList->GetFont());
 
@@ -150,12 +151,12 @@ void MainFrame::InitPopupMenus(){
 	//changed to customized drive-populated submenu for move file
 }
 
-wxListItem FilesList::GetListItem()
+wxListItem FilesList::GetListItem(int id = NULL,int col = NULL)
 {
     //Currently gets column 0, of what is currently selected.
     wxListItem theitem;
-    theitem.m_itemId = currentlyselected;
-    theitem.m_col = 0;
+    theitem.m_itemId = (id!=NULL) ? id : currentlyselected;
+    theitem.m_col = (col!=NULL) ? col : 0;
     theitem.m_mask = wxLIST_MASK_TEXT;
     GetItem(theitem);
     return theitem;
@@ -164,17 +165,16 @@ wxListItem FilesList::GetListItem()
 //                            Event handlers
 // =======================================================================
 
+
 BEGIN_EVENT_TABLE(FilesList, wxListView)
     EVT_LEFT_DCLICK(FilesList::OnMouseLDClick)
-    EVT_RIGHT_DOWN(FilesList::OnMouseRClick)
-
-    EVT_LIST_ITEM_SELECTED(wxID_ANY,FilesList::OnSelectionChange)
-    EVT_LIST_ITEM_DESELECTED(wxID_ANY,FilesList::OnSelectionChange)
-
-    EVT_MENU(ID_RPOPMENU_DEFRAG_SINGLE_1003,FilesList::RClickDefragSingleEntry)
-    EVT_MENU(ID_RPOPMENU_OPEN_EXPLORER_1004,FilesList::RClickOpenExplorer)
+    EVT_LIST_ITEM_RIGHT_CLICK(wxID_ANY,FilesList::OnItemRClick)
+    EVT_LIST_ITEM_SELECTED(wxID_ANY,   FilesList::OnSelect)
+    EVT_LIST_ITEM_DESELECTED(wxID_ANY, FilesList::OnDeSelect)
+    EVT_MENU(ID_RPOPMENU_DEFRAG_SINGLE_1003, FilesList::RClickDefragSingleEntry)
+    EVT_MENU(ID_RPOPMENU_OPEN_EXPLORER_1004, FilesList::RClickOpenExplorer)
     EVT_MENU(ID_RPOPMENU_COPY_CLIPBOARD_1005,FilesList::RClickCopyClipboard)
-    //EVT_MENU(ID_RPOPMENU_MOVE_FILE_1006,FilesList::RClickMoveFile)
+    //EVT_MENU(ID_RPOPMENU_MOVE_FILE_1006,   FilesList::RClickMoveFile)
     EVT_MENU_RANGE(2065,2090,FilesList::RClickSubMenuMoveFiletoDriveX)
 END_EVENT_TABLE()
 //events 2065-2090 are signifying drive A-Z (their letter's char2int)
@@ -285,27 +285,27 @@ void FilesList::RClickOpenExplorer(wxCommandEvent& event)
 
 void FilesList::OnMouseLDClick(wxMouseEvent& event)
 {
-    if(!g_mainFrame->m_busy){
-        // left double click starts default action
-        if(event.GetEventType() == wxEVT_LEFT_DCLICK)
-            PostCommandEvent(g_mainFrame,ID_DefaultAction);
-    }
+//    if(!g_mainFrame->m_busy)
+//        PostCommandEvent(g_mainFrame,ID_DefaultAction);
     event.Skip();
 }
 
-void FilesList::OnMouseRClick(wxMouseEvent& event)
+void FilesList::OnItemRClick(wxListEvent& event)
 {
-    if (currentlyselected != -1){
-        //right click brings up popup menu. (but only if something is selected.
-        if(event.GetEventType() == wxEVT_RIGHT_DOWN)
-            this->PopupMenu(g_mainFrame->m_RClickPopupMenu1);
-    }
+    if (currentlyselected != -1)
+        this->PopupMenu(g_mainFrame->m_RClickPopupMenu1);
     event.Skip();
 }
 
-void FilesList::OnSelectionChange(wxListEvent& event)
+void FilesList::OnSelect(wxListEvent& event)
 {
-    currentlyselected =  event.m_itemIndex;
+    currentlyselected = event.m_itemIndex;
+    event.Skip();
+}
+
+void FilesList::OnDeSelect(wxListEvent& event)
+{
+    currentlyselected = -1;
     event.Skip();
 }
 
@@ -449,6 +449,7 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
     //signal to the INTERNALS native job-thread that the GUI has finished
     //  processing files, so it can clear the lists and exit.
     gui_fileslist_finished();   //very important cleanup.
+    delete file;
 }
 
 /** @} */
