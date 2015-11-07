@@ -64,7 +64,7 @@ void MainFrame::InitVolList()
     int width = this->GetClientSize().GetWidth() - borderx * 8;
     int lastColumnWidth = width;
     dtrace("INIT - client width ......... %d", width);
-    dtrace("INIT - borderx width ......... %d", borderx);
+    dtrace("INIT - border width ......... %d", borderx);
 
     int format[] = {
         wxLIST_FORMAT_LEFT, wxLIST_FORMAT_LEFT,
@@ -291,15 +291,13 @@ void MainFrame::OnListSize(wxSizeEvent& event)
 
 void *ListThread::Entry()
 {
-
     while(!g_mainFrame->CheckForTermination(200)){
         if(m_rescan){
-            dtrace("About to repopulate list from ListThread Scanner in vollist.cpp");
+            dtrace("About to populate drive list from ListThread Scanner in vollist.cpp");
             PostCommandEvent(g_mainFrame,ID_PopulateList);
             m_rescan = false;
         }
     }
-
     return NULL;
 }
 
@@ -424,6 +422,7 @@ void MainFrame::PopulateList(wxCommandEvent& event)
     if(!v) return;
 
     m_vList->DeleteAllItems();
+    m_DriveSubMenu = new wxMenu();  //make the submenu of fileslist popupmenu.
 
     for(int i = 0; v[i].letter; i++){
         wxString label;
@@ -442,7 +441,12 @@ void MainFrame::PopulateList(wxCommandEvent& event)
         e.SetId(ID_UpdateVolumeStatus);
         e.SetInt((int)v[i].letter);
         ProcessEvent(e);
+
+        m_DriveSubMenu->Append(2000+(int)v[i].letter,label,L""); //Adding each drive to submenu
+        // encode the drive-letter char as an int + 2000 in the EventID, and listen on a range of ID's from 2065-2090 (A-Z)
+        // when clicked, this ID will run FilesList::RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event) @ fileslist.cpp
     }
+    m_RClickPopupMenu1->AppendSubMenu(m_DriveSubMenu,wxT("Move file to Drive:"));    //add the submenu to the menu.
 
     ProcessCommandEvent(ID_AdjustListColumns);
 

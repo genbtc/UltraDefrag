@@ -200,6 +200,7 @@ void MainFrame::InitMenu()
             menuBootConfig, wxEmptyString
         );
     menuSettings->Append(ID_ReportOptions);
+    menuSettings->Append(ID_ChooseFont);
 
     // create debug menu
     wxMenu *menuDebug = new wxMenu;

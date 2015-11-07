@@ -365,4 +365,22 @@ void MainFrame::OnReportOptions(wxCommandEvent& WXUNUSED(event))
         Utils::ShellExec(wxT(".\\options\\udreportopts.lua"),wxT("open"));
 }
 
+void MainFrame::ChooseFont(wxCommandEvent& WXUNUSED(event))
+{
+    wxFontDialog dialog = new wxFontDialog();
+    int result = dialog.ShowModal();
+    if (result==5101)
+        return;
+    wxFontData fontDataOUT = dialog.GetFontData();  //Get "font data" from dialog.
+    wxFont font = fontDataOUT.GetChosenFont();
+    m_vList->SetFont(font);
+    m_vList->Refresh();
+    //ProcessCommandEvent(ID_AdjustListColumns);
+    m_filesList->SetFont(font);
+    m_filesList->Refresh();
+    //ProcessCommandEvent(ID_AdjustFilesListColumns);
+    dtrace("Chose new Font = %ws,%d", font.GetFaceName().wc_str(),font.GetPointSize());
+    dialog.EndModal(result);
+}
+
 /** @} */

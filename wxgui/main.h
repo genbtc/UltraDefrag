@@ -65,6 +65,7 @@
 #include <wx/encconv.h> //genbtc for encodings
 #include <wx/menu.h>//genbtc (right-click menu)
 #include <wx/clipbrd.h>//genBTC (right-click menu) copy to clipboard
+#include <wx/fontdlg.h>//genBTC (font-chooser)
 #if wxUSE_UNICODE
 #define wxCharStringFmtSpec "%ls"
 #else
@@ -146,6 +147,7 @@ enum {
     ID_BootScript,
 
     ID_ReportOptions,
+    ID_ChooseFont,
 
     ID_SortByPath,
     ID_SortBySize,
@@ -177,7 +179,6 @@ enum {
     ID_AdjustListColumns,
     ID_AdjustListHeight,
     ID_AdjustFilesListColumns,      //genBTC
-    ID_AdjustFilesListHeight,       //genBTC
     ID_AdjustSystemTrayIcon,
     ID_AdjustTaskbarIconOverlay,
     ID_BootChange,
@@ -196,7 +197,6 @@ enum {
     ID_UpdateStatusBar,
     ID_UpdateVolumeInformation,
     ID_UpdateVolumeStatus,
-    ID_FilesAnalyzedUpdateFilesList,    //genBTC
 
     // tray icon menu identifiers
     ID_ShowHideMenu,
@@ -364,19 +364,6 @@ public:
     bool m_rescan;
 };
 
-//genBTC Fileslist
-class ListFilesThread: public wxThread {
-public:
-    ListFilesThread() : wxThread(wxTHREAD_JOINABLE) {
-        m_rescan = true; Create(); Run();
-    }
-    ~ListFilesThread() { Wait(); }
-
-    virtual void *Entry();
-
-    bool m_rescan;
-};
-
 class UpgradeThread: public wxThread {
 public:
     UpgradeThread(int level) : wxThread(wxTHREAD_JOINABLE) {
@@ -430,8 +417,6 @@ public:
         wxDefaultPosition,wxDefaultSize,style) {}
     ~FilesList() {}
 
-    void OnKeyDown(wxKeyEvent& event);
-    void OnKeyUp(wxKeyEvent& event);
     void OnMouseLDClick(wxMouseEvent& event);
     void OnMouseRClick(wxMouseEvent& event);
     void OnSelectionChange(wxListEvent& event);
@@ -439,12 +424,12 @@ public:
     void RClickOpenExplorer(wxCommandEvent& event);
     void RClickCopyClipboard(wxCommandEvent& event);
     void RClickDefragSingleEntry(wxCommandEvent& event);
+    void RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event);
 
     wxListItem GetListItem();
-    void InitMembers();
+
     DECLARE_EVENT_TABLE()
 private:
-    wxMenu *WxPopupMenu1;
     long currentlyselected;
 };
 
@@ -511,6 +496,7 @@ public:
     void OnBootScript(wxCommandEvent& event);
 
     void OnReportOptions(wxCommandEvent& event);
+    void ChooseFont(wxCommandEvent& event);//genBTC fontpicker.
 
     // help menu handlers
     void OnHelpContents(wxCommandEvent& event);
@@ -558,12 +544,7 @@ public:
 
     // Files List (new) genBTC
     void FilesAdjustListColumns(wxCommandEvent& event);
-    void FilesAdjustListHeight(wxCommandEvent& event);
     void FilesOnListSize(wxSizeEvent& event);
-    void FilesOnSplitChanged(wxSplitterEvent& event);
-    void FilesOnSkipRem(wxCommandEvent& event);
-    void FilesOnRescan(wxCommandEvent& event);
-    void FilesAnalyzedUpdateFilesList(wxCommandEvent& event);
     void FilesPopulateList(wxCommandEvent& event);
 
     // common routines
@@ -588,7 +569,10 @@ public:
     JobsCache m_jobsCache;
     JobsCacheEntry *m_currentJob;
 
+    wxMenu     *m_RClickPopupMenu1;     //genBTC Right Click Popup Menu
+    wxMenu     *m_DriveSubMenu;         //genBTC Right Click Popup Menu
 private:
+    void InitPopupMenus();              //genBTC Right Click Popup Menu
     bool GetLocaleFolder(wxString& CurrentLocaleDir);
     void InitMenu();
     void InitToolbar();
@@ -662,7 +646,6 @@ private:
     ConfigThread    *m_configThread;
     CrashInfoThread *m_crashInfoThread;
     ListThread      *m_listThread;
-    ListFilesThread *m_listfilesThread;
     UpgradeThread   *m_upgradeThread;
 
     DECLARE_EVENT_TABLE()

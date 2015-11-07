@@ -43,17 +43,6 @@ int f_fixedDirtyIcon;
 int f_removableIcon;
 int f_removableDirtyIcon;
 
-//genBTC fileslist.cpp right click menu
-enum
-{
-    ID_RPOPMENU_DEFRAG_SINGLE_1003 = 1003,
-    ID_RPOPMENU_OPEN_EXPLORER_1004 = 1004,
-    ID_RPOPMENU_COPY_CLIPBOARD_1005 = 1005,
-    ID_RPOPMENU_MOVE_FILE_1006 = 1006,
-
-    ID_DUMMY_VALUE_ //don't remove this value unless you have other enum values
-};
-
 // =======================================================================
 //                           ListView of fragmented files.
 // =======================================================================
@@ -72,14 +61,12 @@ void MainFrame::InitFilesList()
         }
     }
 
-
     // adjust widths so all the columns will fit to the window
-    //int width = m_filesList->GetClientSize().GetWidth();
     int borderx = wxSystemSettings::GetMetric(wxSYS_BORDER_X);
     int width = this->GetClientSize().GetWidth() - borderx * 8;
     int lastColumnWidth = width;
-    dtrace("INIT - client width ......... %d", width);
-    dtrace("INIT - border width ......... %d", borderx);
+    dtrace("INIT - client width ........... %d", width);
+    dtrace("INIT - border width ........... %d", borderx);
 
     int format[] = {
         wxLIST_FORMAT_LEFT, wxLIST_FORMAT_LEFT,
@@ -96,7 +83,7 @@ void MainFrame::InitFilesList()
         m_fcolsr[i] = ratios[i];    //initialize with fixed values from above
         int w = m_fcolsw[i] = (int)floor(m_fcolsr[i] * width);        //genBTC - set to default ratios.
         m_filesList->InsertColumn(i, wxEmptyString, format[i], w);
-        dtrace("FilesList column %d width ....... %d", i, w);
+        dtrace("column %d width ......... %d", i, w);
         lastColumnWidth -= w;
     }
 
@@ -109,7 +96,7 @@ void MainFrame::InitFilesList()
     m_filesList->InsertColumn(LIST_COLUMNS - 1,
         wxEmptyString, format[LIST_COLUMNS - 1], w
     );
-    dtrace("FilesList column %d width ....... %d", LIST_COLUMNS - 1, w);
+    dtrace("column %d width ......... %d", LIST_COLUMNS - 1, w);
 
     // attach drive icons
     int size = g_iconSize;
@@ -122,15 +109,12 @@ void MainFrame::InitFilesList()
 
     // ensure that the list will cover integral number of items
     m_filesListHeight = 0xFFFFFFFF; // prevent expansion of the list
-    //m_filesList->InsertItem(0,wxT("hi"),0);
-    ProcessCommandEvent(ID_AdjustFilesListHeight);
 
     Connect(wxEVT_SIZE,wxSizeEventHandler(MainFrame::FilesOnListSize),NULL,this);
 //    m_splitter->Connect(wxEVT_COMMAND_SPLITTER_SASH_POS_CHANGED,
 //        wxSplitterEventHandler(MainFrame::FilesOnSplitChanged),NULL,this);
 
-    m_filesList->InitMembers();
-
+    InitPopupMenus();
 }
 /*Ideas:
 	//Move to First Free Region (that fits fully)
@@ -146,47 +130,14 @@ void MainFrame::InitFilesList()
  *
  *
 */
-void FilesList::InitMembers(){
-	WxPopupMenu1 = new wxMenu(wxT(""));
-	WxPopupMenu1->Append(ID_RPOPMENU_DEFRAG_SINGLE_1003, wxT("Defragment Now"), wxT(""), wxITEM_NORMAL);
-	WxPopupMenu1->Append(ID_RPOPMENU_OPEN_EXPLORER_1004, wxT("Open in Explorer"), wxT(""), wxITEM_NORMAL);
-	WxPopupMenu1->Append(ID_RPOPMENU_COPY_CLIPBOARD_1005, wxT("Copy path to clipboard"), wxT(""), wxITEM_NORMAL);
-	WxPopupMenu1->Append(ID_RPOPMENU_MOVE_FILE_1006, wxT("Move file from E: to C:"), wxT(""), wxITEM_NORMAL);
-
+void MainFrame::InitPopupMenus(){
+	m_RClickPopupMenu1 = new wxMenu(wxT(""));
+	m_RClickPopupMenu1->Append(ID_RPOPMENU_DEFRAG_SINGLE_1003, wxT("Defragment Now"), wxT(""), wxITEM_NORMAL);
+	m_RClickPopupMenu1->Append(ID_RPOPMENU_OPEN_EXPLORER_1004, wxT("Open in Explorer"), wxT(""), wxITEM_NORMAL);
+	m_RClickPopupMenu1->Append(ID_RPOPMENU_COPY_CLIPBOARD_1005, wxT("Copy path to clipboard"), wxT(""), wxITEM_NORMAL);
+	//m_RClickPopupMenu1->Append(ID_RPOPMENU_MOVE_FILE_1006, wxT("Move file from E: to C:"), wxT(""), wxITEM_NORMAL);
+	//changed to customized drive-populated submenu for move file
 }
-//=======================================================================
-//                           scanner thread
-//=======================================================================
-//currently mostly-disabled.
-void *ListFilesThread::Entry()
-{
-    while(!g_mainFrame->CheckForTermination(200)){
-        if(m_rescan){
-            //PostCommandEvent(g_mainFrame,ID_PopulateFilesList);
-            m_rescan = false;
-        }
-    }
-    return NULL;
-}
-
-// =======================================================================
-//                            Event handlers
-// =======================================================================
-
-BEGIN_EVENT_TABLE(FilesList, wxListView)
-    EVT_KEY_DOWN(FilesList::OnKeyDown)
-    EVT_KEY_UP(FilesList::OnKeyUp)
-    EVT_LEFT_DCLICK(FilesList::OnMouseLDClick)
-    EVT_RIGHT_DOWN(FilesList::OnMouseRClick)
-
-    EVT_LIST_ITEM_SELECTED(wxID_ANY,FilesList::OnSelectionChange)
-    EVT_LIST_ITEM_DESELECTED(wxID_ANY,FilesList::OnSelectionChange)
-
-    EVT_MENU(ID_RPOPMENU_DEFRAG_SINGLE_1003,FilesList::RClickDefragSingleEntry)
-    EVT_MENU(ID_RPOPMENU_OPEN_EXPLORER_1004,FilesList::RClickOpenExplorer)
-    EVT_MENU(ID_RPOPMENU_COPY_CLIPBOARD_1005,FilesList::RClickCopyClipboard)
-    EVT_MENU(ID_RPOPMENU_MOVE_FILE_1006,FilesList::RClickMoveFile)
-END_EVENT_TABLE()
 
 wxListItem FilesList::GetListItem()
 {
@@ -198,26 +149,81 @@ wxListItem FilesList::GetListItem()
     GetItem(theitem);
     return theitem;
 }
+// =======================================================================
+//                            Event handlers
+// =======================================================================
+//genBTC fileslist.cpp right click menu
+enum
+{
+    ID_RPOPMENU_DEFRAG_SINGLE_1003 = 1003,
+    ID_RPOPMENU_OPEN_EXPLORER_1004 = 1004,
+    ID_RPOPMENU_COPY_CLIPBOARD_1005 = 1005,
+    ID_RPOPMENU_MOVE_FILE_1006 = 1006,
+
+    ID_DUMMY_VALUE_ //don't remove this value unless you have other enum values
+};
+
+BEGIN_EVENT_TABLE(FilesList, wxListView)
+    EVT_LEFT_DCLICK(FilesList::OnMouseLDClick)
+    EVT_RIGHT_DOWN(FilesList::OnMouseRClick)
+
+    EVT_LIST_ITEM_SELECTED(wxID_ANY,FilesList::OnSelectionChange)
+    EVT_LIST_ITEM_DESELECTED(wxID_ANY,FilesList::OnSelectionChange)
+
+    EVT_MENU(ID_RPOPMENU_DEFRAG_SINGLE_1003,FilesList::RClickDefragSingleEntry)
+    EVT_MENU(ID_RPOPMENU_OPEN_EXPLORER_1004,FilesList::RClickOpenExplorer)
+    EVT_MENU(ID_RPOPMENU_COPY_CLIPBOARD_1005,FilesList::RClickCopyClipboard)
+    EVT_MENU(ID_RPOPMENU_MOVE_FILE_1006,FilesList::RClickMoveFile)
+    EVT_MENU_RANGE(2065,2090,FilesList::RClickSubMenuMoveFiletoDriveX)
+END_EVENT_TABLE()
+//events 2065-2090 are signifying drive A-Z (their letter's char2int)
+//calls this function to move the file to the corresponding drive's eventID.
+void FilesList::RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event)
+{
+    wxListItem theitem = GetListItem();
+    wxString itemtext = theitem.m_text;
+
+    wchar_t letter = (wchar_t)(event.GetId() - 2000);
+    wchar_t *srcfilename = _wcsdup(itemtext.wc_str());
+    wchar_t *dstfilename = _wcsdup(itemtext.wc_str());
+
+    dstfilename[0] = letter;
+
+    wchar_t *dstpath = _wcsdup(dstfilename);
+    winx_path_remove_filename(dstpath);
+
+    Utils::createDirectoryRecursively(dstpath);
+    CopyFile(srcfilename,dstfilename,1);
+
+//    dtrace("srcfilename was %ws",srcfilename);
+//    dtrace("dstfilename was %ws",dstfilename);
+//    dtrace("dst path was %ws",dstpath);
+    delete srcfilename;    delete dstfilename;    delete dstpath;
+}
 
 void FilesList::RClickDefragSingleEntry(wxCommandEvent& event)
 {
-    //See Code in
     wxListItem theitem = GetListItem();
-    wxString itemtext;
-    itemtext << L"\"" << theitem.m_text << L"\";";
-    //itemtext.Printf(L"\"%ws\";",theitem.m_text);
-    //winx_setenv(L"UD_CUT_FILTER",itemtext.wchar_str());
-    wxSetEnv(L"UD_CUT_FILTER",itemtext);
+    wxString filtertext;
+    filtertext << L"\"" << theitem.m_text << L"\";";
+    //filtertext.Printf(L"\"%ws\";",theitem.m_text);
+    //winx_setenv(L"UD_CUT_FILTER",filtertext.wchar_str());
+    wxSetEnv(L"UD_CUT_FILTER",filtertext);
     //dtrace("Cut Filter currently stands at: %ws",winx_getenv(L"UD_CUT_FILTER"));
     g_mainFrame->m_jobThread->singlefile = TRUE;
-    ProcessCommandEvent(ID_Defrag);
+    ProcessCommandEvent(ID_Defrag); //calls the defrag routine.
     //Job.cpp @ MainFrame::OnJobCompletion @ Line 301-303 handles single-file mode.
     //Job.cpp @ MainFrame::OnJobCompletion @ Line 358-361 handles cleanup.
     //works but needs two considerations:
-    //1. The fragmented files list goes away after you finish defragmenting.
+    //x1x. The fragmented files list goes away after you finish defragmenting.
     //  This causes you to have to analyze again just to get the list back.
-    //2. After you get the list back, defragging another file causes ANOTHER analysis before the defrag.
+    //x2x. After you get the list back, defragging another file causes ANOTHER analysis before the defrag.
     //  we have to cut down on the number of these analyses.
+    //OK I Cut down on the analyses but now the issue is:
+    // 1. The defragmented file does not get removed from the list after the defrag job.
+    // 2. Every single file defrag still does a full analyze-pass.(udefrag-internals fault)
+    // 3. Does not work if you selected another Drive on page 1.
+    //    (can be easily fixed by pre-selecting in this function before we call defrag).
 }
 
 void FilesList::RClickCopyClipboard(wxCommandEvent& event)
@@ -275,34 +281,6 @@ void FilesList::RClickMoveFile(wxCommandEvent& event)
 //      calling these crash the program.
 }
 
-void FilesList::OnKeyDown(wxKeyEvent& event)
-{
-    if(!g_mainFrame->m_busy) event.Skip();
-}
-
-void FilesList::OnKeyUp(wxKeyEvent& event)
-{
-    if(!g_mainFrame->m_busy){
-/*         dtrace("Modifier: %d ... KeyCode: %d", \
- *             event.GetModifiers(), event.GetKeyCode());
- */
-        switch(event.GetKeyCode()){
-        case WXK_RETURN:
-        case WXK_NUMPAD_ENTER:
-            if(event.GetModifiers() == wxMOD_NONE)
-                PostCommandEvent(g_mainFrame,ID_DefaultAction);
-            break;
-        case 'A':
-            if(event.GetModifiers() == wxMOD_CONTROL)
-                PostCommandEvent(g_mainFrame,ID_SelectAll);
-            break;
-        default:
-            break;
-        }
-        event.Skip();
-    }
-}
-
 void FilesList::OnMouseLDClick(wxMouseEvent& event)
 {
     if(!g_mainFrame->m_busy){
@@ -318,30 +296,14 @@ void FilesList::OnMouseRClick(wxMouseEvent& event)
     if (currentlyselected != -1){
         //right click brings up popup menu. (but only if something is selected.
         if(event.GetEventType() == wxEVT_RIGHT_DOWN)
-            this->PopupMenu(WxPopupMenu1);
+            this->PopupMenu(g_mainFrame->m_RClickPopupMenu1);
     }
     event.Skip();
 }
 
 void FilesList::OnSelectionChange(wxListEvent& event)
 {
-//    wxListItem info;
-//    info.m_itemId = event.m_itemIndex;
-//    info.m_col = 0;
-//    info.m_mask = wxLIST_MASK_TEXT;
-//    GetItem(info);
-//    dtrace("path was %s",info.m_text.mb_str(wxConvUTF8).data());
     currentlyselected =  event.m_itemIndex;
-//    if(currentlyselected != -1){
-//        char letter = (char)GetItemText(i)[0];
-//        JobsCacheEntry *currentJob = g_mainFrame->m_jobsCache[(int)letter];
-//        if(g_mainFrame->m_currentJob != currentJob){
-//            g_mainFrame->m_currentJob = currentJob;
-//            PostCommandEvent(g_mainFrame,ID_UpdateStatusBar);
-//            PostCommandEvent(g_mainFrame,ID_FilesAnalyzedUpdateFilesList);
-//        }
-//    }
-//    PostCommandEvent(g_mainFrame,ID_FilesAnalyzedUpdateFilesList);
     event.Skip();
 }
 
@@ -351,27 +313,14 @@ void MainFrame::FilesAdjustListColumns(wxCommandEvent& event)
     if(width == 0)
         width = m_filesList->GetClientSize().GetWidth();
 
-    dtrace("FilesList client width ......... %d", width);
+    dtrace("client width ............ %d", width);
 
     for(int i = LIST_COLUMNS - 1; i > 0; i--){
         width -= m_filesList->GetColumnWidth(i);
     }
 
     m_filesList->SetColumnWidth(0, width);
-    dtrace("column %d width ....... %d", 0, width);
-}
-
-void MainFrame::FilesAdjustListHeight(wxCommandEvent& WXUNUSED(event))
-{
-    //Commented out, because its not needed.
-}
-
-void MainFrame::FilesOnSplitChanged(wxSplitterEvent& event)
-{
-    PostCommandEvent(this,ID_AdjustFilesListHeight);
-    PostCommandEvent(this,ID_AdjustFilesListColumns);
-
-    event.Skip();
+    dtrace("column %d width .......... %d", 0, width);
 }
 
 void MainFrame::FilesOnListSize(wxSizeEvent& event)
@@ -433,23 +382,20 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
 
         while (file){
 
-            wxString test((const wchar_t *)(file->path + 4));
+            wxString test((const wchar_t *)(file->path + 4)); /* skip the 4 chars: \??\  */
             m_filesList->InsertItem(currentitem,test,2);
 
             wxString numfragments = wxString::Format(wxT("%d"),file->disp.fragments);
             m_filesList->SetItem(currentitem,1,numfragments);
 
             int bpc = m_volinfocache.bytes_per_cluster;
-//            if (bpc > 32768 || bpc < 512){
-//                etrace("m_volinfocache was not available!");
-//                return;
-//            }
             ULONGLONG filesizebytes = file->disp.clusters * bpc;
             char filesize_hr[32];
             winx_bytes_to_hr(filesizebytes,2,filesize_hr,sizeof(filesize_hr));
-            wxString filename;
-            filename.Printf(wxT("%hs"),filesize_hr);
-            m_filesList->SetItem(currentitem,2,filename);
+//            wxString filename;
+//            filename.Printf(wxT("%hs"),filesize_hr);
+            wxString filesize = wxString::FromUTF8(filesize_hr);
+            m_filesList->SetItem(currentitem,2,filesize);
 
             if(is_directory(file))
                 comment = wxT("[DIR]");
@@ -491,33 +437,16 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
             file = (winx_file_info *)prb_t_next(&trav);
         }
     }
-    if (currentitem > 0)
+    if (currentitem > 0){
         dtrace("Successfully finished with the Populate List Loop");
+        PostCommandEvent(this,ID_AdjustFilesListColumns);
+    }
     else
         dtrace("Populate List Loop Did not run, no files were added.");
 
-    PostCommandEvent(this,ID_AdjustFilesListColumns);
     //signal to the INTERNALS native job-thread that the GUI has finished
     //  processing files, so it can clear the lists and exit.
     gui_fileslist_finished();   //very important cleanup.
 }
-
-void MainFrame::FilesAnalyzedUpdateFilesList (wxCommandEvent& event)
-{
-    //commented out because its not needed.
-}
-void MainFrame::FilesOnSkipRem(wxCommandEvent& WXUNUSED(event))
-{
-    if(!m_busy){
-        m_skipRem = m_menuBar->FindItem(ID_SkipRem)->IsChecked();
-        m_listfilesThread->m_rescan = true;
-    }
-}
-
-void MainFrame::FilesOnRescan(wxCommandEvent& WXUNUSED(event))
-{
-    if(!m_busy) m_listfilesThread->m_rescan = true;
-}
-
 
 /** @} */

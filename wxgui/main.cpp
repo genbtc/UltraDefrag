@@ -481,6 +481,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_BootScript, MainFrame::OnBootScript)
 
     EVT_MENU(ID_ReportOptions, MainFrame::OnReportOptions)
+    EVT_MENU(ID_ChooseFont, MainFrame::ChooseFont)          //genBTC
 
     // help menu
     EVT_MENU(ID_HelpContents,     MainFrame::OnHelpContents)
@@ -504,7 +505,6 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_AdjustListColumns, MainFrame::AdjustListColumns)
     EVT_MENU(ID_AdjustListHeight,  MainFrame::AdjustListHeight)
     EVT_MENU(ID_AdjustFilesListColumns, MainFrame::FilesAdjustListColumns)//genBTC
-    EVT_MENU(ID_AdjustFilesListHeight,  MainFrame::FilesAdjustListHeight)//genBTC
     EVT_MENU(ID_AdjustSystemTrayIcon,     MainFrame::AdjustSystemTrayIcon)
     EVT_MENU(ID_AdjustTaskbarIconOverlay, MainFrame::AdjustTaskbarIconOverlay)
     EVT_MENU(ID_BootChange,        MainFrame::OnBootChange)
@@ -523,7 +523,6 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_UpdateStatusBar,   MainFrame::UpdateStatusBar)
     EVT_MENU(ID_UpdateVolumeInformation, MainFrame::UpdateVolumeInformation)
     EVT_MENU(ID_UpdateVolumeStatus,      MainFrame::UpdateVolumeStatus)
-    EVT_MENU(ID_FilesAnalyzedUpdateFilesList, MainFrame::FilesAnalyzedUpdateFilesList)//genBTC
 END_EVENT_TABLE()
 
 // =======================================================================
@@ -544,7 +543,7 @@ void MainFrame::SetWindowTitle(wxCommandEvent& event)
 {
     if(event.GetString().IsEmpty()){
         if(CheckOption(wxT("UD_DRY_RUN"))){
-            SetTitle(*m_title + wxT(" (dry run)"));
+            SetTitle(*m_title + wxT(" (Dry Run)"));
         } else {
             SetTitle(*m_title);
         }
@@ -622,7 +621,6 @@ void MainFrame::SelectAll(wxCommandEvent& WXUNUSED(event))
     m_vList->Focus(0);
 }
 
-/** @} */
 unsigned WindowsTickToUnixSeconds(ULONGLONG windowsTicks)
 {
    ULONGLONG secs;
@@ -634,3 +632,4 @@ unsigned WindowsTickToUnixSeconds(ULONGLONG windowsTicks)
       return (time_t) -1;   // value not representable as a POSIX time
    return t;
 }
+/** @} */

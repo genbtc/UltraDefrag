@@ -163,6 +163,7 @@ void MainFrame::OnLocaleChange(wxCommandEvent& event)
     m_subMenuBootConfig->SetItemLabel(_("&Boot time scan"));
     m_subMenuSortingConfig->SetItemLabel(_("&Sorting"));
     UD_UpdateMenuItemLabel(ID_ReportOptions , "&Reports" , "Ctrl+R");
+    UD_UpdateMenuItemLabel(ID_ChooseFont , "&Change Font" , "");
 
     // language sub-menu
     UD_UpdateMenuItemLabel(ID_LangShowLog    , "&View change log"            , "");
