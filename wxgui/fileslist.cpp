@@ -43,6 +43,17 @@ int f_fixedDirtyIcon;
 int f_removableIcon;
 int f_removableDirtyIcon;
 
+//genBTC fileslist.cpp right click menu
+enum
+{
+    ID_RPOPMENU_DEFRAG_SINGLE_1003 = 1003,
+    ID_RPOPMENU_OPEN_EXPLORER_1004 = 1004,
+    ID_RPOPMENU_COPY_CLIPBOARD_1005 = 1005,
+   // ID_RPOPMENU_MOVE_FILE_1006 = 1006,
+
+    ID_DUMMY_VALUE_ //don't remove this value unless you have other enum values
+};
+
 // =======================================================================
 //                           ListView of fragmented files.
 // =======================================================================
@@ -152,16 +163,6 @@ wxListItem FilesList::GetListItem()
 // =======================================================================
 //                            Event handlers
 // =======================================================================
-//genBTC fileslist.cpp right click menu
-enum
-{
-    ID_RPOPMENU_DEFRAG_SINGLE_1003 = 1003,
-    ID_RPOPMENU_OPEN_EXPLORER_1004 = 1004,
-    ID_RPOPMENU_COPY_CLIPBOARD_1005 = 1005,
-    ID_RPOPMENU_MOVE_FILE_1006 = 1006,
-
-    ID_DUMMY_VALUE_ //don't remove this value unless you have other enum values
-};
 
 BEGIN_EVENT_TABLE(FilesList, wxListView)
     EVT_LEFT_DCLICK(FilesList::OnMouseLDClick)
@@ -173,7 +174,7 @@ BEGIN_EVENT_TABLE(FilesList, wxListView)
     EVT_MENU(ID_RPOPMENU_DEFRAG_SINGLE_1003,FilesList::RClickDefragSingleEntry)
     EVT_MENU(ID_RPOPMENU_OPEN_EXPLORER_1004,FilesList::RClickOpenExplorer)
     EVT_MENU(ID_RPOPMENU_COPY_CLIPBOARD_1005,FilesList::RClickCopyClipboard)
-    EVT_MENU(ID_RPOPMENU_MOVE_FILE_1006,FilesList::RClickMoveFile)
+    //EVT_MENU(ID_RPOPMENU_MOVE_FILE_1006,FilesList::RClickMoveFile)
     EVT_MENU_RANGE(2065,2090,FilesList::RClickSubMenuMoveFiletoDriveX)
 END_EVENT_TABLE()
 //events 2065-2090 are signifying drive A-Z (their letter's char2int)
@@ -257,29 +258,30 @@ void FilesList::RClickOpenExplorer(wxCommandEvent& event)
     //this actually works, wish i found this earlier.
 }
 
-void FilesList::RClickMoveFile(wxCommandEvent& event)
-{
-    wxListItem theitem = GetListItem();
-    wxString itemtext = theitem.m_text;
-
-    wchar_t *srcfilename = _wcsdup(itemtext.wc_str());
-    //dtrace("srcfilename was %ws",srcfilename);
-
-    itemtext.Replace(wxT("E:\\"),wxT("C:\\"));
-    wchar_t *dstfilename = _wcsdup(itemtext.wc_str());
-    //dtrace("dstfilename was %ws",dstfilename);
-
-    const wchar_t *dstpath = itemtext.wc_str();
-    winx_path_remove_filename((wchar_t *)dstpath);
-    //dtrace("dst path was %ws",dstpath);
-
-    Utils::createDirectoryRecursively(dstpath);
-
-    CopyFile(srcfilename,dstfilename,1);    //works.
-//    winx_free(srcfilename); //since wcsdup calls malloc
-//    winx_free(dstfilename); // ^^^
-//      calling these crash the program.
-}
+/* void FilesList::RClickMoveFile(wxCommandEvent& event)
+ * {
+ *     wxListItem theitem = GetListItem();
+ *     wxString itemtext = theitem.m_text;
+ *
+ *     wchar_t *srcfilename = _wcsdup(itemtext.wc_str());
+ *     //dtrace("srcfilename was %ws",srcfilename);
+ *
+ *     itemtext.Replace(wxT("E:\\"),wxT("C:\\"));
+ *     wchar_t *dstfilename = _wcsdup(itemtext.wc_str());
+ *     //dtrace("dstfilename was %ws",dstfilename);
+ *
+ *     const wchar_t *dstpath = itemtext.wc_str();
+ *     winx_path_remove_filename((wchar_t *)dstpath);
+ *     //dtrace("dst path was %ws",dstpath);
+ *
+ *     Utils::createDirectoryRecursively(dstpath);
+ *
+ *     CopyFile(srcfilename,dstfilename,1);    //works.
+ * //    winx_free(srcfilename); //since wcsdup calls malloc
+ * //    winx_free(dstfilename); // ^^^
+ * //      calling these crash the program.
+ * }
+ */
 
 void FilesList::OnMouseLDClick(wxMouseEvent& event)
 {

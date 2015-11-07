@@ -420,7 +420,7 @@ public:
     void OnMouseLDClick(wxMouseEvent& event);
     void OnMouseRClick(wxMouseEvent& event);
     void OnSelectionChange(wxListEvent& event);
-    void RClickMoveFile(wxCommandEvent& event);
+    //void RClickMoveFile(wxCommandEvent& event);
     void RClickOpenExplorer(wxCommandEvent& event);
     void RClickCopyClipboard(wxCommandEvent& event);
     void RClickDefragSingleEntry(wxCommandEvent& event);
