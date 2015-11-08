@@ -49,7 +49,8 @@ enum
     ID_RPOPMENU_DEFRAG_SINGLE_1003 = 1003,
     ID_RPOPMENU_OPEN_EXPLORER_1004 = 1004,
     ID_RPOPMENU_COPY_CLIPBOARD_1005 = 1005,
-   // ID_RPOPMENU_MOVE_FILE_1006 = 1006,
+    ID_RPOPMENU_MOVE2FRONT_1007 = 1007,
+    ID_RPOPMENU_MOVE2END_1008 = 1008,
 
     ID_DUMMY_VALUE_ //don't remove this value unless you have other enum values
 };
@@ -147,13 +148,14 @@ void MainFrame::InitPopupMenus(){
 	m_RClickPopupMenu1->Append(ID_RPOPMENU_DEFRAG_SINGLE_1003, wxT("Defragment Now"), wxT(""), wxITEM_NORMAL);
 	m_RClickPopupMenu1->Append(ID_RPOPMENU_OPEN_EXPLORER_1004, wxT("Open in Explorer"), wxT(""), wxITEM_NORMAL);
 	m_RClickPopupMenu1->Append(ID_RPOPMENU_COPY_CLIPBOARD_1005, wxT("Copy path to clipboard"), wxT(""), wxITEM_NORMAL);
-	//m_RClickPopupMenu1->Append(ID_RPOPMENU_MOVE_FILE_1006, wxT("Move file from E: to C:"), wxT(""), wxITEM_NORMAL);
-	//changed to customized drive-populated submenu for move file
+	m_RClickPopupMenu1->Append(ID_RPOPMENU_MOVE2FRONT_1007, wxT("Move to Front of Drive"), wxT(""), wxITEM_NORMAL);
+	//m_RClickPopupMenu1->Append(ID_RPOPMENU_MOVE2END_1008, wxT("Move to End of Drive"), wxT(""), wxITEM_NORMAL);
 }
 
 wxListItem FilesList::GetListItem(int id = NULL,int col = NULL)
 {
-    //Currently gets column 0, of what is currently selected.
+    //will gets column 0, of what is currently selected.
+    //unless parameters for id, col are passed.
     wxListItem theitem;
     theitem.m_itemId = (id!=NULL) ? id : currentlyselected;
     theitem.m_col = (col!=NULL) ? col : 0;
@@ -161,24 +163,27 @@ wxListItem FilesList::GetListItem(int id = NULL,int col = NULL)
     GetItem(theitem);
     return theitem;
 }
-// =======================================================================
-//                            Event handlers
-// =======================================================================
 
+// =======================================================================
+//                            Event Table
+// =======================================================================
 
 BEGIN_EVENT_TABLE(FilesList, wxListView)
-    EVT_LEFT_DCLICK(FilesList::OnMouseLDClick)
     EVT_LIST_ITEM_RIGHT_CLICK(wxID_ANY,FilesList::OnItemRClick)
     EVT_LIST_ITEM_SELECTED(wxID_ANY,   FilesList::OnSelect)
     EVT_LIST_ITEM_DESELECTED(wxID_ANY, FilesList::OnDeSelect)
     EVT_MENU(ID_RPOPMENU_DEFRAG_SINGLE_1003, FilesList::RClickDefragSingleEntry)
     EVT_MENU(ID_RPOPMENU_OPEN_EXPLORER_1004, FilesList::RClickOpenExplorer)
     EVT_MENU(ID_RPOPMENU_COPY_CLIPBOARD_1005,FilesList::RClickCopyClipboard)
-    //EVT_MENU(ID_RPOPMENU_MOVE_FILE_1006,   FilesList::RClickMoveFile)
+    EVT_MENU(ID_RPOPMENU_MOVE2FRONT_1007, FilesList::RClickMoveToFirstFreeRegion)
+    EVT_MENU(ID_RPOPMENU_MOVE2END_1008, FilesList::RClickMoveToLastFreeRegion)
     EVT_MENU_RANGE(2065,2090,FilesList::RClickSubMenuMoveFiletoDriveX)
 END_EVENT_TABLE()
 //events 2065-2090 are signifying drive A-Z (their letter's char2int)
-//calls this function to move the file to the corresponding drive's eventID.
+//calls function below to move the file to the corresponding drive's eventID.
+// =======================================================================
+//              Event Handlers   &   Right Click Popup Menu Handlers
+// =======================================================================
 void FilesList::RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event)
 {
     wxListItem theitem = GetListItem();
@@ -195,22 +200,37 @@ void FilesList::RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event)
 
     Utils::createDirectoryRecursively(dstpath);
     CopyFile(srcfilename,dstfilename,1);
-
 //    dtrace("srcfilename was %ws",srcfilename);
 //    dtrace("dstfilename was %ws",dstfilename);
 //    dtrace("dst path was %ws",dstpath);
     delete srcfilename;    delete dstfilename;    delete dstpath;
 }
 
+void FilesList::RClickMoveToFirstFreeRegion(wxCommandEvent& event)
+{
+    wxListItem theitem = GetListItem();
+    wxString filtertext;
+    filtertext << L"\"" << theitem.m_text << L"\";";
+    wxSetEnv(L"UD_CUT_FILTER",filtertext);
+    g_mainFrame->m_jobThread->singlefile = TRUE;
+    ProcessCommandEvent(ID_MoveToFront);
+}
+void FilesList::RClickMoveToLastFreeRegion(wxCommandEvent& event)
+{
+    wxListItem theitem = GetListItem();
+    wxString filtertext;
+    filtertext << L"\"" << theitem.m_text << L"\";";
+    wxSetEnv(L"UD_CUT_FILTER",filtertext);
+    g_mainFrame->m_jobThread->singlefile = TRUE;
+    ProcessCommandEvent(ID_MoveToEnd);
+}
+//Should really combine all these into one and check for the event.GetID() to call the right CommandEvent
 void FilesList::RClickDefragSingleEntry(wxCommandEvent& event)
 {
     wxListItem theitem = GetListItem();
     wxString filtertext;
     filtertext << L"\"" << theitem.m_text << L"\";";
-    //filtertext.Printf(L"\"%ws\";",theitem.m_text);
-    //winx_setenv(L"UD_CUT_FILTER",filtertext.wchar_str());
     wxSetEnv(L"UD_CUT_FILTER",filtertext);
-    //dtrace("Cut Filter currently stands at: %ws",winx_getenv(L"UD_CUT_FILTER"));
     g_mainFrame->m_jobThread->singlefile = TRUE;
     ProcessCommandEvent(ID_Defrag); //calls the defrag routine.
     //Job.cpp @ MainFrame::OnJobCompletion @ Line 301-303 handles single-file mode.
@@ -232,14 +252,10 @@ void FilesList::RClickCopyClipboard(wxCommandEvent& event)
     wxListItem theitem = GetListItem();
     wxString itemtext = theitem.m_text;
     //std::string stlstring = std::string(itemtext.mb_str());
-    //UtilsWin32::toClipboard(std::string(itemtext.mb_str()));
+    //UtilsWin32::toClipboard(std::string(itemtext.mb_str()));  //other way.
     if (wxTheClipboard->Open()){
-        // This data objects are held by the clipboard,
-        // so do not delete them in the app.
         wxTheClipboard->SetData( new wxTextDataObject(itemtext) );
         wxTheClipboard->Close();
-        // This is stupid because when the app exits,
-        // the clipboard loses its contents...
         wxTheClipboard->Flush();  //this is the way to persist data on exit.
     }
 }
@@ -256,38 +272,6 @@ void FilesList::RClickOpenExplorer(wxCommandEvent& event)
 //    system(xec.mb_str().data());  // this does work but it quickly flashes open a black command prompt, and looks really sketchy
     ShellExecuteW(0, L"open", L"explorer.exe", xec.wc_str(), 0, SW_NORMAL);
     //this actually works, wish i found this earlier.
-}
-
-/* void FilesList::RClickMoveFile(wxCommandEvent& event)
- * {
- *     wxListItem theitem = GetListItem();
- *     wxString itemtext = theitem.m_text;
- *
- *     wchar_t *srcfilename = _wcsdup(itemtext.wc_str());
- *     //dtrace("srcfilename was %ws",srcfilename);
- *
- *     itemtext.Replace(wxT("E:\\"),wxT("C:\\"));
- *     wchar_t *dstfilename = _wcsdup(itemtext.wc_str());
- *     //dtrace("dstfilename was %ws",dstfilename);
- *
- *     const wchar_t *dstpath = itemtext.wc_str();
- *     winx_path_remove_filename((wchar_t *)dstpath);
- *     //dtrace("dst path was %ws",dstpath);
- *
- *     Utils::createDirectoryRecursively(dstpath);
- *
- *     CopyFile(srcfilename,dstfilename,1);    //works.
- * //    winx_free(srcfilename); //since wcsdup calls malloc
- * //    winx_free(dstfilename); // ^^^
- * //      calling these crash the program.
- * }
- */
-
-void FilesList::OnMouseLDClick(wxMouseEvent& event)
-{
-//    if(!g_mainFrame->m_busy)
-//        PostCommandEvent(g_mainFrame,ID_DefaultAction);
-    event.Skip();
 }
 
 void FilesList::OnItemRClick(wxListEvent& event)
@@ -353,7 +337,6 @@ void MainFrame::FilesOnListSize(wxSizeEvent& event)
 */
 void MainFrame::FilesPopulateList(wxCommandEvent& event)
 {
-
     struct prb_traverser trav;
     winx_file_info *file;
     wxString comment, status;

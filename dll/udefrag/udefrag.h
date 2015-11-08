@@ -72,7 +72,9 @@ typedef enum {
     DEFRAGMENTATION_JOB,
     FULL_OPTIMIZATION_JOB,
     QUICK_OPTIMIZATION_JOB,
-    MFT_OPTIMIZATION_JOB
+    MFT_OPTIMIZATION_JOB,
+    SINGLE_FILE_MOVE_FRONT_JOB,
+    SINGLE_FILE_MOVE_END_JOB
 } udefrag_job_type;
 
 typedef enum {
@@ -84,13 +86,13 @@ typedef enum {
 /* flags triggering algorithm features */
 #define UD_JOB_REPEAT                     0x1
 /*
-* 0x2, 0x4, 0x8 flags have been used 
+* 0x2, 0x4, 0x8 flags have been used
 * in the past for experimental options
 */
 #define UD_JOB_CONTEXT_MENU_HANDLER       0x10
 
 /*
-* MFT_ZONE_SPACE has special meaning - 
+* MFT_ZONE_SPACE has special meaning -
 * it is used as a marker for MFT Zone space.
 */
 enum {
@@ -125,7 +127,7 @@ typedef struct _udefrag_progress_info {
     ULONGLONG free_space;             /* free space amount, in bytes */
     ULONGLONG mft_size;               /* mft size, in bytes */
     udefrag_operation_type current_operation;  /* identifies currently running operation */
-    unsigned long pass_number;        /* the current disk processing pass, increases 
+    unsigned long pass_number;        /* the current disk processing pass, increases
                                          immediately after the pass completion */
     ULONGLONG clusters_to_process;    /* number of clusters to process */
     ULONGLONG processed_clusters;     /* number of already processed clusters */
@@ -155,6 +157,8 @@ char *udefrag_get_error_description(int error_code);
 int udefrag_set_log_file_path(void);
 
 void gui_fileslist_finished(void);
+
+
 #if defined(__cplusplus)
 }
 #endif

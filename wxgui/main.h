@@ -108,6 +108,8 @@ enum {
     ID_Defrag,
     ID_QuickOpt,
     ID_FullOpt,
+    ID_MoveToFront,
+    ID_MoveToEnd,
     ID_MftOpt,
 
     ID_Pause,
@@ -417,15 +419,16 @@ public:
         wxDefaultPosition,wxDefaultSize,style) {}
     ~FilesList() {}
 
-    void OnMouseLDClick(wxMouseEvent& event);
     void OnItemRClick(wxListEvent& event);
     void OnSelect(wxListEvent& event);
     void OnDeSelect(wxListEvent& event);
-    //void RClickMoveFile(wxCommandEvent& event);
+
+    void RClickDefragSingleEntry(wxCommandEvent& event);
     void RClickOpenExplorer(wxCommandEvent& event);
     void RClickCopyClipboard(wxCommandEvent& event);
-    void RClickDefragSingleEntry(wxCommandEvent& event);
     void RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event);
+    void RClickMoveToFirstFreeRegion(wxCommandEvent& event);
+    void RClickMoveToLastFreeRegion(wxCommandEvent& event);
 
     wxListItem GetListItem(int id,int col);
     long currentlyselected;

@@ -4,3 +4,5 @@ lib/
 wxgui/vc100.pdb
 wxgui/wxguiMSVC.cbp
 wxgui/wxguiMSVC.layout
+dll/udefrag/cscope.out
+dll/udefrag/udefrag.cscope_file_list

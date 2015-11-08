@@ -451,6 +451,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
                    MainFrame::OnStartJob)
     // includes: ID_Analyze = 1,    ID_Defrag,
     //      ID_QuickOpt,    ID_FullOpt,    ID_MftOpt,
+    // and now     ID_MoveToFront,     ID_MoveToEnd,
 
     EVT_MENU(ID_Pause, MainFrame::OnPause)
     EVT_MENU(ID_Stop,  MainFrame::OnStop)

@@ -309,9 +309,17 @@ void MainFrame::OnStartJob(wxCommandEvent& event)
     case ID_FullOpt:
         m_jobThread->m_jobType = FULL_OPTIMIZATION_JOB;
         break;
+    case ID_MoveToFront:
+        m_jobThread->m_jobType = SINGLE_FILE_MOVE_FRONT_JOB;
+        break;
+    case ID_MoveToEnd:
+        m_jobThread->m_jobType = SINGLE_FILE_MOVE_END_JOB;
+        break;
     default:
         m_jobThread->m_jobType = MFT_OPTIMIZATION_JOB;
         break;
+
+
     }
     int width, height; m_cMap->GetClientSize(&width,&height);
     int block_size = CheckOption(wxT("UD_MAP_BLOCK_SIZE"));

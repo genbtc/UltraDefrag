@@ -86,7 +86,7 @@
 #define UD_FILE_NOT_LOCKED              0x80
 
 /*
-* This flag is used to avoid 
+* This flag is used to avoid
 * repeated moves in volume optimization.
 */
 #define UD_FILE_MOVED_TO_FRONT         0x100
@@ -335,5 +335,6 @@ winx_blockmap *find_first_block(udefrag_job_parameters *jp,
 enum {
     SKIP_PARTIALLY_MOVABLE_FILES = 0x1
 };
+int udefrag_movefile_to_start(udefrag_job_parameters *jp);
 
 #endif /* _UDEFRAG_INTERNALS_H_ */

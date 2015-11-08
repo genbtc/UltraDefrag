@@ -92,7 +92,7 @@ int udefrag_init_library(void)
 }
 
 /**
- * @brief Releases resources 
+ * @brief Releases resources
  * acquired by udefrag library.
  * @note
  * - Releases zenwinx resources as well.
@@ -108,7 +108,7 @@ void udefrag_unload_library(void)
 
 /**
  * @brief Delivers progress information to the caller.
- * @note 
+ * @note
  * - completion_status parameter becomes delivered to the caller
  * instead of the appropriate field of jp->pi structure.
  * - If cluster map cell is occupied entirely by MFT zone
@@ -124,28 +124,28 @@ static void deliver_progress_info(udefrag_job_parameters *jp,int completion_stat
     int mft_zone_detected;
     int free_cell_detected;
     ULONGLONG maximum, n;
-    
+
     if(jp->cb == NULL)
         return;
 
     /* make a copy of jp->pi */
     memcpy(&pi,&jp->pi,sizeof(udefrag_progress_info));
-    
+
     /* replace completion status */
     pi.completion_status = completion_status;
-    
+
     /* calculate progress percentage */
     x = (double)pi.processed_clusters;
     y = (double)pi.clusters_to_process;
     if(y == 0) pi.percentage = 0.00;
     else pi.percentage = (x / y) * 100.00;
-    
+
     /* calculate fragmentation percentage */
     x = (double)pi.bad_fragments;
     y = (double)pi.fragments;
     if(y == 0) pi.fragmentation = 0.00;
     else pi.fragmentation = (x / y) * 100.00;
-    
+
     /* refill cluster map */
     if(jp->pi.cluster_map && jp->cluster_map.array \
       && jp->pi.cluster_map_size == jp->cluster_map.map_size){
@@ -184,18 +184,18 @@ static void deliver_progress_info(udefrag_job_parameters *jp,int completion_stat
             }
         }
     }
-    
+
     /* deliver information to the caller */
     jp->cb(&pi,jp->p);
     jp->progress_refresh_time = winx_xtime();
     if(jp->udo.dbgprint_level >= DBG_PARANOID)
         winx_dbg_print_header(0x20,0,D"progress update");
-        
+
     if(jp->udo.dbgprint_level >= DBG_DETAILED){
         p1 = (int)(__int64)(pi.percentage * 100.00);
         p2 = p1 % 100;
         p1 = p1 / 100;
-        
+
         if(p1 >= jp->progress_trigger){
             winx_dbg_print_header('>',0,D"progress %3u.%02u%% completed, "
                 "trigger %3u", p1, p2, jp->progress_trigger);
@@ -245,20 +245,20 @@ static DWORD WINAPI start_job(LPVOID p)
     /* check job flags */
     if(jp->udo.job_flags & UD_JOB_REPEAT)
         itrace("repeat action until nothing left to move");
-    
+
     /* do the job */
     if(jp->job_type == DEFRAGMENTATION_JOB) action = "Defragmentation";
     else if(jp->job_type == FULL_OPTIMIZATION_JOB) action = "Full optimization";
     else if(jp->job_type == QUICK_OPTIMIZATION_JOB) action = "Quick optimization";
     else if(jp->job_type == MFT_OPTIMIZATION_JOB) action = "MFT optimization";
+    else if(jp->job_type == SINGLE_FILE_MOVE_FRONT_JOB) action = "Single File Move to Front";
     winx_dbg_print_header(0,0,I"%s of disk %c: started",action,jp->volume_letter);
     remove_fragmentation_report(jp);
     (void)winx_vflush(jp->volume_letter); /* flush all file buffers */
-    
+
     /* speedup file searching in optimization */
-    if(jp->job_type == FULL_OPTIMIZATION_JOB \
-      || jp->job_type == QUICK_OPTIMIZATION_JOB \
-      || jp->job_type == MFT_OPTIMIZATION_JOB)
+    if(jp->job_type != ANALYSIS_JOB \
+    || jp->job_type != DEFRAGMENTATION_JOB)
         create_file_blocks_tree(jp);
 
     switch(jp->job_type){
@@ -275,6 +275,12 @@ static DWORD WINAPI start_job(LPVOID p)
     case MFT_OPTIMIZATION_JOB:
         result = optimize_mft(jp);
         break;
+    case SINGLE_FILE_MOVE_FRONT_JOB:
+        result = udefrag_movefile_to_start(jp);
+        break;
+    case SINGLE_FILE_MOVE_END_JOB:
+        result = udefrag_movefile_to_start(jp); //change this(when you make it)
+        break;
     default:
         result = 0;
         break;
@@ -284,7 +290,7 @@ static DWORD WINAPI start_job(LPVOID p)
     if(jp->job_type != ANALYSIS_JOB)
         release_temp_space_regions(jp);
     (void)save_fragmentation_report(jp);
-    
+
     /* now it is safe to adjust the completion status */
     jp->pi.completion_status = result;
     if(jp->pi.completion_status == 0)
@@ -296,7 +302,7 @@ static DWORD WINAPI start_job(LPVOID p)
 }
 
 /**
- * @brief Destroys list of free regions, 
+ * @brief Destroys list of free regions,
  * list of files and list of fragmented files.
  */
 void destroy_lists(udefrag_job_parameters *jp)
@@ -361,20 +367,20 @@ int udefrag_start_job(char volume_letter,udefrag_job_type job_type,int flags,
     int use_limit = 0;
     int result = -1;
     int win_version = winx_get_os_version();
-    
+
     /* initialize the job */
     dbg_print_header(&jp);
 
     /* convert volume letter to uppercase */
     volume_letter = winx_toupper(volume_letter);
-    
+
     memset(&jp,0,sizeof(udefrag_job_parameters));
     jp.win_version = win_version;   //genBTC -replaced a 2nd call to winx_get_os_version()
     jp.filelist = NULL;
     jp.fragmented_files = NULL;
     jp.free_regions = NULL;
     jp.progress_refresh_time = 0;
-    
+
     jp.volume_letter = volume_letter;
     jp.job_type = job_type;
     jp.cb = cb;
@@ -385,32 +391,32 @@ int udefrag_start_job(char volume_letter,udefrag_job_type job_type,int flags,
     /*
     * We deliver the progress information from
     * the current thread as well as decide whether
-    * to terminate the job or not here. This 
+    * to terminate the job or not here. This
     * multi-threaded technique works quite smoothly.
     */
     jp.termination_router = terminator;
 
     jp.start_time = jp.p_counters.overall_time = winx_xtime();
     jp.pi.completion_status = 0;
-    
+
     if(get_options(&jp) < 0)
         goto done;
-    
+
     jp.udo.job_flags = flags;
 
     if(allocate_map(cluster_map_size,&jp) < 0){
         release_options(&jp);
         goto done;
     }
-    
+
     /* set additional privileges for Vista and above */
     if(win_version >= WINDOWS_VISTA){
         (void)winx_enable_privilege(SE_BACKUP_PRIVILEGE);
-        
+
         if(win_version >= WINDOWS_7)
             (void)winx_enable_privilege(SE_MANAGE_VOLUME_PRIVILEGE);
     }
-    
+
     /* run the job in separate thread */
     //if <0 this must mean that the job creation failed, so gracefully go to done.
     if(winx_create_thread(start_job,(PVOID)&jp) < 0){
@@ -449,7 +455,7 @@ int udefrag_start_job(char volume_letter,udefrag_job_type job_type,int flags,
                         time = 0;
                 } else {
                     /* this method gives not so fine results, but requires no winx_xtime calls */
-                    time -= jp.udo.refresh_interval; 
+                    time -= jp.udo.refresh_interval;
                 }
             }
         }
@@ -459,7 +465,7 @@ int udefrag_start_job(char volume_letter,udefrag_job_type job_type,int flags,
     deliver_progress_info(&jp,jp.pi.completion_status);
     free_map(&jp);
     release_options(&jp);
-    
+
 done:
     jp.p_counters.overall_time = winx_xtime() - jp.p_counters.overall_time;
     dbg_print_performance_counters(&jp);
@@ -482,7 +488,7 @@ done:
 }
 
 /**
- * @brief Retrieves default formatted results 
+ * @brief Retrieves default formatted results
  * of the completed disk defragmentation job.
  * @param[in] pi pointer to udefrag_progress_info structure.
  * @return A string containing default formatted results
@@ -498,7 +504,7 @@ char *udefrag_get_results(udefrag_progress_info *pi)
     char free_space[68];
     double p;
     unsigned int ip, ifr;
-    
+
     /* allocate memory */
     msg = winx_malloc(MSG_LENGTH + 1);
 
@@ -639,14 +645,14 @@ int udefrag_set_log_file_path(void)
 {
     wchar_t *path, *native_path, *path_copy, *filename;
     int result;
-    
+
     path = winx_getenv(L"UD_LOG_FILE_PATH");
     if(path == NULL){
         /* empty variable forces to disable log */
         winx_disable_dbg_log();
         return 0;
     }
-    
+
     /* convert to native path */
     native_path = winx_swprintf(L"\\??\\%ws",path);
     winx_free(path);
@@ -654,10 +660,10 @@ int udefrag_set_log_file_path(void)
         etrace("cannot build native path");
         return (-1);
     }
-    
+
     /* delete old logfile */
     winx_delete_file(native_path);
-    
+
     /* ensure that target path exists */
     result = 0;
     path_copy = winx_wcsdup(native_path);
@@ -668,7 +674,7 @@ int udefrag_set_log_file_path(void)
         result = winx_create_path(path_copy);
         winx_free(path_copy);
     }
-    
+
     /* if target path cannot be created, use %tmp%\UltraDefrag_Logs */
     if(result < 0){
         path = winx_getenv(L"TMP");
@@ -693,7 +699,7 @@ int udefrag_set_log_file_path(void)
             winx_free(path);
         }
     }
-    
+
     if(native_path){
         /* write header to the log file */
         write_log_file_header(native_path);
@@ -701,6 +707,108 @@ int udefrag_set_log_file_path(void)
         winx_enable_dbg_log(native_path);
         winx_free(native_path);
     }
+    return 0;
+}
+
+//TODO: make one for move-to-end. (or pass beginning/end as parameter)
+//this will be a new EntryPoint (copying Optimize MFT @ optimize.c)
+/************************************************************/
+/*                    The entry point                       */
+/************************************************************/
+int udefrag_movefile_to_start(udefrag_job_parameters *jp)
+{
+    int result;
+    ULONGLONG time;
+    char bytesmovedHR[32];
+    winx_volume_region *region;
+    winx_file_info *file;
+    wchar_t *path, *native_path;
+
+    /* perform volume analysis */
+    result = analyze(jp); /* we need to call it once, here */
+    if(result < 0){
+        etrace("During Single file optimization, Analysis pass failed!");
+        return result;
+    }
+    /* reset counters */
+    time = start_timing("Single File Location Optimization",jp);
+    jp->pi.current_operation = VOLUME_OPTIMIZATION;
+    jp->pi.clusters_to_process = 0;
+    jp->pi.processed_clusters = 0;
+    jp->pi.moved_clusters = 0;
+    jp->pi.total_moves = 0;
+    clear_currently_excluded_flag(jp);  //skipping something about clearing the excluded files flag.
+    /* open volume handle in jp->fVolume */
+    jp->fVolume = winx_vopen(winx_toupper(jp->volume_letter));
+    if(jp->fVolume == NULL){
+        etrace("Error opening volume for handling");
+        return (-1);
+    }
+    path = jp->udo.cut_filter.array[0];
+    itrace("The file being moved to the front is: %ws",path);
+    if(path == NULL){
+        etrace("Could not obtain path from UD_CUT_FILTER array");
+        return (-1);
+    }
+    /* convert to native path */
+    native_path = winx_swprintf(L"\\??\\%ws",path);
+    if(native_path == NULL){
+        etrace("Cannot build native path");
+        return (-1);
+    }
+    /* iterate through the filelist (no other way) */
+    for(file = jp->filelist; file; file = file->next){
+        if(_wcsicmp(file->path,native_path) == 0) break;
+        if(file->next == jp->filelist){
+            etrace("Abnormal error. Could not match path to any scanned file...");
+            return (-1);
+        }
+    }
+    dtrace("The Native path was: %ws",native_path);
+    dtrace("The File's path was: %ws",file->path);
+    /* at this point we should have the file's winx_file_info object, file */
+    dtrace("Before: The File resides @ LCN: %d",file->disp.blockmap->lcn);
+    dtrace("Before: The File has #fragments: %d",file->disp.fragments);
+
+    /* check whether the file is locked or not */
+    if(is_file_locked(file,jp)){
+        etrace("File was locked.");
+        return (-1);
+    }
+    /* check whether we can move it or not */
+    if(!can_move(file,jp)){
+        etrace("File cannot be moved.");
+        return (-1);
+    }
+    /* Find the first region that will fit the entire file */
+    region = find_first_free_region(jp,0,file->disp.clusters,NULL);
+    if (!region){
+        etrace("No contiguous region could be found large enough to hold the selected file.");
+        return (-1);
+   }
+    jp->pi.clusters_to_process = file->disp.clusters;   //set counter.
+    /* Perform the move */
+    if(move_file(file,file->disp.blockmap->vcn,file->disp.clusters,region->lcn,jp) >= 0){
+        jp->pi.total_moves++;
+        file->user_defined_flags |= UD_FILE_MOVED_TO_FRONT;
+        jp->pi.moved_clusters = jp->pi.processed_clusters = file->disp.clusters;
+        jp->pi.clusters_to_process = 0;
+    }
+    else {
+        etrace("Move failed for some reason."); //should have error flags here.
+    }
+    /* Print status messages */
+    dtrace("After: The File resides @ LCN: %d",file->disp.blockmap->lcn);
+    dtrace("After: The File has #fragments: %d",file->disp.fragments);
+    itrace("%I64u clusters moved",jp->pi.moved_clusters);
+    winx_bytes_to_hr(jp->pi.moved_clusters * jp->v_info.bytes_per_cluster,1,bytesmovedHR,sizeof(bytesmovedHR));
+    itrace("%s moved",bytesmovedHR);
+    stop_timing("Single File Location Optimization",time,jp);
+
+    /* cleanup */
+    clear_currently_excluded_flag(jp); //again?
+    winx_fclose(jp->fVolume);
+    jp->fVolume = NULL;
     return 0;
 }
 
