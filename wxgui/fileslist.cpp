@@ -149,7 +149,7 @@ void MainFrame::InitPopupMenus(){
 	m_RClickPopupMenu1->Append(ID_RPOPMENU_OPEN_EXPLORER_1004, wxT("Open in Explorer"), wxT(""), wxITEM_NORMAL);
 	m_RClickPopupMenu1->Append(ID_RPOPMENU_COPY_CLIPBOARD_1005, wxT("Copy path to clipboard"), wxT(""), wxITEM_NORMAL);
 	m_RClickPopupMenu1->Append(ID_RPOPMENU_MOVE2FRONT_1007, wxT("Move to Front of Drive"), wxT(""), wxITEM_NORMAL);
-	//m_RClickPopupMenu1->Append(ID_RPOPMENU_MOVE2END_1008, wxT("Move to End of Drive"), wxT(""), wxITEM_NORMAL);
+	m_RClickPopupMenu1->Append(ID_RPOPMENU_MOVE2END_1008, wxT("Move to End of Drive"), wxT(""), wxITEM_NORMAL);
 }
 
 wxListItem FilesList::GetListItem(int id = NULL,int col = NULL)

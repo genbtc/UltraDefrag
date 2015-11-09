@@ -335,6 +335,6 @@ winx_blockmap *find_first_block(udefrag_job_parameters *jp,
 enum {
     SKIP_PARTIALLY_MOVABLE_FILES = 0x1
 };
-int udefrag_movefile_to_start(udefrag_job_parameters *jp);
+int udefrag_movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end);
 
 #endif /* _UDEFRAG_INTERNALS_H_ */

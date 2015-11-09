@@ -276,10 +276,10 @@ static DWORD WINAPI start_job(LPVOID p)
         result = optimize_mft(jp);
         break;
     case SINGLE_FILE_MOVE_FRONT_JOB:
-        result = udefrag_movefile_to_start(jp);
+        result = udefrag_movefile_to_start_or_end(jp,1);
         break;
     case SINGLE_FILE_MOVE_END_JOB:
-        result = udefrag_movefile_to_start(jp); //change this(when you make it)
+        result = udefrag_movefile_to_start_or_end(jp,-1);
         break;
     default:
         result = 0;
@@ -710,16 +710,16 @@ int udefrag_set_log_file_path(void)
     return 0;
 }
 
-//TODO: make one for move-to-end. (or pass beginning/end as parameter)
-//this will be a new EntryPoint (copying Optimize MFT @ optimize.c)
+//(copied code-flow starting from Optimize MFT @ optimize.c)
 /************************************************************/
 /*                    The entry point                       */
 /************************************************************/
-int udefrag_movefile_to_start(udefrag_job_parameters *jp)
+/*        start_or_end = 1 for start, and -1 for end        */
+int udefrag_movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
 {
     int result;
-    ULONGLONG time;
-    char bytesmovedHR[32];
+    ULONGLONG time,filesize,writeposition;
+    char bytesmovedHR[32],*headerstring;
     winx_volume_region *region;
     winx_file_info *file;
     wchar_t *path, *native_path;
@@ -727,11 +727,15 @@ int udefrag_movefile_to_start(udefrag_job_parameters *jp)
     /* perform volume analysis */
     result = analyze(jp); /* we need to call it once, here */
     if(result < 0){
-        etrace("During Single file optimization, Analysis pass failed!");
+        etrace("Abnormal Error. During Single file optimization, Analysis pass failed!");
         return result;
     }
     /* reset counters */
-    time = start_timing("Single File Location Optimization",jp);
+    if (start_or_end == 1)
+        headerstring = "Single File Move-to-Start Optimization";
+    else
+        headerstring = "Single File Move-to-End Optimization";
+    time = start_timing(headerstring,jp);
     jp->pi.current_operation = VOLUME_OPTIMIZATION;
     jp->pi.clusters_to_process = 0;
     jp->pi.processed_clusters = 0;
@@ -741,19 +745,24 @@ int udefrag_movefile_to_start(udefrag_job_parameters *jp)
     /* open volume handle in jp->fVolume */
     jp->fVolume = winx_vopen(winx_toupper(jp->volume_letter));
     if(jp->fVolume == NULL){
-        etrace("Error opening volume for handling");
+        etrace("Abnormal Error. Could not open volume handle!");
         return (-1);
     }
-    path = jp->udo.cut_filter.array[0];
-    itrace("The file being moved to the front is: %ws",path);
+    if (jp->udo.cut_filter.count > 0)
+        path = jp->udo.cut_filter.array[0];
+    else {
+        etrace("Abnormal Error. The env. variable UD_CUT_FILTER was not properly set!");
+        return (-1);
+    }
+    //itrace("The file being moved to the front is: %ws",path);
     if(path == NULL){
-        etrace("Could not obtain path from UD_CUT_FILTER array");
+        etrace("Abnormal Error. Could not obtain path from UD_CUT_FILTER array!");
         return (-1);
     }
     /* convert to native path */
     native_path = winx_swprintf(L"\\??\\%ws",path);
     if(native_path == NULL){
-        etrace("Cannot build native path");
+        etrace("Abnormal Error. Cannot build native path!");
         return (-1);
     }
     /* iterate through the filelist (no other way) */
@@ -764,38 +773,41 @@ int udefrag_movefile_to_start(udefrag_job_parameters *jp)
             return (-1);
         }
     }
-    dtrace("The Native path was: %ws",native_path);
-    dtrace("The File's path was: %ws",file->path);
     /* at this point we should have the file's winx_file_info object, file */
+    dtrace("The Native path was: %ws",native_path);
+    //dtrace("The File's path was: %ws",file->path);
     dtrace("Before: The File resides @ LCN: %d",file->disp.blockmap->lcn);
     dtrace("Before: The File has #fragments: %d",file->disp.fragments);
 
-    /* check whether the file is locked or not */
-    if(is_file_locked(file,jp)){
-        etrace("File was locked.");
-        return (-1);
-    }
     /* check whether we can move it or not */
     if(!can_move(file,jp)){
-        etrace("File cannot be moved.");
+        etrace("File cannot be moved because reasons."); //should have a better error message.
         return (-1);
     }
+    filesize = file->disp.clusters;
     /* Find the first region that will fit the entire file */
-    region = find_first_free_region(jp,0,file->disp.clusters,NULL);
+    if (start_or_end == 1){
+        region = find_first_free_region(jp,0,filesize,NULL);
+        writeposition = region->lcn;
+    }
+    else {
+        region = find_last_free_region(jp,0,filesize,NULL);
+        writeposition = region->lcn + region->length - filesize;
+    }
     if (!region){
         etrace("No contiguous region could be found large enough to hold the selected file.");
         return (-1);
    }
-    jp->pi.clusters_to_process = file->disp.clusters;   //set counter.
+    jp->pi.clusters_to_process = filesize;
     /* Perform the move */
-    if(move_file(file,file->disp.blockmap->vcn,file->disp.clusters,region->lcn,jp) >= 0){
+    if(move_file(file,0,filesize,writeposition,jp) >= 0){
         jp->pi.total_moves++;
         file->user_defined_flags |= UD_FILE_MOVED_TO_FRONT;
-        jp->pi.moved_clusters = jp->pi.processed_clusters = file->disp.clusters;
+        jp->pi.moved_clusters = jp->pi.processed_clusters = filesize;
         jp->pi.clusters_to_process = 0;
     }
     else {
-        etrace("Move failed for some reason."); //should have error flags here.
+        etrace("Move failed for some reason."); //should have a better error message.
     }
     /* Print status messages */
     dtrace("After: The File resides @ LCN: %d",file->disp.blockmap->lcn);
@@ -803,7 +815,7 @@ int udefrag_movefile_to_start(udefrag_job_parameters *jp)
     itrace("%I64u clusters moved",jp->pi.moved_clusters);
     winx_bytes_to_hr(jp->pi.moved_clusters * jp->v_info.bytes_per_cluster,1,bytesmovedHR,sizeof(bytesmovedHR));
     itrace("%s moved",bytesmovedHR);
-    stop_timing("Single File Location Optimization",time,jp);
+    stop_timing(headerstring,time,jp);
 
     /* cleanup */
     clear_currently_excluded_flag(jp); //again?
