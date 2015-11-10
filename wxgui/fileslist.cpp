@@ -19,49 +19,37 @@
 //  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 //////////////////////////////////////////////////////////////////////////
-
+// Ideas by Stefan Pendl <stefanpe@users.sourceforge.net>
+// and Dmitri Arkhangelski <dmitriar@gmail.com>.
 /**
  * @file fileslist.cpp
  * @brief List of files.
  * @addtogroup FilesList
  * @{
  */
-
-// Ideas by Stefan Pendl <stefanpe@users.sourceforge.net>
-// and Dmitri Arkhangelski <dmitriar@gmail.com>.
-
-// =======================================================================
-//                            Declarations
-// =======================================================================
+/**=========================================================================**
+***                        Declarations                                     **
+***=========================================================================**/
 
 #include "main.h"
 #include "udefrag-internals_flags.h"
-//#include <string>
 
-int f_fixedIcon;
-int f_fixedDirtyIcon;
-int f_removableIcon;
-int f_removableDirtyIcon;
-
-//genBTC fileslist.cpp right click menu
+//genBTC. for fileslist.cpp right click menu
 enum
 {
     ID_RPOPMENU_DEFRAG_SINGLE_1003 = 1003,
     ID_RPOPMENU_OPEN_EXPLORER_1004 = 1004,
     ID_RPOPMENU_COPY_CLIPBOARD_1005 = 1005,
     ID_RPOPMENU_MOVE2FRONT_1007 = 1007,
-    ID_RPOPMENU_MOVE2END_1008 = 1008,
-
-    ID_DUMMY_VALUE_ //don't remove this value unless you have other enum values
+    ID_RPOPMENU_MOVE2END_1008 = 1008
 };
 
-// =======================================================================
-//                           ListView of fragmented files.
-// =======================================================================
+/**=========================================================================**
+***                    ListView of fragmented files.                        **
+***=========================================================================**/
 
 void MainFrame::InitFilesList()
 {
-    m_filesList->currentlyselected = -1;
     // save default font used for the list
     m_filesListFont = new wxFont(m_filesList->GetFont());
 
@@ -111,29 +99,19 @@ void MainFrame::InitFilesList()
     );
     dtrace("column %d width ......... %d", LIST_COLUMNS - 1, w);
 
-    // attach drive icons
-    int size = g_iconSize;
-    wxImageList *list = new wxImageList(size,size);
-    f_fixedIcon          = list->Add(wxIcon(wxT("fixed")           , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
-    f_fixedDirtyIcon     = list->Add(wxIcon(wxT("fixed_dirty")     , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
-    f_removableIcon      = list->Add(wxIcon(wxT("removable")       , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
-    f_removableDirtyIcon = list->Add(wxIcon(wxT("removable_dirty") , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
-    m_filesList->SetImageList(list,wxIMAGE_LIST_SMALL);
-
     // ensure that the list will cover integral number of items
     m_filesListHeight = 0xFFFFFFFF; // prevent expansion of the list
 
     Connect(wxEVT_SIZE,wxSizeEventHandler(MainFrame::FilesOnListSize),NULL,this);
-//    m_splitter->Connect(wxEVT_COMMAND_SPLITTER_SASH_POS_CHANGED,
-//        wxSplitterEventHandler(MainFrame::FilesOnSplitChanged),NULL,this);
 
     InitPopupMenus();
 }
 /*Ideas:
-	//Move to First Free Region (that fits fully)
-	//Move to Last Free Region that fits fully)
+ *DONE:	//Move to First Free Region (that fits fully) (move to first opening)
+ *DONE:	//Move to  Last Free Region (that fits fully)  ""
 	//Move to First Free Region(s) in order w/Fragmentation allowed
 	//Move to Last Free Region(s) in order w/Fragmentation allowed
+//Free up space at beginning of drive to move file(s) into it. (Make a list of files (prefetch concept))
  * GUI: Maybe make a 3rd page with a "proposed actions pending" list, where you can queue/order them, and a Commit button
  * Disk: Force a dismount of the volume (by removing the drive letter or etc.) so you can re-order all the files with no chance of unexpected changes.
  * GUI: Make currently worked on sector be highlighted in green, or maybe even two colors (read/write).
@@ -143,6 +121,9 @@ void MainFrame::InitFilesList()
  *
  *
 */
+/**
+ * @brief Instantiate the right click popup context menu for FilesList
+*/
 void MainFrame::InitPopupMenus(){
 	m_RClickPopupMenu1 = new wxMenu(wxT(""));
 	m_RClickPopupMenu1->Append(ID_RPOPMENU_DEFRAG_SINGLE_1003, wxT("Defragment Now"), wxT(""), wxITEM_NORMAL);
@@ -150,12 +131,16 @@ void MainFrame::InitPopupMenus(){
 	m_RClickPopupMenu1->Append(ID_RPOPMENU_COPY_CLIPBOARD_1005, wxT("Copy path to clipboard"), wxT(""), wxITEM_NORMAL);
 	m_RClickPopupMenu1->Append(ID_RPOPMENU_MOVE2FRONT_1007, wxT("Move to Front of Drive"), wxT(""), wxITEM_NORMAL);
 	m_RClickPopupMenu1->Append(ID_RPOPMENU_MOVE2END_1008, wxT("Move to End of Drive"), wxT(""), wxITEM_NORMAL);
+	//m_RClickPopupMenu1->Append(1009, wxT("Test Selection"), wxT(""), wxITEM_NORMAL);
 }
 
+/**
+ * @brief Retrieve a List Item from FilesList
+ * @details Will get currently selected item, column 0.
+   Unless parameters for id, col are passed.
+*/
 wxListItem FilesList::GetListItem(int id = NULL,int col = NULL)
 {
-    //will gets column 0, of what is currently selected.
-    //unless parameters for id, col are passed.
     wxListItem theitem;
     theitem.m_itemId = (id!=NULL) ? id : currentlyselected;
     theitem.m_col = (col!=NULL) ? col : 0;
@@ -164,9 +149,30 @@ wxListItem FilesList::GetListItem(int id = NULL,int col = NULL)
     return theitem;
 }
 
-// =======================================================================
-//                            Event Table
-// =======================================================================
+void FilesList::ReSelectProperDrive(wxCommandEvent& event){
+    ProcessCommandEvent(ID_SelectProperDrive);
+}
+void MainFrame::ReSelectProperDrive(wxCommandEvent& event){
+    wxListItem theitem = m_filesList->GetListItem();
+    wxString itemtext = theitem.m_text;
+    char letter;
+    letter = (char)itemtext[0]; //find the drive-letter of the fragmented files tab.
+    //DeSelect All Drives
+    int n = m_vList->GetItemCount();
+    for (int i = 0; i < n; i++)
+        m_vList->SetItemState(i,0,wxLIST_STATE_SELECTED);
+    //Select the Proper Drive. (to match the fragmented files list tab)
+    for (int i = 0; i < n; i++){
+        if(letter == (char)m_vList->GetItemText(i)[0]){
+            m_vList->Select(i);  m_vList->Focus(i);
+            break;
+        }
+    }
+}
+
+/**=========================================================================**
+***                         Event Table                                     **
+***=========================================================================**/
 
 BEGIN_EVENT_TABLE(FilesList, wxListView)
     EVT_LIST_ITEM_RIGHT_CLICK(wxID_ANY,FilesList::OnItemRClick)
@@ -177,13 +183,15 @@ BEGIN_EVENT_TABLE(FilesList, wxListView)
     EVT_MENU(ID_RPOPMENU_COPY_CLIPBOARD_1005,FilesList::RClickCopyClipboard)
     EVT_MENU(ID_RPOPMENU_MOVE2FRONT_1007, FilesList::RClickMoveToFirstFreeRegion)
     EVT_MENU(ID_RPOPMENU_MOVE2END_1008, FilesList::RClickMoveToLastFreeRegion)
+    EVT_MENU(1009, FilesList::ReSelectProperDrive)
     EVT_MENU_RANGE(2065,2090,FilesList::RClickSubMenuMoveFiletoDriveX)
 END_EVENT_TABLE()
 //events 2065-2090 are signifying drive A-Z (their letter's char2int)
-//calls function below to move the file to the corresponding drive's eventID.
-// =======================================================================
-//              Event Handlers   &   Right Click Popup Menu Handlers
-// =======================================================================
+//calls the function below to move the file to the corresponding drive's eventID.
+/**=========================================================================**
+***            Event Handlers  &  Right Click Popup Menu Handlers           **
+***=========================================================================**/
+
 void FilesList::RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event)
 {
     wxListItem theitem = GetListItem();
@@ -208,18 +216,23 @@ void FilesList::RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event)
 
 void FilesList::RClickMoveToFirstFreeRegion(wxCommandEvent& event)
 {
+    ProcessCommandEvent(ID_SelectProperDrive);
     wxListItem theitem = GetListItem();
+    currently_being_workedon_filename = theitem.m_text;
     wxString filtertext;
-    filtertext << L"\"" << theitem.m_text << L"\";";
+    filtertext << L"\"" << currently_being_workedon_filename << L"\";";
     wxSetEnv(L"UD_CUT_FILTER",filtertext);
     g_mainFrame->m_jobThread->singlefile = TRUE;
     ProcessCommandEvent(ID_MoveToFront);
 }
+//maybe combine these.
 void FilesList::RClickMoveToLastFreeRegion(wxCommandEvent& event)
 {
+    ProcessCommandEvent(ID_SelectProperDrive);
     wxListItem theitem = GetListItem();
+    currently_being_workedon_filename = theitem.m_text;
     wxString filtertext;
-    filtertext << L"\"" << theitem.m_text << L"\";";
+    filtertext << L"\"" << currently_being_workedon_filename << L"\";";
     wxSetEnv(L"UD_CUT_FILTER",filtertext);
     g_mainFrame->m_jobThread->singlefile = TRUE;
     ProcessCommandEvent(ID_MoveToEnd);
@@ -227,24 +240,19 @@ void FilesList::RClickMoveToLastFreeRegion(wxCommandEvent& event)
 //Should really combine all these into one and check for the event.GetID() to call the right CommandEvent
 void FilesList::RClickDefragSingleEntry(wxCommandEvent& event)
 {
+    ProcessCommandEvent(ID_SelectProperDrive);
     wxListItem theitem = GetListItem();
+    currently_being_workedon_filename = theitem.m_text;
     wxString filtertext;
-    filtertext << L"\"" << theitem.m_text << L"\";";
+    filtertext << L"\"" << currently_being_workedon_filename << L"\";";
     wxSetEnv(L"UD_CUT_FILTER",filtertext);
     g_mainFrame->m_jobThread->singlefile = TRUE;
     ProcessCommandEvent(ID_Defrag); //calls the defrag routine.
     //Job.cpp @ MainFrame::OnJobCompletion @ Line 301-303 handles single-file mode.
     //Job.cpp @ MainFrame::OnJobCompletion @ Line 358-361 handles cleanup.
-    //works but needs two considerations:
-    //x1x. The fragmented files list goes away after you finish defragmenting.
-    //  This causes you to have to analyze again just to get the list back.
-    //x2x. After you get the list back, defragging another file causes ANOTHER analysis before the defrag.
-    //  we have to cut down on the number of these analyses.
-    //OK I Cut down on the analyses but now the issue is:
-    // 1. The defragmented file does not get removed from the list after the defrag job.
-    // 2. Every single file defrag still does a full analyze-pass.(udefrag-internals fault)
-    // 3. Does not work if you selected another Drive on page 1.
-    //    (can be easily fixed by pre-selecting in this function before we call defrag).
+    //FilesList.cpp @ MainFrame::FilesPopulateList @ Line 370-380 handles list-item-removal.
+    //works but needs a consideration:
+    // 1. Every single file defrag still does a full analyze-pass.(udefrag-internals fault)
 }
 
 void FilesList::RClickCopyClipboard(wxCommandEvent& event)
@@ -359,11 +367,23 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
         prb_t_init(&trav,cacheEntry.pi.fragmented_files_prb);
         file = (winx_file_info *)prb_t_first(&trav,cacheEntry.pi.fragmented_files_prb);
         if (!file){
-            etrace("Fragmented Files List File Not Found.");
+            //code here testsfor/finds/removes any single file that was just defragmented.
+            if (m_jobThread->singlefile == TRUE){
+                //Find the Proper File. And Remove it.
+                for (int i = 0; i < m_filesList->GetItemCount(); i++){
+                    if( m_filesList->currently_being_workedon_filename == m_filesList->GetItemText(i)){
+                        m_filesList->DeleteItem(i);
+                        m_filesList->Focus(i);  //leave a hint/remnant of the position where the item was removed from
+                        m_filesList->currently_being_workedon_filename = _("");
+                        break;
+                    }
+                }
+            }
+            else
+                etrace("Fragmented Files List Not Found.");
         }
-        else{
+        else
             m_filesList->DeleteAllItems();
-        }
 
         while (file){
 
@@ -377,8 +397,6 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
             ULONGLONG filesizebytes = file->disp.clusters * bpc;
             char filesize_hr[32];
             winx_bytes_to_hr(filesizebytes,2,filesize_hr,sizeof(filesize_hr));
-//            wxString filename;
-//            filename.Printf(wxT("%hs"),filesize_hr);
             wxString filesize = wxString::FromUTF8(filesize_hr);
             m_filesList->SetItem(currentitem,2,filesize);
 
@@ -386,7 +404,7 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
                 comment = wxT("[DIR]");
             else if(is_compressed(file))
                 comment = wxT("Compressed");
-            else if(is_essential_boot_file(file)) //needed a flag
+            else if(is_essential_boot_file(file)) //needed a flag from udefrag-internals.h (should manually #define it and only it)
                 comment = wxT("[BOOT]");
             else if(is_mft_file(file))
                 comment = wxT("[MFT]");

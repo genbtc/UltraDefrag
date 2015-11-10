@@ -524,6 +524,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_UpdateStatusBar,   MainFrame::UpdateStatusBar)
     EVT_MENU(ID_UpdateVolumeInformation, MainFrame::UpdateVolumeInformation)
     EVT_MENU(ID_UpdateVolumeStatus,      MainFrame::UpdateVolumeStatus)
+    EVT_MENU(ID_SelectProperDrive, MainFrame::ReSelectProperDrive)  //genBTC
 END_EVENT_TABLE()
 
 // =======================================================================
@@ -556,8 +557,10 @@ void MainFrame::SetWindowTitle(wxCommandEvent& event)
 void MainFrame::OnActivate(wxActivateEvent& event)
 {
     /* suggested by Brian Gaff */
-    if(event.GetActive())
+    if(event.GetActive()){
         m_vList->SetFocus();
+        //m_filesList->SetFocus(); //can't do this. crashes on startup. maybe because theres no Item to focus?
+    }
     event.Skip();
 }
 

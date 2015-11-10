@@ -204,6 +204,7 @@ enum {
     ID_ShowHideMenu,
     ID_PauseMenu,
     ID_ExitMenu,
+    ID_SelectProperDrive,
 
     // language selection menu item, must always be last in the list
     ID_LocaleChange
@@ -429,9 +430,12 @@ public:
     void RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event);
     void RClickMoveToFirstFreeRegion(wxCommandEvent& event);
     void RClickMoveToLastFreeRegion(wxCommandEvent& event);
+    void ReSelectProperDrive(wxCommandEvent& event);
 
     wxListItem GetListItem(int id,int col);
     long currentlyselected;
+    wxString currently_being_workedon_filename;
+
     DECLARE_EVENT_TABLE()
 private:
 
@@ -550,6 +554,7 @@ public:
     void FilesAdjustListColumns(wxCommandEvent& event);
     void FilesOnListSize(wxSizeEvent& event);
     void FilesPopulateList(wxCommandEvent& event);
+    void ReSelectProperDrive(wxCommandEvent& event);
 
     // common routines
     int  CheckOption(const wxString& name);
