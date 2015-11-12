@@ -9,9 +9,9 @@
 		<Build>
 			<Target title="Release-MSVC">
 				<Option platforms="Windows;" />
-				<Option output="../../bin/zenwinx" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="../../bin/" />
-				<Option object_output="../../obj/MSVC/zenwinx/" />
+				<Option output="../../../bin/zenwinx" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../../bin/" />
+				<Option object_output="../../../obj/MSVC/zenwinx/" />
 				<Option type="3" />
 				<Option compiler="msvc10" />
 				<Option projectCompilerOptionsRelation="1" />
@@ -48,7 +48,7 @@
 					<Add option='/entry:&quot;DllMain&quot;' />
 					<Add option="/dll" />
 					<Add option="/def:zenwinx.def" />
-					<Add option="/implib:..\..\lib\zenwinx.lib" />
+					<Add option="/implib:..\..\..\lib\zenwinx.lib" />
 					<Add option="/MANIFEST:NO" />
 					<Add library="ntdll.lib" />
 					<Add directory="$(WXWIDGETSDIR)/lib/vc_libwinsdk-X86" />
@@ -56,9 +56,9 @@
 			</Target>
 			<Target title="Release-GCC">
 				<Option platforms="Windows;" />
-				<Option output="../../bin/zenwinx" imp_lib="../../lib/libzenwinx.dll.a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="../../bin/" />
-				<Option object_output="../../obj/GCC/zenwinx/" />
+				<Option output="../../../bin/zenwinx" imp_lib="../../../lib/libzenwinx.dll.a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../../bin/" />
+				<Option object_output="../../../obj/GCC/zenwinx/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createStaticLib="1" />

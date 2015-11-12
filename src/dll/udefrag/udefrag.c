@@ -730,7 +730,8 @@ int udefrag_set_log_file_path(void)
 fail:
     winx_free(native_path);
     return (-1);
-    
+}
+
 //(copied code-flow starting from Optimize MFT @ optimize.c)
 /************************************************************/
 /*                    The entry point                       */

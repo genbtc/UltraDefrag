@@ -9,9 +9,9 @@
 		<Build>
 			<Target title="Debug">
 				<Option platforms="Windows;" />
-				<Option output="../bin/udefrag" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="../bin" />
-				<Option object_output="../obj/console/" />
+				<Option output="../../bin/udefrag" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../bin" />
+				<Option object_output="../../obj/console/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Option use_console_runner="0" />
@@ -22,9 +22,9 @@
 			</Target>
 			<Target title="Release">
 				<Option platforms="Windows;" />
-				<Option output="../bin/udefrag" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="../bin" />
-				<Option object_output="../obj/console/" />
+				<Option output="../../bin/udefrag" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../bin" />
+				<Option object_output="../../obj/console/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Option use_console_runner="0" />
@@ -52,7 +52,7 @@
 			<Add library="libshell32.a" />
 			<Add library="libole32.a" />
 			<Add library="libuuid.a" />
-			<Add directory="../lib" />
+			<Add directory="../../lib" />
 			<Add directory="$(WXWIDGETSDIR)/lib/gcc_libmingw-X86" />
 		</Linker>
 		<Unit filename="console.rc">

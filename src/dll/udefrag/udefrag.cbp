@@ -9,9 +9,9 @@
 		<Build>
 			<Target title="Release-MSVC">
 				<Option platforms="Windows;" />
-				<Option output="../../bin/udefrag" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="../../bin/" />
-				<Option object_output="../../obj/MSVC/udefrag/" />
+				<Option output="../../../bin/udefrag" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../../bin/" />
+				<Option object_output="../../../obj/MSVC/udefrag/" />
 				<Option type="3" />
 				<Option compiler="msvc10" />
 				<Option projectCompilerOptionsRelation="1" />
@@ -48,19 +48,19 @@
 					<Add option='/entry:&quot;DllMain&quot;' />
 					<Add option="/dll" />
 					<Add option="/def:udefrag.def" />
-					<Add option="/implib:..\..\lib\udefrag.lib" />
+					<Add option="/implib:..\..\..\lib\udefrag.lib" />
 					<Add option="/MANIFEST:NO" />
 					<Add library="ntdll.lib" />
 					<Add library="zenwinx.lib" />
-					<Add directory="../../lib" />
+					<Add directory="../../../lib" />
 					<Add directory="$(WXWIDGETSDIR)/lib/vc_libwinsdk-X86" />
 				</Linker>
 			</Target>
 			<Target title="Release-GCC">
 				<Option platforms="Windows;" />
-				<Option output="../../bin/udefrag" imp_lib="../../lib/libudefrag.dll.a" def_file="udefrag.def" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="../../bin/" />
-				<Option object_output="../../obj/GCC/udefrag/" />
+				<Option output="../../../bin/udefrag" imp_lib="../../../lib/libudefrag.dll.a" def_file="udefrag.def" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../../bin/" />
+				<Option object_output="../../../obj/GCC/udefrag/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createStaticLib="1" />
@@ -88,7 +88,7 @@
 					<Add option="-Wl,--kill-at,--entry,_DllMain@12,--strip-all" />
 					<Add library="libntdll.a" />
 					<Add library="libzenwinx.dll.a" />
-					<Add directory="../../lib" />
+					<Add directory="../../../lib" />
 					<Add directory="$(WXWIDGETSDIR)/lib/gcc_libmingw-X86" />
 				</Linker>
 			</Target>
