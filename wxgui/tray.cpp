@@ -56,9 +56,9 @@ void MainFrame::SetSystemTrayIcon(const wxString& icon, const wxString& tooltip)
 // =======================================================================
 
 BEGIN_EVENT_TABLE(SystemTrayIcon, wxTaskBarIcon)
-    EVT_MENU(EventID_ShowHideMenu, SystemTrayIcon::OnMenuShowHide)
-    EVT_MENU(EventID_PauseMenu, SystemTrayIcon::OnMenuPause)
-    EVT_MENU(EventID_ExitMenu, SystemTrayIcon::OnMenuExit)
+    EVT_MENU(ID_ShowHideMenu, SystemTrayIcon::OnMenuShowHide)
+    EVT_MENU(ID_PauseMenu, SystemTrayIcon::OnMenuPause)
+    EVT_MENU(ID_ExitMenu, SystemTrayIcon::OnMenuExit)
     EVT_TASKBAR_LEFT_UP(SystemTrayIcon::OnLeftButtonUp)
 END_EVENT_TABLE()
 
@@ -67,9 +67,9 @@ wxMenu *SystemTrayIcon::CreatePopupMenu()
     wxMenu *menu = new wxMenu;
     wxMenuItem *item;
     if(g_mainFrame->IsIconized()){
-        item = menu->Append(EventID_ShowHideMenu,_("Show"));
+        item = menu->Append(ID_ShowHideMenu,_("Show"));
     } else {
-        item = menu->Append(EventID_ShowHideMenu,_("Hide"));
+        item = menu->Append(ID_ShowHideMenu,_("Hide"));
     }
     wxFont font = item->GetFont();
     font.SetWeight(wxFONTWEIGHT_BOLD);
@@ -77,12 +77,12 @@ wxMenu *SystemTrayIcon::CreatePopupMenu()
 
     menu->AppendSeparator();
 
-    item = menu->Append(EventID_PauseMenu,_("Pa&use"));
+    item = menu->Append(ID_PauseMenu,_("Pa&use"));
     if(g_mainFrame->m_paused) item->Check(true);
 
     menu->AppendSeparator();
 
-    menu->Append(EventID_ExitMenu,_("E&xit"));
+    menu->Append(ID_ExitMenu,_("E&xit"));
     return menu;
 }
 
@@ -104,17 +104,17 @@ void SystemTrayIcon::OnMenuShowHide(wxCommandEvent& WXUNUSED(event))
 
 void SystemTrayIcon::OnMenuPause(wxCommandEvent& WXUNUSED(event))
 {
-    PostCommandEvent(g_mainFrame,EventID_Pause);
+    PostCommandEvent(g_mainFrame,ID_Pause);
 }
 
 void SystemTrayIcon::OnMenuExit(wxCommandEvent& WXUNUSED(event))
 {
-    PostCommandEvent(g_mainFrame,EventID_Exit);
+    PostCommandEvent(g_mainFrame,ID_Exit);
 }
 
 void SystemTrayIcon::OnLeftButtonUp(wxTaskBarIconEvent& WXUNUSED(event))
 {
-    ProcessCommandEvent(EventID_ShowHideMenu);
+    ProcessCommandEvent(ID_ShowHideMenu);
 }
 
 // =======================================================================

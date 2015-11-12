@@ -66,7 +66,7 @@ void MainFrame::InitStatusBar()
     UD_SetStatusIcon(3, compressed);
     UD_SetStatusIcon(4, mft);
 
-    ProcessCommandEvent(EventID_UpdateStatusBar);
+    ProcessCommandEvent(ID_UpdateStatusBar);
 }
 
 // =======================================================================
@@ -75,7 +75,6 @@ void MainFrame::InitStatusBar()
 
 void MainFrame::UpdateStatusBar(wxCommandEvent& event)
 {
-
     unsigned long directories = 0;
     unsigned long files = 0;
     unsigned long fragmented = 0;
@@ -97,7 +96,6 @@ void MainFrame::UpdateStatusBar(wxCommandEvent& event)
 
     char s[32]; winx_bytes_to_hr(mft_size,2,s,sizeof(s));
     SetStatusText(wxString::Format(wxT("%hs MFT"),s), 4);
-
 }
 
 #undef UD_SetStatusIcon

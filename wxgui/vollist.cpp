@@ -64,7 +64,7 @@ void MainFrame::InitVolList()
     int width = this->GetClientSize().GetWidth() - borderx * 8;
     int lastColumnWidth = width;
     dtrace("INIT - client width ......... %d", width);
-    dtrace("INIT - borderx width ......... %d", borderx);
+    dtrace("INIT - border width ......... %d", borderx);
 
     int format[] = {
         wxLIST_FORMAT_LEFT, wxLIST_FORMAT_LEFT,
@@ -99,7 +99,7 @@ void MainFrame::InitVolList()
     // ensure that the list will cover integral number of items
     m_vListHeight = 0xFFFFFFFF; // prevent expansion of the list
     m_vList->InsertItem(0,wxT("hi"),0);
-    ProcessCommandEvent(EventID_AdjustListHeight);
+    ProcessCommandEvent(ID_AdjustListHeight);
 
     Connect(wxEVT_SIZE,wxSizeEventHandler(MainFrame::OnListSize),NULL,this);
     m_splitter->Connect(wxEVT_COMMAND_SPLITTER_SASH_POS_CHANGED,
@@ -120,8 +120,7 @@ END_EVENT_TABLE()
 
 void DrivesList::OnKeyDown(wxKeyEvent& event)
 {
-    if(!g_mainFrame->m_busy)
-        event.Skip();
+    if(!g_mainFrame->m_busy) event.Skip();
 }
 
 void DrivesList::OnKeyUp(wxKeyEvent& event)
@@ -134,11 +133,11 @@ void DrivesList::OnKeyUp(wxKeyEvent& event)
         case WXK_RETURN:
         case WXK_NUMPAD_ENTER:
             if(event.GetModifiers() == wxMOD_NONE)
-                PostCommandEvent(g_mainFrame,EventID_DefaultAction);
+                PostCommandEvent(g_mainFrame,ID_DefaultAction);
             break;
         case 'A':
             if(event.GetModifiers() == wxMOD_CONTROL)
-                PostCommandEvent(g_mainFrame,EventID_SelectAll);
+                PostCommandEvent(g_mainFrame,ID_SelectAll);
             break;
         default:
             break;
@@ -150,7 +149,7 @@ void DrivesList::OnKeyUp(wxKeyEvent& event)
 void DrivesList::OnMouse(wxMouseEvent& event)
 {
     if(!g_mainFrame->m_busy){
-        PostCommandEvent(g_mainFrame,EventID_DefaultAction);
+        PostCommandEvent(g_mainFrame,ID_DefaultAction);
         event.Skip();
     }
 }
@@ -163,8 +162,8 @@ void DrivesList::OnSelectionChange(wxListEvent& event)
         JobsCacheEntry *currentJob = g_mainFrame->m_jobsCache[(int)letter];
         if(g_mainFrame->m_currentJob != currentJob){
             g_mainFrame->m_currentJob = currentJob;
-            PostCommandEvent(g_mainFrame,EventID_RedrawMap);
-            PostCommandEvent(g_mainFrame,EventID_UpdateStatusBar);
+            PostCommandEvent(g_mainFrame,ID_RedrawMap);
+            PostCommandEvent(g_mainFrame,ID_UpdateStatusBar);
         }
     }
     event.Skip();
@@ -256,9 +255,9 @@ void MainFrame::AdjustListHeight(wxCommandEvent& WXUNUSED(event))
 
 void MainFrame::OnSplitChanged(wxSplitterEvent& event)
 {
-    PostCommandEvent(this,EventID_AdjustListHeight);
-    PostCommandEvent(this,EventID_AdjustListColumns);
-    PostCommandEvent(this,EventID_RedrawMap);
+    PostCommandEvent(this,ID_AdjustListHeight);
+    PostCommandEvent(this,ID_AdjustListColumns);
+    PostCommandEvent(this,ID_RedrawMap);
 
     event.Skip();
 }
@@ -272,7 +271,7 @@ void MainFrame::OnListSize(wxSizeEvent& event)
         new_width -= wxSystemSettings::GetMetric(wxSYS_VSCROLL_X);
 
     // scale list columns; avoid horizontal scrollbar appearance
-    wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED,EventID_AdjustListColumns);
+    wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED,ID_AdjustListColumns);
     evt.SetInt(new_width);
     if(new_width < old_width){
         ProcessEvent(evt);
@@ -292,15 +291,13 @@ void MainFrame::OnListSize(wxSizeEvent& event)
 
 void *ListThread::Entry()
 {
-
     while(!g_mainFrame->CheckForTermination(200)){
         if(m_rescan){
-            dtrace("About to repopulate list from ListThread Scanner in vollist.cpp");
-            PostCommandEvent(g_mainFrame,EventID_PopulateList);
+            dtrace("About to populate drive list from ListThread Scanner in vollist.cpp");
+            PostCommandEvent(g_mainFrame,ID_PopulateList);
             m_rescan = false;
         }
     }
-
     return NULL;
 }
 
@@ -425,6 +422,7 @@ void MainFrame::PopulateList(wxCommandEvent& event)
     if(!v) return;
 
     m_vList->DeleteAllItems();
+    m_DriveSubMenu = new wxMenu();  //make the submenu of fileslist popupmenu.
 
     for(int i = 0; v[i].letter; i++){
         wxString label;
@@ -434,25 +432,30 @@ void MainFrame::PopulateList(wxCommandEvent& event)
             v[i].label);
         m_vList->InsertItem(i,label);
 
-        wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED,EventID_UpdateVolumeInformation);
+        wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED,ID_UpdateVolumeInformation);
         volume_info *v_copy = new volume_info;
         memcpy(v_copy,&v[i],sizeof(volume_info));
         e.SetInt(i); e.SetClientData((void *)v_copy);
         ProcessEvent(e);
 
-        e.SetId(EventID_UpdateVolumeStatus);
+        e.SetId(ID_UpdateVolumeStatus);
         e.SetInt((int)v[i].letter);
         ProcessEvent(e);
-    }
 
-    ProcessCommandEvent(EventID_AdjustListColumns);
+        m_DriveSubMenu->Append(2000+(int)v[i].letter,label,L""); //Adding each drive to submenu
+        // encode the drive-letter char as an int + 2000 in the EventID, and listen on a range of ID's from 2065-2090 (A-Z)
+        // when clicked, this ID will run FilesList::RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event) @ fileslist.cpp
+    }
+    m_RClickPopupMenu1->AppendSubMenu(m_DriveSubMenu,wxT("Move file to Drive:"));    //add the submenu to the menu.
+
+    ProcessCommandEvent(ID_AdjustListColumns);
 
     m_vList->Select(0);
     m_vList->Focus(0);
 
     m_currentJob = m_jobsCache[(int)v[0].letter];
-    ProcessCommandEvent(EventID_RedrawMap);
-    ProcessCommandEvent(EventID_UpdateStatusBar);
+    ProcessCommandEvent(ID_RedrawMap);
+    ProcessCommandEvent(ID_UpdateStatusBar);
 
     ::udefrag_release_vollist(v);
 }
@@ -460,7 +463,7 @@ void MainFrame::PopulateList(wxCommandEvent& event)
 void MainFrame::OnSkipRem(wxCommandEvent& WXUNUSED(event))
 {
     if(!m_busy){
-        m_skipRem = m_menuBar->FindItem(EventID_SkipRem)->IsChecked();
+        m_skipRem = m_menuBar->FindItem(ID_SkipRem)->IsChecked();
         m_listThread->m_rescan = true;
     }
 }

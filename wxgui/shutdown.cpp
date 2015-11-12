@@ -200,22 +200,22 @@ void MainFrame::Shutdown(wxCommandEvent& WXUNUSED(event))
 {
     int action=-1;//action was uninitialized
 
-    if(m_menuBar->FindItem(EventID_WhenDoneNone)->IsChecked()){
+    if(m_menuBar->FindItem(ID_WhenDoneNone)->IsChecked()){
         // nothing to do
         return;
-    } else if(m_menuBar->FindItem(EventID_WhenDoneExit)->IsChecked()){
+    } else if(m_menuBar->FindItem(ID_WhenDoneExit)->IsChecked()){
         // just close the window
-        ProcessCommandEvent(EventID_Exit);
+        ProcessCommandEvent(ID_Exit);
         return;
-    } else if(m_menuBar->FindItem(EventID_WhenDoneStandby)->IsChecked()){
+    } else if(m_menuBar->FindItem(ID_WhenDoneStandby)->IsChecked()){
         action = WHEN_DONE_STANDBY;
-    } else if(m_menuBar->FindItem(EventID_WhenDoneHibernate)->IsChecked()){
+    } else if(m_menuBar->FindItem(ID_WhenDoneHibernate)->IsChecked()){
         action = WHEN_DONE_HIBERNATE;
-    } else if(m_menuBar->FindItem(EventID_WhenDoneLogoff)->IsChecked()){
+    } else if(m_menuBar->FindItem(ID_WhenDoneLogoff)->IsChecked()){
         action = WHEN_DONE_LOGOFF;
-    } else if(m_menuBar->FindItem(EventID_WhenDoneReboot)->IsChecked()){
+    } else if(m_menuBar->FindItem(ID_WhenDoneReboot)->IsChecked()){
         action = WHEN_DONE_REBOOT;
-    } else if(m_menuBar->FindItem(EventID_WhenDoneShutdown)->IsChecked()){
+    } else if(m_menuBar->FindItem(ID_WhenDoneShutdown)->IsChecked()){
         action = WHEN_DONE_SHUTDOWN;
     }
 
@@ -228,7 +228,7 @@ void MainFrame::Shutdown(wxCommandEvent& WXUNUSED(event))
     ::winx_flush_dbg_log(0);
 
     // close the window after the request completion
-    PostCommandEvent(this,EventID_Exit);
+    PostCommandEvent(this,ID_Exit);
 
     // There is an opinion that SetSuspendState call
     // is more reliable than SetSystemPowerState:

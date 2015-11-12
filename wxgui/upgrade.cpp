@@ -70,7 +70,7 @@ void *UpgradeThread::Entry()
                 itrace("current version: %hs",&cv[12]);
 
                 if(last && current && last > current){
-                    wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,EventID_ShowUpgradeDialog);
+                    wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,ID_ShowUpgradeDialog);
                     event.SetString(lv);
                     wxPostEvent(g_mainFrame,event);
                 }
@@ -136,16 +136,16 @@ int UpgradeThread::ParseVersionString(const char *version)
 void MainFrame::OnHelpUpgrade(wxCommandEvent& event)
 {
     switch(event.GetId()){
-        case EventID_HelpUpgradeNone:
+        case ID_HelpUpgradeNone:
             // disable checks
             m_upgradeThread->m_level = 0;
             break;
-        case EventID_HelpUpgradeStable:
-        case EventID_HelpUpgradeAll:
+        case ID_HelpUpgradeStable:
+        case ID_HelpUpgradeAll:
             // enable the check...
-            m_upgradeThread->m_level = event.GetId() - EventID_HelpUpgradeNone;
+            m_upgradeThread->m_level = event.GetId() - ID_HelpUpgradeNone;
             // ...and check it now
-        case EventID_HelpUpgradeCheck:
+        case ID_HelpUpgradeCheck:
             m_upgradeThread->m_check = true;
     }
 }

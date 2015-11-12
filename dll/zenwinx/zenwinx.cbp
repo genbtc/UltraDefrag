@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="zenwinxDLL" />
+		<Option platforms="Windows;" />
+		<Option pch_mode="2" />
+		<Option compiler="msvc10" />
+		<Build>
+			<Target title="Release-MSVC">
+				<Option platforms="Windows;" />
+				<Option output="../../bin/zenwinx" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../bin/" />
+				<Option object_output="../../obj/MSVC/zenwinx/" />
+				<Option type="3" />
+				<Option compiler="msvc10" />
+				<Option projectCompilerOptionsRelation="1" />
+				<Option projectLinkerOptionsRelation="1" />
+				<Option projectIncludeDirsRelation="1" />
+				<Option projectResourceIncludeDirsRelation="1" />
+				<Option projectLibDirsRelation="1" />
+				<Compiler>
+					<Add option="/MD" />
+					<Add option="/Ox" />
+					<Add option="/W3" />
+					<Add option="/nologo /W3 /GS- /Gd /O2 /c" />
+					<Add option="/DBUILD_DLL" />
+					<Add option="/DWIN32" />
+					<Add option="/DNDEBUG" />
+					<Add option="/D_MBCS" />
+					<Add option="/DUSE_WINSDK" />
+					<Add option="/D_CRT_SECURE_NO_WARNINGS" />
+					<Add option="/D_CONSOLE" />
+					<Add option="/D_USRDLL" />
+					<Add option="/DZENWINX_EXPORTS" />
+					<Add directory="$(WXWIDGETSDIR)/lib/vc_libwinsdk-X86/mswu" />
+					<Add directory="$(WXWIDGETSDIR)/include" />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory="$(WXWIDGETSDIR)/lib/vc_libwinsdk-X86/mswu" />
+					<Add directory="$(WXWIDGETSDIR)/include" />
+				</ResourceCompiler>
+				<Linker>
+					<Add option="/INCREMENTAL:NO" />
+					<Add option="/nologo" />
+					<Add option="/nodefaultlib" />
+					<Add option="/subsystem:console" />
+					<Add option='/entry:&quot;DllMain&quot;' />
+					<Add option="/dll" />
+					<Add option="/def:zenwinx.def" />
+					<Add option="/implib:..\..\lib\zenwinx.lib" />
+					<Add option="/MANIFEST:NO" />
+					<Add library="ntdll.lib" />
+					<Add directory="$(WXWIDGETSDIR)/lib/vc_libwinsdk-X86" />
+				</Linker>
+			</Target>
+			<Target title="Release-GCC">
+				<Option platforms="Windows;" />
+				<Option output="../../bin/zenwinx" imp_lib="../../lib/libzenwinx.dll.a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../bin/" />
+				<Option object_output="../../obj/GCC/zenwinx/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createStaticLib="1" />
+				<Option projectCompilerOptionsRelation="1" />
+				<Option projectLinkerOptionsRelation="1" />
+				<Option projectIncludeDirsRelation="1" />
+				<Option projectResourceIncludeDirsRelation="1" />
+				<Option projectLibDirsRelation="1" />
+				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-DBUILD_DLL" />
+					<Add directory="$(WXWIDGETSDIR)/include" />
+					<Add directory="$(WXWIDGETSDIR)/lib/gcc_libmingw-X86/mswu" />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory="$(WXWIDGETSDIR)/include" />
+				</ResourceCompiler>
+				<Linker>
+					<Add option="-pipe" />
+					<Add option="-shared" />
+					<Add option="-nostartfiles" />
+					<Add option="-nodefaultlibs" />
+					<Add option="zenwinx.def" />
+					<Add option="-Wl,--kill-at,--entry,_DllMain@12,--strip-all" />
+					<Add library="libntdll.a" />
+					<Add directory="$(WXWIDGETSDIR)/lib/gcc_libmingw-X86" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="/MD" />
+			<Add option="/Ox" />
+			<Add option="/W3" />
+		</Compiler>
+		<Unit filename="case-tables.h" />
+		<Unit filename="dbg.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="entry.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="env.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="event.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="file.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ftw.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ftw_ntfs.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="int64.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="keyboard.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="keytrans.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ldr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="list.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mem.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="misc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mutex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ntfs.h" />
+		<Unit filename="ntndk.h" />
+		<Unit filename="path.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="prb.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="prb.h" />
+		<Unit filename="privilege.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="reg.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="stdio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="string.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="thread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="time.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="volume.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="zenwinx.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="zenwinx.h" />
+		<Unit filename="zenwinx.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

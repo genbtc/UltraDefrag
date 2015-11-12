@@ -86,3 +86,11 @@ bin/logs/ultradefrag.log
 *.po
 bin/logs/ultradefrag.log
 bin/logs/ultradefrag.log
+bin/
+obj/
+lib/
+wxgui/vc100.pdb
+wxgui/wxguiMSVC.cbp
+wxgui/wxguiMSVC.layout
+dll/udefrag/cscope.out
+dll/udefrag/udefrag.cscope_file_list

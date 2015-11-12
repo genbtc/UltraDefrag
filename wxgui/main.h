@@ -57,6 +57,7 @@
 #include <wx/thread.h>
 #include <wx/toolbar.h>
 #include <wx/uri.h>
+
 #include <wx/notebook.h>//genbtc
 #include <wx/panel.h>//genbtc
 #include <wx/grid.h>//genbtc
@@ -64,6 +65,7 @@
 #include <wx/encconv.h> //genbtc for encodings
 #include <wx/menu.h>//genbtc (right-click menu)
 #include <wx/clipbrd.h>//genBTC (right-click menu) copy to clipboard
+#include <wx/fontdlg.h>//genBTC (font-chooser)
 #if wxUSE_UNICODE
 #define wxCharStringFmtSpec "%ls"
 #else
@@ -89,20 +91,8 @@ typedef enum {
 } TBPFLAG;
 
 #include "../include/version.h"
-#include "../native/zenwinx.h"
-#include "../native/udefrag.h"
-//#define __MINGW_EXTENSION
-//typedef ULONG_PTR KAFFINITY;
-//typedef KAFFINITY *PKAFFINITY;
-//#define _NTSECAPI_H
-//#include "../native/udefrag-internals.h"
-
-//i wanted to include that to gain access to jp-> but i can't because:
-//The following errors occur when including that file: Duplicate/already defined:
-//VOLUME_IS_DIRTY
-//_PARTITION_INFORMATION
-//_MEDIA_TYPE
-//_DISK_GEOMETRY
+#include "../dll/zenwinx/zenwinx.h"
+#include "../dll/udefrag/udefrag.h"
 
 // =======================================================================
 //                              Constants
@@ -114,108 +104,110 @@ typedef enum {
 enum {
     // file menu identifiers
     // NOTE: they share a single event handler
-    EventID_Analyze = 1,
-    EventID_Defrag,
-    EventID_QuickOpt,
-    EventID_FullOpt,
-    EventID_MftOpt,
+    ID_Analyze = 1,
+    ID_Defrag,
+    ID_QuickOpt,
+    ID_FullOpt,
+    ID_MoveToFront,
+    ID_MoveToEnd,
+    ID_MftOpt,
 
-    EventID_Pause,
-    EventID_Stop,
+    ID_Pause,
+    ID_Stop,
 
-    EventID_Repeat,
+    ID_Repeat,
 
-    EventID_SkipRem,
-    EventID_Rescan,
+    ID_SkipRem,
+    ID_Rescan,
 
-    EventID_Repair,
+    ID_Repair,
 
-    EventID_WhenDoneNone,
-    EventID_WhenDoneExit,
-    EventID_WhenDoneStandby,
-    EventID_WhenDoneHibernate,
-    EventID_WhenDoneLogoff,
-    EventID_WhenDoneReboot,
-    EventID_WhenDoneShutdown,
+    ID_WhenDoneNone,
+    ID_WhenDoneExit,
+    ID_WhenDoneStandby,
+    ID_WhenDoneHibernate,
+    ID_WhenDoneLogoff,
+    ID_WhenDoneReboot,
+    ID_WhenDoneShutdown,
 
-    EventID_Exit,
+    ID_Exit,
 
     // report menu identifiers
-    EventID_ShowReport,
+    ID_ShowReport,
 
     // settings menu identifiers
     // NOTE: they share a single event handler
-    EventID_LangShowLog,
-    EventID_LangShowReport,
-    EventID_LangSubmit,
+    ID_LangShowLog,
+    ID_LangShowReport,
+    ID_LangSubmit,
 
-    EventID_LangOpenFolder,
+    ID_LangOpenFolder,
 
-    EventID_GuiOptions,
+    ID_GuiOptions,
 
-    EventID_BootEnable,
-    EventID_BootScript,
+    ID_BootEnable,
+    ID_BootScript,
 
-    EventID_ReportOptions,
+    ID_ReportOptions,
+    ID_ChooseFont,
 
-    EventID_SortByPath,
-    EventID_SortBySize,
-    EventID_SortByCreationDate,
-    EventID_SortByModificationDate,
-    EventID_SortByLastAccessDate,
+    ID_SortByPath,
+    ID_SortBySize,
+    ID_SortByCreationDate,
+    ID_SortByModificationDate,
+    ID_SortByLastAccessDate,
 
-    EventID_SortAscending,
-    EventID_SortDescending,
+    ID_SortAscending,
+    ID_SortDescending,
 
     // help menu identifiers
-    EventID_HelpContents,
-    EventID_HelpBestPractice,
-    EventID_HelpFaq,
-    EventID_HelpLegend,
+    ID_HelpContents,
+    ID_HelpBestPractice,
+    ID_HelpFaq,
+    ID_HelpLegend,
 
-    EventID_DebugLog,
-    EventID_DebugSend,
+    ID_DebugLog,
+    ID_DebugSend,
 
     // NOTE: they share a single event handler
-    EventID_HelpUpgradeNone,
-    EventID_HelpUpgradeStable,
-    EventID_HelpUpgradeAll,
-    EventID_HelpUpgradeCheck,
+    ID_HelpUpgradeNone,
+    ID_HelpUpgradeStable,
+    ID_HelpUpgradeAll,
+    ID_HelpUpgradeCheck,
 
-    EventID_HelpAbout,
+    ID_HelpAbout,
 
     // event identifiers
-    EventID_AdjustListColumns,
-    EventID_AdjustListHeight,
-    EventID_AdjustFilesListColumns,      //genBTC
-    EventID_AdjustFilesListHeight,       //genBTC
-    EventID_AdjustSystemTrayIcon,
-    EventID_AdjustTaskbarIconOverlay,
-    EventID_BootChange,
-    EventID_CacheJob,
-    EventID_DefaultAction,
-    EventID_DiskProcessingFailure,
-    EventID_JobCompletion,
-    EventID_PopulateList,
-    EventID_PopulateFilesList,           //genBTC
-    EventID_ReadUserPreferences,
-    EventID_RedrawMap,
-    EventID_SelectAll,
-    EventID_SetWindowTitle,
-    EventID_ShowUpgradeDialog,
-    EventID_Shutdown,
-    EventID_UpdateStatusBar,
-    EventID_UpdateVolumeInformation,
-    EventID_UpdateVolumeStatus,
-    EventID_FilesAnalyzedUpdateFilesList,    //genBTC
+    ID_AdjustListColumns,
+    ID_AdjustListHeight,
+    ID_AdjustFilesListColumns,      //genBTC
+    ID_AdjustSystemTrayIcon,
+    ID_AdjustTaskbarIconOverlay,
+    ID_BootChange,
+    ID_CacheJob,
+    ID_DefaultAction,
+    ID_DiskProcessingFailure,
+    ID_JobCompletion,
+    ID_PopulateList,
+    ID_PopulateFilesList,           //genBTC
+    ID_ReadUserPreferences,
+    ID_RedrawMap,
+    ID_SelectAll,
+    ID_SetWindowTitle,
+    ID_ShowUpgradeDialog,
+    ID_Shutdown,
+    ID_UpdateStatusBar,
+    ID_UpdateVolumeInformation,
+    ID_UpdateVolumeStatus,
 
     // tray icon menu identifiers
-    EventID_ShowHideMenu,
-    EventID_PauseMenu,
-    EventID_ExitMenu,
+    ID_ShowHideMenu,
+    ID_PauseMenu,
+    ID_ExitMenu,
+    ID_SelectProperDrive,
 
     // language selection menu item, must always be last in the list
-    EventID_LocaleChange
+    ID_LocaleChange
 };
 
 #define MAIN_WINDOW_DEFAULT_WIDTH  900
@@ -375,19 +367,6 @@ public:
     bool m_rescan;
 };
 
-//genBTC Fileslist
-class ListFilesThread: public wxThread {
-public:
-    ListFilesThread() : wxThread(wxTHREAD_JOINABLE) {
-        m_rescan = true; Create(); Run();
-    }
-    ~ListFilesThread() { Wait(); }
-
-    virtual void *Entry();
-
-    bool m_rescan;
-};
-
 class UpgradeThread: public wxThread {
 public:
     UpgradeThread(int level) : wxThread(wxTHREAD_JOINABLE) {
@@ -441,22 +420,25 @@ public:
         wxDefaultPosition,wxDefaultSize,style) {}
     ~FilesList() {}
 
-    void OnKeyDown(wxKeyEvent& event);
-    void OnKeyUp(wxKeyEvent& event);
-    void OnMouseLDClick(wxMouseEvent& event);
-    void OnMouseRClick(wxMouseEvent& event);
-    void OnSelectionChange(wxListEvent& event);
-    void RClickMoveFile(wxCommandEvent& event);
+    void OnItemRClick(wxListEvent& event);
+    void OnSelect(wxListEvent& event);
+    void OnDeSelect(wxListEvent& event);
+
+    void RClickDefragSingleEntry(wxCommandEvent& event);
     void RClickOpenExplorer(wxCommandEvent& event);
     void RClickCopyClipboard(wxCommandEvent& event);
-    void RClickDefragSingleEntry(wxCommandEvent& event);
+    void RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event);
+    void RClickMoveToFirstFreeRegion(wxCommandEvent& event);
+    void RClickMoveToLastFreeRegion(wxCommandEvent& event);
+    void ReSelectProperDrive(wxCommandEvent& event);
 
-    wxListItem GetListItem();
-    void InitMembers();
+    wxListItem GetListItem(int id,int col);
+    long currentlyselected;
+    wxString currently_being_workedon_filename;
+
     DECLARE_EVENT_TABLE()
 private:
-    wxMenu *WxPopupMenu1;
-    long currentlyselected;
+
 };
 
 class ClusterMap: public wxWindow {
@@ -522,6 +504,7 @@ public:
     void OnBootScript(wxCommandEvent& event);
 
     void OnReportOptions(wxCommandEvent& event);
+    void ChooseFont(wxCommandEvent& event);//genBTC fontpicker.
 
     // help menu handlers
     void OnHelpContents(wxCommandEvent& event);
@@ -569,13 +552,9 @@ public:
 
     // Files List (new) genBTC
     void FilesAdjustListColumns(wxCommandEvent& event);
-    void FilesAdjustListHeight(wxCommandEvent& event);
     void FilesOnListSize(wxSizeEvent& event);
-    void FilesOnSplitChanged(wxSplitterEvent& event);
-    void FilesOnSkipRem(wxCommandEvent& event);
-    void FilesOnRescan(wxCommandEvent& event);
-    void FilesAnalyzedUpdateFilesList(wxCommandEvent& event);
     void FilesPopulateList(wxCommandEvent& event);
+    void ReSelectProperDrive(wxCommandEvent& event);
 
     // common routines
     int  CheckOption(const wxString& name);
@@ -599,7 +578,10 @@ public:
     JobsCache m_jobsCache;
     JobsCacheEntry *m_currentJob;
 
+    wxMenu     *m_RClickPopupMenu1;     //genBTC Right Click Popup Menu
+    wxMenu     *m_DriveSubMenu;         //genBTC Right Click Popup Menu
 private:
+    void InitPopupMenus();              //genBTC Right Click Popup Menu
     bool GetLocaleFolder(wxString& CurrentLocaleDir);
     void InitMenu();
     void InitToolbar();
@@ -673,11 +655,9 @@ private:
     ConfigThread    *m_configThread;
     CrashInfoThread *m_crashInfoThread;
     ListThread      *m_listThread;
-    ListFilesThread *m_listfilesThread;
     UpgradeThread   *m_upgradeThread;
 
     DECLARE_EVENT_TABLE()
-
 };
 
 class Utils {
@@ -703,7 +683,6 @@ public:
     static void DrawSingleRectangleBorder(HDC m_cacheDC,int xblock,int yblock,int line_width,int cell_size,HBRUSH border,HBRUSH infill);
     static void createDirectoryRecursively(const std::wstring &directory);
 };
-
 
 /* flags for Utils::ShellExec */
 #define SHELLEX_SILENT  0x1

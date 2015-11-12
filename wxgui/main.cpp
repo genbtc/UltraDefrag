@@ -246,7 +246,7 @@ MainFrame::MainFrame()
 
     // read configuration
     ReadAppConfiguration();
-    ProcessCommandEvent(EventID_ReadUserPreferences);
+    ProcessCommandEvent(ID_ReadUserPreferences);
 
     // set main window title
     wxString *instdir = new wxString();
@@ -267,7 +267,7 @@ MainFrame::MainFrame()
         m_title = new wxString(wxT(VERSIONINTITLE_PORTABLE));
     }
     //genBTC re-arranged the above, A LOT.
-    ProcessCommandEvent(EventID_SetWindowTitle);
+    ProcessCommandEvent(ID_SetWindowTitle);
     delete instdir;
 
     // set main window size and position
@@ -358,13 +358,13 @@ MainFrame::MainFrame()
     wxFileName btdFile(wxT("%SystemRoot%\\system32\\defrag_native.exe"));
     btdFile.Normalize();
     bool btd = btdFile.FileExists();
-    m_menuBar->FindItem(EventID_BootEnable)->Enable(btd);
-    m_menuBar->FindItem(EventID_BootScript)->Enable(btd);
-    m_toolBar->EnableTool(EventID_BootEnable,btd);
-    m_toolBar->EnableTool(EventID_BootScript,btd);
+    m_menuBar->FindItem(ID_BootEnable)->Enable(btd);
+    m_menuBar->FindItem(ID_BootScript)->Enable(btd);
+    m_toolBar->EnableTool(ID_BootEnable,btd);
+    m_toolBar->EnableTool(ID_BootScript,btd);
     if(btd && ::winx_bootex_check(L"defrag_native") > 0){
-        m_menuBar->FindItem(EventID_BootEnable)->Check(true);
-        m_toolBar->ToggleTool(EventID_BootEnable,true);
+        m_menuBar->FindItem(ID_BootEnable)->Check(true);
+        m_toolBar->ToggleTool(ID_BootEnable,true);
         m_btdEnabled = true;
     } else {
         m_btdEnabled = false;
@@ -377,7 +377,7 @@ MainFrame::MainFrame()
 
     wxConfigBase *cfg = wxConfigBase::Get();
     int ulevel = (int)cfg->Read(wxT("/Upgrade/Level"),1);
-    wxMenuItem *item = m_menuBar->FindItem(EventID_HelpUpgradeNone + ulevel);
+    wxMenuItem *item = m_menuBar->FindItem(ID_HelpUpgradeNone + ulevel);
     if(item) item->Check();
 
     m_upgradeThread = new UpgradeThread(ulevel);
@@ -391,7 +391,7 @@ MainFrame::MainFrame()
     SetSystemTrayIcon(wxT("tray"),wxT("UltraDefrag"));
 
     // set localized text
-    ProcessCommandEvent(EventID_LocaleChange \
+    ProcessCommandEvent(ID_LocaleChange \
         + g_locale->GetLanguage());
 
     // allow disk processing
@@ -404,7 +404,7 @@ MainFrame::MainFrame()
 MainFrame::~MainFrame()
 {
     // terminate threads
-    ProcessCommandEvent(EventID_Stop);
+    ProcessCommandEvent(ID_Stop);
     ::SetEvent(g_synchEvent);
     delete m_btdThread;
     delete m_configThread;
@@ -447,83 +447,84 @@ bool MainFrame::CheckForTermination(int time)
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     // file menu
-    EVT_MENU_RANGE(EventID_Analyze, EventID_MftOpt,
+    EVT_MENU_RANGE(ID_Analyze, ID_MftOpt,
                    MainFrame::OnStartJob)
-    // includes: EventID_Analyze = 1,    EventID_Defrag,
-    //      EventID_QuickOpt,    EventID_FullOpt,    EventID_MftOpt,
+    // includes: ID_Analyze = 1,    ID_Defrag,
+    //      ID_QuickOpt,    ID_FullOpt,    ID_MftOpt,
+    // and now     ID_MoveToFront,     ID_MoveToEnd,
 
-    EVT_MENU(EventID_Pause, MainFrame::OnPause)
-    EVT_MENU(EventID_Stop,  MainFrame::OnStop)
+    EVT_MENU(ID_Pause, MainFrame::OnPause)
+    EVT_MENU(ID_Stop,  MainFrame::OnStop)
 
-    EVT_MENU(EventID_Repeat,  MainFrame::OnRepeat)
+    EVT_MENU(ID_Repeat,  MainFrame::OnRepeat)
 
-    EVT_MENU(EventID_SkipRem, MainFrame::OnSkipRem)
-    EVT_MENU(EventID_Rescan,  MainFrame::OnRescan)
+    EVT_MENU(ID_SkipRem, MainFrame::OnSkipRem)
+    EVT_MENU(ID_Rescan,  MainFrame::OnRescan)
 
-    EVT_MENU(EventID_Repair,  MainFrame::OnRepair)
+    EVT_MENU(ID_Repair,  MainFrame::OnRepair)
 
-    EVT_MENU(EventID_Exit, MainFrame::OnExit)
+    EVT_MENU(ID_Exit, MainFrame::OnExit)
 
     // report menu
-    EVT_MENU(EventID_ShowReport, MainFrame::OnShowReport)
+    EVT_MENU(ID_ShowReport, MainFrame::OnShowReport)
 
     // settings menu
-    EVT_MENU_RANGE(EventID_LangShowLog, EventID_LangSubmit,
+    EVT_MENU_RANGE(ID_LangShowLog, ID_LangSubmit,
                    MainFrame::OnLangOpenTransifex)
-    EVT_MENU(EventID_LangOpenFolder, MainFrame::OnLangOpenFolder)
+    EVT_MENU(ID_LangOpenFolder, MainFrame::OnLangOpenFolder)
 
-    EVT_MENU_RANGE(EventID_LocaleChange, EventID_LocaleChange \
+    EVT_MENU_RANGE(ID_LocaleChange, ID_LocaleChange \
         + wxUD_LANGUAGE_LAST, MainFrame::OnLocaleChange)
 
-    EVT_MENU(EventID_GuiOptions, MainFrame::OnGuiOptions)
+    EVT_MENU(ID_GuiOptions, MainFrame::OnGuiOptions)
 
-    EVT_MENU(EventID_BootEnable, MainFrame::OnBootEnable)
-    EVT_MENU(EventID_BootScript, MainFrame::OnBootScript)
+    EVT_MENU(ID_BootEnable, MainFrame::OnBootEnable)
+    EVT_MENU(ID_BootScript, MainFrame::OnBootScript)
 
-    EVT_MENU(EventID_ReportOptions, MainFrame::OnReportOptions)
+    EVT_MENU(ID_ReportOptions, MainFrame::OnReportOptions)
+    EVT_MENU(ID_ChooseFont, MainFrame::ChooseFont)          //genBTC
 
     // help menu
-    EVT_MENU(EventID_HelpContents,     MainFrame::OnHelpContents)
-    EVT_MENU(EventID_HelpBestPractice, MainFrame::OnHelpBestPractice)
-    EVT_MENU(EventID_HelpFaq,          MainFrame::OnHelpFaq)
-    EVT_MENU(EventID_HelpLegend,       MainFrame::OnHelpLegend)
+    EVT_MENU(ID_HelpContents,     MainFrame::OnHelpContents)
+    EVT_MENU(ID_HelpBestPractice, MainFrame::OnHelpBestPractice)
+    EVT_MENU(ID_HelpFaq,          MainFrame::OnHelpFaq)
+    EVT_MENU(ID_HelpLegend,       MainFrame::OnHelpLegend)
 
-    EVT_MENU(EventID_DebugLog,  MainFrame::OnDebugLog)
-    EVT_MENU(EventID_DebugSend, MainFrame::OnDebugSend)
+    EVT_MENU(ID_DebugLog,  MainFrame::OnDebugLog)
+    EVT_MENU(ID_DebugSend, MainFrame::OnDebugSend)
 
-    EVT_MENU_RANGE(EventID_HelpUpgradeNone,
-                   EventID_HelpUpgradeCheck,
+    EVT_MENU_RANGE(ID_HelpUpgradeNone,
+                   ID_HelpUpgradeCheck,
                    MainFrame::OnHelpUpgrade)
-    EVT_MENU(EventID_HelpAbout, MainFrame::OnHelpAbout)
+    EVT_MENU(ID_HelpAbout, MainFrame::OnHelpAbout)
 
     // event handlers
     EVT_ACTIVATE(MainFrame::OnActivate)
     EVT_MOVE(MainFrame::OnMove)
     EVT_SIZE(MainFrame::OnSize)
 
-    EVT_MENU(EventID_AdjustListColumns, MainFrame::AdjustListColumns)
-    EVT_MENU(EventID_AdjustListHeight,  MainFrame::AdjustListHeight)
-    EVT_MENU(EventID_AdjustFilesListColumns, MainFrame::FilesAdjustListColumns)//genBTC
-    EVT_MENU(EventID_AdjustFilesListHeight,  MainFrame::FilesAdjustListHeight)//genBTC
-    EVT_MENU(EventID_AdjustSystemTrayIcon,     MainFrame::AdjustSystemTrayIcon)
-    EVT_MENU(EventID_AdjustTaskbarIconOverlay, MainFrame::AdjustTaskbarIconOverlay)
-    EVT_MENU(EventID_BootChange,        MainFrame::OnBootChange)
-    EVT_MENU(EventID_CacheJob,          MainFrame::CacheJob)
-    EVT_MENU(EventID_DefaultAction,     MainFrame::OnDefaultAction)
-    EVT_MENU(EventID_DiskProcessingFailure, MainFrame::OnDiskProcessingFailure)
-    EVT_MENU(EventID_JobCompletion,     MainFrame::OnJobCompletion)
-    EVT_MENU(EventID_PopulateList,      MainFrame::PopulateList)
-    EVT_MENU(EventID_PopulateFilesList,      MainFrame::FilesPopulateList) //genBTC
-    EVT_MENU(EventID_ReadUserPreferences,   MainFrame::ReadUserPreferences)
-    EVT_MENU(EventID_RedrawMap,         MainFrame::RedrawMap)
-    EVT_MENU(EventID_SelectAll,         MainFrame::SelectAll)
-    EVT_MENU(EventID_SetWindowTitle,    MainFrame::SetWindowTitle)
-    EVT_MENU(EventID_ShowUpgradeDialog, MainFrame::ShowUpgradeDialog)
-    EVT_MENU(EventID_Shutdown,          MainFrame::Shutdown)
-    EVT_MENU(EventID_UpdateStatusBar,   MainFrame::UpdateStatusBar)
-    EVT_MENU(EventID_UpdateVolumeInformation, MainFrame::UpdateVolumeInformation)
-    EVT_MENU(EventID_UpdateVolumeStatus,      MainFrame::UpdateVolumeStatus)
-    EVT_MENU(EventID_FilesAnalyzedUpdateFilesList, MainFrame::FilesAnalyzedUpdateFilesList)//genBTC
+    EVT_MENU(ID_AdjustListColumns, MainFrame::AdjustListColumns)
+    EVT_MENU(ID_AdjustListHeight,  MainFrame::AdjustListHeight)
+    EVT_MENU(ID_AdjustFilesListColumns, MainFrame::FilesAdjustListColumns)//genBTC
+    EVT_MENU(ID_AdjustSystemTrayIcon,     MainFrame::AdjustSystemTrayIcon)
+    EVT_MENU(ID_AdjustTaskbarIconOverlay, MainFrame::AdjustTaskbarIconOverlay)
+    EVT_MENU(ID_BootChange,        MainFrame::OnBootChange)
+    EVT_MENU(ID_CacheJob,          MainFrame::CacheJob)
+    EVT_MENU(ID_DefaultAction,     MainFrame::OnDefaultAction)
+    EVT_MENU(ID_DiskProcessingFailure, MainFrame::OnDiskProcessingFailure)
+    EVT_MENU(ID_JobCompletion,     MainFrame::OnJobCompletion)
+    EVT_MENU(ID_PopulateList,      MainFrame::PopulateList)
+    EVT_MENU(ID_PopulateFilesList,      MainFrame::FilesPopulateList) //genBTC
+    EVT_MENU(ID_ReadUserPreferences,   MainFrame::ReadUserPreferences)
+    EVT_MENU(ID_RedrawMap,         MainFrame::RedrawMap)
+    EVT_MENU(ID_SelectAll,         MainFrame::SelectAll)
+    EVT_MENU(ID_SetWindowTitle,    MainFrame::SetWindowTitle)
+    EVT_MENU(ID_ShowUpgradeDialog, MainFrame::ShowUpgradeDialog)
+    EVT_MENU(ID_Shutdown,          MainFrame::Shutdown)
+    EVT_MENU(ID_UpdateStatusBar,   MainFrame::UpdateStatusBar)
+    EVT_MENU(ID_UpdateVolumeInformation, MainFrame::UpdateVolumeInformation)
+    EVT_MENU(ID_UpdateVolumeStatus,      MainFrame::UpdateVolumeStatus)
+    EVT_MENU(ID_SelectProperDrive, MainFrame::ReSelectProperDrive)  //genBTC
 END_EVENT_TABLE()
 
 // =======================================================================
@@ -534,7 +535,7 @@ WXLRESULT MainFrame::MSWWindowProc(WXUINT msg,WXWPARAM wParam,WXLPARAM lParam)
 {
     if(msg == g_TaskbarIconMsg){
         // handle shell restart
-        PostCommandEvent(this,EventID_AdjustTaskbarIconOverlay);
+        PostCommandEvent(this,ID_AdjustTaskbarIconOverlay);
         return 0;
     }
     return wxFrame::MSWWindowProc(msg,wParam,lParam);
@@ -544,7 +545,7 @@ void MainFrame::SetWindowTitle(wxCommandEvent& event)
 {
     if(event.GetString().IsEmpty()){
         if(CheckOption(wxT("UD_DRY_RUN"))){
-            SetTitle(*m_title + wxT(" (dry run)"));
+            SetTitle(*m_title + wxT(" (Dry Run)"));
         } else {
             SetTitle(*m_title);
         }
@@ -556,8 +557,10 @@ void MainFrame::SetWindowTitle(wxCommandEvent& event)
 void MainFrame::OnActivate(wxActivateEvent& event)
 {
     /* suggested by Brian Gaff */
-    if(event.GetActive())
+    if(event.GetActive()){
         m_vList->SetFocus();
+        //m_filesList->SetFocus(); //can't do this. crashes on startup. maybe because theres no Item to focus?
+    }
     event.Skip();
 }
 
@@ -622,7 +625,6 @@ void MainFrame::SelectAll(wxCommandEvent& WXUNUSED(event))
     m_vList->Focus(0);
 }
 
-/** @} */
 unsigned WindowsTickToUnixSeconds(ULONGLONG windowsTicks)
 {
    ULONGLONG secs;
@@ -634,3 +636,4 @@ unsigned WindowsTickToUnixSeconds(ULONGLONG windowsTicks)
       return (time_t) -1;   // value not representable as a POSIX time
    return t;
 }
+/** @} */

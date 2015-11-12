@@ -72,28 +72,28 @@ void MainFrame::InitToolbar()
     m_toolBar = CreateToolBar();
     m_toolBar->SetToolBitmapSize(wxSize(g_iconSize,g_iconSize));
 
-    UD_MakeToolItem(EventID_Analyze         , glass   )
-    UD_MakeToolCheckItem(EventID_Repeat     , repeat  )
-    UD_MakeToolItem(EventID_Defrag          , defrag  )
-    UD_MakeToolItem(EventID_QuickOpt        , quick   )
-    UD_MakeToolItem(EventID_FullOpt         , full    )
-    UD_MakeToolItem(EventID_MftOpt          , mft     )
-    UD_MakeToolCheckItem(EventID_Pause      , pause   )
-    UD_MakeToolItem(EventID_Stop            , stop    )
+    UD_MakeToolItem(ID_Analyze         , glass   )
+    UD_MakeToolCheckItem(ID_Repeat     , repeat  )
+    UD_MakeToolItem(ID_Defrag          , defrag  )
+    UD_MakeToolItem(ID_QuickOpt        , quick   )
+    UD_MakeToolItem(ID_FullOpt         , full    )
+    UD_MakeToolItem(ID_MftOpt          , mft     )
+    UD_MakeToolCheckItem(ID_Pause      , pause   )
+    UD_MakeToolItem(ID_Stop            , stop    )
     m_toolBar->AddSeparator();
-    UD_MakeToolItem(EventID_ShowReport      , report  )
+    UD_MakeToolItem(ID_ShowReport      , report  )
     m_toolBar->AddSeparator();
-    UD_MakeToolItem(EventID_GuiOptions      , gear    )
+    UD_MakeToolItem(ID_GuiOptions      , gear    )
     m_toolBar->AddSeparator();
-    UD_MakeToolCheckItem(EventID_BootEnable , terminal)
-    UD_MakeToolItem(EventID_BootScript      , script  )
+    UD_MakeToolCheckItem(ID_BootEnable , terminal)
+    UD_MakeToolItem(ID_BootScript      , script  )
     m_toolBar->AddSeparator();
-    UD_MakeToolItem(EventID_HelpContents    , help    )
+    UD_MakeToolItem(ID_HelpContents    , help    )
 
     m_toolBar->Realize();
 
     // initial settings (must be after realize)
-    m_toolBar->ToggleTool(EventID_Repeat,m_repeat);
+    m_toolBar->ToggleTool(ID_Repeat,m_repeat);
 }
 
 #undef UD_MakeToolItem
