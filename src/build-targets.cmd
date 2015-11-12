@@ -88,7 +88,7 @@ del /Q .\obj\native\zenwinx.rc
 :: as in /src directory
 mkdir obj\dll
 mkdir obj\dll\udefrag
-copy /Y obj\udefrag\udefrag.h obj\dll\udefrag
+copy /Y obj\udefrag\*.h obj\dll\udefrag
 mkdir obj\dll\zenwinx
 copy /Y obj\zenwinx\*.h obj\dll\zenwinx\
 
