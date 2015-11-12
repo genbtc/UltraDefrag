@@ -46,7 +46,7 @@
 
 COLORREF g_colors[SPACE_STATES] =
 {
-    RGB(178,175,168),               /* unused map block */
+    RGB(0,0,0),        /* unused map block */ //genBTC-turn any extras black.
     RGB(255,255,255),               /* free */
     RGB(0,215,32),RGB(4,164,0),     /* system */
     RGB(255,0,0),RGB(128,0,0),      /* fragmented */
@@ -215,7 +215,7 @@ void ClusterMap::OnPaint(wxPaintEvent& WXUNUSED(event))
     ::FillRect(m_cacheDC,&rc,brush); ::DeleteObject(brush);
     if(!blocks_per_line || !lines) goto draw;
 
-    // draw grid
+    // draw grid lines.
     if(line_width){
         char grid_r = (char)g_mainFrame->CheckOption(wxT("UD_GRID_COLOR_R"));
         char grid_g = (char)g_mainFrame->CheckOption(wxT("UD_GRID_COLOR_G"));
@@ -233,6 +233,23 @@ void ClusterMap::OnPaint(wxPaintEvent& WXUNUSED(event))
             rc.bottom = rc.top + line_width;
             ::FillRect(m_cacheDC,&rc,brush);
         }
+        //draws bright green rectangle around one single block with x,y coords of 33,33 (and fills in with white).
+//        Utils::DrawSingleRectangleBorder(m_cacheDC,33,33,line_width,cell_size,::CreateSolidBrush(RGB(102,255,0)),::CreateSolidBrush(RGB(free_r,free_g,free_b)));
+
+        //fills all gridline rects between columns 45 and 55
+//        for(int i = 45; i <= 55 ; i++){
+//            RECT rc; rc.left = cell_size * i; rc.top = 0;
+//            rc.right = rc.left + line_width;
+//            rc.bottom = cell_size * lines + line_width;
+//            ::FillRect(m_cacheDC,&rc,brush);
+//        }
+        //fills all gridline rects between rows 35 and 40
+//        for(int i = 35; i <= 40 ; i++){
+//            RECT rc; rc.left = 0; rc.top = cell_size * i;
+//            rc.right = cell_size * blocks_per_line + line_width;
+//            rc.bottom = rc.top + line_width;
+//            ::FillRect(m_cacheDC,&rc,brush);
+//        }
         ::DeleteObject(brush);
     }
 

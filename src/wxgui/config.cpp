@@ -89,8 +89,8 @@ void MainFrame::ReadAppConfiguration()
     );
 
     double r[LIST_COLUMNS] = {
-        110.0/615, 110.0/615, 110.0/615,
-        110.0/615, 110.0/615, 65.0/615
+        250.0/900, 280.0/900, 108.0/900,
+        98.0/900, 97.0/900, 67.0/900
     };
     for(int i = 0; i < LIST_COLUMNS; i++){
         cfg->Read(wxString::Format(wxT("/DrivesList/width%d"),i),
@@ -364,6 +364,24 @@ void MainFrame::OnBootScript(wxCommandEvent& WXUNUSED(event))
 {
     wxFileName script(wxT("%SystemRoot%\\system32\\ud-boot-time.cmd"));
     script.Normalize(); Utils::ShellExec(script.GetFullPath(),wxT("edit"));
+}
+
+void MainFrame::ChooseFont(wxCommandEvent& WXUNUSED(event))
+{
+    wxFontDialog dialog = new wxFontDialog();
+    int result = dialog.ShowModal();
+    if (result==5101)
+        return;
+    wxFontData fontDataOUT = dialog.GetFontData();  //Get "font data" from dialog.
+    wxFont font = fontDataOUT.GetChosenFont();
+    m_vList->SetFont(font);
+    m_vList->Refresh();
+    //ProcessCommandEvent(ID_AdjustListColumns);
+    m_filesList->SetFont(font);
+    m_filesList->Refresh();
+    //ProcessCommandEvent(ID_AdjustFilesListColumns);
+    dtrace("Chose new Font = %ws,%d", font.GetFaceName().wc_str(),font.GetPointSize());
+    dialog.EndModal(result);
 }
 
 /** @} */

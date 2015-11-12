@@ -1,0 +1,28 @@
+ALL : "native.dll"
+
+CPP_PROJ=/nologo /W3 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "USE_WINSDK" /D "_CRT_SECURE_NO_WARNINGS" /GS- /Gd /arch:SSE2 /O2 /I "$(WXWIDGETS_INC2_PATH)" /I "$(WXWIDGETS_INC_PATH)" /D "_CONSOLE" /D "_USRDLL" /D "ZENWINX_EXPORTS" /D "UDEFRAG_EXPORTS"  /c 
+RSC_PROJ=/l 0x409 /d "NDEBUG" /I "$(WXWIDGETS_INC2_PATH)" /I "$(WXWIDGETS_INC_PATH)" 
+LINK32_FLAGS=ntdll.lib /nologo /incremental:no /nodefaultlib /subsystem:console /entry:"DllMain" /dll /def:native.def /implib:native.lib /out:"..\..\bin\native.dll" 
+
+CPP=cl.exe
+RSC=rc.exe
+LINK32=link.exe
+
+header_files: \
+C:\Software\udefrag\obj\include\version.h \
+C:\Software\udefrag\obj\include\dbg.h \
+C:\Software\udefrag\obj\zenwinx\case-tables.h \
+C:\Software\udefrag\obj\native\defrag_native.h \
+C:\Software\udefrag\obj\zenwinx\ntfs.h \
+C:\Software\udefrag\obj\zenwinx\ntndk.h \
+C:\Software\udefrag\obj\zenwinx\prb.h \
+C:\Software\udefrag\obj\native\udefrag-internals.h \
+C:\Software\udefrag\obj\native\udefrag.h \
+C:\Software\udefrag\obj\zenwinx\zenwinx.h
+
+LINK32_OBJS=analyze.obj auxiliary.obj commands.obj dbg.obj defrag.obj defrag_native.obj entry.obj env.obj event.obj file.obj ftw.obj ftw_ntfs.obj int64.obj keyboard.obj keytrans.obj ldr.obj list.obj lock.obj map.obj mem.obj misc.obj move.obj mutex.obj objs.txt optimize.obj options.obj path.obj prb.obj privilege.obj reg.obj reports.obj script.obj search.obj stdio.obj string.obj thread.obj time.obj udefrag.obj udefrag-native.obj udefrag-volume.obj volume.obj zenwinx.obj
+
+DEF_FILE=native.def
+
+"native.dll" : $(DEF_FILE) $(LINK32_OBJS)
+    $(LINK32) $(LINK32_FLAGS) $(LINK32_OBJS)

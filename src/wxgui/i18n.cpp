@@ -158,6 +158,7 @@ void MainFrame::OnLocaleChange(wxCommandEvent& event)
     UD_UpdateMenuItemLabel(ID_GuiOptions , "&Options" , "F10");
     m_subMenuSortingConfig->SetItemLabel(_("&Sorting"));
     m_subMenuBootConfig->SetItemLabel(_("&Boot time scan"));
+    UD_UpdateMenuItemLabel(ID_ChooseFont , "&Change Font..." , "");
 
     // language sub-menu
     UD_UpdateMenuItemLabel(ID_LangTranslateOnline  , "Translate &online"    , "");
@@ -214,10 +215,17 @@ void MainFrame::OnLocaleChange(wxCommandEvent& event)
     //xgettext:no-c-format
     item.SetText(_("% free"));        m_vList->SetColumn(5,item);
 
+    item.SetText(_("Filename"));      m_filesList->SetColumn(0,item);
+    item.SetText(_("Fragments"));     m_filesList->SetColumn(1,item);
+    item.SetText(_("Size"));          m_filesList->SetColumn(2,item);
+    item.SetText(_("Info"));          m_filesList->SetColumn(3,item);
+    item.SetText(_("Status"));        m_filesList->SetColumn(4,item);
+    item.SetText(_("Last Modified")); m_filesList->SetColumn(5,item);
+
     // set mono-space font for the list unless Burmese translation is selected
     if(g_locale->GetCanonicalName().Left(2) != wxT("my")){
         wxFont font = m_vList->GetFont();
-        if(font.SetFaceName(wxT("Courier New")))
+        if(font.SetFaceName(wxT("Lucida Console")))
             m_vList->SetFont(font);
     } else {
         m_vList->SetFont(*m_vListFont);

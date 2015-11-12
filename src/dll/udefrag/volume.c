@@ -199,6 +199,7 @@ static int internal_validate_volume(char volume_letter,int skip_removable,volume
     wcsncpy(v->label,volume_info.label,MAX_PATH);
     v->label[MAX_PATH] = 0;
     v->is_dirty = volume_info.is_dirty;
+    v->bytes_per_cluster = volume_info.bytes_per_cluster;
     return 0;
 }
 

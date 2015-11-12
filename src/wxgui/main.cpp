@@ -49,6 +49,7 @@ double g_scaleFactor = 1.0f;   // DPI-aware scaling factor
 int g_iconSize;                // small icon size
 HANDLE g_synchEvent = NULL;    // synchronization for threads
 UINT g_TaskbarIconMsg;         // taskbar icon overlay setup on shell restart
+//PVOID g_jpPtr = NULL;       //pointer back to the udefrag-internals jp-> variable.
 
 // =======================================================================
 //                             Web statistics
@@ -250,24 +251,23 @@ MainFrame::MainFrame()
 
     // set main window title
     wxString *instdir = new wxString();
-    if(wxGetEnv(wxT("UD_INSTALL_DIR"),instdir)){
+    //genBTC re-arranged the below, A LOT.
         wxStandardPaths stdpaths;
         wxFileName exepath(stdpaths.GetExecutablePath());
         wxString cd = exepath.GetPath();
-        itrace("current directory: %ls",cd.wc_str());
-        itrace("installation directory: %ls",instdir->wc_str());
-        if(cd.CmpNoCase(*instdir) == 0){
+    if((wxGetEnv(wxT("UD_INSTALL_DIR"),instdir))&&(cd.CmpNoCase(*instdir) == 0)) {
             itrace("current directory matches "
                 "installation location, so it isn't portable");
+        itrace("installation location: %ls",instdir->wc_str());
             m_title = new wxString(wxT(VERSIONINTITLE));
         } else {
             itrace("current directory differs from "
                 "installation location, so it is portable");
+        itrace("current directory: %ls",cd.wc_str());
+        wxSetEnv(wxT("UD_IS_PORTABLE"),wxT("1"));
             m_title = new wxString(wxT(VERSIONINTITLE_PORTABLE));
         }
-    } else {
-        m_title = new wxString(wxT(VERSIONINTITLE_PORTABLE));
-    }
+    //genBTC re-arranged the above, A LOT.
     ProcessCommandEvent(ID_SetWindowTitle);
     delete instdir;
 
@@ -285,9 +285,17 @@ MainFrame::MainFrame()
     // create menu, tool and status bars
     InitMenu(); InitToolbar(); InitStatusBar();
 
+	//make sizer1 to hold the the tabbed "notebook". And make the notebook
+	wxBoxSizer* bSizer1;
+	bSizer1 = new wxBoxSizer( wxVERTICAL );
+	m_notebook1 = new wxNotebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+
+	//make a panel inside the notebook to hold the m_splitter
+	m_panel1 = new wxPanel( m_notebook1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+
     // create list of volumes and cluster map
-    // don't use live update style to avoid horizontal scrollbar appearance on list resizing
-    m_splitter = new wxSplitterWindow(this,wxID_ANY,
+    // - don't - use live update style to avoid horizontal scrollbar appearance on list resizing
+    m_splitter = new wxSplitterWindow(m_panel1,wxID_ANY,
         wxDefaultPosition,wxDefaultSize,
         wxSP_3D/* | wxSP_LIVE_UPDATE*/ | wxCLIP_CHILDREN);
     m_splitter->SetMinimumPaneSize(DPI(MIN_PANEL_HEIGHT));
@@ -307,9 +315,8 @@ MainFrame::MainFrame()
     else if(m_separatorPosition > maxPanelHeight) m_separatorPosition = maxPanelHeight;
     m_splitter->SetSashPosition(m_separatorPosition);
 
-    // update frame layout so we'll be able
-    // to initialize list of volumes and
-    // cluster map properly
+    // update frame layout so we'll be able to initialize
+    // list of volumes and cluster map properly
     wxSizeEvent evt(wxSize(m_width,m_height));
     ProcessEvent(evt); m_splitter->UpdateSize();
 
@@ -318,6 +325,37 @@ MainFrame::MainFrame()
 
     // populate list of volumes
     m_listThread = new ListThread();
+
+    //make sizer2 to Fit the splitter, and initialize it.
+	wxBoxSizer* bSizer2;
+	bSizer2 = new wxBoxSizer( wxVERTICAL );
+	bSizer2->Add( m_splitter, 1, wxEXPAND, 1 );
+	m_panel1->SetSizer( bSizer2 );
+
+	//Finish Tab1 - Add the Panel1(Splitter+sizer2) to the notebook.
+	m_notebook1->AddPage( m_panel1, wxT("Drives"), false );
+
+	//make a 2nd panel inside the notebook to hold the 2nd page(a grid)
+	m_panel2 = new wxPanel( m_notebook1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+
+    m_filesList = new FilesList(m_panel2,wxLC_REPORT | \
+        wxLC_HRULES | wxLC_VRULES | wxBORDER_NONE);
+    InitFilesList();
+    //m_listfilesThread = new ListFilesThread();//genBTC
+
+	//make sizer3 to Fit the page2list, and initialize it.
+	wxBoxSizer* bSizer3;
+	bSizer3 = new wxBoxSizer( wxVERTICAL );
+	bSizer3->Add( m_filesList, 1, wxEXPAND, 1 );
+	m_panel2->SetSizer( bSizer3 );
+    bSizer3->Fit( m_panel2 );
+
+	//Finish Tab 2 - Add the Panel2(page2list+sizer3) to the notebook.
+	m_notebook1->AddPage( m_panel2, wxT("Files"), false );
+
+    //Finish Notebook & initialize
+	bSizer1->Add( m_notebook1, 1, wxEXPAND, 1 );
+	this->SetSizer( bSizer1 );
 
     // check the boot time defragmenter presence
     wxFileName btdFile(wxT("%SystemRoot%\\system32\\defrag_native.exe"));
@@ -413,6 +451,10 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     // action menu
     EVT_MENU_RANGE(ID_Analyze, ID_MftOpt,
                    MainFrame::OnStartJob)
+    // includes: ID_Analyze = 1,    ID_Defrag,
+    //      ID_QuickOpt,    ID_FullOpt,    ID_MftOpt,
+    // and now     ID_MoveToFront,     ID_MoveToEnd,
+
     EVT_MENU(ID_Pause, MainFrame::OnPause)
     EVT_MENU(ID_Stop,  MainFrame::OnStop)
 
@@ -440,6 +482,8 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_BootEnable, MainFrame::OnBootEnable)
     EVT_MENU(ID_BootScript, MainFrame::OnBootScript)
 
+    EVT_MENU(ID_ChooseFont, MainFrame::ChooseFont)          //genBTC
+
     // help menu
     EVT_MENU(ID_HelpContents,     MainFrame::OnHelpContents)
     EVT_MENU(ID_HelpBestPractice, MainFrame::OnHelpBestPractice)
@@ -461,6 +505,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 
     EVT_MENU(ID_AdjustListColumns, MainFrame::AdjustListColumns)
     EVT_MENU(ID_AdjustListHeight,  MainFrame::AdjustListHeight)
+    EVT_MENU(ID_AdjustFilesListColumns, MainFrame::FilesAdjustListColumns)//genBTC
     EVT_MENU(ID_AdjustSystemTrayIcon,     MainFrame::AdjustSystemTrayIcon)
     EVT_MENU(ID_AdjustTaskbarIconOverlay, MainFrame::AdjustTaskbarIconOverlay)
     EVT_MENU(ID_BootChange,        MainFrame::OnBootChange)
@@ -469,6 +514,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_DiskProcessingFailure, MainFrame::OnDiskProcessingFailure)
     EVT_MENU(ID_JobCompletion,     MainFrame::OnJobCompletion)
     EVT_MENU(ID_PopulateList,      MainFrame::PopulateList)
+    EVT_MENU(ID_PopulateFilesList,      MainFrame::FilesPopulateList) //genBTC
     EVT_MENU(ID_ReadUserPreferences,   MainFrame::ReadUserPreferences)
     EVT_MENU(ID_RedrawMap,         MainFrame::RedrawMap)
     EVT_MENU(ID_SelectAll,         MainFrame::SelectAll)
@@ -478,6 +524,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_UpdateStatusBar,   MainFrame::UpdateStatusBar)
     EVT_MENU(ID_UpdateVolumeInformation, MainFrame::UpdateVolumeInformation)
     EVT_MENU(ID_UpdateVolumeStatus,      MainFrame::UpdateVolumeStatus)
+    EVT_MENU(ID_SelectProperDrive, MainFrame::ReSelectProperDrive)  //genBTC
 END_EVENT_TABLE()
 
 // =======================================================================
@@ -498,7 +545,7 @@ void MainFrame::SetWindowTitle(wxCommandEvent& event)
 {
     if(event.GetString().IsEmpty()){
         if(CheckOption(wxT("UD_DRY_RUN"))){
-            SetTitle(*m_title + wxT(" (dry run)"));
+            SetTitle(*m_title + wxT(" (Dry Run)"));
         } else {
             SetTitle(*m_title);
         }

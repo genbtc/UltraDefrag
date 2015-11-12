@@ -59,7 +59,7 @@
 // =======================================================================
 
 /**
- * @brief Initializes main menu.
+ * @brief Initializes main menu. Uses i18n.cpp for localization strings
  */
 void MainFrame::InitMenu()
 {
@@ -199,6 +199,8 @@ void MainFrame::InitMenu()
         menuSettings->AppendSubMenu(
             menuBootConfig, wxEmptyString
         );
+
+    menuSettings->Append(ID_ChooseFont);
 
     // create debug menu
     wxMenu *menuDebug = new wxMenu;

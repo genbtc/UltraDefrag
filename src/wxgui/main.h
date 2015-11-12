@@ -26,11 +26,13 @@
 // =======================================================================
 //                               Headers
 // =======================================================================
+#include <string>
 
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include <wx/wx.h>
+	#include <wx/wx.h>
+	#include <wx/frame.h>
 #endif
 
 #include <wx/artprov.h>
@@ -55,6 +57,14 @@
 #include <wx/toolbar.h>
 #include <wx/uri.h>
 
+#include <wx/notebook.h>//genbtc
+#include <wx/panel.h>//genbtc
+#include <wx/grid.h>//genbtc
+#include <wx/sizer.h>//genbtc
+#include <wx/encconv.h> //genbtc for encodings
+#include <wx/menu.h>//genbtc (right-click menu)
+#include <wx/clipbrd.h>//genBTC (right-click menu) copy to clipboard
+#include <wx/fontdlg.h>//genBTC (font-chooser)
 #if wxUSE_UNICODE
 #define wxCharStringFmtSpec "%ls"
 #else
@@ -87,6 +97,7 @@ typedef enum {
 //                              Constants
 // =======================================================================
 
+#define MAX_UTF8_PATH_LENGTH (256 * 1024)
 #define LIST_COLUMNS 6 // number of columns in the list of volumes
 
 enum {
@@ -97,6 +108,8 @@ enum {
     ID_Defrag,
     ID_QuickOpt,
     ID_FullOpt,
+    ID_MoveToFront,
+    ID_MoveToEnd,
     ID_MftOpt,
 
     ID_Pause,
@@ -131,6 +144,8 @@ enum {
     ID_BootEnable,
     ID_BootScript,
 
+    ID_ChooseFont,
+
     ID_SortByPath,
     ID_SortBySize,
     ID_SortByCreationDate,
@@ -160,6 +175,7 @@ enum {
     // event identifiers
     ID_AdjustListColumns,
     ID_AdjustListHeight,
+    ID_AdjustFilesListColumns,      //genBTC
     ID_AdjustSystemTrayIcon,
     ID_AdjustTaskbarIconOverlay,
     ID_BootChange,
@@ -168,6 +184,7 @@ enum {
     ID_DiskProcessingFailure,
     ID_JobCompletion,
     ID_PopulateList,
+    ID_PopulateFilesList,           //genBTC
     ID_ReadUserPreferences,
     ID_RedrawMap,
     ID_SelectAll,
@@ -182,17 +199,18 @@ enum {
     ID_ShowHideMenu,
     ID_PauseMenu,
     ID_ExitMenu,
+    ID_SelectProperDrive,
 
     // language selection menu item, must always be last in the list
     ID_LocaleChange
 };
 
-#define MAIN_WINDOW_DEFAULT_WIDTH  640
-#define MAIN_WINDOW_DEFAULT_HEIGHT 480
-#define MAIN_WINDOW_MIN_WIDTH      500
-#define MAIN_WINDOW_MIN_HEIGHT     375
-#define DEFAULT_LIST_HEIGHT        130
-#define MIN_PANEL_HEIGHT            40
+#define MAIN_WINDOW_DEFAULT_WIDTH  900
+#define MAIN_WINDOW_DEFAULT_HEIGHT 600
+#define MAIN_WINDOW_MIN_WIDTH      640
+#define MAIN_WINDOW_MIN_HEIGHT     480
+#define DEFAULT_LIST_HEIGHT        145
+#define MIN_PANEL_HEIGHT            42
 
 // dialog layout constants
 #define SMALL_SPACING  DPI(5)
@@ -321,6 +339,8 @@ public:
     wxArrayString *m_volumes;
     udefrag_job_type m_jobType;
     int m_mapSize;
+    int m_flags;
+    bool singlefile;
 
 private:
     void ProcessVolume(int index);
@@ -386,6 +406,36 @@ public:
     DECLARE_EVENT_TABLE()
 };
 
+#define FilesListRightClickMenuFrm_STYLE wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX
+//genBTC FilesList.cpp
+class FilesList: public wxListView {
+public:
+    FilesList(wxWindow* parent, long style)
+      : wxListView(parent,wxID_ANY,
+        wxDefaultPosition,wxDefaultSize,style) {}
+    ~FilesList() {}
+
+    void OnItemRClick(wxListEvent& event);
+    void OnSelect(wxListEvent& event);
+    void OnDeSelect(wxListEvent& event);
+
+    void RClickDefragSingleEntry(wxCommandEvent& event);
+    void RClickOpenExplorer(wxCommandEvent& event);
+    void RClickCopyClipboard(wxCommandEvent& event);
+    void RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event);
+    void RClickMoveToFirstFreeRegion(wxCommandEvent& event);
+    void RClickMoveToLastFreeRegion(wxCommandEvent& event);
+    void ReSelectProperDrive(wxCommandEvent& event);
+
+    wxListItem GetListItem(int id,int col);
+    long currentlyselected;
+    wxString currently_being_workedon_filename;
+
+    DECLARE_EVENT_TABLE()
+private:
+
+};
+
 class ClusterMap: public wxWindow {
 public:
     ClusterMap(wxWindow* parent);
@@ -434,10 +484,7 @@ public:
     void OnShowReport(wxCommandEvent& event);
 
     void OnRepeat(wxCommandEvent& event);
-
-    void OnSkipRem(wxCommandEvent& event);
-    void OnRescan(wxCommandEvent& event);
-
+    
     void OnRepair(wxCommandEvent& event);
 
     void OnExit(wxCommandEvent& event);
@@ -451,6 +498,8 @@ public:
 
     void OnBootEnable(wxCommandEvent& event);
     void OnBootScript(wxCommandEvent& event);
+
+    void ChooseFont(wxCommandEvent& event);//genBTC fontpicker.
 
     // help menu handlers
     void OnHelpContents(wxCommandEvent& event);
@@ -469,8 +518,6 @@ public:
     void OnMove(wxMoveEvent& event);
     void OnSize(wxSizeEvent& event);
 
-    void AdjustListColumns(wxCommandEvent& event);
-    void AdjustListHeight(wxCommandEvent& event);
     void AdjustSystemTrayIcon(wxCommandEvent& event);
     void AdjustTaskbarIconOverlay(wxCommandEvent& event);
     void CacheJob(wxCommandEvent& event);
@@ -478,10 +525,7 @@ public:
     void OnDefaultAction(wxCommandEvent& event);
     void OnDiskProcessingFailure(wxCommandEvent& event);
     void OnJobCompletion(wxCommandEvent& event);
-    void OnListSize(wxSizeEvent& event);
     void OnLocaleChange(wxCommandEvent& event);
-    void OnSplitChanged(wxSplitterEvent& event);
-    void PopulateList(wxCommandEvent& event);
     void ReadUserPreferences(wxCommandEvent& event);
     void RedrawMap(wxCommandEvent& event);
     void SelectAll(wxCommandEvent& event);
@@ -489,8 +533,23 @@ public:
     void ShowUpgradeDialog(wxCommandEvent& event);
     void Shutdown(wxCommandEvent& event);
     void UpdateStatusBar(wxCommandEvent& event);
+
+    //Volume List (mixed)
+    void AdjustListColumns(wxCommandEvent& event);
+    void AdjustListHeight(wxCommandEvent& event);
+    void OnListSize(wxSizeEvent& event);
+    void OnSplitChanged(wxSplitterEvent& event);
+    void OnSkipRem(wxCommandEvent& event);
+    void OnRescan(wxCommandEvent& event);
+    void PopulateList(wxCommandEvent& event);
     void UpdateVolumeInformation(wxCommandEvent& event);
     void UpdateVolumeStatus(wxCommandEvent& event);
+
+    // Files List (new) genBTC
+    void FilesAdjustListColumns(wxCommandEvent& event);
+    void FilesOnListSize(wxSizeEvent& event);
+    void FilesPopulateList(wxCommandEvent& event);
+    void ReSelectProperDrive(wxCommandEvent& event);
 
     // common routines
     int  CheckOption(const wxString& name);
@@ -514,11 +573,15 @@ public:
     JobsCache m_jobsCache;
     JobsCacheEntry *m_currentJob;
 
+    wxMenu     *m_RClickPopupMenu1;     //genBTC Right Click Popup Menu
+    wxMenu     *m_DriveSubMenu;         //genBTC Right Click Popup Menu
 private:
+    void InitPopupMenus();              //genBTC Right Click Popup Menu
     void InitMenu();
     void InitToolbar();
     void InitStatusBar();
     void InitVolList();
+    void InitFilesList();    //genBTC FilesList.cpp
     void ReadAppConfiguration();
     void ReadUserPreferences();
     void ReleasePause();
@@ -542,16 +605,20 @@ private:
     // 0.5 means that a column acquires
     // a half of the entire list width
     double m_r[LIST_COLUMNS];
+    double m_fcolsr[LIST_COLUMNS]; //file-list column ratios //genbtc
 
     // list column widths:
     // used to check whether the user
     // has changed them or not
     int m_w[LIST_COLUMNS];
+    int m_fcolsw[LIST_COLUMNS]; //file-list column widths //genbtc
 
     // list height
     int m_vListHeight;
+    int m_filesListHeight;  //genBTC FilesList.cpp
 
     wxFont *m_vListFont;
+    wxFont *m_filesListFont;  //genBTC FilesList.cpp
 
     wxString   *m_title;
     wxToolBar  *m_toolBar;
@@ -564,9 +631,17 @@ private:
     wxMenuItem *m_subMenuUpgrade;
     wxMenu     *m_menuLanguage;
 
+    wxNotebook* m_notebook1;        //genBTC New Tabs
+    wxPanel* m_panel1;              //genBTC New Tabs
+    wxSplitterWindow* m_splitter1;  //genBTC New Tabs
+    wxPanel* m_panel2;              //genBTC New Tabs
+    wxGrid* m_grid1;                //genBTC New Tabs
+
     wxSplitterWindow *m_splitter;
     DrivesList       *m_vList;
     ClusterMap       *m_cMap;
+    FilesList        *m_filesList;  //genBTC FilesList.cpp
+    volume_info      m_volinfocache; //genBTC
 
     bool m_btdEnabled;
     BtdThread *m_btdThread;
@@ -582,7 +657,7 @@ private:
 class Utils {
 public:
     static bool CheckAdminRights(void);
-    static bool DownloadFile(const wxString& url, const wxString& path);
+    static wxString DownloadFile(const wxString& url);
     static void GaRequest(const wxString& path);
     static wxBitmap *LoadPngResource(const wchar_t *name);
     static int MessageDialog(wxFrame *parent,
@@ -597,6 +672,10 @@ public:
         const wxString& parameters = wxEmptyString,
         int show = SW_SHOW, int flags = 0);
     static void ShowError(const wxChar* format, ...);
+    static wxString ConvertChartoWxString(char* input);
+    static char* wxStringToChar(wxString input);
+    static void DrawSingleRectangleBorder(HDC m_cacheDC,int xblock,int yblock,int line_width,int cell_size,HBRUSH border,HBRUSH infill);
+    static void createDirectoryRecursively(const std::wstring &directory);
 };
 
 /* flags for Utils::ShellExec */
