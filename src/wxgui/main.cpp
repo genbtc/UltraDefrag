@@ -49,7 +49,6 @@ double g_scaleFactor = 1.0f;   // DPI-aware scaling factor
 int g_iconSize;                // small icon size
 HANDLE g_synchEvent = NULL;    // synchronization for threads
 UINT g_TaskbarIconMsg;         // taskbar icon overlay setup on shell restart
-//PVOID g_jpPtr = NULL;       //pointer back to the udefrag-internals jp-> variable.
 
 // =======================================================================
 //                             Web statistics
@@ -295,13 +294,12 @@ MainFrame::MainFrame()
 
     // create list of volumes and cluster map
     // - don't - use live update style to avoid horizontal scrollbar appearance on list resizing
-    m_splitter = new wxSplitterWindow(m_panel1,wxID_ANY,
-        wxDefaultPosition,wxDefaultSize,
+    m_splitter = new wxSplitterWindow(m_panel1,wxID_ANY, wxDefaultPosition,wxDefaultSize,
         wxSP_3D/* | wxSP_LIVE_UPDATE*/ | wxCLIP_CHILDREN);
     m_splitter->SetMinimumPaneSize(DPI(MIN_PANEL_HEIGHT));
 
-    m_vList = new DrivesList(m_splitter,wxLC_REPORT | \
-        wxLC_NO_SORT_HEADER | wxLC_HRULES | wxLC_VRULES | wxBORDER_NONE);
+    m_vList = new DrivesList(m_splitter,wxLC_REPORT | wxLC_NO_SORT_HEADER | 
+                                        wxLC_HRULES | wxLC_VRULES | wxBORDER_NONE);
     //LONG_PTR style = ::GetWindowLongPtr((HWND)m_vList->GetHandle(),GWL_STYLE);
     //style |= LVS_SHOWSELALWAYS; ::SetWindowLongPtr((HWND)m_vList->GetHandle(),GWL_STYLE,style);
 
@@ -338,10 +336,9 @@ MainFrame::MainFrame()
 	//make a 2nd panel inside the notebook to hold the 2nd page(a grid)
 	m_panel2 = new wxPanel( m_notebook1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 
-    m_filesList = new FilesList(m_panel2,wxLC_REPORT | \
-        wxLC_HRULES | wxLC_VRULES | wxBORDER_NONE);
+    m_filesList = new FilesList(m_panel2,wxLC_REPORT /* | wxLC_SINGLE_SEL  | wxLC_NO_SORT_HEADER*/ \
+                                        | wxLC_HRULES | wxLC_VRULES | wxBORDER_NONE);
     InitFilesList();
-    //m_listfilesThread = new ListFilesThread();//genBTC
 
 	//make sizer3 to Fit the page2list, and initialize it.
 	wxBoxSizer* bSizer3;
@@ -352,6 +349,37 @@ MainFrame::MainFrame()
 
 	//Finish Tab 2 - Add the Panel2(page2list+sizer3) to the notebook.
 	m_notebook1->AddPage( m_panel2, wxT("Files"), false );
+
+    //create Query tab, Tab3.
+	m_panel3 = new wxPanel( m_notebook1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer4	= new wxBoxSizer( wxVERTICAL );
+	Analyze = new wxButton(m_panel3, ID_ANALYZE, _("Analyze"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _("Analyze"));
+
+	wxArrayString arrayStringFor_WxComboBox1;
+	WxComboBox1 = new wxComboBox(m_panel3, ID_WXCOMBOBOX1, _("WxComboBox1"), wxDefaultPosition, wxDefaultSize, arrayStringFor_WxComboBox1, 0, wxDefaultValidator, _("WxComboBox1"));
+
+	WxStaticText1 = new wxStaticText(m_panel3, ID_WXSTATICTEXT1, _("WxStaticText1"), wxDefaultPosition, wxSize(wxDefaultCoord,100), 0, _("WxStaticText1"));
+	
+    WxFilePickerCtrl1 = new wxFilePickerCtrl(m_panel3, ID_WXFILEPICKERCTRL1, wxEmptyString, wxFileSelectorPromptStr, wxFileSelectorDefaultWildcardStr, wxDefaultPosition, wxDefaultSize);
+  
+	WxTextCtrl1 = new wxTextCtrl(m_panel3, ID_WXTEXTCTRL1, _(""), wxDefaultPosition,wxSize(wxDefaultCoord,400), 0, wxDefaultValidator, _("WxTextCtrl1"));
+	WxTextCtrl1->SetMaxLength(0);
+	WxTextCtrl1->AppendText(_("WxTextCtrl1"));
+	WxTextCtrl1->SetFocus();
+	WxTextCtrl1->SetInsertionPointEnd();
+
+	PerformQuery = new wxButton(m_panel3, ID_PERFORMQUERY, _("Perform Query!"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _("PerformQuery"));
+	
+	bSizer4->Add( Analyze, 0, wxEXPAND | wxALL, 5);
+	bSizer4->Add( WxComboBox1, 0, wxEXPAND | wxALL, 5);
+	bSizer4->Add( WxStaticText1, 0, wxEXPAND | wxALL, 5);
+	bSizer4->Add( WxFilePickerCtrl1, 0, wxEXPAND | wxALL, 5);
+	bSizer4->Add( WxTextCtrl1, 0, wxEXPAND | wxALL, 5);
+	bSizer4->Add( PerformQuery, 0, wxEXPAND | wxALL, 5);
+	
+	m_panel3->SetSizer( bSizer4 );
+    bSizer4->Fit( m_panel3 );
+    m_notebook1->AddPage( m_panel3, wxT("Query"), false );
 
     //Finish Notebook & initialize
 	bSizer1->Add( m_notebook1, 1, wxEXPAND, 1 );
@@ -399,6 +427,10 @@ MainFrame::MainFrame()
 
     // allow disk processing
     m_jobThread = new JobThread();
+
+    //create query thread to perform queries without blocking the GUI
+    //(sort of like jobs) - may not be good to have both possibly running at once.
+    m_queryThread = new QueryThread();
 }
 
 /**
@@ -525,6 +557,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_UpdateVolumeInformation, MainFrame::UpdateVolumeInformation)
     EVT_MENU(ID_UpdateVolumeStatus,      MainFrame::UpdateVolumeStatus)
     EVT_MENU(ID_SelectProperDrive, MainFrame::ReSelectProperDrive)  //genBTC
+    EVT_MENU(ID_QueryClusters, MainFrame::QueryClusters)    //genBTC query.cpp
 END_EVENT_TABLE()
 
 // =======================================================================

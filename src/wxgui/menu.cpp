@@ -99,6 +99,11 @@ void MainFrame::InitMenu()
     m_menuAction->AppendSeparator();
     m_menuAction->Append(ID_Exit);
 
+    // create Query menu by genBTC) - Query.cpp
+    //title is set @ Line 246, and added to the menubar.
+    wxMenu *menuQuery = new wxMenu;
+    menuQuery->Append(ID_QueryClusters, L"&Show File's Clusters" , L"");    //query the internals and ask what clusters a file uses.
+
     // create language menu
     m_menuLanguage = new wxMenu;
     m_menuLanguage->Append(ID_LangTranslateOnline);
@@ -238,6 +243,7 @@ void MainFrame::InitMenu()
     // create main menu
     m_menuBar = new wxMenuBar;
     m_menuBar->Append(m_menuAction, wxEmptyString);
+    m_menuBar->Append(menuQuery   , _("&Query"));
     m_menuBar->Append(menuSettings, wxEmptyString);
     m_menuBar->Append(menuHelp    , wxEmptyString);
 

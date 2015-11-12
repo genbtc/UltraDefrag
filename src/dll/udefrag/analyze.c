@@ -731,7 +731,7 @@ static void redraw_well_known_locked_files(udefrag_job_parameters *jp)
             if(is_well_known_locked_file(f,jp)){
                 if(!is_file_locked(f,jp)){
                     /* possibility of this case should be reduced */
-                    itrace("file wasn't locked: %ws",f->path);
+                    dtrace("file wasn't locked: %ws",f->path);
                 } else {
                     itrace("locked file DETECTED:  %ws",f->path);
                     n ++;

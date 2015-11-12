@@ -224,7 +224,7 @@ void MainFrame::ReadUserPreferences(wxCommandEvent& WXUNUSED(event))
 
     status = luaL_dofile(L,path.GetFullPath().char_str());
     if(status != 0){
-        error += wxT("cannot interprete ") + path.GetFullPath();
+        error += wxT("cannot interpret ") + path.GetFullPath();
         etrace("%ls",error.wc_str());
         if(!lua_isnil(L,-1)){
             const char *msg = lua_tostring(L,-1);
@@ -368,20 +368,19 @@ void MainFrame::OnBootScript(wxCommandEvent& WXUNUSED(event))
 
 void MainFrame::ChooseFont(wxCommandEvent& WXUNUSED(event))
 {
-    wxFontDialog dialog = new wxFontDialog();
-    int result = dialog.ShowModal();
-    if (result==5101)
-        return;
-    wxFontData fontDataOUT = dialog.GetFontData();  //Get "font data" from dialog.
-    wxFont font = fontDataOUT.GetChosenFont();
-    m_vList->SetFont(font);
-    m_vList->Refresh();
-    //ProcessCommandEvent(ID_AdjustListColumns);
-    m_filesList->SetFont(font);
-    m_filesList->Refresh();
-    //ProcessCommandEvent(ID_AdjustFilesListColumns);
-    dtrace("Chose new Font = %ws,%d", font.GetFaceName().wc_str(),font.GetPointSize());
-    dialog.EndModal(result);
+    wxFontDialog* dialog = new wxFontDialog(this);
+    if (dialog->ShowModal() == wxID_OK){
+        wxFontData fontDataOUT = dialog->GetFontData();  //Get "font data" from dialog.
+        wxFont font = fontDataOUT.GetChosenFont();
+        m_vList->SetFont(font);
+        m_vList->Refresh();
+        //ProcessCommandEvent(ID_AdjustListColumns);
+        m_filesList->SetFont(font);
+        m_filesList->Refresh();
+        //ProcessCommandEvent(ID_AdjustFilesListColumns);
+        dtrace("Chose new Font = %ws,%d", font.GetFaceName().wc_str(),font.GetPointSize());
+    }
+    dialog->Destroy();
 }
 
 /** @} */

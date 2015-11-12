@@ -57,14 +57,18 @@
 #include <wx/toolbar.h>
 #include <wx/uri.h>
 
+#include <wx/clipbrd.h>//genBTC (right-click menu) copy to clipboard
+#include <wx/encconv.h> //genbtc for encodings
+#include <wx/filepicker.h>//genBTC query tab 3
+#include <wx/fontdlg.h>//genBTC (font-chooser)
+#include <wx/grid.h>//genbtc
+#include <wx/menu.h>//genbtc (right-click menu)
 #include <wx/notebook.h>//genbtc
 #include <wx/panel.h>//genbtc
-#include <wx/grid.h>//genbtc
+
 #include <wx/sizer.h>//genbtc
-#include <wx/encconv.h> //genbtc for encodings
-#include <wx/menu.h>//genbtc (right-click menu)
-#include <wx/clipbrd.h>//genBTC (right-click menu) copy to clipboard
-#include <wx/fontdlg.h>//genBTC (font-chooser)
+#include <wx/stattext.h>//genBTC query tab 3
+
 #if wxUSE_UNICODE
 #define wxCharStringFmtSpec "%ls"
 #else
@@ -200,6 +204,14 @@ enum {
     ID_PauseMenu,
     ID_ExitMenu,
     ID_SelectProperDrive,
+    ID_QueryClusters,
+    
+    ID_ANALYZE,
+    ID_WXCOMBOBOX1,
+    ID_WXFILEPICKERCTRL1,
+    ID_WXTEXTCTRL1,
+    ID_WXSTATICTEXT1,
+    ID_PERFORMQUERY,
 
     // language selection menu item, must always be last in the list
     ID_LocaleChange
@@ -362,6 +374,18 @@ public:
     bool m_rescan;
 };
 
+class QueryThread: public wxThread {
+public:
+    QueryThread() : wxThread(wxTHREAD_JOINABLE) {
+        m_startquery = false; Create(); Run();
+    }
+    ~QueryThread() { Wait(); }
+
+    virtual void *Entry();
+
+    bool m_startquery;
+};
+
 class UpgradeThread: public wxThread {
 public:
     UpgradeThread(int level) : wxThread(wxTHREAD_JOINABLE) {
@@ -406,30 +430,73 @@ public:
     DECLARE_EVENT_TABLE()
 };
 
+class ListSortInfo{
+public:
+        ListSortInfo()
+        {
+            SortAscending = false;
+            Column = -1;
+        }
+
+        bool SortAscending;
+        int Column;
+        class FilesList *ListCtrl;
+
+};
 #define FilesListRightClickMenuFrm_STYLE wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX
 //genBTC FilesList.cpp
-class FilesList: public wxListView {
+class FilesList: public wxListCtrl {
 public:
     FilesList(wxWindow* parent, long style)
-      : wxListView(parent,wxID_ANY,
+      : wxListCtrl(parent,wxID_ANY,
         wxDefaultPosition,wxDefaultSize,style) {}
     ~FilesList() {}
-
+    // -----------------------------------------------------------------------
+    //BEGIN PROTOTYPES FROM wxListView
+    // ---------------------
+    // focus/selection stuff
+    // ---------------------
+    // [de]select an item
+    void Select(long n, bool on = true){
+        SetItemState(n, on ? wxLIST_STATE_SELECTED : 0, wxLIST_STATE_SELECTED);}
+    // focus and show the given item
+    void Focus(long index)
+    {
+        SetItemState(index, wxLIST_STATE_FOCUSED, wxLIST_STATE_FOCUSED);
+        EnsureVisible(index);
+    }
+    // get the currently focused item or -1 if none
+    long GetFocusedItem() const{
+        return GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_FOCUSED);}
+    // get first and subsequent selected items, return -1 when no more
+    long GetNextSelected(long item) const{
+        return GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);}
+    long GetFirstSelected() const{
+        return GetNextSelected(-1);}
+    // return true if the item is selected
+    bool IsSelected(long index) const{
+        return GetItemState(index, wxLIST_STATE_SELECTED) != 0;}
+    //END PROTOTYPES FROM wxListView
+    // -----------------------------------------------------------------------    
     void OnItemRClick(wxListEvent& event);
     void OnSelect(wxListEvent& event);
     void OnDeSelect(wxListEvent& event);
 
-    void RClickDefragSingleEntry(wxCommandEvent& event);
     void RClickOpenExplorer(wxCommandEvent& event);
     void RClickCopyClipboard(wxCommandEvent& event);
     void RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event);
-    void RClickMoveToFirstFreeRegion(wxCommandEvent& event);
-    void RClickMoveToLastFreeRegion(wxCommandEvent& event);
     void ReSelectProperDrive(wxCommandEvent& event);
+    void RClickDefragMoveSingle(wxCommandEvent& event);
 
     wxListItem GetListItem(int id,int col);
+    wxString GetTextByColumn(long index, int col);
     long currentlyselected;
-    wxString currently_being_workedon_filename;
+    wxArrayString *currently_being_workedon_filenames;
+    
+    int n_lastItem;
+    ListSortInfo m_sortinfo; 
+    void OnColClick(wxListEvent& event );
+    static bool DateCompare(wxString &lsDate1, wxString &lsDate2);
 
     DECLARE_EVENT_TABLE()
 private:
@@ -545,11 +612,14 @@ public:
     void UpdateVolumeInformation(wxCommandEvent& event);
     void UpdateVolumeStatus(wxCommandEvent& event);
 
-    // Files List (new) genBTC
+    // Files List (new) by genBTC
     void FilesAdjustListColumns(wxCommandEvent& event);
     void FilesOnListSize(wxSizeEvent& event);
     void FilesPopulateList(wxCommandEvent& event);
     void ReSelectProperDrive(wxCommandEvent& event);
+
+    //for Query Menu (new) by genBTC
+    void QueryClusters(wxCommandEvent& event);   //genBTC query.cpp
 
     // common routines
     int  CheckOption(const wxString& name);
@@ -573,9 +643,12 @@ public:
     JobsCache m_jobsCache;
     JobsCacheEntry *m_currentJob;
 
+    QueryThread *m_queryThread;
+
     wxMenu     *m_RClickPopupMenu1;     //genBTC Right Click Popup Menu
     wxMenu     *m_DriveSubMenu;         //genBTC Right Click Popup Menu
 private:
+    void InitQueryMenu();   //genBTC query.cpp
     void InitPopupMenus();              //genBTC Right Click Popup Menu
     void InitMenu();
     void InitToolbar();
@@ -635,7 +708,8 @@ private:
     wxPanel* m_panel1;              //genBTC New Tabs
     wxSplitterWindow* m_splitter1;  //genBTC New Tabs
     wxPanel* m_panel2;              //genBTC New Tabs
-    wxGrid* m_grid1;                //genBTC New Tabs
+//    wxGrid* m_grid1;                //genBTC New Tabs
+    wxPanel* m_panel3;              //genBTC Tab3
 
     wxSplitterWindow *m_splitter;
     DrivesList       *m_vList;
@@ -650,6 +724,18 @@ private:
     CrashInfoThread *m_crashInfoThread;
     ListThread      *m_listThread;
     UpgradeThread   *m_upgradeThread;
+
+    //genBTC Query - tab 3.
+    wxButton *PerformQuery;     
+    wxStaticText *WxStaticText1;
+    wxTextCtrl *WxTextCtrl1;
+    wxFilePickerCtrl *WxFilePickerCtrl1;
+    wxComboBox *WxComboBox1;
+    wxButton *Analyze;
+    wxPanel *WxNoteBookPage2;
+    wxPanel *WxNoteBookPage1;
+    wxNotebook *WxNotebook1;
+    wxBoxSizer *WxBoxSizer1;    
 
     DECLARE_EVENT_TABLE()
 };

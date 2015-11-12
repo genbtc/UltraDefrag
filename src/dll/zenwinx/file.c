@@ -636,7 +636,7 @@ NTSTATUS winx_defrag_fopen(winx_file_info *f,int action,HANDLE *phandle)
                             special_file_names[i].accepted_name);
                         buffer[MAX_PATH] = 0;
                         path = buffer;
-                        itrace("%ws used instead of %ws",path,f->path);
+                        dtrace("%ws used instead of %ws",path,f->path);
                         break;
                     }
                 }

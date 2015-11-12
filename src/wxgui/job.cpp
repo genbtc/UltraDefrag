@@ -310,10 +310,10 @@ void MainFrame::OnStartJob(wxCommandEvent& event)
         m_jobThread->m_jobType = FULL_OPTIMIZATION_JOB;
         break;
     case ID_MoveToFront:
-        m_jobThread->m_jobType = SINGLE_FILE_MOVE_FRONT_JOB;
+        m_jobThread->m_jobType = SINGLE_FILE_MOVE_FRONT_JOB;    //genBTC
         break;
     case ID_MoveToEnd:
-        m_jobThread->m_jobType = SINGLE_FILE_MOVE_END_JOB;
+        m_jobThread->m_jobType = SINGLE_FILE_MOVE_END_JOB;      //genBTC
         break;
     default:
         m_jobThread->m_jobType = MFT_OPTIMIZATION_JOB;

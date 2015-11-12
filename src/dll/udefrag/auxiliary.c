@@ -47,7 +47,9 @@ void dbg_print_header(udefrag_job_parameters *jp)
     winx_dbg_print_header(0x20,0,I"%s",VERSIONINTITLE);
 
     /* print windows version */
-    os_version = winx_get_os_version();
+    //decide whether to call it again just in case someone
+    //  did not pre-load the version before trying to print the header.
+    os_version = jp->win_version ? jp->win_version : winx_get_os_version();
     mj = os_version / 10;
     mn = os_version % 10;
     winx_dbg_print_header(0x20,0,I"Windows NT %u.%u",mj,mn);
@@ -135,12 +137,11 @@ void dbg_print_performance_counters(udefrag_job_parameters *jp)
     ULONGLONG time, seconds;
     char buffer[32];
     
-    winx_dbg_print_header(0,0,I"*");
-
     time = jp->p_counters.overall_time;
     seconds = time / 1000;
     winx_time2str(seconds,buffer,sizeof(buffer));
     time -= seconds * 1000;
+    winx_dbg_print_header(0,0,I"*");
     itrace("volume processing completed in %s %I64ums:",buffer,time);
     dbg_print_single_counter(jp,jp->p_counters.analysis_time,             "analysis ...............");
     dbg_print_single_counter(jp,jp->p_counters.searching_time,            "searching ..............");

@@ -125,8 +125,8 @@ void MainFrame::OnLocaleChange(wxCommandEvent& event)
 
     // main menu
     m_menuBar->SetMenuLabel(0, _("&Action"));
-    m_menuBar->SetMenuLabel(1, _("&Settings"));
-    m_menuBar->SetMenuLabel(2, _("&Help"));
+    m_menuBar->SetMenuLabel(2, _("&Settings"));
+    m_menuBar->SetMenuLabel(3, _("&Help"));
 
     // action menu
     UD_UpdateMenuItemLabel(ID_Analyze    , "&Analyze"              , "F5");

@@ -1,0 +1,78 @@
+# depslib dependency file v1.0
+1447055449 source:c:\software\ultradefrag-7.0.0-beta2.src\dll\udefrag\analyze.c
+	"udefrag-internals.h"
+
+1447029562 c:\software\ultradefrag-7.0.0-beta2.src\dll\udefrag\udefrag-internals.h
+	"../zenwinx/ntndk.h"
+	"../zenwinx/zenwinx.h"
+	"udefrag.h"
+	"../../include/version.h"
+
+1359570903 c:\software\ultradefrag-7.0.0-beta2.src\dll\zenwinx\ntndk.h
+	<windows.h>
+	<stdio.h>
+	<stdarg.h>
+	<stdlib.h>
+	<ctype.h>
+
+1446768856 c:\software\ultradefrag-7.0.0-beta2.src\dll\zenwinx\zenwinx.h
+	"../../include/dbg.h"
+	"prb.h"
+
+1359546193 c:\software\ultradefrag-7.0.0-beta2.src\include\dbg.h
+
+1359546202 c:\software\ultradefrag-7.0.0-beta2.src\dll\zenwinx\prb.h
+	<stddef.h>
+
+1447139808 c:\software\ultradefrag-7.0.0-beta2.src\dll\udefrag\udefrag.h
+
+1445674568 c:\software\ultradefrag-7.0.0-beta2.src\include\version.h
+
+1447138915 source:c:\software\ultradefrag-7.0.0-beta2.src\dll\udefrag\auxiliary.c
+	"udefrag-internals.h"
+
+1361657091 source:c:\software\ultradefrag-7.0.0-beta2.src\dll\udefrag\defrag.c
+	"udefrag-internals.h"
+
+1361372721 source:c:\software\ultradefrag-7.0.0-beta2.src\dll\udefrag\entry.c
+	"udefrag-internals.h"
+
+1359546204 source:c:\software\ultradefrag-7.0.0-beta2.src\dll\udefrag\int64.c
+	"udefrag-internals.h"
+
+1446347933 source:c:\software\ultradefrag-7.0.0-beta2.src\dll\udefrag\map.c
+	"udefrag-internals.h"
+
+1363723169 source:c:\software\ultradefrag-7.0.0-beta2.src\dll\udefrag\move.c
+	"udefrag-internals.h"
+
+1367184202 source:c:\software\ultradefrag-7.0.0-beta2.src\dll\udefrag\optimize.c
+	"udefrag-internals.h"
+
+1361547107 source:c:\software\ultradefrag-7.0.0-beta2.src\dll\udefrag\options.c
+	"udefrag-internals.h"
+	<math.h>
+
+1446768479 source:c:\software\ultradefrag-7.0.0-beta2.src\dll\udefrag\reports.c
+	"udefrag-internals.h"
+
+1361665366 source:c:\software\ultradefrag-7.0.0-beta2.src\dll\udefrag\search.c
+	"udefrag-internals.h"
+
+1447145798 source:c:\software\ultradefrag-7.0.0-beta2.src\dll\udefrag\udefrag.c
+	"udefrag-internals.h"
+	"query.h"
+
+1359548456 source:c:\software\ultradefrag-7.0.0-beta2.src\dll\udefrag\udefrag.rc
+	<windows.h>
+	"../../include/version.h"
+
+1446848185 source:c:\software\ultradefrag-7.0.0-beta2.src\dll\udefrag\volume.c
+	"udefrag-internals.h"
+
+1447145786 source:c:\software\ultradefrag-7.0.0-beta2.src\dll\udefrag\query.c
+	"udefrag-internals.h"
+	"query.h"
+
+1447145786 c:\software\ultradefrag-7.0.0-beta2.src\dll\udefrag\query.h
+

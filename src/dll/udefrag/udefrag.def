@@ -13,3 +13,4 @@ EXPORTS
     udefrag_unload_library
     udefrag_validate_volume
     gui_fileslist_finished
+    udefrag_start_query
