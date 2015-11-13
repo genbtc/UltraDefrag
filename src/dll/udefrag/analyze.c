@@ -202,7 +202,7 @@ static int process_free_region(winx_volume_region *rgn,void *user_defined_data)
     
     if(jp->udo.dbgprint_level >= DBG_PARANOID)
         itrace("Free block start: %I64u len: %I64u",rgn->lcn,rgn->length);
-    colorize_map_region(jp,rgn->lcn,rgn->length,FREE_SPACE,SYSTEM_SPACE);
+    colorize_map_region(jp,rgn->lcn,rgn->length,FREE_SPACE,DEFAULT_COLOR);  //genBTC,-was using wrong alias.
     jp->pi.processed_clusters += rgn->length;
     jp->free_regions_count ++;
     return 0; /* continue scan */
@@ -623,7 +623,7 @@ static int find_files(udefrag_job_parameters *jp)
         }
 
         /* redraw cluster map */
-        colorize_file(jp,f,SYSTEM_SPACE);
+        colorize_file(jp,f,DEFAULT_COLOR);  //genBTC,-was using wrong alias.
         
         /* add file blocks to the binary search tree - after winx_scan_disk! */
         for(block = f->disp.blockmap; block; block = block->next){

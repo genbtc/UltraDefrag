@@ -46,16 +46,20 @@
 
 COLORREF g_colors[SPACE_STATES] =
 {
-    RGB(0,0,0),        /* unused map block */ //genBTC-turn any extras black.
+    //RGB(178,175,168),               /* unused map block */
+    RGB(0,0,0),                     /* unused map block (NEW COLOR)*/ //genBTC turn any extras black.
     RGB(255,255,255),               /* free */
-    RGB(0,215,32),RGB(4,164,0),     /* system */
-    RGB(255,0,0),RGB(128,0,0),      /* fragmented */
+    //RGB(0,215,32),RGB(4,164,0),     /* system */ 
+    RGB(201,131,231),RGB(224,180,240), /* system (NEW COLOR)*/   //genBTC change from green to purple-ish(MFT-ish)
+    RGB(255,0,0),/*RGB(128,0,0),*/RGB(192,0,0),      /* fragmented */ //genBTC change Frag_over_limit from 128 to 192.
     RGB(0,0,255),RGB(0,0,128),      /* unfragmented */
     RGB(255,255,0),RGB(238,221,0),  /* directories */
     RGB(185,185,0),RGB(93,93,0),    /* compressed */
-    RGB(211,0,255),RGB(128,0,128),  /* mft zone; mft itself */
+    //RGB(211,0,255),RGB(128,0,128),  /* mft zone; mft itself */
+    RGB(128,0,255),RGB(211,0,255),   /* mft zone; mft itself (REVERSED COLORS)*/
+    RGB(0,192,0),RGB(0,172,192)      /* IN_MOVE_PROGRESS_SPACE / TEAL_BLUE_GREEN. */
+    //SUPER_OBNOXIOUS_GREEN = RGB(102,255,0)
 };
-
 // =======================================================================
 //                            Cluster map
 // =======================================================================

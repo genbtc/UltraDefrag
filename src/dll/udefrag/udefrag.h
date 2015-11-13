@@ -110,6 +110,8 @@ enum {
     COMPRESSED_OVER_LIMIT_SPACE,
     MFT_ZONE_SPACE,
     MFT_SPACE,                   /* has highest precedence */
+    IN_MOVE_PROGRESS_SPACE,      //genBTC
+    TEAL_BLUE_GREEN,
     SPACE_STATES                 /* this must always be the last */
 };
 

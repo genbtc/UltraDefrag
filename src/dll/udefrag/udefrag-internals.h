@@ -27,7 +27,7 @@
 
 #include "../../include/version.h"
 
-#define DEFAULT_COLOR SYSTEM_SPACE
+#define DEFAULT_COLOR IN_MOVE_PROGRESS_SPACE
 
 /************************************************************/
 /*             Constants affecting performance              */
@@ -278,7 +278,7 @@ int check_fragmentation_level(udefrag_job_parameters *jp);
 
 void dbg_print_header(udefrag_job_parameters *jp);
 ULONGLONG start_timing(char *operation_name,udefrag_job_parameters *jp);
-void stop_timing(char *operation_name,ULONGLONG start_time,udefrag_job_parameters *jp);
+ULONGLONG stop_timing(char *operation_name,ULONGLONG start_time,udefrag_job_parameters *jp);
 void dbg_print_performance_counters(udefrag_job_parameters *jp);
 void dbg_print_footer(udefrag_job_parameters *jp);
 
@@ -332,6 +332,6 @@ winx_blockmap *find_first_block(udefrag_job_parameters *jp,
 enum {
     SKIP_PARTIALLY_MOVABLE_FILES = 0x1
 };
-int udefrag_movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end);
+int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end);
 
 #endif /* _UDEFRAG_INTERNALS_H_ */

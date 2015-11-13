@@ -280,10 +280,10 @@ static DWORD WINAPI start_job(LPVOID p)
         result = optimize_mft(jp);
         break;
     case SINGLE_FILE_MOVE_FRONT_JOB:
-        result = udefrag_movefile_to_start_or_end(jp,1);
+        result = movefile_to_start_or_end(jp,1);
         break;
     case SINGLE_FILE_MOVE_END_JOB:
-        result = udefrag_movefile_to_start_or_end(jp,-1);
+        result = movefile_to_start_or_end(jp,-1);
         break;
     default:
         result = 0;
@@ -298,7 +298,7 @@ static DWORD WINAPI start_job(LPVOID p)
     /* now it is safe to adjust the completion status */
     jp->pi.completion_status = result;
     if(jp->pi.completion_status == 0)
-    jp->pi.completion_status ++; /* success */
+        jp->pi.completion_status ++; /* success */
     
     winx_exit_thread(0); /* 8k/12k memory leak here?   ???whocares... */
     return 0;
@@ -859,18 +859,23 @@ done:
 
 
 //(copied code-flow starting from Optimize MFT @ optimize.c)
-/************************************************************/
-/*                    The entry point                       */
-/************************************************************/
-/*        start_or_end = 1 for start, and -1 for end        */
-int udefrag_movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
+/*                    The Entry Point                       */
+/** 
+ * @brief Moves files to either the first free region or the last free region *
+ * @note Obtains list of files to act on from UD_CUT_FILTER                   *
+ * @param int start_or_end = 1 for start, and -1 for end                      *
+**/
+int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
 {
-    int result,i;
-    ULONGLONG time,filelength,writeposition;
+    int result,i,old_color,new_color;
+    ULONGLONG time,jobruntime,filelength,filesize,totalfilesize,writeposition;
+    double overall_speed;
     char bytesmovedHR[32],*headerstring;
     winx_volume_region *region;
     winx_file_info *file;
     wchar_t *path, *native_path;
+    winx_file_disposition oldfiledisp;
+    winx_blockmap *block;
 
     /* perform volume analysis */
     result = analyze(jp); /* we need to call it once, here */
@@ -886,11 +891,12 @@ int udefrag_movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end
     jp->fVolume = winx_vopen(winx_toupper(jp->volume_letter));
     if(jp->fVolume == NULL){
         etrace("Abnormal Error. Could not open volume handle!");
-    return (-1);
+        return (-1);
     }
     /* reset outer/job counters */
     jp->pi.total_moves = 0;
     jp->pi.pass_number = 0;
+    totalfilesize = 0;
     for(i=0; i < jp->udo.cut_filter.count; i++){
         /* reset inner/file counters */
         //These clusters to process & processed clusters means the 
@@ -901,65 +907,92 @@ int udefrag_movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end
         jp->pi.moved_clusters = 0;
 
         path = jp->udo.cut_filter.array[i];
-    if(path == NULL){
-        etrace("Abnormal Error. Could not obtain path from UD_CUT_FILTER array!");
+        if(path == NULL){
+            etrace("Abnormal Error. Could not obtain path from UD_CUT_FILTER array!");
             result = (-1); goto cleanup;
-    }
-    /* convert to native path */
-    native_path = winx_swprintf(L"\\??\\%ws",path);
-    if(native_path == NULL){
-        etrace("Abnormal Error. Cannot build native path!");
-            result = (-1); goto cleanup;
-    }
-    /* iterate through the filelist (no other way) */
-    for(file = jp->filelist; file; file = file->next){
-        if(_wcsicmp(file->path,native_path) == 0) break;
-        if(file->next == jp->filelist){
-            etrace("Abnormal error. Could not match path to any scanned file...");
-                result = (-1); goto cleanup;
         }
-    }
+        /* convert to native path */
+        native_path = winx_swprintf(L"\\??\\%ws",path);
+        if(native_path == NULL){
+            etrace("Abnormal Error. Cannot build native path!");
+            result = (-1); goto cleanup;
+        }
+        /* iterate through the filelist (no other way) */
+        for(file = jp->filelist; file; file = file->next){
+            if(_wcsicmp(file->path,native_path) == 0) break;
+            if(file->next == jp->filelist){
+                etrace("Abnormal error. Could not match path to any scanned file...");
+                result = (-1); goto cleanup;
+            }
+        }
         /* at this point we should have the file's winx_file_info object in *file */
         //dtrace("The file's Native Path is: %ws",native_path);
         dtrace("The File's path is: %ws",file->path);
         dtrace("Before: The File has %I64u fragments & resides @ LCN: %I64u",file->disp.fragments,file->disp.blockmap->lcn);
-    /* check whether we can move it or not */
-    if(!can_move(file,jp)){
-        etrace("File cannot be moved because reasons."); //should have a better error message.
+        /* check whether we can move it or not */
+        if(!can_move(file,jp)){
+            etrace("File cannot be moved because reasons."); //should have a better error message.
             result = (-1); goto cleanup;
-    }
+        }
         filelength = file->disp.clusters;
         jp->pi.clusters_to_process = filelength;        
         /* Find the first region that will fit the entire file (use conditional operators.) */
         region = start_or_end ? find_first_free_region(jp,0,filelength,NULL) : find_last_free_region(jp,0,filelength,NULL);
         writeposition = start_or_end ? region->lcn :(region->lcn + region->length - filelength);
-    if (!region){
-        etrace("No contiguous region could be found large enough to hold the selected file.");
+        if (!region){
+            etrace("No contiguous region could be found large enough to hold the selected file.");
             result = (-1); goto cleanup;
-   }
-    /* Perform the move */
+        }
+        /* Perform the move */
+        //color the file as in-progress. need to memcpy it to save the old-location to UN-color it after.
+        memcpy(&oldfiledisp,&file->disp,sizeof(winx_file_disposition));
+        old_color = get_file_color(jp,file);
+        for(block = oldfiledisp.blockmap; block; block = block->next){
+            colorize_map_region(jp,block->lcn,block->length,IN_MOVE_PROGRESS_SPACE,old_color);
+            if(block->next == oldfiledisp.blockmap) break;
+        }        
         //purposefully fragmenting files should only make fragments sized larger than jp->clusters_at_once
         if(move_file(file,0,filelength,writeposition,jp) >= 0){
-        jp->pi.total_moves++;
+            //update progress counters.
             file->user_defined_flags |= UD_FILE_MOVED_TO_FRONT;    //there is no existing MOVED_TO_END flag.
+            jp->pi.total_moves++;
             jp->pi.moved_clusters = jp->pi.processed_clusters = filelength;
-        jp->pi.clusters_to_process = 0;
-    }
-    else {
+            jp->pi.clusters_to_process = 0;
+            //undo the in-progress movement color and make the Old-file-Location the proper color.
+            new_color = get_file_color(jp,file);
+            for(block = oldfiledisp.blockmap; block; block = block->next){
+                colorize_map_region(jp,block->lcn,block->length,new_color,IN_MOVE_PROGRESS_SPACE);
+                if(block->next == oldfiledisp.blockmap) break;
+            }
+            //colorize the New-file-location a similar-but-different color. (so it persists on screen).
+            for(block = file->disp.blockmap; block; block = block->next){
+                colorize_map_region(jp,block->lcn,block->length,TEAL_BLUE_GREEN,new_color);
+                if(block->next == file->disp.blockmap) break;
+            }               
+        }
+        else {
+            jp->pi.processed_clusters -= filelength;    //somehow needed, otherwise volume status is exactly +100% higher than it should be after a cancel.
             etrace("Moving failed for some reason."); //should have a better error message.
-    }
-    /* Print status messages */
+            result = (-1);  goto endnicely;
+        }
+        /* Print status messages */
         dtrace("After: The File has %I64u fragments & resides @ LCN: %I64u",file->disp.fragments,file->disp.blockmap->lcn);
-        winx_bytes_to_hr(jp->pi.moved_clusters * jp->v_info.bytes_per_cluster,2,bytesmovedHR,sizeof(bytesmovedHR));
+        filesize = jp->pi.moved_clusters * jp->v_info.bytes_per_cluster;
+        totalfilesize += filesize;
+        winx_bytes_to_hr(filesize,2,bytesmovedHR,sizeof(bytesmovedHR));
         dtrace("%I64u clusters (%s) moved",jp->pi.moved_clusters, bytesmovedHR);
-        //Determine a better way to print decimal places on the bytes to string conversion.
-        //calculate Bytes Per Second.
     }
     result = 0;
     /* cleanup */
 cleanup:
-    dtrace("Total Files Moved: %I64u of %d",jp->pi.total_moves,jp->udo.cut_filter.count);
-    stop_timing(headerstring,time,jp);
+    dtrace("Finished. Total Files Moved: %I64u of %d",jp->pi.total_moves,jp->udo.cut_filter.count);
+    jobruntime = stop_timing(headerstring,time,jp);
+    overall_speed = (double)totalfilesize / (jobruntime / 1000);
+    //re-use the bytesmovedHR charbuffer to display the average transfer speed in human readable form.
+    winx_bytes_to_hr((ULONGLONG)overall_speed,3,bytesmovedHR,sizeof(bytesmovedHR));
+    dtrace("Avg. Speed = %s/s", bytesmovedHR);
+endnicely:    
+    winx_flush_dbg_log(0);
     clear_currently_excluded_flag(jp); //again?
     winx_fclose(jp->fVolume);
     jp->fVolume = NULL;

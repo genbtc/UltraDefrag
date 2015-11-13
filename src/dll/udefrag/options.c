@@ -77,7 +77,7 @@ int get_options(udefrag_job_parameters *jp)
         jp->udo.fragment_size_threshold = winx_hr_to_bytes(buf);
         winx_free(buffer);
     }
-    /* if theshold isn't set, assign maximum value to it */
+    /* if threshold isn't set, assign maximum value to it */
     if(jp->udo.fragment_size_threshold == 0)
         jp->udo.fragment_size_threshold = DEFAULT_FRAGMENT_SIZE_THRESHOLD;
 

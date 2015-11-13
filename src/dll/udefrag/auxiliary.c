@@ -80,19 +80,21 @@ ULONGLONG start_timing(char *operation_name,udefrag_job_parameters *jp)
  * for the operation; the second
  * parameter must be obtained from
  * the start_timing procedure.
+ * @return Returns the time difference in ms.
  */
-void stop_timing(char *operation_name,ULONGLONG start_time,udefrag_job_parameters *jp)
+ULONGLONG stop_timing(char *operation_name,ULONGLONG start_time,udefrag_job_parameters *jp)
 {
-    ULONGLONG time, seconds;
+    ULONGLONG time, seconds,returntime;
     char buffer[32];
     
-    time = winx_xtime() - start_time;
+    returntime = time = winx_xtime() - start_time;
     seconds = time / 1000;
     winx_time2str(seconds,buffer,sizeof(buffer));
     time -= seconds * 1000;
     winx_dbg_print_header(0,0,I"%s of %c: completed in %s %I64ums",
         operation_name,jp->volume_letter,buffer,time);
     jp->progress_trigger = 0;
+    return returntime;
 }
 
 /**

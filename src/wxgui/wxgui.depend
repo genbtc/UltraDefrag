@@ -2095,3 +2095,179 @@
 
 1446448378 c:\software\ultradefrag-7.0.0-beta2.src\wxgui\udefrag-internals_flags.h
 
+1447320326 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\about.cpp
+	"main.h"
+
+1447328695 c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\main.h
+	<string>
+	<wx/wxprec.h>
+	<wx/wx.h>
+	<wx/frame.h>
+	<wx/artprov.h>
+	<wx/cmdline.h>
+	<wx/confbase.h>
+	<wx/dir.h>
+	<wx/display.h>
+	<wx/dynlib.h>
+	<wx/fileconf.h>
+	<wx/filename.h>
+	<wx/gbsizer.h>
+	<wx/hyperlink.h>
+	<wx/intl.h>
+	<wx/listctrl.h>
+	<wx/mstream.h>
+	<wx/splitter.h>
+	<wx/stdpaths.h>
+	<wx/sysopt.h>
+	<wx/taskbar.h>
+	<wx/textfile.h>
+	<wx/thread.h>
+	<wx/toolbar.h>
+	<wx/uri.h>
+	<wx/clipbrd.h>
+	<wx/encconv.h>
+	<wx/filepicker.h>
+	<wx/fontdlg.h>
+	<wx/grid.h>
+	<wx/menu.h>
+	<wx/notebook.h>
+	<wx/panel.h>
+	<wx/sizer.h>
+	<wx/stattext.h>
+	<commctrl.h>
+	"../include/version.h"
+	"../dll/zenwinx/zenwinx.h"
+	"../dll/udefrag/udefrag.h"
+
+1195476932 c:\software\wxwidgets-2.8.12\include\\wx\filepicker.h
+	"wx/defs.h"
+	"wx/pickerbase.h"
+	"wx/gtk/filepicker.h"
+	"wx/generic/filepickerg.h"
+
+1195476932 c:\software\wxwidgets-2.8.12\include\\wx\pickerbase.h
+	"wx/control.h"
+	"wx/sizer.h"
+	"wx/containr.h"
+
+1186429286 c:\software\wxwidgets-2.8.12\include\\wx\generic\filepickerg.h
+	"wx/button.h"
+	"wx/filedlg.h"
+	"wx/dirdlg.h"
+
+1447319048 c:\software\ultradefrag-7.0.0-beta2.src\src\include\version.h
+
+1447318922 c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\zenwinx.h
+	"../../include/dbg.h"
+	"prb.h"
+
+1359546193 c:\software\ultradefrag-7.0.0-beta2.src\src\include\dbg.h
+
+1447318870 c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\prb.h
+	<stddef.h>
+
+1447409052 c:\software\ultradefrag-7.0.0-beta2.src\src\dll\udefrag\udefrag.h
+
+1447320415 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\btd.cpp
+	"main.h"
+
+1447328144 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\config.cpp
+	"main.h"
+	"../lua5.1/lua.h"
+	"../lua5.1/lauxlib.h"
+	"../lua5.1/lualib.h"
+
+1359546201 c:\software\ultradefrag-7.0.0-beta2.src\src\lua5.1\lua.h
+	<stdarg.h>
+	<stddef.h>
+	"luaconf.h"
+
+1359546201 c:\software\ultradefrag-7.0.0-beta2.src\src\lua5.1\luaconf.h
+	<limits.h>
+	<stddef.h>
+	<unistd.h>
+	<io.h>
+	<stdio.h>
+	<stdio.h>
+	<readline/readline.h>
+	<readline/history.h>
+	<assert.h>
+	<math.h>
+	<unistd.h>
+
+1359546200 c:\software\ultradefrag-7.0.0-beta2.src\src\lua5.1\lauxlib.h
+	<stddef.h>
+	<stdio.h>
+	"lua.h"
+
+1359546200 c:\software\ultradefrag-7.0.0-beta2.src\src\lua5.1\lualib.h
+	"lua.h"
+
+1447320599 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\crash.cpp
+	"main.h"
+
+1447328307 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\fileslist.cpp
+	"main.h"
+	"udefrag-internals_flags.h"
+
+1447316699 c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\udefrag-internals_flags.h
+
+1447328907 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\i18n.cpp
+	"main.h"
+
+1447328431 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\job.cpp
+	"main.h"
+
+1447321394 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\log.cpp
+	"main.h"
+
+1447328594 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\main.cpp
+	"main.h"
+	<new.h>
+
+1447328775 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\menu.cpp
+	"main.h"
+
+1447315294 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\query.cpp
+	"main.h"
+	"udefrag-internals_flags.h"
+	"../dll/udefrag/query.h"
+
+1447315294 c:\software\ultradefrag-7.0.0-beta2.src\src\dll\udefrag\query.h
+
+1447322038 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\report.cpp
+	"main.h"
+
+1447322051 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\shutdown.cpp
+	"main.h"
+	<powrprof.h>
+
+1447402819 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\statbar.cpp
+	"main.h"
+
+1447322059 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\taskbar.cpp
+	"main.h"
+
+1447403934 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\map.cpp
+	"main.h"
+
+1447322070 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\toolbar.cpp
+	"main.h"
+
+1447322075 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\tray.cpp
+	"main.h"
+
+1447322107 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\upgrade.cpp
+	"main.h"
+
+1447322197 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\utils.cpp
+	"main.h"
+	<stdexcept>
+
+1447322370 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\vollist.cpp
+	"main.h"
+
+1447322521 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\wxgui.rc
+	<wx/msw/wx.rc>
+	"../include/version.h"
+
