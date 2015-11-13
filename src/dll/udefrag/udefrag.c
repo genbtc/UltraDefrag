@@ -283,7 +283,7 @@ static DWORD WINAPI start_job(LPVOID p)
         result = movefile_to_start_or_end(jp,1);
         break;
     case SINGLE_FILE_MOVE_END_JOB:
-        result = movefile_to_start_or_end(jp,-1);
+        result = movefile_to_start_or_end(jp,0);
         break;
     default:
         result = 0;
@@ -863,7 +863,7 @@ done:
 /** 
  * @brief Moves files to either the first free region or the last free region *
  * @note Obtains list of files to act on from UD_CUT_FILTER                   *
- * @param int start_or_end = 1 for start, and -1 for end                      *
+ * @param int start_or_end = 1 for start, and 0 for end                      *
 **/
 int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
 {
@@ -987,7 +987,7 @@ int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
 cleanup:
     dtrace("Finished. Total Files Moved: %I64u of %d",jp->pi.total_moves,jp->udo.cut_filter.count);
     jobruntime = stop_timing(headerstring,time,jp);
-    overall_speed = (double)totalfilesize / (jobruntime / 1000);
+    overall_speed = totalfilesize / ((double)jobruntime / 1000);
     //re-use the bytesmovedHR charbuffer to display the average transfer speed in human readable form.
     winx_bytes_to_hr((ULONGLONG)overall_speed,3,bytesmovedHR,sizeof(bytesmovedHR));
     dtrace("Avg. Speed = %s/s", bytesmovedHR);

@@ -448,20 +448,18 @@ completed:
     */
 
     /* display amount of moved data and number of defragmented files */
-    itrace("%I64u files defragmented",defragmented_files);
-    itrace("  %I64u clusters moved",jp->pi.moved_clusters);
-    winx_bytes_to_hr(jp->pi.moved_clusters * jp->v_info.bytes_per_cluster,1,buffer,sizeof(buffer));
-    itrace("  %s moved",buffer);
-    
-    itrace("%I64u files defragmented entirely",defragmented_entirely);
-    itrace("  %I64u clusters moved",moved_entirely);
-    winx_bytes_to_hr(moved_entirely * jp->v_info.bytes_per_cluster,1,buffer,sizeof(buffer));
-    itrace("  %s moved",buffer);
-    itrace("%I64u files defragmented partially",defragmented_partially);
-    itrace("  %I64u clusters moved",moved_partially);
-    winx_bytes_to_hr(moved_partially * jp->v_info.bytes_per_cluster,1,buffer,sizeof(buffer));
-    itrace("  %s moved",buffer);
-    
+    winx_bytes_to_hr(moved_entirely * jp->v_info.bytes_per_cluster,2,buffer,sizeof(buffer));
+    itrace("%I64u files defragmented entirely, %I64u clusters (%s) moved", \
+            defragmented_entirely,moved_entirely, buffer);
+
+    winx_bytes_to_hr(moved_partially * jp->v_info.bytes_per_cluster,2,buffer,sizeof(buffer));
+    itrace("%I64u files defragmented partially, %I64u clusters (%s) moved", \
+            defragmented_partially,moved_partially, buffer);
+
+    winx_bytes_to_hr(jp->pi.moved_clusters * jp->v_info.bytes_per_cluster,2,buffer,sizeof(buffer));
+    itrace("%I64u files defragmented overall, %I64u clusters (%s) moved (total)", \
+            defragmented_files,jp->pi.moved_clusters, buffer);
+
     /* cleanup */
     clear_currently_excluded_flag(jp);
     winx_fclose(jp->fVolume);

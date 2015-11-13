@@ -470,6 +470,7 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
     winx_file_info *file;
     wxString comment, status;
     int currentitem = 0;
+    bool something_removed = false;
 
     if(!&m_jobsCache){
       etrace("FAILED to obtain currentJob CacheEntry!!");
@@ -499,6 +500,7 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
                             c--;
                             m_filesList->currently_being_workedon_filenames->RemoveAt(j);
                             d--; j--;
+                            something_removed = true;
                         }
                     }
                 }
@@ -568,8 +570,10 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
         dtrace("Successfully finished with the Populate List Loop");
         PostCommandEvent(this,ID_AdjustFilesListColumns);
     }
-    else
+    else if (!something_removed)
         dtrace("Populate List Loop Did not run, no files were added.");
+    else
+        dtrace("Fragmented Files List updated - item(s) removed.");
 
     //signal to the INTERNALS native job-thread that the GUI has finished
     //  processing files, so it can clear the lists and exit.

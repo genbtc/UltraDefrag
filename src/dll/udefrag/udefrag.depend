@@ -79,7 +79,7 @@
 1447405359 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\udefrag\analyze.c
 	"udefrag-internals.h"
 
-1447416032 c:\software\ultradefrag-7.0.0-beta2.src\src\dll\udefrag\udefrag-internals.h
+1447416568 c:\software\ultradefrag-7.0.0-beta2.src\src\dll\udefrag\udefrag-internals.h
 	"../zenwinx/ntndk.h"
 	"../zenwinx/zenwinx.h"
 	"udefrag.h"
@@ -108,7 +108,7 @@
 1447416032 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\udefrag\auxiliary.c
 	"udefrag-internals.h"
 
-1447317920 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\udefrag\defrag.c
+1447429136 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\udefrag\defrag.c
 	"udefrag-internals.h"
 
 1447317940 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\udefrag\entry.c
@@ -148,4 +148,8 @@
 
 1447318677 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\udefrag\volume.c
 	"udefrag-internals.h"
+
+1447419944 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\udefrag\udefrag.c
+	"udefrag-internals.h"
+	"query.h"
 

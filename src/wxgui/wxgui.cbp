@@ -116,6 +116,8 @@
 				<Option projectLibDirsRelation="1" />
 				<Compiler>
 					<Add option="/MT" />
+					<Add option="/arch:SSE2" />
+					<Add option="/GA" />
 					<Add option="/EHc" />
 					<Add option="/EHs" />
 					<Add option="/W3" />

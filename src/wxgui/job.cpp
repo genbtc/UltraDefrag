@@ -140,7 +140,7 @@ void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
         event.SetInt(letter);
         //event.SetClientData((void *)cacheEntry); //instead of sending this, the target is using cacheEntry instead.
         wxPostEvent(g_mainFrame,event);
-        dtrace("Successfully sent Fragmented Files list over to MainFrame::FilesPopulateList()");
+        //dtrace("Successfully sent Fragmented Files list over to MainFrame::FilesPopulateList()");
         event.SetId(ID_UpdateVolumeStatus);//updates status column with "Analyzed.", etc (on finished)
         wxPostEvent(g_mainFrame,event);
         return; //shortcut past a redundant redrawmap and updatestatusbar
