@@ -327,7 +327,7 @@ void FilesList::RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event)
  * @brief Create a filter-string from a single path.
  * @param[in] itemtext the filename path.
  */
-static wxString makefiltertext(wxString itemtext)
+wxString Utils::makefiltertext(wxString itemtext)
 {
     wxString filtertext;
     filtertext << L"\"" << itemtext << L"\";";
@@ -338,9 +338,9 @@ static wxString makefiltertext(wxString itemtext)
  * @param[in] itemtext the new path to append
  * @param[in,out] extfiltertext the existing filter-string.
  */
-static void extendfiltertext(wxString itemtext,wxString *extfiltertext)
+void Utils::extendfiltertext(wxString itemtext,wxString *extfiltertext)
 {
-    *extfiltertext << makefiltertext(itemtext);
+    *extfiltertext << Utils::makefiltertext(itemtext);
 }
 void FilesList::RClickDefragMoveSingle(wxCommandEvent& event)
 {
@@ -351,7 +351,7 @@ void FilesList::RClickDefragMoveSingle(wxCommandEvent& event)
     while(i != -1){
         wxString selitem = GetItemText(i);
         currently_being_workedon_filenames->Add(selitem);
-        extendfiltertext(selitem,&filtertext);
+        Utils::extendfiltertext(selitem,&filtertext);
         i = GetNextSelected(i);
     }
     wxSetEnv(L"UD_CUT_FILTER",filtertext);

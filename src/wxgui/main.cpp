@@ -430,7 +430,7 @@ MainFrame::MainFrame()
 
     //create query thread to perform queries without blocking the GUI
     //(sort of like jobs) - may not be good to have both possibly running at once.
-    m_queryThread = new QueryThread();
+    InitQueryMenu();
 }
 
 /**

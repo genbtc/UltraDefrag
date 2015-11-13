@@ -26,6 +26,7 @@
  * @file query.cpp
  * @brief Query the internals and provide information.
  * @addtogroup Query
+ * @note query.c in udefrag.dll is the backend.
  * @{
  */
 /**=========================================================================**
@@ -33,44 +34,95 @@
 ***=========================================================================**/
 #include "main.h"
 #include "udefrag-internals_flags.h"
-#include "../dll/udefrag/query.h"
-/**=========================================================================**
-***                    Functions in the Query Menu.                         **
-***=========================================================================**/
-// Instead of making a query Menu, make a Query Tab
-// This will cause a "query mode" to happen.
-// First button will be "Analyze" (since we are in query mode, it will cache the result in RAM)
-// Second Item should be a dropdown menu containing a list of all the queries.
-// Below that there should be a Caption field that has descriptive help text about the query selected.
-// Off to the right there should be a button that says "Go!" or "Perform Query"
-// Below all of that we would have some kind of a universal results box, maybe just an open ended text box.
+//#include "../dll/udefrag/query.h" //definitions are defined in udefrag.dll's .h's
 // The best thing would be to have the query functions return the original structs, and then have the GUI deal with it.
-// We should make the udefrag-internals struct's available to the GUI. (such as blockmap, regions) 
-// We will have to create query.c for a passthrough. 
+// We could make the udefrag-internals struct's available to the GUI. (such as blockmap, regions) 
 
 void MainFrame::InitQueryMenu()
 {
-
+    m_queryThread = new QueryThread();
 }
 
+/**=========================================================================**
+***                  Functions in the Query Menu/Tab.                       **
+***=========================================================================**/
+//right now this is equivalent to Job.cpp @ void MainFrame::OnStartJob(wxCommandEvent& event)
 void MainFrame::QueryClusters(wxCommandEvent& event){
+    wxListItem theitem = m_filesList->GetListItem(-1,-1);
+    wxString itemtext = theitem.m_text;
+    
+    wxString filtertext;
+    ProcessCommandEvent(ID_SelectProperDrive);
+    long i = m_filesList->GetFirstSelected();
+    while(i != -1){
+        wxString selitem = m_filesList->GetItemText(i);
+        Utils::extendfiltertext(selitem,&filtertext);
+        i = m_filesList->GetNextSelected(i);
+    }
+    //set the Analysis Mode to SINGLE file mode.
+    // This probably can't work for all queries, but is fast.
+    wxSetEnv(L"UD_CUT_FILTER",filtertext);
+    m_queryThread->singlefile = TRUE;
+    m_queryThread->m_flags |= UD_JOB_CONTEXT_MENU_HANDLER;
 
+    m_queryThread->m_querypath = itemtext.wchar_str();
+    m_queryThread->m_letter = (char)m_queryThread->m_querypath[0]; //find the drive-letter of the fragmented files tab.
+    m_queryThread->m_qp.path = m_queryThread->m_querypath;
+    m_queryThread->m_mapSize = m_jobThread->m_mapSize;
+    
+    switch(event.GetId()){
+    case ID_QueryClusters:
+        m_queryThread->m_qType = QUERY_GET_VCNLIST;
+        break;
+    case ID_QueryClusters+1:
+        m_queryThread->m_qType = QUERY_GET_FREE_REGIONS;
+        break;    
+    default:
+        break;
+    }
+    
+    m_queryThread->m_startquery = true; //BEGIN LAUNCH.
+    
 }
 /**=========================================================================**
 ***                  Dedicated Query Thread.                                **
 ***=========================================================================**/
-//should create some kind of a struct to pass any variables we need IN.
-// drive_letter. query_type. File Path. 
+//better off with a struct to pass any variables we need IN. Such as:
+// drive_letter. query_type. File Path.  (combine/variables set above)
 void *QueryThread::Entry()
 {
+    int result;
     while(!g_mainFrame->CheckForTermination(200)){
         if(m_startquery){
-//            result = udefrag_start_query(m_letter,m_jobType,m_flags,m_mapSize,
-//                reinterpret_cast<udefrag_progress_callback>(ProgressCallback),
-//                reinterpret_cast<udefrag_terminator>(Terminator),NULL
-//            );
+            result = udefrag_start_query(m_letter,m_qType,m_flags,m_mapSize,
+                reinterpret_cast<udefrag_progress_callback>(ProgressCallback),
+                reinterpret_cast<udefrag_terminator>(Terminator),m_qp,NULL
+            );
+            //PostCommandEvent(g_mainFrame,ID_JobCompletion);  // does not exist - OnJobCompletion
+            //  can we do everything here maybe? 
+            m_startquery = false;
+            //gui_fileslist_finished();   //can't work because the threads don't wait for this.
         }
     }
     return NULL;
+}
+
+void QueryThread::ProgressCallback(udefrag_progress_info *pi, void *p)
+{
+    //Copied from Job.cpp function of same-name.
+    if (pi->completion_status > 0){
+        dtrace("The Completion Status Was 0. Begin Populating The Query Tab Here.");
+        //call MainFrame:OnQUERYCOMPLETION:
+        //      or
+        //call PopulateQueryTab
+        //either of those will call gui_fileslist_finished();
+        return;
+    }
+}
+
+int QueryThread::Terminator(void *p)
+{
+    while(g_mainFrame->m_paused) ::Sleep(300);
+    return g_mainFrame->m_stopped;
 }
 

@@ -249,6 +249,7 @@ typedef struct _udefrag_job_parameters {
     int progress_trigger;                       /* a trigger used for debugging purposes */
     struct _mft_zone mft_zone;                  /* disposition of the mft zone; as it is before the volume processing */
     int win_version;                            /* Windows version */
+    udefrag_query_parameters *qp;               /* Embed a pointer to Query_parameters inside this for query.c */
 } udefrag_job_parameters;
 
 int get_options(udefrag_job_parameters *jp);
@@ -334,4 +335,13 @@ enum {
 };
 int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end);
 
+//needed to un-static this and move this from udefrag.c to here for query.c to use it/work.
+void deliver_progress_info(udefrag_job_parameters *jp,int completion_status);
+
+
+/*Begin Query.C definitions */
+int query_get_VCNlist(udefrag_job_parameters *jp);
+int query_get_freeRegions(udefrag_job_parameters *jp);
+
+    
 #endif /* _UDEFRAG_INTERNALS_H_ */

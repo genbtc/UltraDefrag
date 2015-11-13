@@ -374,6 +374,7 @@ public:
     bool m_rescan;
 };
 
+//genBTC query.cpp Query Thread.
 class QueryThread: public wxThread {
 public:
     QueryThread() : wxThread(wxTHREAD_JOINABLE) {
@@ -384,6 +385,17 @@ public:
     virtual void *Entry();
 
     bool m_startquery;
+    wchar_t *m_querypath;
+    int m_flags;
+    bool singlefile;
+    int m_mapSize;
+    char m_letter;
+    udefrag_query_type m_qType;
+    udefrag_query_parameters m_qp;
+
+private:
+    static void ProgressCallback(udefrag_progress_info *pi, void *p);
+    static int Terminator(void *p);    
 };
 
 class UpgradeThread: public wxThread {
@@ -762,6 +774,8 @@ public:
     static char* wxStringToChar(wxString input);
     static void DrawSingleRectangleBorder(HDC m_cacheDC,int xblock,int yblock,int line_width,int cell_size,HBRUSH border,HBRUSH infill);
     static void createDirectoryRecursively(const std::wstring &directory);
+    static void extendfiltertext(wxString itemtext,wxString *extfiltertext);
+    static wxString makefiltertext(wxString itemtext);
 };
 
 /* flags for Utils::ShellExec */

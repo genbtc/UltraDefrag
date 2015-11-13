@@ -58,7 +58,6 @@
 */
 
 #include "udefrag-internals.h"
-#include "query.h"
 
 //Globals
 //-----------------------------------------------
@@ -117,7 +116,7 @@ void udefrag_unload_library(void)
  * Otherwise, such a cell will be drawn in different color
  * indicating that something still exists inside the zone.
  */
-static void deliver_progress_info(udefrag_job_parameters *jp,int completion_status)
+void deliver_progress_info(udefrag_job_parameters *jp,int completion_status)
 {
     udefrag_progress_info pi;
     double x, y;
@@ -207,7 +206,7 @@ static void deliver_progress_info(udefrag_job_parameters *jp,int completion_stat
 
 /**
  */
-static int killer(void *p)
+int killer(void *p)
 {
     winx_dbg_print_header(0,0,I"*");
     winx_dbg_print_header(0x20,0,I"termination requested by caller");
@@ -218,7 +217,7 @@ static int killer(void *p)
 
 /**
  */
-static int terminator(void *p)
+int terminator(void *p)
 {
     udefrag_job_parameters *jp = (udefrag_job_parameters *)p;
     int result;
@@ -740,121 +739,6 @@ int udefrag_set_log_file_path(void)
 fail:
     winx_free(native_path);
     return (-1);
-}
-
-/************************************************************/
-/*                    The query.c code                      */
-/************************************************************/
-
-static DWORD WINAPI start_query(LPVOID p)
-{
-    udefrag_job_parameters *jp = (udefrag_job_parameters *)p;
-    int result = 0;
-    //analyze.
-    result = analyze(jp);
-    
-    //get the filename / file_info of the file we want:
-//query switch/case
-    switch(jp->job_type){
-    case QUERY_GET_VCNLIST:
-        result = query_get_VCNlist(jp);
-        break;
-    case QUERY_GET_FREE_REGIONS:
-        result = query_get_VCNlist(jp);
-        break;
-    default:
-        result = 0;
-        break;
-    }
-
-    //cleanup.
-    destroy_file_blocks_tree(jp);
-    (void)save_fragmentation_report(jp);
-
-    /* now it is safe to adjust the completion status */
-    jp->pi.completion_status = result;
-    if(jp->pi.completion_status == 0)
-        jp->pi.completion_status ++; /* success */
-
-    winx_exit_thread(0); /* 8k/12k memory leak here?   ???whocares... */
-    return 0;
-}
-int udefrag_start_query(char volume_letter,udefrag_job_type job_type,int flags,
-        int cluster_map_size,udefrag_progress_callback cb,udefrag_terminator t,void *p)
-{
-    udefrag_job_parameters jp;
-    int result = -1;
-
-    /* initialize the job */
-    memset(&jp,0,sizeof(udefrag_job_parameters));
-    jp.win_version = winx_get_os_version();
-
-    /* print the header */
-    dbg_print_header(&jp);
-
-    jp.volume_letter = winx_toupper(volume_letter);    /* convert volume letter to uppercase */
-    jp.filelist = NULL;
-    jp.fragmented_files = NULL;
-    jp.free_regions = NULL;
-    jp.progress_refresh_time = 0;
-    jp.job_type = job_type;
-    jp.cb = cb;
-    jp.t = t;
-    jp.p = p;
-
-    /*
-    * We deliver the progress information from
-    * the current thread as well as decide whether
-    * to terminate the job or not here. This
-    * multi-threaded technique works quite smoothly.
-    */
-    jp.termination_router = terminator;
-
-    jp.start_time = jp.p_counters.overall_time = winx_xtime();
-    jp.pi.completion_status = 0;
-
-    if(get_options(&jp) < 0)
-        goto done;
-
-    jp.udo.job_flags = flags;
-
-    if(allocate_map(cluster_map_size,&jp) < 0){
-        release_options(&jp);
-        goto done;
-    }
-
-    /* set additional privileges for Vista and above */
-    if(jp.win_version >= WINDOWS_VISTA){
-        (void)winx_enable_privilege(SE_BACKUP_PRIVILEGE);
-
-        if(jp.win_version >= WINDOWS_7)
-            (void)winx_enable_privilege(SE_MANAGE_VOLUME_PRIVILEGE);
-    }
-
-    if(winx_create_thread(start_query,(PVOID)&jp) < 0){
-        etrace("The Job Failed for some reason.");
-        goto done;
-    }
-    do {
-        winx_sleep(jp.udo.refresh_interval);
-        deliver_progress_info(&jp,0); /* status = running */
-    } while(jp.pi.completion_status == 0);
-
-    /* cleanup */
-    deliver_progress_info(&jp,jp.pi.completion_status);
-    free_map(&jp);
-    release_options(&jp);
-
-done:
-    jp.p_counters.overall_time = winx_xtime() - jp.p_counters.overall_time;
-    dbg_print_performance_counters(&jp);
-    dbg_print_footer(&jp);
-    if(jp.pi.completion_status > 0)
-        result = 0;
-    else if(jp.pi.completion_status < 0)
-        result = jp.pi.completion_status;
-
-    return result;
 }
 
 
