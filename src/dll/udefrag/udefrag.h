@@ -146,9 +146,6 @@ typedef struct _udefrag_progress_info {
 typedef void  (*udefrag_progress_callback)(udefrag_progress_info *pi, void *p);
 typedef int   (*udefrag_terminator)(void *p);
 
-int terminator(void *p);
-int killer(void *p);
-
 int udefrag_start_job(char volume_letter,udefrag_job_type job_type,int flags,
     int cluster_map_size,udefrag_progress_callback cb,udefrag_terminator t,void *p);
 
@@ -164,6 +161,7 @@ void gui_fileslist_finished(void);
 /*Begin Query.C definitions */
 typedef struct _udefrag_query_parameters {
     wchar_t *path;      /* Path from the GUI. What to query */
+    winx_file_disposition filedisp;
     //something else
 } udefrag_query_parameters;
 
@@ -173,8 +171,11 @@ typedef enum {
 } udefrag_query_type;
 
 int udefrag_start_query(char volume_letter,udefrag_query_type job_type,int flags,int cluster_map_size,
-    udefrag_progress_callback cb,udefrag_terminator t,udefrag_query_parameters qp,void *p);
-    
+    udefrag_progress_callback cb,udefrag_terminator t,udefrag_query_parameters *qp,void *p);
+
+void gui_query_finished(void);
+
+
 #if defined(__cplusplus)
 }
 #endif

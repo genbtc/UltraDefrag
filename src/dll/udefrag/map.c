@@ -73,10 +73,14 @@ int allocate_map(int map_size,udefrag_job_parameters *jp)
         return 0;
     
     /* get volume information */
-    if(winx_get_volume_information(jp->volume_letter,&jp->v_info) < 0)
+    if(winx_get_volume_information(jp->volume_letter,&jp->v_info) < 0){
+        etrace("Couldn't get volume information for Drive: %c",jp->volume_letter);
         return (-1);
-    if(jp->v_info.total_clusters == 0)
+    }
+    if(jp->v_info.total_clusters == 0){
+        etrace("Abnormal Error. Volume info said total_clusters == 0");
         return (-1);
+    }
 
     /* allocate memory */
     jp->pi.cluster_map = winx_tmalloc(map_size);

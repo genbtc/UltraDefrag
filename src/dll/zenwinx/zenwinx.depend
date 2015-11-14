@@ -1,0 +1,138 @@
+# depslib dependency file v1.0
+1447318698 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\dbg.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1447318864 c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\ntndk.h
+	<windows.h>
+	<stdio.h>
+	<stdarg.h>
+	<stdlib.h>
+	<ctype.h>
+
+1447318922 c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\zenwinx.h
+	"../../include/dbg.h"
+	"prb.h"
+
+1359546193 c:\software\ultradefrag-7.0.0-beta2.src\src\include\dbg.h
+
+1447318870 c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\prb.h
+	<stddef.h>
+
+1359546202 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\entry.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1447318701 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\env.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1447318703 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\event.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1447315294 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\file.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1447318705 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\ftw.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1447318839 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\ftw_ntfs.c
+	"ntndk.h"
+	"zenwinx.h"
+	"ntfs.h"
+
+1447318863 c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\ntfs.h
+
+1447318848 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\int64.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1447318849 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\keyboard.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1447318850 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\keytrans.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1447318851 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\ldr.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1447318852 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\list.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1447318853 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\lock.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1447318859 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\mem.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1447318861 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\misc.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1447318862 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\mutex.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1447318865 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\path.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1447318869 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\prb.c
+	<assert.h>
+	<stdio.h>
+	"prb.h"
+	"ntndk.h"
+	"zenwinx.h"
+	<assert.h>
+
+1447318871 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\privilege.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1447318872 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\reg.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1447318886 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\stdio.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1447318887 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\string.c
+	"ntndk.h"
+	"zenwinx.h"
+	<math.h>
+	"case-tables.h"
+
+1447318686 c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\case-tables.h
+
+1447318888 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\thread.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1447318902 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\time.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1447318905 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\volume.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1447318914 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\zenwinx.c
+	"ntndk.h"
+	"zenwinx.h"
+
+1447318927 source:c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\zenwinx.rc
+	<windows.h>
+	"../../include/version.h"
+
+1447319048 c:\software\ultradefrag-7.0.0-beta2.src\src\include\version.h
+

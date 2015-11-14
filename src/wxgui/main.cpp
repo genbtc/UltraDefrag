@@ -545,6 +545,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_DefaultAction,     MainFrame::OnDefaultAction)
     EVT_MENU(ID_DiskProcessingFailure, MainFrame::OnDiskProcessingFailure)
     EVT_MENU(ID_JobCompletion,     MainFrame::OnJobCompletion)
+    EVT_MENU(ID_QueryCompletion,     MainFrame::OnQueryCompletion)  //genBTC query.cpp
     EVT_MENU(ID_PopulateList,      MainFrame::PopulateList)
     EVT_MENU(ID_PopulateFilesList,      MainFrame::FilesPopulateList) //genBTC
     EVT_MENU(ID_ReadUserPreferences,   MainFrame::ReadUserPreferences)

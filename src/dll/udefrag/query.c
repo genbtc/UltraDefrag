@@ -38,6 +38,48 @@
 
 #include "udefrag-internals.h"
 //#include "query.h"
+BOOL is_gui_query_finished = FALSE;      //related to gui_fileslist_finished()
+BOOL wait_delete_thread_query_finished = FALSE; //related to wait_delete_lists_thread()
+static int killer(void *p)
+{
+    winx_dbg_print_header(0,0,I"*");
+    winx_dbg_print_header(0x20,0,I"termination requested by caller");
+    winx_dbg_print_header(0,0,I"*");
+    gui_query_finished();//must be called.
+    return 1;
+}
+
+/**
+ */
+static int terminator(void *p)
+{
+    udefrag_job_parameters *jp = (udefrag_job_parameters *)p;
+    int result;
+
+    /* ask caller */
+    if(jp->t){
+        result = jp->t(jp->p);
+        if(result)
+            killer(jp->p);
+        return result;
+    }
+
+    /* continue */
+    return 0;
+}
+static DWORD WINAPI wait_delete_lists_thread(LPVOID p)
+{
+    while(!is_gui_query_finished)
+        winx_sleep(250);
+    destroy_lists((udefrag_job_parameters *)p);
+    wait_delete_thread_query_finished = TRUE;
+    winx_exit_thread(0);
+    return 0;
+}
+
+void gui_query_finished(void){
+    is_gui_query_finished = TRUE;
+}
 
 static DWORD WINAPI start_query(LPVOID p)
 {
@@ -67,7 +109,7 @@ static DWORD WINAPI start_query(LPVOID p)
     jp->pi.completion_status = result;
     if(jp->pi.completion_status == 0)
         jp->pi.completion_status ++; /* success */
-
+        
     winx_exit_thread(0); /* 8k/12k memory leak here?   ???whocares... */
     return 0;
 }
@@ -78,7 +120,7 @@ static DWORD WINAPI start_query(LPVOID p)
 
 
 int udefrag_start_query(char volume_letter,udefrag_query_type query_type,int flags,int cluster_map_size,
-        udefrag_progress_callback cb,udefrag_terminator t,udefrag_query_parameters qp,void *p)
+        udefrag_progress_callback cb,udefrag_terminator t,udefrag_query_parameters *qp,void *p)
 {
     udefrag_job_parameters jp;
     int result = -1;
@@ -99,7 +141,7 @@ int udefrag_start_query(char volume_letter,udefrag_query_type query_type,int fla
     jp.cb = cb;
     jp.t = t;
     jp.p = p;
-    jp.qp = &qp;        //establish the Query Parameters variable.
+    jp.qp = qp;        //establish the Query Parameters variable.
 
     jp.termination_router = terminator;
 
@@ -134,38 +176,50 @@ int udefrag_start_query(char volume_letter,udefrag_query_type query_type,int fla
     } while(jp.pi.completion_status == 0);
 
     /* cleanup */
-    dtrace("Query JOB finishing soon, cleanup in progress.");
+    dtrace("Cleanup in progress.");
     deliver_progress_info(&jp,jp.pi.completion_status);
     free_map(&jp);
     release_options(&jp);
 done:
-    destroy_lists(&jp);  //delete.
     jp.p_counters.overall_time = winx_xtime() - jp.p_counters.overall_time;
     dbg_print_performance_counters(&jp);
     dbg_print_footer(&jp);
-    if(jp.pi.completion_status > 0)
-        result = 0;
-    else if(jp.pi.completion_status < 0)
-        result = jp.pi.completion_status;
 
-    return result;
+    /* cleanup */
+    winx_flush_dbg_log(0);
+    
+    result = jp.pi.completion_status;
+
+    //Code to handle the filelists deletion after GUI finishes.
+    // Needs to wait until it gets a response. If this thread exits too soon
+    // without clearing the memory, deletion of lists will fail/break/segfault.
+    // This has to be kept in mind in the terminator also, to reset variables.
+    if (result > 0){
+        winx_create_thread(wait_delete_lists_thread,(PVOID)&jp);
+        while(!is_gui_query_finished || !wait_delete_thread_query_finished)
+            winx_sleep(333);
+        is_gui_query_finished = FALSE;
+        wait_delete_thread_query_finished = FALSE;
+    }
+    else
+        destroy_lists(&jp);
+    
+    if(result < 0) return result;
+    return (result > 0) ? 0 : (-1);
 }
 
 /************************************************************/
 /*              Query #1                                    */
 /************************************************************/
-static int query_get_VCNlist(udefrag_job_parameters *jp)
+int query_get_VCNlist(udefrag_job_parameters *jp)
 {
     int result;
-    ULONGLONG time,i,filelength;
-    char buffer[32],*headerstring;
-    winx_volume_region *region;
     winx_file_info *file;
     wchar_t *path, *native_path;
-    winx_file_disposition oldfiledisp;
-    winx_blockmap *block;
     
     path = jp->qp->path;
+    //dtrace("Path1 was: %ws",jp->qp->path);
+    //dtrace("Path2 was: %ws",path);
     
     if(path == NULL){
         etrace("Abnormal Error. Could not obtain path from parameter!");
@@ -177,31 +231,34 @@ static int query_get_VCNlist(udefrag_job_parameters *jp)
         etrace("Abnormal Error. Cannot build native path!");
         result = (-1);
     }
+    dtrace("Path was: %ws",native_path);
     /* iterate through the filelist (no other way) */
     for(file = jp->filelist; file; file = file->next){
         if(_wcsicmp(file->path,native_path) == 0) break;
         if(file->next == jp->filelist){
             etrace("Abnormal error. Could not match path to any scanned file...");
-            result = (-1);
+            return (-1);
         }
     }
-    dtrace("The File's path is: %ws",file->path);
-    filelength = file->disp.clusters;
+    jp->qp->filedisp = file->disp;
+    //memcpy(&jp->qp->filedisp,&file->disp,sizeof(winx_file_disposition));
+    dtrace("The VCNList Query itself has been Completed. Throwing back to job..");
     
-    itrace("The File has #fragments: %d",file->disp.fragments);
-
-    for(block = file->disp.blockmap, i = 0; block; block = block->next, i++){
-        itrace("file part #%I64u start: %I64u, length: %I64u",i,block->lcn,block->length);
-        if(block->next == file->disp.blockmap) break;
-    }
-    
+    /*cleanup*/
+    winx_free(file);
+    dtrace("winx_free file"); winx_flush_dbg_log(0);
+    winx_free(native_path);
+    dtrace("winx_free native_path"); winx_flush_dbg_log(0);
+    clear_currently_excluded_flag(jp); //again?
+    winx_fclose(jp->fVolume);
+    jp->fVolume = NULL;
     return 0;
 }
 
 /************************************************************/
 /*               Query #2                                   */
 /************************************************************/
-static int query_get_freeRegions(udefrag_job_parameters *jp)
+int query_get_freeRegions(udefrag_job_parameters *jp)
 {
     return 0;
 }

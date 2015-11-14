@@ -179,7 +179,7 @@ enum {
     // event identifiers
     ID_AdjustListColumns,
     ID_AdjustListHeight,
-    ID_AdjustFilesListColumns,      //genBTC
+    ID_AdjustFilesListColumns,      //genBTC fileslist.cpp
     ID_AdjustSystemTrayIcon,
     ID_AdjustTaskbarIconOverlay,
     ID_BootChange,
@@ -187,8 +187,9 @@ enum {
     ID_DefaultAction,
     ID_DiskProcessingFailure,
     ID_JobCompletion,
+    ID_QueryCompletion,             //genBTC query.cpp
     ID_PopulateList,
-    ID_PopulateFilesList,           //genBTC
+    ID_PopulateFilesList,           //genBTC fileslist.cpp
     ID_ReadUserPreferences,
     ID_RedrawMap,
     ID_SelectAll,
@@ -383,7 +384,9 @@ public:
     ~QueryThread() { Wait(); }
 
     virtual void *Entry();
-
+    
+    void DisplayQueryResults();
+    
     bool m_startquery;
     wchar_t *m_querypath;
     int m_flags;
@@ -391,7 +394,7 @@ public:
     int m_mapSize;
     char m_letter;
     udefrag_query_type m_qType;
-    udefrag_query_parameters m_qp;
+    udefrag_query_parameters *m_qp;
 
 private:
     static void ProgressCallback(udefrag_progress_info *pi, void *p);
@@ -604,6 +607,7 @@ public:
     void OnDefaultAction(wxCommandEvent& event);
     void OnDiskProcessingFailure(wxCommandEvent& event);
     void OnJobCompletion(wxCommandEvent& event);
+    void OnQueryCompletion(wxCommandEvent& event);  //genBTC query.cpp
     void OnLocaleChange(wxCommandEvent& event);
     void ReadUserPreferences(wxCommandEvent& event);
     void RedrawMap(wxCommandEvent& event);

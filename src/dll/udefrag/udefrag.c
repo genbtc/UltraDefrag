@@ -206,7 +206,7 @@ void deliver_progress_info(udefrag_job_parameters *jp,int completion_status)
 
 /**
  */
-int killer(void *p)
+static int killer(void *p)
 {
     winx_dbg_print_header(0,0,I"*");
     winx_dbg_print_header(0x20,0,I"termination requested by caller");
@@ -217,7 +217,7 @@ int killer(void *p)
 
 /**
  */
-int terminator(void *p)
+static int terminator(void *p)
 {
     udefrag_job_parameters *jp = (udefrag_job_parameters *)p;
     int result;

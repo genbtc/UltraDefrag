@@ -14,3 +14,4 @@ EXPORTS
     udefrag_validate_volume
     gui_fileslist_finished
     udefrag_start_query
+    gui_query_finished
