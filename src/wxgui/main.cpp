@@ -350,37 +350,6 @@ MainFrame::MainFrame()
 	//Finish Tab 2 - Add the Panel2(page2list+sizer3) to the notebook.
 	m_notebook1->AddPage( m_panel2, wxT("Files"), false );
 
-    //create Query tab, Tab3.
-	m_panel3 = new wxPanel( m_notebook1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-	wxBoxSizer* bSizer4	= new wxBoxSizer( wxVERTICAL );
-	Analyze = new wxButton(m_panel3, ID_ANALYZE, _("Analyze"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _("Analyze"));
-
-	wxArrayString arrayStringFor_WxComboBox1;
-	WxComboBox1 = new wxComboBox(m_panel3, ID_WXCOMBOBOX1, _("WxComboBox1"), wxDefaultPosition, wxDefaultSize, arrayStringFor_WxComboBox1, 0, wxDefaultValidator, _("WxComboBox1"));
-
-	WxStaticText1 = new wxStaticText(m_panel3, ID_WXSTATICTEXT1, _("WxStaticText1"), wxDefaultPosition, wxSize(wxDefaultCoord,100), 0, _("WxStaticText1"));
-	
-    WxFilePickerCtrl1 = new wxFilePickerCtrl(m_panel3, ID_WXFILEPICKERCTRL1, wxEmptyString, wxFileSelectorPromptStr, wxFileSelectorDefaultWildcardStr, wxDefaultPosition, wxDefaultSize);
-  
-	WxTextCtrl1 = new wxTextCtrl(m_panel3, ID_WXTEXTCTRL1, _(""), wxDefaultPosition,wxSize(wxDefaultCoord,400), 0, wxDefaultValidator, _("WxTextCtrl1"));
-	WxTextCtrl1->SetMaxLength(0);
-	WxTextCtrl1->AppendText(_("WxTextCtrl1"));
-	WxTextCtrl1->SetFocus();
-	WxTextCtrl1->SetInsertionPointEnd();
-
-	PerformQuery = new wxButton(m_panel3, ID_PERFORMQUERY, _("Perform Query!"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _("PerformQuery"));
-	
-	bSizer4->Add( Analyze, 0, wxEXPAND | wxALL, 5);
-	bSizer4->Add( WxComboBox1, 0, wxEXPAND | wxALL, 5);
-	bSizer4->Add( WxStaticText1, 0, wxEXPAND | wxALL, 5);
-	bSizer4->Add( WxFilePickerCtrl1, 0, wxEXPAND | wxALL, 5);
-	bSizer4->Add( WxTextCtrl1, 0, wxEXPAND | wxALL, 5);
-	bSizer4->Add( PerformQuery, 0, wxEXPAND | wxALL, 5);
-	
-	m_panel3->SetSizer( bSizer4 );
-    bSizer4->Fit( m_panel3 );
-    m_notebook1->AddPage( m_panel3, wxT("Query"), false );
-
     //Finish Notebook & initialize
 	bSizer1->Add( m_notebook1, 1, wxEXPAND, 1 );
 	this->SetSizer( bSizer1 );
@@ -431,6 +400,8 @@ MainFrame::MainFrame()
     //create query thread to perform queries without blocking the GUI
     //(sort of like jobs) - may not be good to have both possibly running at once.
     InitQueryMenu();
+    
+    UD_DisableTool(ID_Stop);    //change stop icon to be not always enabled.
 }
 
 /**
@@ -559,6 +530,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_UpdateVolumeStatus,      MainFrame::UpdateVolumeStatus)
     EVT_MENU(ID_SelectProperDrive, MainFrame::ReSelectProperDrive)  //genBTC
     EVT_MENU(ID_QueryClusters, MainFrame::QueryClusters)    //genBTC query.cpp
+    EVT_BUTTON(ID_PERFORMQUERY,MainFrame::QueryClusters)
 END_EVENT_TABLE()
 
 // =======================================================================

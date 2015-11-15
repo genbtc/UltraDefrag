@@ -663,6 +663,23 @@ static int create_target_directory(wchar_t *path)
     return result;
 }
 
+/** @brief convert to native path */
+int convert_path_to_native(wchar_t *path, wchar_t **native_path)
+{
+    if(path == NULL){
+        etrace("Abnormal Error. Could not obtain path from parameter!");
+        return 0;
+    }
+    
+    *native_path = winx_swprintf(L"\\??\\%ws",path);
+    if(*native_path == NULL){
+        etrace("Abnormal Error. Cannot build native path!");
+        return 0;
+    }
+    //dtrace("Path was: %ws",native_path);
+    return 1;
+}
+
 /**
  * @brief Enables debug logging to the file
  * if <b>\%UD_LOG_FILE_PATH\%</b> is set, otherwise
@@ -791,16 +808,9 @@ int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
         jp->pi.moved_clusters = 0;
 
         path = jp->udo.cut_filter.array[i];
-        if(path == NULL){
-            etrace("Abnormal Error. Could not obtain path from UD_CUT_FILTER array!");
-            result = (-1); goto cleanup;
-        }
         /* convert to native path */
-        native_path = winx_swprintf(L"\\??\\%ws",path);
-        if(native_path == NULL){
-            etrace("Abnormal Error. Cannot build native path!");
-            result = (-1); goto cleanup;
-        }
+        if(!convert_path_to_native(path,&native_path))
+            goto cleanup;
         /* iterate through the filelist (no other way) */
         for(file = jp->filelist; file; file = file->next){
             if(_wcsicmp(file->path,native_path) == 0) break;

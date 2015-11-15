@@ -46,6 +46,11 @@ extern "C" {
 // =======================================================================
 //                      Application configuration
 // =======================================================================
+//reference these variables instead of magic-strings all over the source-files.
+wxString OPTIONSDIR = wxT(".\\options\\");
+wxString OPTIONSFILE = OPTIONSDIR + wxT("options.lua");
+//options file should be in its own directory because of the change-tracker
+//change-tracker should not care about anything else being modified.
 
 /**
  * @brief Reads application configuration.
@@ -201,9 +206,9 @@ void MainFrame::ReadUserPreferences(wxCommandEvent& WXUNUSED(event))
     wxUnsetEnv(wxT("UD_SORTING_ORDER"));
     wxUnsetEnv(wxT("UD_TIME_LIMIT"));
 
-    /* interprete guiopts.lua file */
+    /* interpret options.lua file */
     lua_State *L; int status; wxString error = wxT("");
-    wxFileName path(wxT(".\\options.lua"));
+    wxFileName path(OPTIONSFILE);
     path.Normalize();
     if(!path.FileExists()){
         etrace("%ls file not found",
@@ -298,7 +303,7 @@ void *ConfigThread::Entry()
 
     itrace("configuration tracking started");
 
-    HANDLE h = FindFirstChangeNotification(wxT("."),
+    HANDLE h = FindFirstChangeNotification(OPTIONSDIR,
         FALSE,FILE_NOTIFY_CHANGE_LAST_WRITE);
     if(h == INVALID_HANDLE_VALUE){
         letrace("FindFirstChangeNotification failed");
@@ -355,9 +360,9 @@ done:
 void MainFrame::OnGuiOptions(wxCommandEvent& WXUNUSED(event))
 {
     if(m_title->Find(wxT("Portable")) != wxNOT_FOUND)
-        Utils::ShellExec(wxT("notepad"),wxT("open"),wxT(".\\options.lua"));
+        Utils::ShellExec(wxT("notepad"),wxT("open"),OPTIONSFILE);
     else
-        Utils::ShellExec(wxT(".\\options.lua"),wxT("edit"));
+        Utils::ShellExec(OPTIONSFILE,wxT("edit"));
 }
 
 void MainFrame::OnBootScript(wxCommandEvent& WXUNUSED(event))

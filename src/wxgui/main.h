@@ -458,7 +458,7 @@ public:
         class FilesList *ListCtrl;
 
 };
-#define FilesListRightClickMenuFrm_STYLE wxCAPTION | wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX
+
 //genBTC FilesList.cpp
 class FilesList: public wxListCtrl {
 public:
@@ -503,8 +503,8 @@ public:
     void ReSelectProperDrive(wxCommandEvent& event);
     void RClickDefragMoveSingle(wxCommandEvent& event);
 
-    wxListItem GetListItem(int id,int col);
-    wxString GetTextByColumn(long index, int col);
+    wxListItem GetListItem(long index=-1,long col=-1);
+
     long currentlyselected;
     wxArrayString *currently_being_workedon_filenames;
     
@@ -663,7 +663,9 @@ public:
 
     wxMenu     *m_RClickPopupMenu1;     //genBTC Right Click Popup Menu
     wxMenu     *m_DriveSubMenu;         //genBTC Right Click Popup Menu
+    wxTextCtrl *WxTextCtrl1;
 private:
+    int getmapsize();       //genBTC - used by job.cpp & query.cpp
     void InitQueryMenu();   //genBTC query.cpp
     void InitPopupMenus();              //genBTC Right Click Popup Menu
     void InitMenu();
@@ -744,7 +746,7 @@ private:
     //genBTC Query - tab 3.
     wxButton *PerformQuery;     
     wxStaticText *WxStaticText1;
-    wxTextCtrl *WxTextCtrl1;
+    
     wxFilePickerCtrl *WxFilePickerCtrl1;
     wxComboBox *WxComboBox1;
     wxButton *Analyze;
@@ -785,6 +787,43 @@ public:
 /* flags for Utils::ShellExec */
 #define SHELLEX_SILENT  0x1
 #define SHELLEX_NOASYNC 0x2
+
+// =======================================================================
+//                     #Defined Functions
+// =======================================================================
+//from job.cpp
+#define UD_EnableTool(id) { \
+    wxMenuItem *item = m_menuBar->FindItem(id); \
+    if(item) item->Enable(true); \
+    if(m_toolBar->FindById(id)) \
+        m_toolBar->EnableTool(id,true); \
+}
+
+#define UD_DisableTool(id) { \
+    wxMenuItem *item = m_menuBar->FindItem(id); \
+    if(item) item->Enable(false); \
+    if(m_toolBar->FindById(id)) \
+        m_toolBar->EnableTool(id,false); \
+}
+
+//from menu.cpp
+#define UD_AppendCheckItem(id) AppendCheckItem(id, wxEmptyString)
+#define UD_AppendRadioItem(id) AppendRadioItem(id, wxEmptyString)
+
+#define UD_SetMenuIcon(id, icon) { \
+    wxBitmap *pic; wxString string; \
+    string.Printf(wxT("%hs%u"),#icon,g_iconSize); \
+    pic = Utils::LoadPngResource(string.wc_str()); \
+    if(pic) m_menuBar->FindItem(id)->SetBitmap(*pic); \
+    delete pic; \
+}
+
+#define UD_SetMarginWidth(menu) { \
+    wxMenuItemList list = menu->GetMenuItems(); \
+    size_t count = list.GetCount(); \
+    for(size_t i = 0; i < count; i++) \
+        list.Item(i)->GetData()->SetMarginWidth(g_iconSize); \
+}
 
 // =======================================================================
 //                           Global variables

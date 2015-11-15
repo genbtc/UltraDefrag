@@ -72,8 +72,8 @@ int wxCALLBACK ListItemCompare(long item1, long item2, long m_sortinfo) // the c
     bool SortAscending = sortinfo->SortAscending; // get the sorting order
     long index1 = ListCtrl->FindItem(-1,item1); // get the index of the first item
     long index2 = ListCtrl->FindItem(-1,item2); // get the index of the second item
-    wxString string1 = ListCtrl->GetTextByColumn(index1, Column); // get the text of the first item
-    wxString string2 = ListCtrl->GetTextByColumn(index2, Column); // get the text of the second item 
+    wxString string1 = ListCtrl->GetListItem(index1, Column).GetText(); // get the text of the first item
+    wxString string2 = ListCtrl->GetListItem(index2, Column).GetText(); // get the text of the second item 
 
     if (Column == 0){
         //does string-compare
@@ -214,28 +214,14 @@ void MainFrame::InitPopupMenus()
 }
 
 /**
- * @brief Return Text from Column, given index & col
- * @return a wxString of text.
- */
-wxString FilesList::GetTextByColumn(long index, int col)
-{
-//   wxListItem Item; // the item whose text we want
-//   Item.SetId(index); // set the index
-//   Item.SetColumn(col); // set the column
-//   Item.SetMask(wxLIST_MASK_TEXT); // enable GetText()
-//   GetItem(Item); // get the item
-   return GetListItem(index,col).GetText(); // get and return its text
-}
-
-/**
  * @brief Retrieve a List Item from FilesList
  * @details Will get currently selected item, column 0.
    Unless parameters for id, col are passed.
 */
-wxListItem FilesList::GetListItem(int id = -1,int col = -1)
+wxListItem FilesList::GetListItem(long index,long col)
 {
     wxListItem theitem;
-    theitem.m_itemId = (id!=-1) ? id : currentlyselected;
+    theitem.m_itemId = (index!=-1) ? index : currentlyselected;
     theitem.m_col = (col!=-1) ? col : 0;
     theitem.m_mask = wxLIST_MASK_TEXT;
     GetItem(theitem);
@@ -248,8 +234,7 @@ void FilesList::ReSelectProperDrive(wxCommandEvent& event)
 }
 void MainFrame::ReSelectProperDrive(wxCommandEvent& event)
 {
-    wxListItem theitem = m_filesList->GetListItem();
-    wxString itemtext = theitem.m_text;
+    wxString itemtext = m_filesList->GetListItem().GetText();
     char letter;
     letter = (char)itemtext[0]; //find the drive-letter of the fragmented files tab.
     //DeSelect All Drives
@@ -303,8 +288,7 @@ void FilesList::OnColClick(wxListEvent& event)
 
 void FilesList::RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event)
 {
-    wxListItem theitem = GetListItem();
-    wxString itemtext = theitem.m_text;
+    wxString itemtext = GetListItem().GetText();
 
     wchar_t letter = (wchar_t)(event.GetId() - 2000);
     wchar_t *srcfilename = _wcsdup(itemtext.wc_str());
@@ -378,10 +362,7 @@ void FilesList::RClickDefragMoveSingle(wxCommandEvent& event)
 
 void FilesList::RClickCopyClipboard(wxCommandEvent& event)
 {
-    wxListItem theitem = GetListItem();
-    wxString itemtext = theitem.m_text;
-    //std::string stlstring = std::string(itemtext.mb_str());
-    //UtilsWin32::toClipboard(std::string(itemtext.mb_str()));  //other way.
+    wxString itemtext = GetListItem().GetText();
     if (wxTheClipboard->Open()){
         wxTheClipboard->SetData( new wxTextDataObject(itemtext) );
         wxTheClipboard->Close();
@@ -391,16 +372,10 @@ void FilesList::RClickCopyClipboard(wxCommandEvent& event)
 
 void FilesList::RClickOpenExplorer(wxCommandEvent& event)
 {
-    wxListItem theitem = GetListItem();
-    wxString itemtext = theitem.m_text;
-    //UtilsWin32::BrowseToFile(itemtext.wc_str());  //this has typedef issues. works on VC++, not working on G++
-    //Utils::ShellExec(wxT("explorer.exe"),wxT("open"),itemtext); //This OPENS the file itself using the default handler.
+    wxString itemtext = GetListItem().GetText();
     wxString xec;
-    xec << L"/select,\"" << itemtext.wc_str() << L"\"";
-    //xec.Printf(L"/select,\"%s\"",itemtext.wc_str());
-//    system(xec.mb_str().data());  // this does work but it quickly flashes open a black command prompt, and looks really sketchy
-    ShellExecuteW(0, L"open", L"explorer.exe", xec.wc_str(), 0, SW_NORMAL);
-    //this actually works, wish i found this earlier.
+    xec << L"/select,\"" << itemtext << L"\"";
+    Utils::ShellExec(wxT("explorer.exe"),wxT("open"),xec); //This OPENS the file itself using the default handler.    
 }
 
 void FilesList::OnItemRClick(wxListEvent& event)

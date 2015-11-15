@@ -46,18 +46,22 @@
 
 COLORREF g_colors[SPACE_STATES] =
 {
-    //RGB(178,175,168),               /* unused map block */
-    RGB(0,0,0),                     /* unused map block (NEW COLOR)*/ //genBTC turn any extras black.
-    RGB(255,255,255),               /* free */
-    //RGB(0,215,32),RGB(4,164,0),     /* system */ 
-    RGB(201,131,231),RGB(224,180,240), /* system (NEW COLOR)*/   //genBTC change from green to purple-ish(MFT-ish)
-    RGB(255,0,0),/*RGB(128,0,0),*/RGB(192,0,0),      /* fragmented */ //genBTC change Frag_over_limit from 128 to 192.
-    RGB(0,0,255),RGB(0,0,128),      /* unfragmented */
-    RGB(255,255,0),RGB(238,221,0),  /* directories */
-    RGB(185,185,0),RGB(93,93,0),    /* compressed */
-    //RGB(211,0,255),RGB(128,0,128),  /* mft zone; mft itself */
-    RGB(128,0,255),RGB(211,0,255),   /* mft zone; mft itself (REVERSED COLORS)*/
-    RGB(0,192,0),RGB(0,172,192)      /* IN_MOVE_PROGRESS_SPACE / TEAL_BLUE_GREEN. */
+    RGB(0,0,0),         /* 0= unused map block  */             //genBTC change from grey to black.
+    RGB(255,255,255),   /* 1= free */
+    RGB(201,131,231),   /* 2= SYSTEM_SPACE */                  //genBTC change from green to purple-ish(like MFT#12-ish)    
+    RGB(224,180,240),   /* 3=   ""  OVER_LIMIT_SPACE */        //genBTC change from green to purple-ish(like MFT#13-ish)
+    RGB(255,0,0),       /* 4= fragmented */                      
+    RGB(192,0,0),       /* 5=   ""  OVER_LIMIT_SPACE */        //genBTC change Frag_over_limit from 128 to 192.
+    RGB(0,0,255),       /* 6= unfragmented */
+    RGB(0,0,128),       /* 7=   ""  OVER_LIMIT_SPACE */ 
+    RGB(255,255,0),     /* 8= directories */
+    RGB(238,221,0),     /* 9=   ""  OVER_LIMIT_SPACE */ 
+    RGB(185,185,0),     /*10= compressed */
+    RGB(93,93,0),       /*11=   ""  OVER_LIMIT_SPACE */ 
+    RGB(128,0,255),     /*12= mft zone */ 
+    RGB(211,0,255),     /*13= mft itself */                    //genBTC (REVERSED COLORS)
+    RGB(0,192,0),       /*14= IN_MOVE_PROGRESS_SPACE */
+    RGB(0,230,255)      /*15= TEAL_BLUE_GREEN */
     //SUPER_OBNOXIOUS_GREEN = RGB(102,255,0)
 };
 // =======================================================================

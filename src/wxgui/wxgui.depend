@@ -2098,7 +2098,7 @@
 1447320326 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\about.cpp
 	"main.h"
 
-1447502395 c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\main.h
+1447562832 c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\main.h
 	<string>
 	<wx/wxprec.h>
 	<wx/wx.h>
@@ -2166,12 +2166,12 @@
 1447318870 c:\software\ultradefrag-7.0.0-beta2.src\src\dll\zenwinx\prb.h
 	<stddef.h>
 
-1447512615 c:\software\ultradefrag-7.0.0-beta2.src\src\dll\udefrag\udefrag.h
+1447552285 c:\software\ultradefrag-7.0.0-beta2.src\src\dll\udefrag\udefrag.h
 
 1447320415 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\btd.cpp
 	"main.h"
 
-1447328144 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\config.cpp
+1447554251 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\config.cpp
 	"main.h"
 	"../lua5.1/lua.h"
 	"../lua5.1/lauxlib.h"
@@ -2206,7 +2206,7 @@
 1447320599 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\crash.cpp
 	"main.h"
 
-1447453557 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\fileslist.cpp
+1447556237 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\fileslist.cpp
 	"main.h"
 	"udefrag-internals_flags.h"
 
@@ -2215,20 +2215,20 @@
 1447328907 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\i18n.cpp
 	"main.h"
 
-1447431972 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\job.cpp
+1447562816 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\job.cpp
 	"main.h"
 
 1447321394 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\log.cpp
 	"main.h"
 
-1447498632 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\main.cpp
+1447562187 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\main.cpp
 	"main.h"
 	<new.h>
 
-1447328775 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\menu.cpp
+1447555370 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\menu.cpp
 	"main.h"
 
-1447511417 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\query.cpp
+1447550043 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\query.cpp
 	"main.h"
 	"udefrag-internals_flags.h"
 
@@ -2247,7 +2247,7 @@
 1447322059 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\taskbar.cpp
 	"main.h"
 
-1447411087 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\map.cpp
+1447552442 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\map.cpp
 	"main.h"
 
 1447322070 source:c:\software\ultradefrag-7.0.0-beta2.src\src\wxgui\toolbar.cpp

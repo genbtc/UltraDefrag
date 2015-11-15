@@ -38,9 +38,48 @@
 // The best thing would be to have the query functions return the original structs, and then have the GUI deal with it.
 // We could make the udefrag-internals struct's available to the GUI. (such as blockmap, regions) 
 
+/**=========================================================================**
+***                        Create GUI                                       **
+***=========================================================================**/
 void MainFrame::InitQueryMenu()
 {
     m_queryThread = new QueryThread();
+    
+     //create Query tab, Tab3.
+	m_panel3 = new wxPanel( m_notebook1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer4	= new wxBoxSizer( wxVERTICAL );
+	Analyze = new wxButton(m_panel3, ID_ANALYZE, _("Analyze"), wxDefaultPosition, wxDefaultSize, 0, 
+                        wxDefaultValidator, _("Analyze"));
+
+	wxArrayString arrayStringFor_WxComboBox1;
+	WxComboBox1 = new wxComboBox(m_panel3, ID_WXCOMBOBOX1, _("WxComboBox1"), wxDefaultPosition, wxDefaultSize, 
+                              arrayStringFor_WxComboBox1,wxTE_READONLY, wxDefaultValidator, _("WxComboBox1"));
+
+	WxStaticText1 = new wxStaticText(m_panel3, ID_WXSTATICTEXT1, _("WxStaticText1"), wxDefaultPosition, 
+                                  wxSize(wxDefaultCoord,100), 0, _("WxStaticText1"));
+	
+    WxFilePickerCtrl1 = new wxFilePickerCtrl(m_panel3, ID_WXFILEPICKERCTRL1, wxEmptyString, wxFileSelectorPromptStr, 
+                                             wxFileSelectorDefaultWildcardStr, wxDefaultPosition, wxDefaultSize);
+  
+	WxTextCtrl1 = new wxTextCtrl(m_panel3, ID_WXTEXTCTRL1, _(""), wxDefaultPosition,wxSize(wxDefaultCoord,400), 
+                              wxVSCROLL | wxTE_READONLY | wxTE_MULTILINE, wxDefaultValidator, _("WxTextCtrl1"));
+	WxTextCtrl1->SetMaxLength(0);
+	WxTextCtrl1->SetFocus();
+	WxTextCtrl1->SetInsertionPointEnd();
+
+	PerformQuery = new wxButton(m_panel3, ID_PERFORMQUERY, _("Perform Query!"), wxDefaultPosition, wxDefaultSize, 
+                             0, wxDefaultValidator, _("PerformQuery"));
+	
+	bSizer4->Add( Analyze, 0, wxEXPAND | wxALL, 5);
+	bSizer4->Add( WxComboBox1, 0, wxEXPAND | wxALL, 5);
+	bSizer4->Add( WxStaticText1, 0, wxEXPAND | wxALL, 5);
+	bSizer4->Add( WxFilePickerCtrl1, 0, wxEXPAND | wxALL, 5);
+	bSizer4->Add( WxTextCtrl1, 0, wxEXPAND | wxALL, 5);
+	bSizer4->Add( PerformQuery, 0, wxEXPAND | wxALL, 5);
+	
+	m_panel3->SetSizer( bSizer4 );
+    bSizer4->Fit( m_panel3 );
+    m_notebook1->AddPage( m_panel3, wxT("Query"), false );   
 }
 
 /**=========================================================================**
@@ -48,19 +87,31 @@ void MainFrame::InitQueryMenu()
 ***=========================================================================**/
 //right now this is equivalent to Job.cpp @ void MainFrame::OnStartJob(wxCommandEvent& event)
 void MainFrame::QueryClusters(wxCommandEvent& event){
+    wxString filtertext,itemtext;
+    
+    int id = event.GetId();
     m_queryThread->m_qp = new udefrag_query_parameters();
+    WxTextCtrl1->Clear();
     
-    wxListItem theitem = m_filesList->GetListItem(-1,-1);
-    wxString itemtext = theitem.m_text;
-    
-    wxString filtertext;
-    ProcessCommandEvent(ID_SelectProperDrive);
-    long i = m_filesList->GetFirstSelected();
-    while(i != -1){
-        wxString selitem = m_filesList->GetItemText(i);
-        Utils::extendfiltertext(selitem,&filtertext);
-        i = m_filesList->GetNextSelected(i);
+//Launched from Menu:
+    if (id == ID_QueryClusters){
+        itemtext = m_filesList->GetListItem().GetText();
+        WxFilePickerCtrl1->SetPath(itemtext);
+        
+        ProcessCommandEvent(ID_SelectProperDrive);
+        long i = m_filesList->GetFirstSelected();
+        while(i != -1){
+            wxString selitem = m_filesList->GetItemText(i);
+            Utils::extendfiltertext(selitem,&filtertext);
+            i = m_filesList->GetNextSelected(i);
+        }
     }
+//Launched from Tab
+    else if (id == ID_PERFORMQUERY){
+        itemtext = WxFilePickerCtrl1->GetPath();
+        Utils::extendfiltertext(itemtext,&filtertext);
+    }
+   
     //set the Analysis Mode to SINGLE file mode.
     // This probably can't work for all queries, but is fast.
     wxSetEnv(L"UD_CUT_FILTER",filtertext);
@@ -68,13 +119,14 @@ void MainFrame::QueryClusters(wxCommandEvent& event){
     m_queryThread->m_flags |= UD_JOB_CONTEXT_MENU_HANDLER;
 
     m_queryThread->m_querypath = (wchar_t *)itemtext.fn_str();
-    m_queryThread->m_letter = (char)(itemtext[0]); //find the drive-letter of the fragmented files tab.
-    
     m_queryThread->m_qp->path = m_queryThread->m_querypath;
-    m_queryThread->m_mapSize = m_jobThread->m_mapSize;
+    m_queryThread->m_letter = (char)(itemtext[0]); //find the drive-letter of the fragmented files tab.
+        
+    m_queryThread->m_mapSize = getmapsize();
     
-    switch(event.GetId()){
+    switch(id){
     case ID_QueryClusters:
+    case ID_PERFORMQUERY:
         m_queryThread->m_qType = QUERY_GET_VCNLIST;
         break;
     case ID_QueryClusters+1:
@@ -87,6 +139,7 @@ void MainFrame::QueryClusters(wxCommandEvent& event){
     m_queryThread->m_startquery = true; //BEGIN LAUNCH.
     
 }
+
 /**=========================================================================**
 ***                  Dedicated Query Thread.                                **
 ***=========================================================================**/
@@ -102,8 +155,10 @@ void *QueryThread::Entry()
                 reinterpret_cast<udefrag_progress_callback>(ProgressCallback),
                 reinterpret_cast<udefrag_terminator>(Terminator),m_qp,NULL
             );
-            if(result < 0 && !g_mainFrame->m_stopped)
+            if(result < 0 && !g_mainFrame->m_stopped){
                 etrace("Disk Processing Failure.");
+                g_mainFrame->WxTextCtrl1->AppendText(L"Error executing Query.");
+            }
             PostCommandEvent(g_mainFrame,ID_QueryCompletion);
             m_startquery = false;
         }
@@ -128,21 +183,22 @@ void QueryThread::DisplayQueryResults()
     winx_blockmap *block;
 
     dtrace("The File's path is: %ws",m_qp->path);
-    dtrace("The File has #clusters: %d",m_qp->filedisp.clusters);
-    itrace("The File has #fragments: %d",m_qp->filedisp.fragments);
-    
+//    dtrace("The File has #clusters: %d",m_qp->filedisp.clusters);
+//    itrace("The File has #fragments: %d",m_qp->filedisp.fragments);
+    wxString line;
+    line.Printf(_("Fragments: %I64u , Length(clusters): %I64u \n"),m_qp->filedisp.fragments, m_qp->filedisp.clusters);
+    g_mainFrame->WxTextCtrl1->Freeze(); 
+    g_mainFrame->WxTextCtrl1->AppendText(line.c_str());
     for(block = m_qp->filedisp.blockmap, i = 0; block; block = block->next, i++){
-        itrace("file part #%I64u start: %I64u, length: %I64u",i,block->lcn,block->length);
+        //itrace("file part #%I64u start: %I64u, length: %I64u\n"),i,block->lcn,block->length);
+        line.Printf(_("Fragment #%I64u starts @ %I64u, length: %I64u clusters.\n"),i,block->lcn,block->length);
+        
+        g_mainFrame->WxTextCtrl1->AppendText(line.c_str());
+
         if(block->next == m_qp->filedisp.blockmap) break;
     }
-
+    g_mainFrame->WxTextCtrl1->Thaw(); 
     gui_query_finished();
-}
-
-int QueryThread::Terminator(void *p)
-{
-    while(g_mainFrame->m_paused) ::Sleep(300);
-    return g_mainFrame->m_stopped;
 }
 
 void MainFrame::OnQueryCompletion(wxCommandEvent& WXUNUSED(event))
@@ -152,3 +208,10 @@ void MainFrame::OnQueryCompletion(wxCommandEvent& WXUNUSED(event))
     m_queryThread->singlefile = FALSE;
     wxUnsetEnv(L"UD_CUT_FILTER");    
 }
+
+int QueryThread::Terminator(void *p)
+{
+    while(g_mainFrame->m_paused) ::Sleep(300);
+    return g_mainFrame->m_stopped;
+}
+

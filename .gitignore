@@ -95,3 +95,5 @@ dll/udefrag/udefrag.cscope_file_list
 *.orig
 src/release/ultradefrag-7.0.1-test1.src.7z
 doc/handbook/doxy-doc/
+src/dll/udefrag/html/
+src/dll/zenwinx/html/

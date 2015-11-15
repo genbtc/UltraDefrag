@@ -36,20 +36,6 @@
 
 #include "main.h"
 
-#define UD_EnableTool(id) { \
-    wxMenuItem *item = m_menuBar->FindItem(id); \
-    if(item) item->Enable(true); \
-    if(m_toolBar->FindById(id)) \
-        m_toolBar->EnableTool(id,true); \
-}
-
-#define UD_DisableTool(id) { \
-    wxMenuItem *item = m_menuBar->FindItem(id); \
-    if(item) item->Enable(false); \
-    if(m_toolBar->FindById(id)) \
-        m_toolBar->EnableTool(id,false); \
-}
-
 // =======================================================================
 //                              Jobs cache
 // =======================================================================
@@ -233,6 +219,15 @@ void *JobThread::Entry()
 // =======================================================================
 //                            Event handlers
 // =======================================================================
+int MainFrame::getmapsize(){
+    int width, height; g_mainFrame->m_cMap->GetClientSize(&width,&height);
+    int block_size = CheckOption(wxT("UD_MAP_BLOCK_SIZE"));
+    int line_width = CheckOption(wxT("UD_GRID_LINE_WIDTH"));
+    int cell_size = block_size + line_width;
+    int blocks_per_line = (width - line_width) / cell_size;
+    int lines = (height - line_width) / cell_size;
+    return (blocks_per_line * lines);
+}
 
 void MainFrame::OnStartJob(wxCommandEvent& event)
 {
@@ -249,6 +244,7 @@ void MainFrame::OnStartJob(wxCommandEvent& event)
 
     // lock everything till the job completion
     m_busy = true; m_paused = false; m_stopped = false;
+    UD_EnableTool(ID_Stop);
     UD_DisableTool(ID_Analyze);
     UD_DisableTool(ID_Defrag);
     UD_DisableTool(ID_QuickOpt);
@@ -319,19 +315,14 @@ void MainFrame::OnStartJob(wxCommandEvent& event)
         m_jobThread->m_jobType = MFT_OPTIMIZATION_JOB;
         break;
     }
-    int width, height; m_cMap->GetClientSize(&width,&height);
-    int block_size = CheckOption(wxT("UD_MAP_BLOCK_SIZE"));
-    int line_width = CheckOption(wxT("UD_GRID_LINE_WIDTH"));
-    int cell_size = block_size + line_width;
-    int blocks_per_line = (width - line_width) / cell_size;
-    int lines = (height - line_width) / cell_size;
-    m_jobThread->m_mapSize = blocks_per_line * lines;
+    m_jobThread->m_mapSize = getmapsize();
     m_jobThread->m_launch = true;
 }
 
 void MainFrame::OnJobCompletion(wxCommandEvent& WXUNUSED(event))
 {
     // unlock everything after the job completion
+    UD_DisableTool(ID_Stop);
     UD_EnableTool(ID_Analyze);
     UD_EnableTool(ID_Defrag);
     UD_EnableTool(ID_QuickOpt);
@@ -494,8 +485,5 @@ void MainFrame::OnDiskProcessingFailure(wxCommandEvent& event)
 
     Utils::ShowError(wxT("%ls"),msg.wc_str());
 }
-
-#undef UD_EnableTool
-#undef UD_DisableTool
 
 /** @} */

@@ -36,24 +36,6 @@
 
 #include "main.h"
 
-#define UD_AppendCheckItem(id) AppendCheckItem(id, wxEmptyString)
-#define UD_AppendRadioItem(id) AppendRadioItem(id, wxEmptyString)
-
-#define UD_SetMenuIcon(id, icon) { \
-    wxBitmap *pic; wxString string; \
-    string.Printf(wxT("%hs%u"),#icon,g_iconSize); \
-    pic = Utils::LoadPngResource(string.wc_str()); \
-    if(pic) m_menuBar->FindItem(id)->SetBitmap(*pic); \
-    delete pic; \
-}
-
-#define UD_SetMarginWidth(menu) { \
-    wxMenuItemList list = menu->GetMenuItems(); \
-    size_t count = list.GetCount(); \
-    for(size_t i = 0; i < count; i++) \
-        list.Item(i)->GetData()->SetMarginWidth(g_iconSize); \
-}
-
 // =======================================================================
 //                        Menu for main window
 // =======================================================================
@@ -298,10 +280,5 @@ void MainFrame::InitMenu()
         m_menuBar->FindItem(ID_SortDescending)->Check();
     }
 }
-
-#undef UD_AppendCheckItem
-#undef UD_AppendRadioItem
-#undef UD_SetMenuIcon
-#undef UD_SetMarginWidth
 
 /** @} */

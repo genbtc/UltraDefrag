@@ -157,6 +157,7 @@ char *udefrag_get_error_description(int error_code);
 int udefrag_set_log_file_path(void);
 
 void gui_fileslist_finished(void);
+int convert_path_to_native(wchar_t *path, wchar_t **native_path);
 
 /*Begin Query.C definitions */
 typedef struct _udefrag_query_parameters {

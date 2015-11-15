@@ -213,25 +213,12 @@ done:
 /************************************************************/
 int query_get_VCNlist(udefrag_job_parameters *jp)
 {
-    int result;
     winx_file_info *file;
-    wchar_t *path, *native_path;
+    wchar_t *native_path;
     
-    path = jp->qp->path;
-    //dtrace("Path1 was: %ws",jp->qp->path);
-    //dtrace("Path2 was: %ws",path);
+    //dtrace("Path was: %ws",jp->qp->path);
+    convert_path_to_native(jp->qp->path,&native_path);
     
-    if(path == NULL){
-        etrace("Abnormal Error. Could not obtain path from parameter!");
-        result = (-1);
-    }
-    /* convert to native path */
-    native_path = winx_swprintf(L"\\??\\%ws",path);
-    if(native_path == NULL){
-        etrace("Abnormal Error. Cannot build native path!");
-        result = (-1);
-    }
-    dtrace("Path was: %ws",native_path);
     /* iterate through the filelist (no other way) */
     for(file = jp->filelist; file; file = file->next){
         if(_wcsicmp(file->path,native_path) == 0) break;
@@ -246,9 +233,7 @@ int query_get_VCNlist(udefrag_job_parameters *jp)
     
     /*cleanup*/
     winx_free(file);
-    dtrace("winx_free file"); winx_flush_dbg_log(0);
     winx_free(native_path);
-    dtrace("winx_free native_path"); winx_flush_dbg_log(0);
     clear_currently_excluded_flag(jp); //again?
     winx_fclose(jp->fVolume);
     jp->fVolume = NULL;
@@ -260,5 +245,6 @@ int query_get_VCNlist(udefrag_job_parameters *jp)
 /************************************************************/
 int query_get_freeRegions(udefrag_job_parameters *jp)
 {
+    
     return 0;
 }
