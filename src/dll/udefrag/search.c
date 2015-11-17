@@ -303,7 +303,7 @@ int remove_block_from_file_blocks_tree(udefrag_job_parameters *jp, winx_blockmap
  */
 void destroy_file_blocks_tree(udefrag_job_parameters *jp)
 {
-    itrace("destroy_file_blocks_tree called");
+    itrace("Cleanup: destroying binary trees for all file blocks");
     if(jp->file_blocks){
         prb_destroy(jp->file_blocks,free_item);
         jp->file_blocks = NULL;

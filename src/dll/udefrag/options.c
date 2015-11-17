@@ -196,17 +196,17 @@ int get_options(udefrag_job_parameters *jp)
     /* print all options */
     winx_dbg_print_header(0,0,I"ultradefrag job options");
     if(jp->udo.in_filter.count){
-        itrace("in_filter patterns:");
+        itrace("%d in_filter patterns:",jp->udo.in_filter.count);
         for(i = 0; i < jp->udo.in_filter.count; i++)
             itrace("  + %ws",jp->udo.in_filter.array[i]);
     }
     if(jp->udo.ex_filter.count){
-        itrace("ex_filter patterns:");
+        itrace("%d ex_filter patterns:",jp->udo.ex_filter.count);
         for(i = 0; i < jp->udo.ex_filter.count; i++)
             itrace("  - %ws",jp->udo.ex_filter.array[i]);
     }
     if(jp->udo.cut_filter.count){
-        itrace("cut_filter patterns:");
+        itrace("%d cut_filter patterns:",jp->udo.cut_filter.count);
         for(i = 0; i < jp->udo.cut_filter.count; i++)
             itrace("  + %ws",jp->udo.cut_filter.array[i]);
     }

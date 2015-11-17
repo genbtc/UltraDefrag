@@ -466,7 +466,7 @@ function get_preferences()
     max_chars_per_line = 50
     
     -- get user preferences
-    path = instdir .. "\\options.lua"
+    path = instdir .. "\\options\\options.lua"
     f = io.open(path, "r")
     if f then
         f:close()
@@ -545,7 +545,7 @@ end
 
 -- upgrade configuration file when needed
 if version < current_version then
-    path = instdir .. "\\options.lua"
+    path = instdir .. "\\options\\options.lua"
     -- make a backup copy
     f = io.open(path, "r")
     if f then

@@ -424,9 +424,10 @@ static ULONGLONG opt_mft_cc_routine(udefrag_job_parameters *jp)
 static int optimize_mft_routine(udefrag_job_parameters *jp)
 {
     winx_file_info *f, *mft_file = NULL;
-    ULONGLONG time;
+    ULONGLONG time,jobruntime;
     char buffer[32];
     int result;
+    double overall_speed;
 
     jp->pi.current_operation = VOLUME_OPTIMIZATION;
     jp->pi.moved_clusters = 0;
@@ -468,8 +469,8 @@ static int optimize_mft_routine(udefrag_job_parameters *jp)
     /* display amount of moved data */
     winx_bytes_to_hr(jp->pi.moved_clusters * jp->v_info.bytes_per_cluster,1,buffer,sizeof(buffer));
     itrace("%I64u clusters (%s) moved",jp->pi.moved_clusters, buffer);
-    int jobruntime = stop_timing("mft optimization",time,jp);
-    double overall_speed = (jp->pi.moved_clusters * jp->v_info.bytes_per_cluster) / ((double)jobruntime / 1000);
+    jobruntime = stop_timing("mft optimization",time,jp);
+    overall_speed = (jp->pi.moved_clusters * jp->v_info.bytes_per_cluster) / ((double)jobruntime / 1000);
     //re-use the buffer charbuffer to display the average transfer speed in human readable form.
     winx_bytes_to_hr((ULONGLONG)overall_speed,3,buffer,sizeof(buffer));
     itrace("Avg. Speed = %s/s", buffer);

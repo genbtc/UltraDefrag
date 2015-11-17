@@ -247,15 +247,14 @@ int save_fragmentation_report(udefrag_job_parameters *jp)
     int result = 0;
     ULONGLONG time;
 
-    //winx_dbg_print_header(0,0,I"*");
+    winx_dbg_print_header(0,0,I"*");
+    winx_dbg_print_header(0,0,I"report saving started");
     if(jp->job_type != ANALYSIS_JOB)
         dbg_print_file_counters(jp);
     
     if(jp->udo.disable_reports)
         return 0;
     
-    winx_dbg_print_header(0,0,I"*");
-    winx_dbg_print_header(0,0,I"report saving started");
     time = winx_xtime();
 
     result = save_lua_report(jp);

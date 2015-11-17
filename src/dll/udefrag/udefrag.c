@@ -482,12 +482,16 @@ done:
     // Needs to wait until it gets a response. If this thread exits too soon
     // without clearing the memory, deletion of lists will fail/break/segfault.
     // This has to be kept in mind in the terminator also, to reset variables.
-    winx_create_thread(wait_delete_lists_thread,(PVOID)&jp);
-    while(!gui_finished || !wait_delete_thread_finished)
-        winx_sleep(333);
-    gui_finished = FALSE;
-    wait_delete_thread_finished = FALSE;
-    
+    if (result > 0){
+        winx_create_thread(wait_delete_lists_thread,(PVOID)&jp);
+        while(!gui_finished || !wait_delete_thread_finished)
+            winx_sleep(333);
+        gui_finished = FALSE;
+        wait_delete_thread_finished = FALSE;
+    }
+    else
+        destroy_lists(&jp);
+
     if(result < 0) return result;
     return (result > 0) ? 0 : (-1);
 }
@@ -517,7 +521,7 @@ char *udefrag_get_results(udefrag_progress_info *pi)
     (void)winx_bytes_to_hr(pi->free_space,2,free_space,sizeof(free_space));
 
     p = calc_percentage(pi->fragments,pi->files);
-    ip = (unsigned int)(p * 100.00);
+    ip = (unsigned int)(p);
     if(ip < 100) ip = 100; /* fix round off error */
     ifr = (unsigned int)(pi->fragmentation * 100.00);
 
@@ -761,7 +765,7 @@ int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
     int result,i,old_color,new_color;
     ULONGLONG time,jobruntime,filelength,filesize,totalfilesize,writeposition;
     double overall_speed;
-    char bytesmovedHR[32],*headerstring;
+    char buffer[32],*headerstring;
     winx_volume_region *region;
     winx_file_info *file;
     wchar_t *path, *native_path;
@@ -855,7 +859,8 @@ int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
             }               
         }
         else {
-            jp->pi.processed_clusters -= filelength;    //somehow needed, otherwise volume status is exactly +100% higher than it should be after a cancel.
+            if (jp->pi.processed_clusters > 0)
+                jp->pi.processed_clusters -= filelength;    //somehow needed, otherwise volume status is exactly +100% higher than it should be after a cancel.
             etrace("Moving failed for some reason."); //should have a better error message.
             result = (-1);  goto endnicely;
         }
@@ -863,18 +868,18 @@ int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
         itrace("After: The File has %I64u fragments & resides @ LCN: %I64u",file->disp.fragments,file->disp.blockmap->lcn);
         filesize = jp->pi.moved_clusters * jp->v_info.bytes_per_cluster;
         totalfilesize += filesize;
-        winx_bytes_to_hr(filesize,2,bytesmovedHR,sizeof(bytesmovedHR));
-        itrace("%I64u clusters (%s) moved",jp->pi.moved_clusters, bytesmovedHR);
+        winx_bytes_to_hr(filesize,2,buffer,sizeof(buffer));
+        itrace("%I64u clusters (%s) moved",jp->pi.moved_clusters, buffer);
     }
     result = 0;
     /* cleanup */
 cleanup:
-    itrace("Finished. Total Files Moved: %I64u of %d",jp->pi.total_moves,jp->udo.cut_filter.count);
     jobruntime = stop_timing(headerstring,time,jp);
-    overall_speed = totalfilesize / ((double)jobruntime / 1000);
-    //re-use the bytesmovedHR charbuffer to display the average transfer speed in human readable form.
-    winx_bytes_to_hr((ULONGLONG)overall_speed,3,bytesmovedHR,sizeof(bytesmovedHR));
-    itrace("Avg. Speed = %s/s", bytesmovedHR);
+    overall_speed = totalfilesize / ((double)jobruntime / 1000);    
+    winx_bytes_to_hr(totalfilesize,3,buffer,sizeof(buffer));
+    itrace("Finished. Total Files Moved: %I64u out of %d. (%s) ",jp->pi.total_moves,jp->udo.cut_filter.count,buffer);
+    winx_bytes_to_hr((ULONGLONG)overall_speed,3,buffer,sizeof(buffer));
+    itrace("Avg. Speed = %s/s", buffer);
 endnicely:    
     winx_flush_dbg_log(0);
     clear_currently_excluded_flag(jp); //again?

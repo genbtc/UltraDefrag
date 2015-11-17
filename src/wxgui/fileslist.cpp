@@ -77,7 +77,7 @@ int wxCALLBACK ListItemCompare(long item1, long item2, long m_sortinfo) // the c
 
     if (Column == 0){
         //does string-compare
-        //Column 0: Filename
+        //Column 0: Filename (default ascending)
         if(string1.Cmp(string2) < 0)
             return SortAscending ? -1 : 1;
         else if(string1.Cmp(string2) > 0)
@@ -87,33 +87,33 @@ int wxCALLBACK ListItemCompare(long item1, long item2, long m_sortinfo) // the c
     }
     else if ( Column == 1) {
         //does number-compare
-        //Column 1: Fragments
+        //Column 1: Fragments (default descending)
         long long1, long2;
         string1.ToLong(&long1);
         string2.ToLong(&long2);
         if(long1 < long2)
-            return SortAscending ? -1 : 1;
-        else if(long1 > long2)
             return SortAscending ? 1 : -1;
+        else if(long1 > long2)
+            return SortAscending ? -1 : 1;
         else
             return 0;        
     }
     else if ( Column == 2){
         //does human-readable to bytes
-        //Column 2: FileSize     
+        //Column 2: FileSize (default descending)
         ULONGLONG long1,long2;
         long1 = winx_hr_to_bytes(Utils::wxStringToChar(string1));
         long2 = winx_hr_to_bytes(Utils::wxStringToChar(string2));
         if(long1 < long2)
-            return SortAscending ? -1 : 1;
-        else if(long1 > long2)
             return SortAscending ? 1 : -1;
+        else if(long1 > long2)
+            return SortAscending ? -1 : 1;
         else
             return 0;   
     }
     else if ( Column == 5 ){
         //does date-compare
-        //Column 5: Last Modified
+        //Column 5: Last Modified (default descending)
         if( FilesList::DateCompare(string1,string2))
             return SortAscending ? -1 : 1;
         else
@@ -272,6 +272,7 @@ END_EVENT_TABLE()
 
 void FilesList::OnColClick(wxListEvent& event)
 {
+    this->Freeze();
     int col = event.GetColumn();
     if (col == 3 || col == 4)
         return;
@@ -284,6 +285,7 @@ void FilesList::OnColClick(wxListEvent& event)
     for (long i=0; i<GetItemCount();i++)
         SetItemData(i,i);   //set the item data of each row to its index. while searching, use this data to search for the real index    
     SortItems(ListItemCompare, (long)&m_sortinfo); // sort the items, passing a pointer to the SortInfo object
+    this->Thaw();
 }
 
 void FilesList::RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event)
@@ -300,7 +302,7 @@ void FilesList::RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event)
     winx_path_remove_filename(dstpath);
 
     Utils::createDirectoryRecursively(dstpath);
-    CopyFile(srcfilename,dstfilename,1);
+    MoveFile(srcfilename,dstfilename);
 //    dtrace("srcfilename was %ws",srcfilename);
 //    dtrace("dstfilename was %ws",dstfilename);
 //    dtrace("dst path was %ws",dstpath);
@@ -334,6 +336,8 @@ void FilesList::RClickDefragMoveSingle(wxCommandEvent& event)
     long i = GetFirstSelected();
     while(i != -1){
         wxString selitem = GetItemText(i);
+        //do not exceed max environment variable length.
+        if((filtertext.Length() + selitem.Length() + 3) > 32767) break;
         currently_being_workedon_filenames->Add(selitem);
         Utils::extendfiltertext(selitem,&filtertext);
         i = GetNextSelected(i);
