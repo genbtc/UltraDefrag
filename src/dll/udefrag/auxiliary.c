@@ -164,4 +164,12 @@ void dbg_print_footer(udefrag_job_parameters *jp)
     winx_dbg_print_header(0,0,I"*");
 }
 
+double calc_percentage(ULONGLONG x,ULONGLONG y)
+{
+    if(y == 0) 
+        return (0.00);
+    else 
+        return ( ( (double)x / (double)y ) * 100.00 );
+}
+
 /** @} */

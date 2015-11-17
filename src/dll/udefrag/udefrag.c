@@ -119,7 +119,6 @@ void udefrag_unload_library(void)
 void deliver_progress_info(udefrag_job_parameters *jp,int completion_status)
 {
     udefrag_progress_info pi;
-    double x, y;
     int i, k, index, p1, p2;
     int mft_zone_detected;
     int free_cell_detected;
@@ -135,16 +134,11 @@ void deliver_progress_info(udefrag_job_parameters *jp,int completion_status)
     pi.completion_status = completion_status;
     
     /* calculate progress percentage */
-    x = (double)pi.processed_clusters;
-    y = (double)pi.clusters_to_process;
-    if(y == 0) pi.percentage = 0.00;
-    else pi.percentage = (x / y) * 100.00;
+    pi.percentage = calc_percentage(jp->pi.processed_clusters,jp->pi.clusters_to_process);
     
     /* calculate fragmentation percentage */
-    x = (double)pi.bad_fragments;
-    y = (double)pi.fragments;
-    if(y == 0) pi.fragmentation = 0.00;
-    else pi.fragmentation = (x / y) * 100.00;
+    pi.fragmentation = calc_percentage(jp->pi.bad_fragments,jp->pi.fragments);
+    //pi.fragmentation = calc_percentage(jp->pi.bad_clusters,jp->pi.used_clusters);
     
     /* refill cluster map */
     if(jp->pi.cluster_map && jp->cluster_map.array \
@@ -522,11 +516,7 @@ char *udefrag_get_results(udefrag_progress_info *pi)
     (void)winx_bytes_to_hr(pi->total_space,2,total_space,sizeof(total_space));
     (void)winx_bytes_to_hr(pi->free_space,2,free_space,sizeof(free_space));
 
-    if(pi->files == 0){
-        p = 0.00;
-    } else {
-        p = (double)pi->fragments / (double)pi->files;
-    }
+    p = calc_percentage(pi->fragments,pi->files);
     ip = (unsigned int)(p * 100.00);
     if(ip < 100) ip = 100; /* fix round off error */
     ifr = (unsigned int)(pi->fragmentation * 100.00);
@@ -760,11 +750,11 @@ fail:
 
 
 //(copied code-flow starting from Optimize MFT @ optimize.c)
-/*                    The Entry Point                       */
+/**                    The Entry Point                       */
 /** 
- * @brief Moves files to either the first free region or the last free region *
- * @note Obtains list of files to act on from UD_CUT_FILTER                   *
- * @param int start_or_end = 1 for start, and 0 for end                      *
+ * @brief Moves files to either the first free region or the last free region
+ * @note Obtains list of files to act on from UD_CUT_FILTER
+ * @param int start_or_end = 1 for start, and 0 for end
 **/
 int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
 {
@@ -870,21 +860,21 @@ int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
             result = (-1);  goto endnicely;
         }
         /* Print status messages */
-        dtrace("After: The File has %I64u fragments & resides @ LCN: %I64u",file->disp.fragments,file->disp.blockmap->lcn);
+        itrace("After: The File has %I64u fragments & resides @ LCN: %I64u",file->disp.fragments,file->disp.blockmap->lcn);
         filesize = jp->pi.moved_clusters * jp->v_info.bytes_per_cluster;
         totalfilesize += filesize;
         winx_bytes_to_hr(filesize,2,bytesmovedHR,sizeof(bytesmovedHR));
-        dtrace("%I64u clusters (%s) moved",jp->pi.moved_clusters, bytesmovedHR);
+        itrace("%I64u clusters (%s) moved",jp->pi.moved_clusters, bytesmovedHR);
     }
     result = 0;
     /* cleanup */
 cleanup:
-    dtrace("Finished. Total Files Moved: %I64u of %d",jp->pi.total_moves,jp->udo.cut_filter.count);
+    itrace("Finished. Total Files Moved: %I64u of %d",jp->pi.total_moves,jp->udo.cut_filter.count);
     jobruntime = stop_timing(headerstring,time,jp);
     overall_speed = totalfilesize / ((double)jobruntime / 1000);
     //re-use the bytesmovedHR charbuffer to display the average transfer speed in human readable form.
     winx_bytes_to_hr((ULONGLONG)overall_speed,3,bytesmovedHR,sizeof(bytesmovedHR));
-    dtrace("Avg. Speed = %s/s", bytesmovedHR);
+    itrace("Avg. Speed = %s/s", bytesmovedHR);
 endnicely:    
     winx_flush_dbg_log(0);
     clear_currently_excluded_flag(jp); //again?
@@ -893,4 +883,22 @@ endnicely:
     return result;
 }
 
+/** @todo 
+    Enlarge Largest Free Space Region
+    Find location with find_largest_free_region()
+    Step1. Determine percentage area location of the MIDDLE of the chunk. (get start & end location divide by 2).
+    Step2a. Starting backwards from the start, move files to the beginning of the drive.
+    Step2b. Starting forwards from the end, move files to the end of the drive.
+        This should probably only move FRAGMENTED files at first.
+        this will free as much space as easily is possible. Will only move files that actually find a spot in Find_free_region.
+        (if we just go sequentially, we will waste regions.)
+        Ideally we should make a first-analysis pass so we can sort files to best-suited region 
+        (I think this is why there was a find_matching_free_region that was never finished/commented out.)
+    At a certain point, we will run out of suitable regions. At this point, the main algorithm should end, and there should be a 
+        "Do you want to continue, even if not optimal?". Then it will move un-fragmented files into suitable regions.(fully fitting)
+    The un-fragmented files will repeat the process above, filling suitable regions.
+    At a certain point, we will run out of suitable regions. At this point, the un-fragmented algorithm should end, and ask
+        "Do you want to continue, even if it will fragment files?"
+    
+*/
 /** @} */

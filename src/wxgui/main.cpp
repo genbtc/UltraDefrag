@@ -251,21 +251,19 @@ MainFrame::MainFrame()
     // set main window title
     wxString *instdir = new wxString();
     //genBTC re-arranged the below, A LOT.
-        wxStandardPaths stdpaths;
-        wxFileName exepath(stdpaths.GetExecutablePath());
-        wxString cd = exepath.GetPath();
+    wxStandardPaths stdpaths;
+    wxFileName exepath(stdpaths.GetExecutablePath());
+    wxString cd = exepath.GetPath();
     if((wxGetEnv(wxT("UD_INSTALL_DIR"),instdir))&&(cd.CmpNoCase(*instdir) == 0)) {
-            itrace("current directory matches "
-                "installation location, so it isn't portable");
+        itrace("current directory matches installation location, so it isn't portable");
         itrace("installation location: %ls",instdir->wc_str());
-            m_title = new wxString(wxT(VERSIONINTITLE));
-        } else {
-            itrace("current directory differs from "
-                "installation location, so it is portable");
+        m_title = new wxString(wxT(VERSIONINTITLE));
+    } else {
+        itrace("current directory differs from installation location, so it is portable");
         itrace("current directory: %ls",cd.wc_str());
         wxSetEnv(wxT("UD_IS_PORTABLE"),wxT("1"));
-            m_title = new wxString(wxT(VERSIONINTITLE_PORTABLE));
-        }
+        m_title = new wxString(wxT(VERSIONINTITLE_PORTABLE));
+    }
     //genBTC re-arranged the above, A LOT.
     ProcessCommandEvent(ID_SetWindowTitle);
     delete instdir;
@@ -292,16 +290,13 @@ MainFrame::MainFrame()
 	//make a panel inside the notebook to hold the m_splitter
 	m_panel1 = new wxPanel( m_notebook1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 
-    // create list of volumes and cluster map
-    // - don't - use live update style to avoid horizontal scrollbar appearance on list resizing
-    m_splitter = new wxSplitterWindow(m_panel1,wxID_ANY, wxDefaultPosition,wxDefaultSize,
-        wxSP_3D/* | wxSP_LIVE_UPDATE*/ | wxCLIP_CHILDREN);
+    // create list of volumes and cluster map (with splitter as parent)
+    m_splitter = new wxSplitterWindow(m_panel1,wxID_ANY, wxDefaultPosition,wxDefaultSize, 
+                                      wxSP_3D | wxCLIP_CHILDREN);
     m_splitter->SetMinimumPaneSize(DPI(MIN_PANEL_HEIGHT));
 
     m_vList = new DrivesList(m_splitter,wxLC_REPORT | wxLC_NO_SORT_HEADER | 
-                                        wxLC_HRULES | wxLC_VRULES | wxBORDER_NONE);
-    //LONG_PTR style = ::GetWindowLongPtr((HWND)m_vList->GetHandle(),GWL_STYLE);
-    //style |= LVS_SHOWSELALWAYS; ::SetWindowLongPtr((HWND)m_vList->GetHandle(),GWL_STYLE,style);
+                             wxLC_HRULES | wxLC_VRULES | wxBORDER_NONE);
 
     m_cMap = new ClusterMap(m_splitter);
 
@@ -391,14 +386,14 @@ MainFrame::MainFrame()
     SetSystemTrayIcon(wxT("tray"),wxT("UltraDefrag"));
 
     // set localized text
-    ProcessCommandEvent(ID_LocaleChange \
-        + g_locale->GetLanguage());
+    ProcessCommandEvent(ID_LocaleChange + g_locale->GetLanguage());
 
     // allow disk processing
     m_jobThread = new JobThread();
 
     //create query thread to perform queries without blocking the GUI
     //(sort of like jobs) - may not be good to have both possibly running at once.
+    //Create Query Tab, Tab #3.
     InitQueryMenu();
     
     UD_DisableTool(ID_Stop);    //change stop icon to be not always enabled.

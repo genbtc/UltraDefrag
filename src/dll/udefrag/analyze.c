@@ -154,6 +154,8 @@ int get_volume_information(udefrag_job_parameters *jp)
     jp->pi.total_space = jp->v_info.total_bytes;
     jp->pi.free_space = jp->v_info.free_bytes;
     itrace("total clusters: %I64u",jp->v_info.total_clusters);
+    jp->pi.used_clusters = jp->v_info.total_clusters - (jp->v_info.free_bytes / jp->v_info.bytes_per_cluster);
+    itrace("used clusters: %I64u",jp->pi.used_clusters);
     itrace("cluster size: %I64u",jp->v_info.bytes_per_cluster);
     /* validate geometry */
     if(!jp->v_info.total_clusters || !jp->v_info.bytes_per_cluster){
@@ -614,7 +616,8 @@ static int find_files(udefrag_job_parameters *jp)
     
     /* calculate number of fragmented files; redraw map */
     for(f = jp->filelist; f; f = f->next){
-        /* skip excluded files */
+        /* skip excluded files. if excluded, count as 1 fragment.
+            obviously if not fragmented, it counts as 1. */
         if(!is_fragmented(f) || is_excluded(f)){
             jp->pi.fragments ++;
         } else {
@@ -808,56 +811,27 @@ static void produce_list_of_fragmented_files(udefrag_job_parameters *jp)
 {
     winx_file_info *f;
     ULONGLONG bad_fragments = 0;
-    
-//    int fragcount=0;
-//    winx_file_info *file;
-//    struct prb_traverser trav;
-//    int length;
-//    char *cnv_path = NULL;
+    ULONGLONG bad_clusters = 0;
 
     itrace("started creation of fragmented files list");
     jp->fragmented_files = prb_create(fragmented_files_compare,(void *)jp,NULL);
     for(f = jp->filelist; f; f = f->next){
         if(is_fragmented(f) && !is_excluded(f)){
             expand_fragmented_files_list(f,jp);
-            /* more precise calculation seems to be too slow */ // ????
-//            fragcount++;
+            //Old way counts number of fragments and calculates percentage on
+            // how many TOTAL fragments exist. Seems very inaccurate...
             bad_fragments += f->disp.fragments;
+            bad_clusters += f->disp.clusters;   //use clusters instead.
         }
         if(f->next == jp->filelist) break;
     }
-//    jp->pi.fragmented_files_count = fragcount;
     jp->pi.bad_fragments = bad_fragments;
-
-    jp->pi.fragmented_files_prb = jp->fragmented_files;
-    //jp->pi.fragmented_files_prb = prb_copy(jp->fragmented_files,NULL,NULL,NULL);
-/* The above line is there from before as an example on how to copy a PRB, because:
- * previously could not do pointer assignment operation, because when lists gets freed
- * in destroy_lists() in Udefrag.c @ Line 297ish, it will leave holes because
- * even though the destroy list is acting on ->filelist, it will even corrupt
- * other lists, such as fragmented_files_prb, due to pointers. This took me forever to realize.
- * Now the code has been changed to only free the lists when FilesList.cpp finishes with the list.
- * when OnJobCompletion in job.cpp finishes.
- * (and for thoroughness - from before - upon a new Analyze operation @ Line 144.)
- */
-/* This will output a list of fragmented files directly to the debug window.
- *
- *  prb_t_init(&trav,jp->fragmented_files);
- *  file = prb_t_first(&trav,jp->fragmented_files);
- *
- *     while (file){
- *         length = ((int)wcslen((wchar_t *)file->path) + 1) * sizeof(wchar_t) * 2; // enough to hold UTF-8 string
- *         cnv_path = (char *)winx_tmalloc(length);
- *         //should really check tmalloc for success. but it hasnt failed me yet.
- *         winx_to_utf8(cnv_path,length,(wchar_t *)file->path);
- *         dtrace("File->Path: %s",cnv_path);
- *         //dtrace("File->Path Length: %i",length);
- *         file = prb_t_next(&trav);
- *         winx_free(cnv_path);
- *     }
- */
+    jp->pi.bad_clusters = bad_clusters;
+    jp->pi.fragmented_files_prb = jp->fragmented_files; //pointer for fileslist.cpp to access
     jp->pi.isfragfileslist = 1;
     itrace("finished creation of fragmented files list");
+    itrace("fragments total: %u",jp->pi.fragments);
+    itrace("bad_clusters   : %u",jp->pi.bad_clusters);
 }
 
 /**
@@ -885,14 +859,11 @@ static int check_requested_action(udefrag_job_parameters *jp)
  */
 int check_fragmentation_level(udefrag_job_parameters *jp)
 {
-    double x, y;
     unsigned int ifr, it;
     double fragmentation;
     
-    x = (double)jp->pi.bad_fragments;
-    y = (double)jp->pi.fragments;
-    if(y == 0) fragmentation = 0.00;
-    else fragmentation = (x / y) * 100.00;
+    fragmentation = calc_percentage(jp->pi.bad_fragments,jp->pi.fragments);
+    
     ifr = (unsigned int)(fragmentation * 100.00);
     it = (unsigned int)(jp->udo.fragmentation_threshold * 100.00);
     if(fragmentation < jp->udo.fragmentation_threshold){

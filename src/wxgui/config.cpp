@@ -310,7 +310,7 @@ void *ConfigThread::Entry()
         goto done;
     }
 
-    while(!g_mainFrame->CheckForTermination(1)){
+    while(!g_mainFrame->CheckForTermination(10)){
         DWORD status = WaitForSingleObject(h,100);
         if(status == WAIT_OBJECT_0){
             if(!(counter % 2)){
@@ -362,7 +362,7 @@ void MainFrame::OnGuiOptions(wxCommandEvent& WXUNUSED(event))
     if(m_title->Find(wxT("Portable")) != wxNOT_FOUND)
         Utils::ShellExec(wxT("notepad"),wxT("open"),OPTIONSFILE);
     else
-        Utils::ShellExec(OPTIONSFILE,wxT("edit"));
+        Utils::ShellExec(OPTIONSFILE,wxT("open"));
 }
 
 void MainFrame::OnBootScript(wxCommandEvent& WXUNUSED(event))

@@ -722,9 +722,11 @@ int move_file(winx_file_info *f,
             jp->pi.fragmented ++;
             jp->pi.fragments += (new_file_info.disp.fragments - 1);
             jp->pi.bad_fragments += new_file_info.disp.fragments;
+            jp->pi.bad_clusters += new_file_info.disp.clusters;
         } else {
             jp->pi.fragments -= (f->disp.fragments - new_file_info.disp.fragments);
             jp->pi.bad_fragments -= (f->disp.fragments - new_file_info.disp.fragments);
+            jp->pi.bad_clusters -= (f->disp.clusters - new_file_info.disp.clusters);
         }
     }
     if(!became_fragmented || is_excluded(f)){
@@ -732,6 +734,7 @@ int move_file(winx_file_info *f,
             jp->pi.fragmented --;
             jp->pi.fragments -= (f->disp.fragments - 1);
             jp->pi.bad_fragments -= f->disp.fragments;
+            jp->pi.bad_clusters -= f->disp.clusters;
         }
     }
 

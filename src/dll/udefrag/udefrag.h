@@ -124,7 +124,9 @@ typedef struct _udefrag_progress_info {
     unsigned long fragmented;         /* number of fragmented files */
     ULONGLONG fragments;              /* number of fragments */
     ULONGLONG bad_fragments;          /* number of fragments which need to be joined together */
+    ULONGLONG bad_clusters;           /* number of clusters of the bad_fragments */
     double fragmentation;             /* fragmentation percentage */
+    ULONGLONG used_clusters;          /* used space amount, in clusters*/
     ULONGLONG total_space;            /* volume size, in bytes */
     ULONGLONG free_space;             /* free space amount, in bytes */
     ULONGLONG mft_size;               /* mft size, in bytes */
@@ -176,7 +178,8 @@ int udefrag_start_query(char volume_letter,udefrag_query_type job_type,int flags
 
 void gui_query_finished(void);
 
-
+//auxiliary.c
+double calc_percentage(ULONGLONG x,ULONGLONG y);
 #if defined(__cplusplus)
 }
 #endif

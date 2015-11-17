@@ -9,9 +9,9 @@
 # Project related configuration options
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = udefrag.dll
-PROJECT_NUMBER         =
-PROJECT_BRIEF          =
+PROJECT_NAME           = "udefrag.dll"
+PROJECT_NUMBER         = 7.0.1
+PROJECT_BRIEF          = "UltraDefrag's Native Library including Algorithms"
 PROJECT_LOGO           =
 OUTPUT_DIRECTORY       =
 CREATE_SUBDIRS         = NO
@@ -20,7 +20,7 @@ OUTPUT_LANGUAGE        = English
 BRIEF_MEMBER_DESC      = YES
 REPEAT_BRIEF           = YES
 ABBREVIATE_BRIEF       =
-ALWAYS_DETAILED_SEC    = NO
+ALWAYS_DETAILED_SEC    = YES
 INLINE_INHERITED_MEMB  = NO
 FULL_PATH_NAMES        = NO
 STRIP_FROM_PATH        =
@@ -49,7 +49,7 @@ DISTRIBUTE_GROUP_DOC   = NO
 GROUP_NESTED_COMPOUNDS = NO
 SUBGROUPING            = YES
 INLINE_GROUPED_CLASSES = YES
-INLINE_SIMPLE_STRUCTS  = NO
+INLINE_SIMPLE_STRUCTS  = YES
 TYPEDEF_HIDES_STRUCT   = NO
 LOOKUP_CACHE_SIZE      = 0
 #---------------------------------------------------------------------------
@@ -66,7 +66,7 @@ HIDE_UNDOC_MEMBERS     = NO
 HIDE_UNDOC_CLASSES     = NO
 HIDE_FRIEND_COMPOUNDS  = NO
 HIDE_IN_BODY_DOCS      = NO
-INTERNAL_DOCS          = NO
+INTERNAL_DOCS          = YES
 CASE_SENSE_NAMES       = NO
 HIDE_SCOPE_NAMES       = NO
 HIDE_COMPOUND_REFERENCE= NO
@@ -101,55 +101,28 @@ WARN_IF_UNDOCUMENTED   = NO
 WARN_IF_DOC_ERROR      = YES
 WARN_NO_PARAMDOC       = YES
 WARN_FORMAT            = "$file:$line: $text"
-WARN_LOGFILE           = "C:\Software\udefrag\native\doxygen\doxygen.log"
+WARN_LOGFILE           = "doxygen.log"
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = "analyze.c" \
                          "auxiliary.c" \
-                         "case-tables.h" \
-                         "dbg.c" \
                          "defrag.c" \
-                         "defrag_native.c" \
                          "entry.c" \
-                         "env.c" \
-                         "event.c" \
-                         "file.c" \
-                         "ftw.c" \
-                         "ftw_ntfs.c" \
                          "int64.c" \
-                         "keyboard.c" \
-                         "keytrans.c" \
-                         "ldr.c" \
-                         "list.c" \
-                         "lock.c" \
                          "map.c" \
-                         "mem.c" \
-                         "misc.c" \
                          "move.c" \
-                         "mutex.c" \
-                         "ntfs.h" \
-                         "ntndk.h" \
                          "optimize.c" \
                          "options.c" \
-                         "path.c" \
-                         "prb.c" \
-                         "prb.h" \
-                         "privilege.c" \
-                         "reg.c" \
+                         "query.c" \
                          "reports.c" \
                          "search.c" \
-                         "stdio.c" \
-                         "string.c" \
-                         "thread.c" \
-                         "time.c" \
                          "udefrag.c" \
-                         "udefrag.h" \
-                         "udefrag-internals.h" \
-                         "udefrag-volume.c" \
                          "volume.c" \
-                         "zenwinx.c" \
-                         "zenwinx.h"
+                         "query.h" \
+                         "udefrag.h" \
+                         "udefrag-internals.h"
+
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          =
 RECURSIVE              = NO

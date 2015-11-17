@@ -275,6 +275,11 @@ static int defrag_routine(udefrag_job_parameters *jp)
     ULONGLONG cut_length;
     int defrag_succeeded;
     char buffer[32];
+    
+    //aliases for code re-use reading simplicity.
+    ULONGLONG max_frag_size,bpc;
+    max_frag_size = jp->udo.fragment_size_threshold;
+    bpc = jp->v_info.bytes_per_cluster; //bytes per cluster.
 
     winx_dbg_print_header(0,0,I"defragmentation pass #%u",jp->pi.pass_number);
     jp->pi.current_operation = VOLUME_DEFRAGMENTATION;
@@ -313,8 +318,8 @@ static int defrag_routine(udefrag_job_parameters *jp)
         next_file = prb_t_next(&t);
         if(can_defragment(file,jp)){
             move_entirely = 0;
-            if(file->disp.clusters * jp->v_info.bytes_per_cluster \
-              < 2 * jp->udo.fragment_size_threshold) move_entirely = 1;
+            if(file->disp.clusters * bpc < 2 * max_frag_size)
+                move_entirely = 1;  /* keep algorithm simple */
             else if(jp->win_version < WINDOWS_XP && jp->fs_type == FS_NTFS)
                 move_entirely = 1; /* keep algorithm simple */
             if(move_entirely){
@@ -336,8 +341,7 @@ static int defrag_routine(udefrag_job_parameters *jp)
             } else {
                 /* eliminate little fragments */
                 min_vcn = file->disp.blockmap->vcn;
-                max_vcn = file->disp.blockmap->prev->vcn + \
-                    file->disp.blockmap->prev->length;
+                max_vcn = file->disp.blockmap->prev->vcn + file->disp.blockmap->prev->length;
                 defrag_succeeded = 0;
                 x = jp->pi.moved_clusters;
                 while(min_vcn < max_vcn && can_defragment(file,jp)){
@@ -355,37 +359,34 @@ static int defrag_routine(udefrag_job_parameters *jp)
                         if(next_fr == head_fr) break;
                     }
                     
-                    /* how much clusters can we join together? */
+                    /* how many clusters can we join together? */
                     largest_rgn = find_largest_free_region(jp);
                     if(largest_rgn == NULL) break;
-                    
+                    //COMBINE LITTLE FRAGMENTS up to the size of max_frag_size
                     /* find clusters needing optimization */
                     vcn = length = n = new_min_vcn = 0;
                     for(fr = fragments; fr; fr = fr->next){
                         /* find the first little fragment */
-                        if(fr->length * jp->v_info.bytes_per_cluster < jp->udo.fragment_size_threshold){
+                        if(fr->length * bpc < max_frag_size){
                             if(fr->length >= largest_rgn->length) break;
                             vcn = fr->vcn;
                             length = fr->length, n++;
                             new_min_vcn = fr->vcn + fr->length;
                             /* look forward for the next little fragments */
                             for(fr2 = fr->next; fr2 != fragments; fr2 = fr2->next){
-                                if(fr2->length * jp->v_info.bytes_per_cluster >= jp->udo.fragment_size_threshold)
-                                    break;
+                                if(fr2->length * bpc >= max_frag_size) break;
                                 if(length + fr2->length > largest_rgn->length) goto move_clusters;
                                 length += fr2->length, n++;
                                 new_min_vcn = fr2->vcn + fr2->length;
                             }
-                            if(largest_rgn->length * jp->v_info.bytes_per_cluster < jp->udo.fragment_size_threshold) break;
-                            if(length * jp->v_info.bytes_per_cluster < jp->udo.fragment_size_threshold){
-                                cut_length = jp->udo.fragment_size_threshold / jp->v_info.bytes_per_cluster;
-                                if(cut_length * jp->v_info.bytes_per_cluster != jp->udo.fragment_size_threshold)
-                                    cut_length ++;
+                            if(largest_rgn->length * bpc < max_frag_size) break;
+                            if(length * bpc < max_frag_size){
+                                cut_length = max_frag_size / bpc;
+                                if(cut_length * bpc != max_frag_size) cut_length ++;
                                 cut_length -= length;
                                 if(fr2 != fragments){
                                     /* let's cut from the next fragment */
-                                    if((fr2->length - cut_length) * jp->v_info.bytes_per_cluster \
-                                      < jp->udo.fragment_size_threshold){
+                                    if((fr2->length - cut_length) * bpc < max_frag_size){
                                         length += fr2->length, n++;
                                         new_min_vcn = fr2->vcn + fr2->length;
                                     } else {
@@ -394,8 +395,7 @@ static int defrag_routine(udefrag_job_parameters *jp)
                                     }
                                 } else if(fr != fragments){
                                     /* let's cut from the previous fragment */
-                                    if((fr->prev->length - cut_length) * jp->v_info.bytes_per_cluster \
-                                      < jp->udo.fragment_size_threshold){
+                                    if((fr->prev->length - cut_length) * bpc < max_frag_size){
                                         vcn = fr->prev->vcn;
                                         length += fr->prev->length, n++;
                                     } else {
@@ -448,15 +448,15 @@ completed:
     */
 
     /* display amount of moved data and number of defragmented files */
-    winx_bytes_to_hr(moved_entirely * jp->v_info.bytes_per_cluster,2,buffer,sizeof(buffer));
+    winx_bytes_to_hr(moved_entirely * bpc,2,buffer,sizeof(buffer));
     itrace("%I64u files defragmented entirely, %I64u clusters (%s) moved", \
             defragmented_entirely,moved_entirely, buffer);
 
-    winx_bytes_to_hr(moved_partially * jp->v_info.bytes_per_cluster,2,buffer,sizeof(buffer));
+    winx_bytes_to_hr(moved_partially * bpc,2,buffer,sizeof(buffer));
     itrace("%I64u files defragmented partially, %I64u clusters (%s) moved", \
             defragmented_partially,moved_partially, buffer);
 
-    winx_bytes_to_hr(jp->pi.moved_clusters * jp->v_info.bytes_per_cluster,2,buffer,sizeof(buffer));
+    winx_bytes_to_hr(jp->pi.moved_clusters * bpc,2,buffer,sizeof(buffer));
     itrace("%I64u files defragmented overall, %I64u clusters (%s) moved (total)", \
             defragmented_files,jp->pi.moved_clusters, buffer);
 
