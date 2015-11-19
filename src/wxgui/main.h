@@ -450,7 +450,7 @@ public:
         ListSortInfo()
         {
             SortAscending = false;
-            Column = -1;
+            Column = 1; //pre-sorted by Fragments.
         }
 
         bool SortAscending;
@@ -458,6 +458,13 @@ public:
         class FilesList *ListCtrl;
 
 };
+struct FilesListItem{
+    wxString col0,col1,col2,col3,col4,col5;
+    ULONGLONG col2bytes;
+    long currindex;
+};
+#include <vector>
+typedef std::vector<FilesListItem> FilesListItems;
 
 //genBTC FilesList.cpp
 class FilesList: public wxListCtrl {
@@ -466,6 +473,9 @@ public:
       : wxListCtrl(parent,wxID_ANY,
         wxDefaultPosition,wxDefaultSize,style) {}
     ~FilesList() {}
+    
+    FilesListItems allitems;    //data container for virtual list
+    void SortVirtualItems(int Column);
     // -----------------------------------------------------------------------
     //BEGIN PROTOTYPES FROM wxListView
     // ---------------------
@@ -511,11 +521,13 @@ public:
     int n_lastItem;
     ListSortInfo m_sortinfo; 
     void OnColClick(wxListEvent& event );
-    static bool DateCompare(wxString &lsDate1, wxString &lsDate2);
 
-    DECLARE_EVENT_TABLE()
+    DECLARE_EVENT_TABLE()    
+protected:
+    //overload required for virtual mode.
+    virtual wxString OnGetItemText(long item, long column) const;    
 private:
-
+    
 };
 
 class ClusterMap: public wxWindow {

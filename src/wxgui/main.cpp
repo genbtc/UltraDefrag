@@ -332,7 +332,7 @@ MainFrame::MainFrame()
 	m_panel2 = new wxPanel( m_notebook1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 
     m_filesList = new FilesList(m_panel2,wxLC_REPORT /* | wxLC_SINGLE_SEL  | wxLC_NO_SORT_HEADER*/ \
-                                        | wxLC_HRULES | wxLC_VRULES | wxBORDER_NONE);
+                                        | wxLC_VIRTUAL | wxLC_HRULES | wxLC_VRULES | wxBORDER_NONE);
     InitFilesList();
 
 	//make sizer3 to Fit the page2list, and initialize it.

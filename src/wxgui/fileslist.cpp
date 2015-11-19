@@ -43,6 +43,7 @@
  * Query a specific filename and report cluster locations and percent on the drive.
  *DONE* GUI: Made Multi-Selection possible. 
  *DONE* GUI: Made Sorting Possible.
+ *DONE* GUI: Changed ListCtrl to Virtual mode. Sorting is way faster.
  *
  */
 /**=========================================================================**
@@ -51,6 +52,7 @@
 
 #include "main.h"
 #include "udefrag-internals_flags.h"
+#include <algorithm>
 
 //genBTC. Event ID's for fileslist.cpp right click popup menu
 enum
@@ -64,78 +66,81 @@ enum
 /**=========================================================================**
 ***                           ListView Sorting.                             **
 ***=========================================================================**/
-int wxCALLBACK ListItemCompare(long item1, long item2, long m_sortinfo) // the callback sorting function, takes a pointer to a SortInfo object
-{       
-    ListSortInfo *sortinfo = (ListSortInfo *) m_sortinfo;
-    int Column = sortinfo->Column; // get the column
-    FilesList *ListCtrl = sortinfo->ListCtrl; // get the list control
-    bool SortAscending = sortinfo->SortAscending; // get the sorting order
-    long index1 = ListCtrl->FindItem(-1,item1); // get the index of the first item
-    long index2 = ListCtrl->FindItem(-1,item2); // get the index of the second item
-    wxString string1 = ListCtrl->GetListItem(index1, Column).GetText(); // get the text of the first item
-    wxString string2 = ListCtrl->GetListItem(index2, Column).GetText(); // get the text of the second item 
 
-    if (Column == 0){
-        //does string-compare
-        //Column 0: Filename (default ascending)
-        if(string1.Cmp(string2) < 0)
-            return SortAscending ? -1 : 1;
-        else if(string1.Cmp(string2) > 0)
-            return SortAscending ? 1 : -1;
-        else
-            return 0;
-    }
-    else if ( Column == 1) {
-        //does number-compare
-        //Column 1: Fragments (default descending)
-        long long1, long2;
-        string1.ToLong(&long1);
-        string2.ToLong(&long2);
-        if(long1 < long2)
-            return SortAscending ? 1 : -1;
-        else if(long1 > long2)
-            return SortAscending ? -1 : 1;
-        else
-            return 0;        
-    }
-    else if ( Column == 2){
-        //does human-readable to bytes
-        //Column 2: FileSize (default descending)
-        ULONGLONG long1,long2;
-        long1 = winx_hr_to_bytes(Utils::wxStringToChar(string1));
-        long2 = winx_hr_to_bytes(Utils::wxStringToChar(string2));
-        if(long1 < long2)
-            return SortAscending ? 1 : -1;
-        else if(long1 > long2)
-            return SortAscending ? -1 : 1;
-        else
-            return 0;   
-    }
-    else if ( Column == 5 ){
-        //does date-compare
-        //Column 5: Last Modified (default descending)
-        if( FilesList::DateCompare(string1,string2))
-            return SortAscending ? -1 : 1;
-        else
-            return SortAscending ? 1 : -1;
-    }
+bool sortcol0 (FilesListItem i,FilesListItem j) {
+    //sorts Ascending by default
+    int cmp = i.col0.Cmp(j.col0);
+    if(cmp < 0)
+        return true;
     else
-        return 0;    
+        return false;
 }
-
-
-bool FilesList::DateCompare( wxString &lsDate1, wxString &lsDate2 )      // Should come in as MM/DD/YYYY
-{
+bool sortcol1 (FilesListItem i,FilesListItem j) {
+    //sorts DE-scending by default
+    long l1,l2;
+    i.col1.ToLong(&l1);
+    j.col1.ToLong(&l2);
+    if(l1 < l2)
+        return false;
+    else
+        return true;   
+}
+bool sortcol2 (FilesListItem i,FilesListItem j) {
+    //sorts DE-scending by default
+    if(i.col2bytes < j.col2bytes)
+        return false;
+    else
+        return true;   
+}
+bool sortcol5 (FilesListItem i,FilesListItem j) { 
+    //sorts DE-scending by default
     wxDateTime ldDate1, ldDate2;
-    bool lbRetVal = false;
-    ldDate1.ParseFormat( lsDate1, L"%m/%d/%Y %H:%M:%S" );
-    ldDate2.ParseFormat( lsDate2, L"%m/%d/%Y %H:%M:%S" );
-    if ( ldDate2.IsEarlierThan( ldDate1 ) )
-        lbRetVal = true;
+    bool lbRetVal = true;
+    ldDate1.ParseFormat( i.col5, L"%m/%d/%Y %H:%M:%S" );
+    ldDate2.ParseFormat( j.col5, L"%m/%d/%Y %H:%M:%S" );
+    if ( ldDate1.IsEarlierThan( ldDate2 ) )
+        lbRetVal = false;
     return lbRetVal;
 }
+void FilesList::SortVirtualItems(int Column)
+{
+    this->Freeze();
+    if(Column == m_sortinfo.Column)
+    {
+        // user clicked same column as last time, reverse the sorting order
+        std::reverse(allitems.begin(),allitems.end());
+    }
+    else
+    {
+        // user clicked new column, sort normal.
+        if (Column == 0){
+            std::stable_sort (allitems.begin(), allitems.end(), sortcol0);
+        }
+        else if ( Column == 1) {
+            std::stable_sort (allitems.begin(), allitems.end(), sortcol1);
+        }
+        else if ( Column == 2){
+            std::stable_sort (allitems.begin(), allitems.end(), sortcol2);
+        }
+        else if ( Column == 5 ){
+            std::stable_sort (allitems.begin(), allitems.end(), sortcol5);
+        }
+    }
+    this->Thaw();
+    m_sortinfo.Column = Column; // set the last-clicked column 
+//    for (std::vector<FilesListItem>::iterator it=allitems.begin(); it!=allitems.end(); ++it){
+}
+
+void FilesList::OnColClick(wxListEvent& event)
+{
+    int col = event.GetColumn();
+    if (col == 3 || col == 4)
+        return;
+    SortVirtualItems(col);
+}
+
 /**=========================================================================**
-***                    ListView of fragmented files.                        **
+***            Instantiate ListView of fragmented files.                    **
 ***=========================================================================**/
 
 void MainFrame::InitFilesList()
@@ -210,7 +215,7 @@ void MainFrame::InitPopupMenus()
 	m_RClickPopupMenu1->Append(ID_RPOPMENU_DEFRAG_SINGLE_1006, wxT("Defragment Now"), wxT(""), wxITEM_NORMAL);
 	m_RClickPopupMenu1->Append(ID_RPOPMENU_DEFRAG_MOVE2FRONT_1007, wxT("Move to Front of Drive"), wxT(""), wxITEM_NORMAL);
 	m_RClickPopupMenu1->Append(ID_RPOPMENU_DEFRAG_MOVE2END_1008, wxT("Move to End of Drive"), wxT(""), wxITEM_NORMAL);
-	//m_RClickPopupMenu1->Append(1009, wxT("Test Selection"), wxT(""), wxITEM_NORMAL);
+	//Last Item is "Move File to Drive *: ", created in vollist.cpp because it needs the list of drives.
 }
 
 /**
@@ -269,24 +274,6 @@ END_EVENT_TABLE()
 /**=========================================================================**
 ***            Event Handlers  &  Right Click Popup Menu Handlers           **
 ***=========================================================================**/
-
-void FilesList::OnColClick(wxListEvent& event)
-{
-    this->Freeze();
-    int col = event.GetColumn();
-    if (col == 3 || col == 4)
-        return;
-    if(col == m_sortinfo.Column) // user clicked same column as last time, change the sorting order
-        m_sortinfo.SortAscending = m_sortinfo.SortAscending ? FALSE : TRUE;
-    else // user clicked new column, sort ascending
-        m_sortinfo.SortAscending = TRUE;
-    m_sortinfo.Column = event.GetColumn(); // set the column
-    m_sortinfo.ListCtrl = this; // set the list control pointer
-    for (long i=0; i<GetItemCount();i++)
-        SetItemData(i,i);   //set the item data of each row to its index. while searching, use this data to search for the real index    
-    SortItems(ListItemCompare, (long)&m_sortinfo); // sort the items, passing a pointer to the SortInfo object
-    this->Thaw();
-}
 
 void FilesList::RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event)
 {
@@ -447,7 +434,6 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
 {
     struct prb_traverser trav;
     winx_file_info *file;
-    wxString comment, status;
     int currentitem = 0;
     bool something_removed = false;
 
@@ -475,7 +461,8 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
                 for (int i=0; i<c; i++){
                     for (int j=0; j<d; j++){
                         if((*m_filesList->currently_being_workedon_filenames)[j] == m_filesList->GetItemText(i)){
-                        m_filesList->DeleteItem(i);
+                            m_filesList->allitems.erase(m_filesList->allitems.begin()+i);
+                            m_filesList->Select(i,false);   //de-select removed item.
                             c--;
                             m_filesList->currently_being_workedon_filenames->RemoveAt(j);
                             d--; j--;
@@ -488,39 +475,35 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
                 etrace("Fragmented Files List Not Found.");
         }
         else{
-            m_filesList->DeleteAllItems();
-	}
+            m_filesList->allitems.clear();  //clear entire list.
+        }
         while (file){
+            FilesListItem item;
+            
+            item.col0 = (const wchar_t *)(file->path + 4); /* skip the 4 chars: \??\  */
 
-            wxString test((const wchar_t *)(file->path + 4)); /* skip the 4 chars: \??\  */
-            m_filesList->InsertItem(currentitem,test);
-
-            wxString numfragments = wxString::Format(wxT("%d"),file->disp.fragments);
-            m_filesList->SetItem(currentitem,1,numfragments);
+            item.col1 = wxString::Format(wxT("%d"),file->disp.fragments);
 
             int bpc = m_volinfocache.bytes_per_cluster;
-            ULONGLONG filesizebytes = file->disp.clusters * bpc;
+            item.col2bytes = file->disp.clusters * bpc;
             char filesize_hr[32];
-            winx_bytes_to_hr(filesizebytes,2,filesize_hr,sizeof(filesize_hr));
-            wxString filesize = wxString::FromUTF8(filesize_hr);
-            m_filesList->SetItem(currentitem,2,filesize);
+            winx_bytes_to_hr(item.col2bytes,2,filesize_hr,sizeof(filesize_hr));
+            item.col2 = wxString::FromUTF8(filesize_hr);
 
             if(is_directory(file))
-                comment = wxT("[DIR]");
+                item.col3 = wxT("[DIR]");
             else if(is_compressed(file))
-                comment = wxT("Compressed");
+                item.col3 = wxT("Compressed");
             else if(is_essential_boot_file(file)) //needed a flag from udefrag-internals.h (should manually #define it and only it)
-                comment = wxT("[BOOT]");
+                item.col3 = wxT("[BOOT]");
             else if(is_mft_file(file))
-                comment = wxT("[MFT]");
+                item.col3 = wxT("[MFT]");
             else
-                comment = wxT("");
-            status = wxT("");
+                item.col3 = wxT("");
             if(is_locked(file))
-                status = wxT("Locked");
-
-            m_filesList->SetItem(currentitem,3,comment);
-            m_filesList->SetItem(currentitem,4,status);
+                item.col4 = wxT("Locked");
+            else
+                item.col4 = wxT("");
 
             // ULONGLONG time is stored in how many of 100 nanoseconds (0.1 microseconds) or (0.0001 milliseconds) or 0.0000001 seconds.
             //WindowsTickToUnixSeconds() (alternate way. unused.)
@@ -536,10 +519,9 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
                 (int)lmt.hour,(int)lmt.minute,(int)lmt.second
             );
             lmtbuffer[sizeof(lmtbuffer) - 1] = 0; //terminate with a 0.
-            wxString lastmodtime;
-            lastmodtime.Printf(wxT("%hs"),lmtbuffer);
-            m_filesList->SetItem(currentitem,5,lastmodtime);
+            item.col5 = wxString::Format(wxT("%hs"),lmtbuffer);
 
+            m_filesList->allitems.push_back(item);  //store item in virtual list's container.
             currentitem++;
 
             file = (winx_file_info *)prb_t_next(&trav);
@@ -547,12 +529,17 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
     }
     if (currentitem > 0){
         dtrace("Successfully finished with the Populate List Loop");
+        m_filesList->SetItemCount(m_filesList->allitems.size());   //set new virtual-list size.        
         PostCommandEvent(this,ID_AdjustFilesListColumns);
     }
     else if (!something_removed)
         dtrace("Populate List Loop Did not run, no files were added.");
-    else
+    else{
         dtrace("Fragmented Files List updated - item(s) removed.");
+        m_filesList->SetItemCount(m_filesList->allitems.size());   //set new virtual-list size.
+        m_filesList->Refresh();
+        m_filesList->Focus(0);
+    }
 
     //signal to the INTERNALS native job-thread that the GUI has finished
     //  processing files, so it can clear the lists and exit.
@@ -560,4 +547,27 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
     delete file;
 }
 
+wxString FilesList::OnGetItemText(long item, long column) const
+{
+    wxCHECK_MSG(item >= 0 && item < (long)allitems.size(),
+        L"", L"Invalid item index in FilesList::OnGetItemText");
+    
+    switch (column) {
+        case 0:
+            return allitems[item].col0;
+        case 1:
+            return allitems[item].col1;
+        case 2:
+            return allitems[item].col2;
+        case 3:
+            return allitems[item].col3;
+        case 4:
+            return allitems[item].col4;
+        case 5:
+            return allitems[item].col5;
+        default:
+            wxFAIL_MSG(L"Invalid column index in FilesList::OnGetItemText");
+    }
+    return L"";    
+}
 /** @} */
