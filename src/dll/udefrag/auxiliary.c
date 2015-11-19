@@ -115,12 +115,8 @@ static void dbg_print_single_counter(udefrag_job_parameters *jp,ULONGLONG counte
     winx_time2str(seconds,buffer,sizeof(buffer));
     time -= seconds * 1000;
     
-    if(jp->p_counters.overall_time == 0){
-        p = 0.00;
-    } else {
-        p = (double)counter / (double)jp->p_counters.overall_time;
-    }
-    ip = (unsigned int)(p * 10000);
+    p = calc_percentage(counter,jp->p_counters.overall_time);
+    ip = (unsigned int)(p * 100);
     s = winx_sprintf("%s %I64ums",buffer,time);
     if(s == NULL){
         itrace(" - %s %-18s %6I64ums  %3u.%02u %%",name,buffer,time,ip / 100,ip % 100);

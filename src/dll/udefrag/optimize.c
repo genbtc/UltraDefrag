@@ -367,9 +367,8 @@ static int optimize_directories(udefrag_job_parameters *jp)
     
     /* display amount of moved data and number of optimized directories */
     itrace("%I64u directories optimized",optimized_dirs);
-    itrace("%I64u clusters moved",jp->pi.moved_clusters);
-    winx_bytes_to_hr(jp->pi.moved_clusters * jp->v_info.bytes_per_cluster,1,buffer,sizeof(buffer));
-    itrace("%s moved",buffer);
+    winx_bytes_to_hr(jp->pi.moved_clusters * jp->v_info.bytes_per_cluster,2,buffer,sizeof(buffer));
+    itrace("%I64u clusters (%s) moved",jp->pi.moved_clusters,buffer);
     stop_timing("directories optimization",time,jp);
 
     /* cleanup */
@@ -467,7 +466,7 @@ static int optimize_mft_routine(udefrag_job_parameters *jp)
     }
 
     /* display amount of moved data */
-    winx_bytes_to_hr(jp->pi.moved_clusters * jp->v_info.bytes_per_cluster,1,buffer,sizeof(buffer));
+    winx_bytes_to_hr(jp->pi.moved_clusters * jp->v_info.bytes_per_cluster,2,buffer,sizeof(buffer));
     itrace("%I64u clusters (%s) moved",jp->pi.moved_clusters, buffer);
     jobruntime = stop_timing("mft optimization",time,jp);
     overall_speed = (jp->pi.moved_clusters * jp->v_info.bytes_per_cluster) / ((double)jobruntime / 1000);

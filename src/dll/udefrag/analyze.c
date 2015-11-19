@@ -155,7 +155,7 @@ int get_volume_information(udefrag_job_parameters *jp)
     jp->pi.free_space = jp->v_info.free_bytes;
     itrace("total clusters: %I64u",jp->v_info.total_clusters);
     jp->pi.used_clusters = jp->v_info.total_clusters - (jp->v_info.free_bytes / jp->v_info.bytes_per_cluster);
-    itrace("used clusters: %I64u",jp->pi.used_clusters);
+    itrace("used clusters : %I64u",jp->pi.used_clusters);
     itrace("cluster size: %I64u",jp->v_info.bytes_per_cluster);
     /* validate geometry */
     if(!jp->v_info.total_clusters || !jp->v_info.bytes_per_cluster){
@@ -221,7 +221,7 @@ static int get_free_space_layout(udefrag_job_parameters *jp)
     jp->free_regions = winx_get_free_volume_regions(jp->volume_letter,
         WINX_GVR_ALLOW_PARTIAL_SCAN,process_free_region,(void *)jp);
     
-    winx_bytes_to_hr(jp->v_info.free_bytes,1,buffer,sizeof(buffer));
+    winx_bytes_to_hr(jp->v_info.free_bytes,2,buffer,sizeof(buffer));
     itrace("free space amount : %s",buffer);
     itrace("free regions count: %u",jp->free_regions_count);
     
@@ -260,8 +260,7 @@ static void get_mft_zones_layout(udefrag_job_parameters *jp)
     * Don't increment progress counters,
     * because mft zones are partially
     * inside already counted free space pool.
-    */
-    itrace("%-12s: %-20s: %-20s", "mft section", "start", "length");
+    */    
 
     /* $MFT */
     start = jp->v_info.ntfs_data.MftStartLcn.QuadPart;
@@ -269,9 +268,10 @@ static void get_mft_zones_layout(udefrag_job_parameters *jp)
         length = jp->v_info.ntfs_data.MftValidDataLength.QuadPart / jp->v_info.ntfs_data.BytesPerCluster;
     else
         length = 0;
-    itrace("%-12s: %-20I64u: %-20I64u", "mft", start, length);
+    itrace("%-12s: %-20s: %-20s", "mft section", "start", "length");
     jp->pi.mft_size = length * jp->v_info.bytes_per_cluster;
     itrace("mft size = %I64u bytes", jp->pi.mft_size);
+    itrace("%-12s: %-20I64u: %-20I64u", "mft", start, length);
 
     /* MFT Zone */
     start = jp->v_info.ntfs_data.MftZoneStart.QuadPart;
@@ -862,7 +862,8 @@ int check_fragmentation_level(udefrag_job_parameters *jp)
     unsigned int ifr, it;
     double fragmentation;
     
-    fragmentation = calc_percentage(jp->pi.bad_fragments,jp->pi.fragments);
+    //fragmentation = calc_percentage(jp->pi.bad_fragments,jp->pi.fragments);
+    fragmentation = calc_percentage(jp->pi.bad_clusters,jp->pi.used_clusters);
     
     ifr = (unsigned int)(fragmentation * 100.00);
     it = (unsigned int)(jp->udo.fragmentation_threshold * 100.00);

@@ -327,10 +327,14 @@ static int defrag_routine(udefrag_job_parameters *jp)
                 rgn = find_first_free_region(jp,0,file->disp.clusters,NULL);
                 if(rgn){
                     x = jp->pi.moved_clusters;
+                    if(jp->udo.dbgprint_level >= DBG_DETAILED)
+                        itrace("Before: The File has %I64u fragments & resides @ LCN: %I64u",file->disp.fragments,file->disp.blockmap->lcn);
                     if(move_file(file,file->disp.blockmap->vcn,
                      file->disp.clusters,rgn->lcn,jp) >= 0){
-                        if(jp->udo.dbgprint_level >= DBG_DETAILED)
+                        if(jp->udo.dbgprint_level >= DBG_DETAILED){
                             itrace("Defrag success for %ws",file->path);
+                            itrace("After: The File has %I64u fragments & resides @ LCN: %I64u",file->disp.fragments,file->disp.blockmap->lcn);
+                        }
                         defragmented_files ++;
                         defragmented_entirely ++;
                         moved_entirely += (jp->pi.moved_clusters - x);

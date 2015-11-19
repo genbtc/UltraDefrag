@@ -135,10 +135,19 @@ void deliver_progress_info(udefrag_job_parameters *jp,int completion_status)
     
     /* calculate progress percentage */
     pi.percentage = calc_percentage(jp->pi.processed_clusters,jp->pi.clusters_to_process);
+//Note: After the analyze job is finished: 
+//   processed_clusters seems to be 2 clusters shy of clusters_to_process.
+//    dtrace("proc_clus: %I64u",jp->pi.processed_clusters);
+//    dtrace("Clus_to_proc: %I64u",jp->pi.clusters_to_process);
+//    dtrace("bad_frags: %I64u",jp->pi.bad_fragments);
+//    dtrace("all_Frags: %I64u",jp->pi.fragments);
+//    dtrace("bad_Clus: %I64u",jp->pi.bad_clusters);
+//    dtrace("used_Clus: %I64u",jp->pi.used_clusters);
     
-    /* calculate fragmentation percentage */
-    pi.fragmentation = calc_percentage(jp->pi.bad_fragments,jp->pi.fragments);
-    //pi.fragmentation = calc_percentage(jp->pi.bad_clusters,jp->pi.used_clusters);
+    /* calculate fragmentation percentage #1 (original) (bad frags / total frags) */
+    //pi.fragmentation = calc_percentage(jp->pi.bad_fragments,jp->pi.fragments);
+    /* calculate fragmentation percentage #2 (bad clusters / used clusters) */
+    pi.fragmentation = calc_percentage(jp->pi.bad_clusters,jp->pi.used_clusters);
     
     /* refill cluster map */
     if(jp->pi.cluster_map && jp->cluster_map.array \
@@ -295,7 +304,7 @@ static DWORD WINAPI start_job(LPVOID p)
     
     winx_exit_thread(0); /* 8k/12k memory leak here?   ???whocares... */
     return 0;
-    //Goes back to udefrag_start_job@line426
+    //Goes back to udefrag_start_job@line475
 }
 
 /**
@@ -309,13 +318,13 @@ void destroy_lists(udefrag_job_parameters *jp)
     dtrace("Destroying list of free regions, list of files and " \
            "PRB of fragmented files for Drive: %c...",jp->volume_letter);
     if(jp->fragmented_files){
-        dtrace("Deleting jp->fragmented_files");
+        dtrace("Deleting jp->fragmented_files...");
         prb_destroy(jp->fragmented_files,NULL);
     }
     winx_scan_disk_release(jp->filelist);
     winx_release_free_volume_regions(jp->free_regions);
     end = winx_xtime();
-    dtrace("The list-deletion took: %d msec.",end-start);
+    dtrace("Cleanup Finished. The list-deletion took: %d msec.",end-start);
 }
 
 /**
@@ -815,8 +824,10 @@ int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
         }
         /* at this point we should have the file's winx_file_info object in *file */
         //dtrace("The file's Native Path is: %ws",native_path);
-        dtrace("The File's path is: %ws",file->path);
-        dtrace("Before: The File has %I64u fragments & resides @ LCN: %I64u",file->disp.fragments,file->disp.blockmap->lcn);
+        if(jp->udo.dbgprint_level >= DBG_DETAILED){
+            dtrace("The File's path is: %ws",file->path);
+            dtrace("Before: The File has %I64u fragments & resides @ LCN: %I64u",file->disp.fragments,file->disp.blockmap->lcn);
+        }
         /* check whether we can move it or not */
         if(!can_move(file,jp)){
             etrace("File cannot be moved because reasons."); //should have a better error message.
@@ -865,11 +876,13 @@ int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
             result = (-1);  goto endnicely;
         }
         /* Print status messages */
-        itrace("After: The File has %I64u fragments & resides @ LCN: %I64u",file->disp.fragments,file->disp.blockmap->lcn);
         filesize = jp->pi.moved_clusters * jp->v_info.bytes_per_cluster;
         totalfilesize += filesize;
         winx_bytes_to_hr(filesize,2,buffer,sizeof(buffer));
-        itrace("%I64u clusters (%s) moved",jp->pi.moved_clusters, buffer);
+        if(jp->udo.dbgprint_level >= DBG_DETAILED){
+            dtrace("After: The File has %I64u fragments & resides @ LCN: %I64u",file->disp.fragments,file->disp.blockmap->lcn);
+            dtrace("%I64u clusters (%s) moved",jp->pi.moved_clusters, buffer);
+        }
     }
     result = 0;
     /* cleanup */
@@ -889,7 +902,7 @@ endnicely:
 }
 
 /** @todo 
-    Enlarge Largest Free Space Region
+    Enlarge Largest Free Space Region. (Also determine if anything tiny is blocking the region.)
     Find location with find_largest_free_region()
     Step1. Determine percentage area location of the MIDDLE of the chunk. (get start & end location divide by 2).
     Step2a. Starting backwards from the start, move files to the beginning of the drive.

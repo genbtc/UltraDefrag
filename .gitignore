@@ -81,19 +81,20 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 *.log
-bin/gui.ini
-bin/logs/ultradefrag.log
 *.po
+
+#udefrag specific stuff
 bin/
 obj/
 lib/
 wxgui/vc100.pdb
 wxgui/wxguiMSVC.cbp
-wxgui/wxguiMSVC.layout
-dll/udefrag/cscope.out
-dll/udefrag/udefrag.cscope_file_list
+*.cscope.out
 *.orig
 src/release/ultradefrag-7.0.1-test1.src.7z
 doc/handbook/doxy-doc/
 src/dll/udefrag/html/
 src/dll/zenwinx/html/
+*.cscope_file_list
+*.depend
+*.layout

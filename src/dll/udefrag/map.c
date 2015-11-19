@@ -103,8 +103,8 @@ int allocate_map(int map_size,udefrag_job_parameters *jp)
     jp->cluster_map.map_size = map_size;
     jp->cluster_map.n_colors = SPACE_STATES;
     jp->cluster_map.field_size = jp->v_info.total_clusters;
-    
     jp->cluster_map.clusters_per_cell = jp->cluster_map.field_size / jp->cluster_map.map_size;
+    itrace("total_clusters,clusters_per_cell,clusters_per_last_cell,unused_cells.");
     if(jp->cluster_map.clusters_per_cell){
         jp->cluster_map.opposite_order = 0;
         if(jp->cluster_map.clusters_per_cell * jp->cluster_map.map_size != jp->cluster_map.field_size)
