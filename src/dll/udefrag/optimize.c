@@ -962,9 +962,7 @@ static int optimize_routine(udefrag_job_parameters *jp)
     while(!jp->termination_router((void *)jp)){
         winx_dbg_print_header(0,0,I"volume optimization pass #%u",jp->pi.pass_number);
         jp->pi.clusters_to_process = \
-            jp->pi.processed_clusters \
-            + count_clusters(jp,start_lcn) \
-            + clusters_to_optimize(jp,pt);
+            jp->pi.processed_clusters + count_clusters(jp,start_lcn) + clusters_to_optimize(jp,pt);
         
         /* cleanup space in the beginning of the disk */
         move_files_to_back(jp,&end_lcn);

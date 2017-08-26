@@ -27,7 +27,7 @@
 
 #include "../../include/version.h"
 
-#define DEFAULT_COLOR IN_MOVE_PROGRESS_SPACE
+#define DEFAULT_COLOR DEFAULT_GRAY
 
 /************************************************************/
 /*             Constants affecting performance              */

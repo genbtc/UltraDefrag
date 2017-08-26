@@ -43,9 +43,10 @@
 // =======================================================================
 
 #include "main.h"
-
+//colors are listed in udefrag.h line 98
 COLORREF g_colors[SPACE_STATES] =
 {
+    RGB(165,165,165),   /* 0= DEFAULT_GRAY */
     RGB(0,0,0),         /* 0= unused map block  */             //genBTC change from grey to black.
     RGB(255,255,255),   /* 1= free */
     RGB(201,131,231),   /* 2= SYSTEM_SPACE */                  //genBTC change from green to purple-ish(like MFT#12-ish)    

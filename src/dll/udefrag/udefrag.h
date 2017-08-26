@@ -96,7 +96,8 @@ typedef enum {
 * it is used as a marker for MFT Zone space.
 */
 enum {
-    UNUSED_MAP_SPACE = 0,        /* other colors have more precedence */
+    DEFAULT_GRAY = 0,
+    UNUSED_MAP_SPACE,        /* other colors have more precedence */
     FREE_SPACE,                  /* has lowest precedence */
     SYSTEM_SPACE,
     SYSTEM_OVER_LIMIT_SPACE,
@@ -143,6 +144,7 @@ typedef struct _udefrag_progress_info {
     ULONGLONG total_moves;            /* number of moves by move_files_to_front/back functions */
     int isfragfileslist;             /* Bool to prove that the fragmented files list has been filled by Analyze.c */
     struct prb_table *fragmented_files_prb; /* list of fragmented files; does not contain filtered out files */
+    wchar_t filename[MAX_PATH + 1];
 } udefrag_progress_info;
 
 typedef void  (*udefrag_progress_callback)(udefrag_progress_info *pi, void *p);

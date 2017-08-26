@@ -241,10 +241,23 @@ int query_get_VCNlist(udefrag_job_parameters *jp)
 }
 
 /************************************************************/
-/*               Query #2                                   */
+/*               Query #2 (free space)                      */
 /************************************************************/
 int query_get_freeRegions(udefrag_job_parameters *jp)
 {
+/*
+ * @param[in] jp job parameters structure.
+ * @param[in] min_lcn minimum LCN of region.
+ * @param[in] min_length minimum length of region, in clusters.
+ * @param[out] max_length length of the biggest region found.
+ * @note In case of termination request returns NULL immediately.
+ */    
+    //find_first_free_region()
+    //find blocking clusters
+    //find next free region
+    //if they are larger, move the blockages out of that area
+    //find_last_free_region()
+    //compare ?
     
     return 0;
 }

@@ -128,7 +128,6 @@
 		<Unit filename="query.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="query.h" />
 		<Unit filename="reports.c">
 			<Option compilerVar="CC" />
 		</Unit>

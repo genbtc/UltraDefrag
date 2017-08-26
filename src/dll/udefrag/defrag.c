@@ -298,8 +298,7 @@ static int defrag_routine(udefrag_job_parameters *jp)
         return (-1);
     }
 
-    jp->pi.clusters_to_process = \
-        jp->pi.processed_clusters + defrag_cc_routine(jp);
+    jp->pi.clusters_to_process = jp->pi.processed_clusters + defrag_cc_routine(jp);
         
     /*
     dtrace(">>> %I64u\\%I64u <<<",

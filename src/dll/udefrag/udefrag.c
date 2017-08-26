@@ -842,30 +842,23 @@ int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
             etrace("No contiguous region could be found large enough to hold the selected file.");
             result = (-1); goto cleanup;
         }
-        /* Perform the move */
+        
         //color the file as in-progress. need to memcpy it to save the old-location to UN-color it after.
-        memcpy(&oldfiledisp,&file->disp,sizeof(winx_file_disposition));
+        //undo the in-progress movement color and make the Old-file-Location the proper color.
         old_color = get_file_color(jp,file);
-        for(block = oldfiledisp.blockmap; block; block = block->next){
-            colorize_map_region(jp,block->lcn,block->length,IN_MOVE_PROGRESS_SPACE,old_color);
-            if(block->next == oldfiledisp.blockmap) break;
-        }        
-        //purposefully fragmenting files should only make fragments sized larger than jp->clusters_at_once
+
+        /* Perform the move: */
+        //purposefully fragmenting files. should only make fragments sized larger than jp->clusters_at_once
         if(move_file(file,0,filelength,writeposition,jp) >= 0){
             //update progress counters.
             file->user_defined_flags |= UD_FILE_MOVED_TO_FRONT;    //there is no existing MOVED_TO_END flag.
             jp->pi.total_moves++;
             jp->pi.moved_clusters = jp->pi.processed_clusters = filelength;
             jp->pi.clusters_to_process = 0;
-            //undo the in-progress movement color and make the Old-file-Location the proper color.
-            new_color = get_file_color(jp,file);
-            for(block = oldfiledisp.blockmap; block; block = block->next){
-                colorize_map_region(jp,block->lcn,block->length,new_color,IN_MOVE_PROGRESS_SPACE);
-                if(block->next == oldfiledisp.blockmap) break;
-            }
+
             //colorize the New-file-location a similar-but-different color. (so it persists on screen).
             for(block = file->disp.blockmap; block; block = block->next){
-                colorize_map_region(jp,block->lcn,block->length,TEAL_BLUE_GREEN,new_color);
+                colorize_map_region(jp,block->lcn,block->length,TEAL_BLUE_GREEN,old_color);
                 if(block->next == file->disp.blockmap) break;
             }               
         }

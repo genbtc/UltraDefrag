@@ -13,7 +13,7 @@ set RELEASE_STAGE=test1
 :: paths to development tools
 set WINSDKBASE=C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A
 set MINGWBASE=C:\Program Files (x86)\CodeBlocks\MinGW
-set MINGWx64BASE=C:\Software\mingw64
+set MINGWx64BASE=C:\Program Files\Git\mingw64
 set WXWIDGETSDIR=C:\Software\wxWidgets-2.8.12
 set NSISDIR=C:\Program Files (x86)\NSIS
 set SEVENZIP_PATH=C:\Program Files (x86)\7-Zip\

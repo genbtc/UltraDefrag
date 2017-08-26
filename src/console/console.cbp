@@ -33,6 +33,9 @@
 					<Add option="-s" />
 				</Linker>
 			</Target>
+			<Environment>
+				<Variable name="WXWIDGETSDIR" value="C:\Software\wxWidgets-2.8.12" />
+			</Environment>
 		</Build>
 		<Compiler>
 			<Add directory="$(WXWIDGETSDIR)/include" />

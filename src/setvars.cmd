@@ -11,10 +11,10 @@ set VERSION_REVISION=0
 set RELEASE_STAGE=beta2
 
 :: paths to development tools
-set WINSDKBASE=C:\Program Files\Microsoft SDKs\Windows\v6.1
-set MINGWBASE=D:\Software\MinGWStudio\MinGW
-set MINGWx64BASE=D:\Software\mingw64
-set WXWIDGETSDIR=D:\Software\wxMSW-2.8.12
+set WINSDKBASE=C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A
+set MINGWBASE=C:\Software\msys32\mingw32
+set MINGWx64BASE=C:\Software\msys32\mingw32\i686-w64-mingw32
+set WXWIDGETSDIR=C:\Software\wxWidgets-2.8.12
 set NSISDIR=D:\Software\Tools\NSIS
 set SEVENZIP_PATH=C:\Program Files\7-Zip
 set GNUWIN32_DIR=D:\Software\GnuWin32\bin

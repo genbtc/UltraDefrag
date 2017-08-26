@@ -154,6 +154,8 @@ void DrivesList::OnMouse(wxMouseEvent& event)
     }
 }
 
+///TODO: if a defrag job is going off, allow it to Switch.
+///  But we have to disable the Defrag job from auto redrawing into that space if we have switched.
 void DrivesList::OnSelectionChange(wxListEvent& event)
 {
     long i = GetFirstSelected();
