@@ -35,7 +35,7 @@ extern "C" {
 #define NtCloseSafe(h) { if(h) { NtClose(h); h = NULL; } }
 
 /* debugging macros */
-#include "../../include/dbg.h"
+#include "../include/dbg.h"
 
 /* prints whatever specified */
 #define trace(format,...)  winx_dbg_print(0,format,## __VA_ARGS__)

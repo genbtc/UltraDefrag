@@ -14,6 +14,8 @@
 				<Option object_output="../../../obj/MSVC/zenwinx/" />
 				<Option type="3" />
 				<Option compiler="msvc10" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
 				<Option projectCompilerOptionsRelation="1" />
 				<Option projectLinkerOptionsRelation="1" />
 				<Option projectIncludeDirsRelation="1" />
@@ -41,15 +43,11 @@
 					<Add directory="$(WXWIDGETSDIR)/include" />
 				</ResourceCompiler>
 				<Linker>
-					<Add option="/INCREMENTAL:NO" />
 					<Add option="/nologo" />
 					<Add option="/nodefaultlib" />
 					<Add option="/subsystem:console" />
 					<Add option='/entry:&quot;DllMain&quot;' />
-					<Add option="/dll" />
 					<Add option="/def:zenwinx.def" />
-					<Add option="/implib:..\..\..\lib\zenwinx.lib" />
-					<Add option="/MANIFEST:NO" />
 					<Add library="ntdll.lib" />
 					<Add directory="$(WXWIDGETSDIR)/lib/vc_libwinsdk-X86" />
 				</Linker>

@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src\wxgui\wxgui.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\wxgui\about.cpp" />
+    <ClCompile Include="src\wxgui\btd.cpp" />
+    <ClCompile Include="src\wxgui\config.cpp" />
+    <ClCompile Include="src\wxgui\crash.cpp" />
+    <ClCompile Include="src\wxgui\fileslist.cpp" />
+    <ClCompile Include="src\wxgui\i18n.cpp" />
+    <ClCompile Include="src\wxgui\job.cpp" />
+    <ClCompile Include="src\wxgui\log.cpp" />
+    <ClCompile Include="src\wxgui\main.cpp" />
+    <ClCompile Include="src\wxgui\map.cpp" />
+    <ClCompile Include="src\wxgui\menu.cpp" />
+    <ClCompile Include="src\wxgui\query.cpp" />
+    <ClCompile Include="src\wxgui\report.cpp" />
+    <ClCompile Include="src\wxgui\shutdown.cpp" />
+    <ClCompile Include="src\wxgui\statbar.cpp" />
+    <ClCompile Include="src\wxgui\taskbar.cpp" />
+    <ClCompile Include="src\wxgui\toolbar.cpp" />
+    <ClCompile Include="src\wxgui\tray.cpp" />
+    <ClCompile Include="src\wxgui\upgrade.cpp" />
+    <ClCompile Include="src\wxgui\utils.cpp" />
+    <ClCompile Include="src\wxgui\utils_win32.cpp" />
+    <ClCompile Include="src\wxgui\vollist.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\wxgui\main.h" />
+    <ClInclude Include="src\wxgui\udefrag-internals_flags.h" />
+    <ClInclude Include="src\wxgui\utils_win32.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="src\wxgui\res\ultradefrag.manifest" />
+  </ItemGroup>
+</Project>

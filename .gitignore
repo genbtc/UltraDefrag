@@ -98,3 +98,12 @@ src/dll/zenwinx/html/
 *.cscope_file_list
 *.depend
 *.layout
+src/.vs/Supercharger/*
+src/.vs/Udefrag-VS/v15/.suo
+src/.vs/Udefrag-VS/v15/Browse.VC.db
+src/.vs/Udefrag-VS/v15/ipch/*
+src/.vs/Udefrag-VS/v15/Solution.VC.db
+src/Debug/*
+src/dll/udefrag/Debug/*
+src/dll/zenwinx/Debug/*
+src/wxgui/Debug/*
