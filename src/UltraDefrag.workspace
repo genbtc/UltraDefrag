@@ -2,8 +2,17 @@
 <CodeBlocks_workspace_file>
 	<Workspace title="UltraDefrag">
 		<Project filename="dll/zenwinx/zenwinx.cbp" />
-		<Project filename="dll/udefrag/udefrag.cbp" />
-		<Project filename="console/console.cbp" />
-		<Project filename="wxgui/wxgui.cbp" />
+		<Project filename="dll/udefrag/udefrag.cbp">
+			<Depends filename="dll/zenwinx/zenwinx.cbp" />
+		</Project>
+		<Project filename="console/console.cbp">
+			<Depends filename="dll/zenwinx/zenwinx.cbp" />
+			<Depends filename="dll/udefrag/udefrag.cbp" />
+		</Project>
+		<Project filename="wxgui/wxgui.cbp">
+			<Depends filename="dll/zenwinx/zenwinx.cbp" />
+			<Depends filename="dll/udefrag/udefrag.cbp" />
+			<Depends filename="console/console.cbp" />
+		</Project>
 	</Workspace>
 </CodeBlocks_workspace_file>

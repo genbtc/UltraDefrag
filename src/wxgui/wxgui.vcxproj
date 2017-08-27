@@ -70,24 +70,24 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <GenerateManifest>
-    </GenerateManifest>
+    <GenerateManifest>true</GenerateManifest>
     <IncludePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;$(WindowsSdkDir)include;$(VCInstallDir)include</IncludePath>
     <ReferencePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;$(WindowsSdkDir)include;$(VCInstallDir)include;$(WINSDKBASE)include</ReferencePath>
     <LibraryPath>$(SolutionDir)lua-lib;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86;$(WindowsSdkDir)lib;$(VCInstallDir)lib</LibraryPath>
     <LinkIncremental>
     </LinkIncremental>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    <SourcePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;$(WindowsSdkDir)include;$(VCInstallDir)atlmfc\src\mfc;$(VCInstallDir)atlmfc\src\mfcm;$(VCInstallDir)atlmfc\src\atl;$(VCInstallDir)crt\src;</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <GenerateManifest>
-    </GenerateManifest>
+    <GenerateManifest>true</GenerateManifest>
     <IncludePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;$(WindowsSdkDir)include;$(VCInstallDir)include</IncludePath>
     <ReferencePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;$(WindowsSdkDir)include;$(VCInstallDir)include;$(WINSDKBASE)include</ReferencePath>
     <LibraryPath>$(SolutionDir)lua-lib;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86;$(WindowsSdkDir)lib;$(VCInstallDir)lib</LibraryPath>
     <LinkIncremental>
     </LinkIncremental>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    <SourcePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;$(WindowsSdkDir)include;$(VCInstallDir)atlmfc\src\mfc;$(VCInstallDir)atlmfc\src\mfcm;$(VCInstallDir)atlmfc\src\atl;$(VCInstallDir)crt\src;</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>
@@ -98,6 +98,7 @@
     <LinkIncremental>
     </LinkIncremental>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    <SourcePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;$(WindowsSdkDir)include;$(VCInstallDir)atlmfc\src\mfc;$(VCInstallDir)atlmfc\src\mfcm;$(VCInstallDir)atlmfc\src\atl;$(VCInstallDir)crt\src;</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <GenerateManifest>
@@ -108,12 +109,13 @@
     <LinkIncremental>
     </LinkIncremental>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    <SourcePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;$(WindowsSdkDir)include;$(VCInstallDir)atlmfc\src\mfc;$(VCInstallDir)atlmfc\src\mfcm;$(VCInstallDir)atlmfc\src\atl;$(VCInstallDir)crt\src;</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
       <AdditionalDependencies>zenwinx.lib;udefrag.lib;lua5.1a.lib;wxmsw28u_adv.lib;wxmsw28u_core.lib;wxpng.lib;wxzlib.lib;wxbase28u.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;ole32.lib;oleaut32.lib;uuid.lib;powrprof.lib;comctl32.lib;wsock32.lib;odbc32.lib;shell32.lib</AdditionalDependencies>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
       <SubSystem>Windows</SubSystem>
@@ -122,7 +124,6 @@
       <RandomizedBaseAddress />
       <DataExecutionPrevention />
       <ShowProgress>LinkVerbose</ShowProgress>
-      <ProgramDatabaseFile />
       <TargetMachine>
       </TargetMachine>
       <AdditionalLibraryDirectories>$(LibraryPath);$(SolutionDir)$(Configuration)</AdditionalLibraryDirectories>
@@ -130,13 +131,11 @@
     </Link>
     <ClCompile />
     <ClCompile>
-      <MultiProcessorCompilation>
-      </MultiProcessorCompilation>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <MinimalRebuild>
-      </MinimalRebuild>
+      <MinimalRebuild>false</MinimalRebuild>
       <TreatWChar_tAsBuiltInType>
       </TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>
@@ -167,7 +166,7 @@
       <ProgramDataBaseFileName />
     </ClCompile>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>C:\Software\wxWidgets-2.8.12\include;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(WXWIDGETSDIR)\include;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions />
     </ResourceCompile>
     <ProjectReference>
@@ -179,7 +178,7 @@
     <Link>
       <AdditionalDependencies>zenwinx.lib;udefrag.lib;lua5.1a.lib;wxmsw28u_adv.lib;wxmsw28u_core.lib;wxpng.lib;wxzlib.lib;wxbase28u.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;ole32.lib;oleaut32.lib;uuid.lib;powrprof.lib;comctl32.lib;wsock32.lib;odbc32.lib;shell32.lib</AdditionalDependencies>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
       <SubSystem>Windows</SubSystem>
@@ -192,8 +191,6 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <ShowProgress>LinkVerbose</ShowProgress>
-      <ProgramDatabaseFile>
-      </ProgramDatabaseFile>
       <AdditionalLibraryDirectories>$(LibraryPath);$(SolutionDir)$(Configuration)</AdditionalLibraryDirectories>
       <EnableUAC>
       </EnableUAC>
@@ -201,13 +198,11 @@
     </Link>
     <ClCompile />
     <ClCompile>
-      <MultiProcessorCompilation>
-      </MultiProcessorCompilation>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <MinimalRebuild>
-      </MinimalRebuild>
+      <MinimalRebuild>false</MinimalRebuild>
       <TreatWChar_tAsBuiltInType>
       </TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>
@@ -241,7 +236,7 @@
       <ProgramDataBaseFileName />
     </ClCompile>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>C:\Software\wxWidgets-2.8.12\include;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(WXWIDGETSDIR)\include;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>
       </PreprocessorDefinitions>
     </ResourceCompile>
@@ -280,8 +275,7 @@
     </Link>
     <ClCompile />
     <ClCompile>
-      <MultiProcessorCompilation>
-      </MultiProcessorCompilation>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <UseUnicodeForAssemblerListing>
       </UseUnicodeForAssemblerListing>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -315,7 +309,7 @@
       <ProgramDataBaseFileName />
     </ClCompile>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>C:\Software\wxWidgets-2.8.12\include;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(WXWIDGETSDIR)\include;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions />
     </ResourceCompile>
     <ProjectReference />
@@ -359,8 +353,7 @@
     </Link>
     <ClCompile />
     <ClCompile>
-      <MultiProcessorCompilation>
-      </MultiProcessorCompilation>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <UseUnicodeForAssemblerListing>
       </UseUnicodeForAssemblerListing>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -395,7 +388,7 @@
       <ProgramDataBaseFileName />
     </ClCompile>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>C:\Software\wxWidgets-2.8.12\include;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(WXWIDGETSDIR)\include;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>
       </PreprocessorDefinitions>
     </ResourceCompile>
