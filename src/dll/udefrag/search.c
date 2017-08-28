@@ -245,15 +245,15 @@ int create_file_blocks_tree(udefrag_job_parameters *jp)
 int add_block_to_file_blocks_tree(udefrag_job_parameters *jp, winx_file_info *file, winx_blockmap *block)
 {
     struct file_block *fb;
-    void **p;
-    
-    if(file == NULL || block == NULL)
+	void **p;
+
+	if(file == NULL || block == NULL)
         return (-1);
     
     if(jp->file_blocks == NULL)
         return (-1);
 
-    fb = winx_malloc(sizeof *fb);
+    fb = (struct file_block *)winx_malloc(sizeof *fb);
     fb->file = file;
     fb->block = block;
     p = prb_probe(jp->file_blocks,(void *)fb);
@@ -284,7 +284,7 @@ int remove_block_from_file_blocks_tree(udefrag_job_parameters *jp, winx_blockmap
 
     b.file = NULL;
     b.block = block;
-    fb = prb_delete(jp->file_blocks,&b);
+    fb = (struct file_block*)prb_delete(jp->file_blocks,&b);
     if(fb == NULL){
         /* the following debugging output indicates either
            a bug, or file system inconsistency */
@@ -342,10 +342,10 @@ winx_blockmap *find_first_block(udefrag_job_parameters *jp,
     found_file = NULL; first_block = NULL;
     b.lcn = *min_lcn; fb.block = &b;
     prb_t_init(&t,jp->file_blocks);
-    item = prb_t_insert(&t,jp->file_blocks,&fb);
+    item = (struct file_block *)prb_t_insert(&t,jp->file_blocks,&fb);
     if(item == &fb){
         /* block at min_lcn not found */
-        item = prb_t_next(&t);
+        item = (struct file_block *)prb_t_next(&t);
         if(prb_delete(jp->file_blocks,&fb) == NULL){
             etrace("cannot remove block from the tree");
             winx_flush_dbg_log(0); /* 'cause error is critical */
@@ -378,7 +378,7 @@ winx_blockmap *find_first_block(udefrag_job_parameters *jp,
         /* skip current block */
         *min_lcn = *min_lcn + 1;
         /* and go to the next one */
-        item = prb_t_next(&t);
+        item = (struct file_block *)prb_t_next(&t);
         if(item == NULL) break;
         found_file = item->file;
         first_block = item->block;

@@ -8,6 +8,7 @@
 		<Option pch_mode="2" />
 		<Option default_target="Release-GCC" />
 		<Option compiler="gcc" />
+		<Option extended_obj_names="1" />
 		<Build>
 			<Target title="Debug-GCC">
 				<Option platforms="Windows;" />
@@ -101,6 +102,7 @@
 					<Add library="shell32" />
 					<Add directory="../../lib" />
 					<Add directory="$(WXWIDGETSDIR)/lib/vc_libwinsdk-X86" />
+					<Add directory="../../bin" />
 				</Linker>
 			</Target>
 			<Target title="Release-MSVC">
@@ -108,6 +110,7 @@
 				<Option output="../../bin/UltraDefrag" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="../../bin/" />
 				<Option object_output="../../obj/MSVC/wxgui/" />
+				<Option additional_output="../../lib/udefrag.lib;../../lib/zenwinx.lib;../../lib/lua5.1a.lib;" />
 				<Option type="0" />
 				<Option compiler="msvc10" />
 				<Option projectCompilerOptionsRelation="1" />
@@ -119,8 +122,10 @@
 					<Add option="/MT" />
 					<Add option="/arch:SSE2" />
 					<Add option="/GA" />
+					<Add option="/GL" />
 					<Add option="/EHc" />
 					<Add option="/EHs" />
+					<Add option="/O2" />
 					<Add option="/W3" />
 					<Add option="/DNDEBUG" />
 					<Add option="/D_CRT_SECURE_NO_WARNINGS" />
@@ -131,7 +136,7 @@
 					<Add directory="$(WXWIDGETSDIR)/include" />
 				</ResourceCompiler>
 				<Linker>
-					<Add option="/MANIFEST:NO" />
+					<Add option="/LTCG" />
 					<Add library="zenwinx" />
 					<Add library="udefrag" />
 					<Add library="lua5.1a" />
@@ -155,6 +160,7 @@
 					<Add library="odbc32" />
 					<Add library="shell32" />
 					<Add directory="../../lib" />
+					<Add directory="../../bin" />
 					<Add directory="$(WXWIDGETSDIR)/lib/vc_libwinsdk-X86" />
 				</Linker>
 			</Target>
@@ -225,6 +231,9 @@
 			<code_completion />
 			<envvars />
 			<debugger />
+			<wxsmith version="1">
+				<gui name="wxWidgets" src="main.cpp" main="-- None --" init_handlers="necessary" language="CPP" />
+			</wxsmith>
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

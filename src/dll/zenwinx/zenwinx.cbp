@@ -6,6 +6,7 @@
 		<Option platforms="Windows;" />
 		<Option pch_mode="2" />
 		<Option compiler="msvc10" />
+		<Option extended_obj_names="1" />
 		<Build>
 			<Target title="Release-MSVC">
 				<Option platforms="Windows;" />
@@ -48,6 +49,7 @@
 					<Add option="/subsystem:console" />
 					<Add option='/entry:&quot;DllMain&quot;' />
 					<Add option="/def:zenwinx.def" />
+					<Add option="/verbose" />
 					<Add library="ntdll.lib" />
 					<Add directory="$(WXWIDGETSDIR)/lib/vc_libwinsdk-X86" />
 				</Linker>
@@ -59,6 +61,7 @@
 				<Option object_output="../../../obj/GCC/zenwinx/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
+				<Option createDefFile="1" />
 				<Option createStaticLib="1" />
 				<Option projectCompilerOptionsRelation="1" />
 				<Option projectLinkerOptionsRelation="1" />

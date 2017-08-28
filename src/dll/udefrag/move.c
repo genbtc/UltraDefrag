@@ -26,6 +26,7 @@
 
 #include "udefrag-internals.h"
 
+
 /**
  * @brief Actualizes the free space regions list.
  * @details All NTFS regions temporarily allocated
@@ -34,11 +35,10 @@
 void release_temp_space_regions(udefrag_job_parameters *jp)
 {
     ULONGLONG time = winx_xtime();
-    
     if(!jp->udo.dry_run){
         winx_release_free_volume_regions(jp->free_regions);
         jp->free_regions = winx_get_free_volume_regions(jp->volume_letter,
-            WINX_GVR_ALLOW_PARTIAL_SCAN,NULL,(void *)jp);
+            WINX_GVR_ALLOW_PARTIAL_SCAN, NULL,(void *)jp);
         if(jp->win_version < WINDOWS_XP){
             jp->free_regions = winx_sub_volume_region(jp->free_regions,
                 jp->mft_zone.start,jp->mft_zone.length);
@@ -55,85 +55,85 @@ void release_temp_space_regions(udefrag_job_parameters *jp)
  * @brief Defines whether the file can be
  * moved or not, at least partially.
  */
-int can_move(winx_file_info *f,udefrag_job_parameters *jp)
+extern int can_move(winx_file_info *f, udefrag_job_parameters *jp)
 {
-    wchar_t *dos_files[] = {
-        L"*:\\io.sys",
-        L"*:\\msdos.sys",
-        L"*:\\ibmbio.com",
-        L"*:\\ibmdos.com",
-        L"*:\\drbios.sys",
-        NULL
-    };
-    wchar_t *boot_files[] = {
-        L"*\\safeboot.fs",   /* http://www.safeboot.com/ */
-        L"*\\Gobackio.bin",  /* Symantec GoBack */
-        L"*\\PGPWDE0*",      /* PGP Whole Disk Encryption */
-        L"*\\bootwiz*",      /* Acronis OS Selector */
-        L"*\\BootAuth?.sys", /* DriveCrypt (http://www.securstar.com/) */
-        L"*\\$dcsys$",       /* DiskCryptor (Diskencryption Software) */
-        L"*\\bootstat.dat",  /* part of Windows */
-        L"*\\bootsqm.dat",   /* part of Windows */
-        NULL
-    };
-    int i;
+	wchar_t *dos_files[] = {
+		L"*:\\io.sys",
+		L"*:\\msdos.sys",
+		L"*:\\ibmbio.com",
+		L"*:\\ibmdos.com",
+		L"*:\\drbios.sys",
+		NULL
+	};
+	wchar_t *boot_files[] = {
+		L"*\\safeboot.fs",   /* http://www.safeboot.com/ */
+		L"*\\Gobackio.bin",  /* Symantec GoBack */
+		L"*\\PGPWDE0*",      /* PGP Whole Disk Encryption */
+		L"*\\bootwiz*",      /* Acronis OS Selector */
+		L"*\\BootAuth?.sys", /* DriveCrypt (http://www.securstar.com/) */
+		L"*\\$dcsys$",       /* DiskCryptor (Diskencryption Software) */
+		L"*\\bootstat.dat",  /* part of Windows */
+		L"*\\bootsqm.dat",   /* part of Windows */
+		NULL
+	};
+	int i;
 
-    /* skip files already moved to front in optimization */
-    if(is_moved_to_front(f))
-        return 0;
-    
-    /* skip files already excluded by the current task */
-    if(is_currently_excluded(f))
-        return 0;
-    
-    /* skip files with undefined cluster map and locked files */
-    if(f->disp.blockmap == NULL || is_locked(f))
-        return 0;
-    
-    /* skip files of zero length */
-    if(f->disp.clusters == 0 || \
-      (f->disp.blockmap->next == f->disp.blockmap && \
-      f->disp.blockmap->length == 0)){
-        f->user_defined_flags |= UD_FILE_IMPROPER_STATE;
-        return 0;
-    }
+	/* skip files already moved to front in optimization */
+	if (is_moved_to_front(f))
+		return 0;
 
-    /* skip file in case of improper state detected */
-    if(is_in_improper_state(f))
-        return 0;
-    
-    /* avoid infinite loops */
-    if(is_moving_failed(f))
-        return 0;
-    
-    /* keep the computer bootable */
-    if(is_not_essential_file(f)) return 1;
-    if(is_essential_boot_file(f)) return 0;
-    if(jp->is_fat && !is_fragmented(f)){
-        for(i = 0; dos_files[i]; i++){
-            if(winx_wcsmatch(f->path,dos_files[i],WINX_PAT_ICASE)){
-                itrace("essential dos file detected: %ws",f->path);
-                f->user_defined_flags |= UD_FILE_ESSENTIAL_BOOT_FILE;
-                return 0;
-            }
-        }
-    }
-    for(i = 0; boot_files[i]; i++){
-        if(winx_wcsmatch(f->path,boot_files[i],WINX_PAT_ICASE)){
-            itrace("essential boot file detected: %ws",f->path);
-            f->user_defined_flags |= UD_FILE_ESSENTIAL_BOOT_FILE;
-            return 0;
-        }
-    }
-    f->user_defined_flags |= UD_FILE_NOT_ESSENTIAL_FILE;
-    return 1;
+	/* skip files already excluded by the current task */
+	if (is_currently_excluded(f))
+		return 0;
+
+	/* skip files with undefined cluster map and locked files */
+	if (f->disp.blockmap == NULL || is_locked(f))
+		return 0;
+
+	/* skip files of zero length */
+	if (f->disp.clusters == 0 || \
+		(f->disp.blockmap->next == f->disp.blockmap && \
+			f->disp.blockmap->length == 0)) {
+		f->user_defined_flags |= UD_FILE_IMPROPER_STATE;
+		return 0;
+	}
+
+	/* skip file in case of improper state detected */
+	if (is_in_improper_state(f))
+		return 0;
+
+	/* avoid infinite loops */
+	if (is_moving_failed(f))
+		return 0;
+
+	/* keep the computer bootable */
+	if (is_not_essential_file(f)) return 1;
+	if (is_essential_boot_file(f)) return 0;
+	if (jp->is_fat && !is_fragmented(f)) {
+		for (i = 0; dos_files[i]; i++) {
+			if (winx_wcsmatch(f->path, dos_files[i], WINX_PAT_ICASE)) {
+				itrace("essential dos file detected: %ws", f->path);
+				f->user_defined_flags |= UD_FILE_ESSENTIAL_BOOT_FILE;
+				return 0;
+			}
+		}
+	}
+	for (i = 0; boot_files[i]; i++) {
+		if (winx_wcsmatch(f->path, boot_files[i], WINX_PAT_ICASE)) {
+			itrace("essential boot file detected: %ws", f->path);
+			f->user_defined_flags |= UD_FILE_ESSENTIAL_BOOT_FILE;
+			return 0;
+		}
+	}
+	f->user_defined_flags |= UD_FILE_NOT_ESSENTIAL_FILE;
+	return 1;
 }
 
 /**
  * @brief Defines whether the file
  * can be moved entirely or not.
  */
-int can_move_entirely(winx_file_info *f,udefrag_job_parameters *jp)
+extern int can_move_entirely(winx_file_info *f,udefrag_job_parameters *jp)
 {
     if(!can_move(f,jp))
         return 0;
@@ -217,11 +217,11 @@ static int move_file_clusters(winx_file_info *f,HANDLE hFile,ULONGLONG startVcn,
 #else
         mfd.NumVcns = (ULONG)clusters_to_move;
 #endif
-        status = NtFsControlFile(winx_fileno(jp->fVolume),NULL,NULL,0,&iosb,
+        status = NtFsControlFile(winx_fileno(jp->fVolume), NULL,NULL,NULL,&iosb,
                             FSCTL_MOVE_FILE,&mfd,sizeof(MOVEFILE_DESCRIPTOR),
                             NULL,0);
         if(NT_SUCCESS(status)){
-            NtWaitForSingleObject(winx_fileno(jp->fVolume),FALSE,NULL);
+            NtWaitForSingleObject(winx_fileno(jp->fVolume), FALSE, NULL);
             status = iosb.Status;
         }
         jp->last_move_status = status;
@@ -493,7 +493,7 @@ typedef enum {
  * one of the flags listed in udefrag_internals.h under "file status flags"
  * becomes set to display a proper message in fragmentation reports.
  */
-int move_file(winx_file_info *f,
+extern int move_file(winx_file_info *f,
               ULONGLONG vcn,
               ULONGLONG length,
               ULONGLONG target,

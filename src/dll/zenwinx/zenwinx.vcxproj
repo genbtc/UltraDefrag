@@ -58,7 +58,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v100</PlatformToolset>
-    <UseOfAtl>Static</UseOfAtl>
+    <UseOfAtl>false</UseOfAtl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -66,7 +66,7 @@
     <PlatformToolset>v100</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <UseOfAtl>Static</UseOfAtl>
+    <UseOfAtl>false</UseOfAtl>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -89,7 +89,8 @@
     <GenerateManifest>false</GenerateManifest>
     <IncludePath>C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include;C:\Software\wxWidgets-2.8.12\include;C:\Software\wxWidgets-2.8.12\lib\vc_libwinsdk-X86\mswu;$(IncludePath)</IncludePath>
     <ReferencePath>C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\lib;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\lib;C:\Software\wxWidgets-2.8.12\lib\vc_libwinsdk-X86\mswu;C:\Software\wxWidgets-2.8.12\lib\vc_libwinsdk-X86;..\bin;..\lib;$(SolutionDir)$(Configuration);$(ReferencePath)</ReferencePath>
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>
+    </LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -114,6 +115,7 @@
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>$(IncludePath);</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ntdll.lib</AdditionalDependencies>
@@ -148,6 +150,7 @@
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <AdditionalLibraryDirectories>$(LibraryPath)</AdditionalLibraryDirectories>
     </Link>
     <Lib>
       <AdditionalDependencies>ntdll.lib</AdditionalDependencies>
@@ -191,6 +194,7 @@
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>$(IncludePath);</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ntdll.lib</AdditionalDependencies>
@@ -223,6 +227,7 @@
       <TargetMachine>MachineX86</TargetMachine>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(LibraryPath)</AdditionalLibraryDirectories>
     </Link>
     <Lib>
       <AdditionalDependencies>ntdll.lib</AdditionalDependencies>

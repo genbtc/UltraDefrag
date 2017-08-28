@@ -117,7 +117,7 @@ static int save_lua_report(udefrag_job_parameters *jp)
     #define MAX_UTF8_PATH_LENGTH (256 * 1024)
     char *utf8_path;
     
-    utf8_path = winx_tmalloc(MAX_UTF8_PATH_LENGTH);
+    utf8_path = (char *)winx_tmalloc(MAX_UTF8_PATH_LENGTH);
     if(utf8_path == NULL){
         mtrace();
         return (-1);
@@ -173,7 +173,7 @@ static int save_lua_report(udefrag_job_parameters *jp)
     
     /* print body */
     prb_t_init(&t,jp->fragmented_files);
-    file = prb_t_first(&t,jp->fragmented_files);
+    file = (winx_file_info *)prb_t_first(&t,jp->fragmented_files);
     while(file){
         if(is_directory(file))
             comment = "[DIR]";
@@ -224,7 +224,7 @@ static int save_lua_report(udefrag_job_parameters *jp)
         (void)strcpy(buffer,"\"},\r\n");
         (void)winx_fwrite(buffer,1,strlen(buffer),f);
 
-        file = prb_t_next(&t);
+        file = (winx_file_info *)prb_t_next(&t);
     }
     
     /* print footer */

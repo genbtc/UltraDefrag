@@ -309,12 +309,12 @@ static ULONGLONG opt_dirs_cc_routine(udefrag_job_parameters *jp)
     ULONGLONG n = 0;
     
     prb_t_init(&t,jp->fragmented_files);
-    file = prb_t_first(&t,jp->fragmented_files);
+    file = (winx_file_info*)prb_t_first(&t,jp->fragmented_files);
     while(file){
         if(jp->termination_router((void *)jp)) break;
         if(is_directory(file) && can_move(file,jp))
             n += file->disp.clusters * 2;
-        file = prb_t_next(&t);
+        file = (winx_file_info*)prb_t_next(&t);
     }
     return n;
 }
@@ -353,10 +353,10 @@ static int optimize_directories(udefrag_job_parameters *jp)
 
     optimized_dirs = 0;
     prb_t_init(&t,jp->fragmented_files);
-    file = prb_t_first(&t,jp->fragmented_files);
+    file = (winx_file_info*)prb_t_first(&t,jp->fragmented_files);
     while(file){
         if(jp->termination_router((void *)jp)) break;
-        next_file = prb_t_next(&t);
+        next_file = (winx_file_info*)prb_t_next(&t);
         if(is_directory(file) && can_move(file,jp)){
             if(optimize_file(file,jp) > 0)
                 optimized_dirs ++;
@@ -561,7 +561,7 @@ static void move_files_to_front(udefrag_job_parameters *jp,
     release_temp_space_regions(jp);
 
     /* do the job */
-    file = prb_t_cur(t);
+    file = (winx_file_info*)prb_t_cur(t);
     while(file){
         if(can_move_entirely(file,jp)){
             region_not_found = 1;
@@ -573,13 +573,13 @@ static void move_files_to_front(udefrag_job_parameters *jp,
             if(region_not_found){
                 if(file->user_defined_flags & UD_FILE_REGION_NOT_FOUND){
                     /* if region is not found twice, skip the file */
-                    file = prb_t_next(t);
+                    file = (winx_file_info*)prb_t_next(t);
                     skipped_files ++;
                     continue;
                 } else {
                     if(skipped_files && !jp->pi.moved_clusters){
                         /* skip all subsequent big files too */
-                        file = prb_t_next(t);
+                        file = (winx_file_info*)prb_t_next(t);
                         skipped_files ++;
                         continue;
                     } else {
@@ -600,7 +600,7 @@ static void move_files_to_front(udefrag_job_parameters *jp,
             }
             file->user_defined_flags |= UD_FILE_MOVED_TO_FRONT;
         }
-        file = prb_t_next(t);
+        file = (winx_file_info*)prb_t_next(t);
     }
     
     /* display amount of moved data */
@@ -731,12 +731,12 @@ static void cut_off_group_of_files(udefrag_job_parameters *jp,
     }
     
     prb_t_init(&t,pt);
-    file = prb_t_find(&t,pt,first_file);
+    file = (winx_file_info*)prb_t_find(&t,pt,first_file);
     while(file && n){
         file->user_defined_flags |= UD_FILE_MOVED_TO_FRONT;
         n --;
         jp->already_optimized_clusters += file->disp.clusters;
-        file = prb_t_next(&t);
+        file = (winx_file_info*)prb_t_next(&t);
     }
     if(n > 0){
         etrace("cannot find file in tree");
@@ -773,10 +773,10 @@ static void cut_off_sorted_out_files(udefrag_job_parameters *jp,struct prb_table
     
     /* select first not fragmented file */
     prb_t_init(&t,pt);
-    file = prb_t_first(&t,pt);
+    file = (winx_file_info*)prb_t_first(&t,pt);
     while(file){
         if(!is_fragmented(file)) break;
-        file = prb_t_next(&t);
+        file = (winx_file_info*)prb_t_next(&t);
     }
     if(file == NULL) goto done;
 
@@ -789,7 +789,7 @@ static void cut_off_sorted_out_files(udefrag_job_parameters *jp,struct prb_table
     prev_file = file;
     
     /* analyze subsequent files */
-    file = prb_t_next(&t);
+    file = (winx_file_info*)prb_t_next(&t);
     while(file){
         /* check whether the file is in group or not */
         belongs_to_group = 1;
@@ -836,7 +836,7 @@ static void cut_off_sorted_out_files(udefrag_job_parameters *jp,struct prb_table
             /* reset group */
             while(file){
                 if(!is_fragmented(file)) break;
-                file = prb_t_next(&t);
+                file = (winx_file_info*)prb_t_next(&t);
             }
             if(file == NULL) goto done;
             first_file = file;
@@ -846,7 +846,7 @@ static void cut_off_sorted_out_files(udefrag_job_parameters *jp,struct prb_table
             plcn = file->disp.blockmap->lcn;
             prev_file = file;
         }
-        file = prb_t_next(&t);
+        file = (winx_file_info*)prb_t_next(&t);
     }
     
     if(n > 1){
@@ -899,13 +899,13 @@ static ULONGLONG clusters_to_optimize(udefrag_job_parameters *jp,struct prb_tabl
     ULONGLONG n = 0;
 
     prb_t_init(&t,pt);
-    f = prb_t_first(&t,pt);
+    f = (winx_file_info*)prb_t_first(&t,pt);
     while(f){
         if(!is_moved_to_front(f)){
             if(can_move_entirely(f,jp))
                 n += f->disp.clusters;
         }
-        f = prb_t_next(&t);
+        f = (winx_file_info*)prb_t_next(&t);
     }
     return n;
 }
@@ -957,7 +957,7 @@ static int optimize_routine(udefrag_job_parameters *jp)
     
     /* do the job */
     prb_t_init(&t,pt);
-    if(prb_t_first(&t,pt) == NULL) goto done;
+    if((winx_file_info*)prb_t_first(&t,pt) == NULL) goto done;
     start_lcn = end_lcn = 0;
     while(!jp->termination_router((void *)jp)){
         winx_dbg_print_header(0,0,I"volume optimization pass #%u",jp->pi.pass_number);
@@ -977,7 +977,7 @@ static int optimize_routine(udefrag_job_parameters *jp)
         jp->pi.pass_number ++; /* the pass is completed */
         
         /* break if no more files need optimization */
-        if(prb_t_cur(&t) == NULL) break;
+        if((winx_file_info*)prb_t_cur(&t) == NULL) break;
         
         /* break if no repeat allowed */
         if(!(jp->udo.job_flags & UD_JOB_REPEAT)) break;

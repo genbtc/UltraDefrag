@@ -246,12 +246,12 @@ static ULONGLONG defrag_cc_routine(udefrag_job_parameters *jp)
     
     /* fine calculation will take too much time */
     prb_t_init(&t,jp->fragmented_files);
-    file = prb_t_first(&t,jp->fragmented_files);
+    file = (winx_file_info*)prb_t_first(&t,jp->fragmented_files);
     while(file){
         if(jp->termination_router((void *)jp)) break;
         /* count all fragmented files which can be processed */
         if(can_defragment(file,jp)) n += file->disp.clusters;
-        file = prb_t_next(&t);
+        file = (winx_file_info*)prb_t_next(&t);
     }
     return n;
 }
@@ -311,10 +311,10 @@ static int defrag_routine(udefrag_job_parameters *jp)
     */
     defragmented_files = 0;
     prb_t_init(&t,jp->fragmented_files);
-    file = prb_t_first(&t,jp->fragmented_files);
+    file = (winx_file_info*)prb_t_first(&t,jp->fragmented_files);
     while(file){
         if(jp->termination_router((void *)jp)) break;
-        next_file = prb_t_next(&t);
+        next_file = (winx_file_info*)prb_t_next(&t);
         if(can_defragment(file,jp)){
             move_entirely = 0;
             if(file->disp.clusters * bpc < 2 * max_frag_size)
@@ -581,14 +581,14 @@ int defragment(udefrag_job_parameters *jp)
     * So, let's give them another chance.
     */
     prb_t_init(&t,jp->fragmented_files);
-    file = prb_t_first(&t,jp->fragmented_files);
+    file = (winx_file_info*)prb_t_first(&t,jp->fragmented_files);
     while(file){
         if(jp->termination_router((void *)jp)) break;
         if(is_moving_failed(file)){
             second_attempt = 1;
             file->user_defined_flags &= ~UD_FILE_MOVING_FAILED;
         }
-        file = prb_t_next(&t);
+        file = (winx_file_info*)prb_t_next(&t);
     }
     if(second_attempt){
         result = defrag_sequence(jp);

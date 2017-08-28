@@ -22,6 +22,7 @@
     <PlatformToolset>v100</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfAtl>Static</UseOfAtl>
+    <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -30,6 +31,7 @@
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v100</PlatformToolset>
     <UseOfAtl>Static</UseOfAtl>
+    <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -45,19 +47,24 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include;C:\Software\wxWidgets-2.8.12\include;C:\Software\wxWidgets-2.8.12\lib\vc_libwinsdk-X86\mswu;$(IncludePath)</IncludePath>
-    <ReferencePath>C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\lib;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\lib;C:\Software\wxWidgets-2.8.12\lib\vc_libwinsdk-X86\mswu;C:\Software\wxWidgets-2.8.12\lib\vc_libwinsdk-X86;..\bin;..\lib;$(SolutionDir)$(Configuration);$(ReferencePath)</ReferencePath>
+    <IncludePath>$(WindowsSdkDir)include;$(VCInstallDir)include</IncludePath>
+    <ReferencePath>$(WindowsSdkDir)include;$(VCInstallDir)include</ReferencePath>
+    <LinkIncremental>
+    </LinkIncremental>
+    <LibraryPath>$(WindowsSdkDir)lib;$(VCInstallDir)lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include;C:\Software\wxWidgets-2.8.12\include;C:\Software\wxWidgets-2.8.12\lib\vc_libwinsdk-X86\mswu;$(IncludePath)</IncludePath>
-    <ReferencePath>C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\lib;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\lib;C:\Software\wxWidgets-2.8.12\lib\vc_libwinsdk-X86\mswu;C:\Software\wxWidgets-2.8.12\lib\vc_libwinsdk-X86;..\bin;..\lib;$(SolutionDir)$(Configuration);$(ReferencePath)</ReferencePath>
-    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(WindowsSdkDir)include;$(VCInstallDir)include</IncludePath>
+    <ReferencePath>$(WindowsSdkDir)include;$(VCInstallDir)include</ReferencePath>
+    <LinkIncremental>
+    </LinkIncremental>
+    <LibraryPath>$(WindowsSdkDir)lib;$(VCInstallDir)lib</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Full</Optimization>
+      <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;BUILD_DLL;WIN32;_MBCS;USE_WINSDK;_CRT_SECURE_NO_WARNINGS;_CONSOLE;_USRDLL;UDEFRAG_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -74,14 +81,15 @@
       <PrecompiledHeaderOutputFile />
       <DebugInformationFormat />
       <AssemblerOutput>NoListing</AssemblerOutput>
+      <AdditionalIncludeDirectories>$(IncludePath);</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>ntdll.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ntdll.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ntdll.lib;comsupp.lib;kernel32.lib</AdditionalDependencies>
       <GenerateDebugInformation>
       </GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <EntryPointSymbol>DllMain</EntryPointSymbol>
-      <ShowProgress>NotSet</ShowProgress>
+      <ShowProgress>LinkVerbose</ShowProgress>
       <SetChecksum>
       </SetChecksum>
       <MapExports>
@@ -89,8 +97,7 @@
       <ImportLibrary>
       </ImportLibrary>
       <ModuleDefinitionFile>$(SolutionDir)dll\udefrag\udefrag.def</ModuleDefinitionFile>
-      <OptimizeReferences>
-      </OptimizeReferences>
+      <OptimizeReferences>false</OptimizeReferences>
       <ManifestFile>
       </ManifestFile>
       <AllowIsolation>
@@ -108,7 +115,15 @@
       <TypeLibraryResourceID />
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateMapFile />
-      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <IgnoreAllDefaultLibraries>
+      </IgnoreAllDefaultLibraries>
+      <AdditionalLibraryDirectories>$(LibraryPath);$(SolutionDir)$(Configuration)</AdditionalLibraryDirectories>
+      <ForceSymbolReferences>
+      </ForceSymbolReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <CLRImageType>ForceIJWImage</CLRImageType>
+      <CLRUnmanagedCodeCheck>true</CLRUnmanagedCodeCheck>
     </Link>
     <Lib>
       <AdditionalDependencies>ntdll.lib</AdditionalDependencies>
@@ -130,13 +145,13 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <MinimalRebuild>true</MinimalRebuild>
+      <MinimalRebuild>false</MinimalRebuild>
       <PreprocessorDefinitions>DEBUG;BUILD_DLL;WIN32;_MBCS;USE_WINSDK;_CRT_SECURE_NO_WARNINGS;_CONSOLE;_USRDLL;UDEFRAG_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <CompileAs>Default</CompileAs>
       <ErrorReporting>None</ErrorReporting>
       <AdditionalOptions>
@@ -150,9 +165,10 @@
       <PrecompiledHeaderOutputFile />
       <AssemblerOutput>NoListing</AssemblerOutput>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <AdditionalIncludeDirectories>$(IncludePath);</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>ntdll.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ntdll.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ntdll.lib;comsupp.lib;kernel32.lib</AdditionalDependencies>
       <ModuleDefinitionFile>$(SolutionDir)dll\udefrag\udefrag.def</ModuleDefinitionFile>
       <ManifestFile />
       <AllowIsolation />
@@ -167,6 +183,15 @@
       <TargetMachine>MachineX86</TargetMachine>
       <SetChecksum />
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ShowProgress>LinkVerbose</ShowProgress>
+      <AdditionalLibraryDirectories>$(LibraryPath);$(SolutionDir)$(Configuration)</AdditionalLibraryDirectories>
+      <ForceSymbolReferences>
+      </ForceSymbolReferences>
+      <OptimizeReferences>false</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <CLRImageType>ForceIJWImage</CLRImageType>
+      <CLRUnmanagedCodeCheck>true</CLRUnmanagedCodeCheck>
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>C:\Software\wxWidgets-2.8.12\include;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -179,7 +204,12 @@
     <ClCompile Include="entry.c" />
     <ClCompile Include="int64.c" />
     <ClCompile Include="map.c" />
-    <ClCompile Include="move.c" />
+    <ClCompile Include="move.c">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+      <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BufferSecurityCheck>
+      <FloatingPointModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Fast</FloatingPointModel>
+    </ClCompile>
     <ClCompile Include="optimize.c" />
     <ClCompile Include="options.c" />
     <ClCompile Include="query.c" />
@@ -198,7 +228,7 @@
   <ItemGroup>
     <ProjectReference Include="..\zenwinx\zenwinx.vcxproj">
       <Project>{601c4f2c-3f3b-4b28-ae2c-920908b65e3a}</Project>
-      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -56,7 +56,7 @@ struct fs fs_types[] = {
     {"FAT32", FS_FAT32, 1},
     {"EXFAT", FS_EXFAT, 1},
     {"UDF",   FS_UDF,   0},
-    {NULL,    0,        0}
+    {NULL,    FS_UNKNOWN,0}
 };
 
 /**

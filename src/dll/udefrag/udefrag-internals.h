@@ -298,14 +298,14 @@ winx_blockmap *build_fragments_list(winx_file_info *f,ULONGLONG *n_fragments);
 void release_fragments_list(winx_blockmap **fragments);
 void clear_currently_excluded_flag(udefrag_job_parameters *jp);
 
-int move_file(winx_file_info *f,
+extern int move_file(winx_file_info *f,
               ULONGLONG vcn,
               ULONGLONG length,
               ULONGLONG target,
               udefrag_job_parameters *jp
               );
-int can_move(winx_file_info *f,udefrag_job_parameters *jp);
-int can_move_entirely(winx_file_info *f,udefrag_job_parameters *jp);
+extern int can_move(winx_file_info *f,udefrag_job_parameters *jp);
+extern int can_move_entirely(winx_file_info *f,udefrag_job_parameters *jp);
 
 /* flags for find_matching_free_region */
 enum {

@@ -524,7 +524,7 @@ char *udefrag_get_results(udefrag_progress_info *pi)
     unsigned int ip, ifr;
     
     /* allocate memory */
-    msg = winx_malloc(MSG_LENGTH + 1);
+    msg = (char *)winx_malloc(MSG_LENGTH + 1);
 
     (void)winx_bytes_to_hr(pi->total_space,2,total_space,sizeof(total_space));
     (void)winx_bytes_to_hr(pi->free_space,2,free_space,sizeof(free_space));
@@ -604,7 +604,7 @@ static void write_log_file_header(wchar_t *path)
 {
     WINX_FILE *f;
     int os_version, mj, mn;
-    char bom[4] = {0xEF, 0xBB, 0xBF, 0x00};
+    const char bom[4] = {0xEF, 0xBB, 0xBF, 0x00};
     char *header;
     char format[] = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\n"
                     "\r\n"

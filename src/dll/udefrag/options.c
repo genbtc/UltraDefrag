@@ -187,7 +187,7 @@ int get_options(udefrag_job_parameters *jp)
         if(dp != NULL){
             for(z = 0; dp[z + 1] == '0'; z++) {}
             for(r = (double)_wtoi(dp + 1); r > 1; r /= 10){}
-            r *= pow(10, -z);
+            r *= pow(10., -z);
             jp->udo.fragmentation_threshold += r;
         }
         winx_free(buffer);

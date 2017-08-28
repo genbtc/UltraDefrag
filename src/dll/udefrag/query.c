@@ -137,7 +137,7 @@ int udefrag_start_query(char volume_letter,udefrag_query_type query_type,int fla
     jp.fragmented_files = NULL;
     jp.free_regions = NULL;
     jp.progress_refresh_time = 0;
-    jp.job_type = query_type;
+    jp.job_type = (udefrag_job_type)query_type;
     jp.cb = cb;
     jp.t = t;
     jp.p = p;
