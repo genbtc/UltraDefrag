@@ -771,7 +771,7 @@ fail:
 **/
 int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
 {
-    int result,i,old_color,new_color;
+    int result,i,file_color,new_color;
     ULONGLONG time,jobruntime,filelength,filesize,totalfilesize,writeposition;
     double overall_speed;
     char buffer[32],*headerstring;
@@ -836,17 +836,25 @@ int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
         filelength = file->disp.clusters;
         jp->pi.clusters_to_process = filelength;        
         /* Find the first region that will fit the entire file (use conditional operators.) */
-        region = start_or_end ? find_first_free_region(jp,0,filelength,NULL) : find_last_free_region(jp,0,filelength,NULL);
-        writeposition = start_or_end ? region->lcn :(region->lcn + region->length - filelength);
+        region = start_or_end ? find_first_free_region(jp,0,filelength,NULL) 
+    						  : find_last_free_region(jp, 0,filelength,NULL);
+        writeposition = start_or_end ? region->lcn 
+    							     :(region->lcn + region->length - filelength);
         if (!region){
             etrace("No contiguous region could be found large enough to hold the selected file.");
             result = (-1); goto cleanup;
         }
-        
-        //color the file as in-progress. need to memcpy it to save the old-location to UN-color it after.
-        //undo the in-progress movement color and make the Old-file-Location the proper color.
-        old_color = get_file_color(jp,file);
 
+    	//color the file as in-progress. need to memcpy it to save the old-location to UN-color it after.
+		memcpy(&oldfiledisp,&file->disp,sizeof(winx_file_disposition));
+        file_color = get_file_color(jp,file);
+        
+/*		//mark the old file location as some color.
+		for (block = file->disp.blockmap; block; block = block->next) {
+			colorize_map_region(jp, block->lcn, block->length, IN_MOVE_PROGRESS_SPACE, file_color);
+			if (block->next == file->disp.blockmap) break;
+		}
+*/
         /* Perform the move: */
         //purposefully fragmenting files. should only make fragments sized larger than jp->clusters_at_once
         if(move_file(file,0,filelength,writeposition,jp) >= 0){
@@ -855,10 +863,15 @@ int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
             jp->pi.total_moves++;
             jp->pi.moved_clusters = jp->pi.processed_clusters = filelength;
             jp->pi.clusters_to_process = 0;
-
+/*			//undo the in-progress movement color and make the Old-file-Location the proper color.
+			for(block = oldfiledisp.blockmap; block; block = block->next){
+				colorize_map_region(jp,block->lcn,block->length,IN_MOVE_PROGRESS_SPACE,file_color);
+				if(block->next == oldfiledisp.blockmap) break;
+			}
+*/
             //colorize the New-file-location a similar-but-different color. (so it persists on screen).
             for(block = file->disp.blockmap; block; block = block->next){
-                colorize_map_region(jp,block->lcn,block->length,TEAL_BLUE_GREEN,old_color);
+                colorize_map_region(jp,block->lcn,block->length,TEAL_BLUE_GREEN,file_color);
                 if(block->next == file->disp.blockmap) break;
             }               
         }
