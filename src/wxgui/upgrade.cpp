@@ -100,7 +100,7 @@ void *UpgradeThread::Entry()
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 /**

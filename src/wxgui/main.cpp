@@ -44,10 +44,10 @@
 //                            Global variables
 // =======================================================================
 
-MainFrame *g_mainFrame = NULL;
+MainFrame *g_mainFrame = nullptr;
 double g_scaleFactor = 1.0f;   // DPI-aware scaling factor
 int g_iconSize;                // small icon size
-HANDLE g_synchEvent = NULL;    // synchronization for threads
+HANDLE g_synchEvent = nullptr;    // synchronization for threads
 UINT g_TaskbarIconMsg;         // taskbar icon overlay setup on shell restart
 
 // =======================================================================
@@ -72,7 +72,7 @@ void *StatThread::Entry()
 #endif
     }
 
-    return NULL;
+    return nullptr;
 }
 
 // =======================================================================
@@ -154,7 +154,7 @@ bool App::OnInit()
 
     // check for administrative rights
     if(!Utils::CheckAdminRights()){
-        wxMessageDialog dlg(NULL,
+        wxMessageDialog dlg(nullptr,
             wxT("Administrative rights are needed to run the program!"),
             wxT("UltraDefrag"),wxOK | wxICON_ERROR
         );
@@ -163,10 +163,10 @@ bool App::OnInit()
     }
 
     // create synchronization event
-    g_synchEvent = ::CreateEvent(NULL,TRUE,FALSE,NULL);
+    g_synchEvent = ::CreateEvent(nullptr,TRUE,FALSE, nullptr);
     if(!g_synchEvent){
         letrace("cannot create synchronization event");
-        wxMessageDialog dlg(NULL,
+        wxMessageDialog dlg(nullptr,
             wxT("Cannot create synchronization event!"),
             wxT("UltraDefrag"),wxOK | wxICON_ERROR
         );
@@ -175,10 +175,10 @@ bool App::OnInit()
     }
 
     // keep things DPI-aware
-    HDC hdc = ::GetDC(NULL);
+    HDC hdc = ::GetDC(nullptr);
     if(hdc){
         g_scaleFactor = (double)::GetDeviceCaps(hdc,LOGPIXELSX) / 96.0f;
-        ::ReleaseDC(NULL,hdc);
+        ::ReleaseDC(nullptr,hdc);
     }
     g_iconSize = wxSystemSettings::GetMetric(wxSYS_SMALLICON_X);
     if(g_iconSize < 20) g_iconSize = 16;
@@ -203,7 +203,7 @@ bool App::OnInit()
 void App::Cleanup()
 {
     // flush configuration to disk
-    delete wxConfigBase::Set(NULL);
+    delete wxConfigBase::Set(nullptr);
 
     // stop web statistics
     delete m_statThread;
@@ -232,17 +232,17 @@ IMPLEMENT_APP(App)
  * @brief Initializes main window.
  */
 MainFrame::MainFrame()
-    :wxFrame(NULL,wxID_ANY,wxT("UltraDefrag"))
+    :wxFrame(nullptr,wxID_ANY,wxT("UltraDefrag"))
 {
     g_mainFrame = this;
-    m_vList = NULL;
-    m_cMap = NULL;
-    m_currentJob = NULL;
+    m_vList = nullptr;
+    m_cMap = nullptr;
+    m_currentJob = nullptr;
     m_busy = false;
     m_paused = false;
 
     // set main window icon
-    SetIcons(wxICON(appicon));
+	wxTopLevelWindowMSW::SetIcons(wxICON(appicon));
 
     // read configuration
     ReadAppConfiguration();
@@ -275,9 +275,9 @@ MainFrame::MainFrame()
         GetPosition(&m_x,&m_y);
     }
     Move(m_x,m_y);
-    if(m_maximized) Maximize(true);
+    if(m_maximized) wxTopLevelWindowMSW::Maximize(true);
 
-    SetMinSize(wxSize(DPI(MAIN_WINDOW_MIN_WIDTH),DPI(MAIN_WINDOW_MIN_HEIGHT)));
+	wxTopLevelWindowBase::SetMinSize(wxSize(DPI(MAIN_WINDOW_MIN_WIDTH),DPI(MAIN_WINDOW_MIN_HEIGHT)));
 
     // create menu, tool and status bars
     InitMenu(); InitToolbar(); InitStatusBar();
@@ -311,7 +311,7 @@ MainFrame::MainFrame()
     // update frame layout so we'll be able to initialize
     // list of volumes and cluster map properly
     wxSizeEvent evt(wxSize(m_width,m_height));
-    ProcessEvent(evt); m_splitter->UpdateSize();
+	wxEvtHandler::ProcessEvent(evt); m_splitter->UpdateSize();
 
     InitVolList();
     m_vList->SetFocus();

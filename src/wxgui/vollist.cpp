@@ -101,9 +101,9 @@ void MainFrame::InitVolList()
     m_vList->InsertItem(0,wxT("hi"),0);
     ProcessCommandEvent(ID_AdjustListHeight);
 
-    Connect(wxEVT_SIZE,wxSizeEventHandler(MainFrame::OnListSize),NULL,this);
+    Connect(wxEVT_SIZE,wxSizeEventHandler(MainFrame::OnListSize), nullptr,this);
     m_splitter->Connect(wxEVT_COMMAND_SPLITTER_SASH_POS_CHANGED,
-        wxSplitterEventHandler(MainFrame::OnSplitChanged),NULL,this);
+        wxSplitterEventHandler(MainFrame::OnSplitChanged), nullptr,this);
 }
 
 // =======================================================================
@@ -307,7 +307,7 @@ void *ListThread::Entry()
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void MainFrame::UpdateVolumeInformation(wxCommandEvent& event)

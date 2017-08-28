@@ -290,7 +290,7 @@ public:
 class Log: public wxLog {
 public:
     Log()  { delete SetActiveTarget(this); };
-    ~Log() { SetActiveTarget(NULL); };
+    ~Log() { SetActiveTarget(nullptr); };
 
     virtual void DoLog(wxLogLevel level,
         const wxChar *msg,time_t timestamp);

@@ -60,7 +60,7 @@ void *CrashInfoThread::Entry()
     DWORD new_time_stamp = last_time_stamp;
 
     // collect information on application crashes
-    HANDLE hLog = ::OpenEventLog(NULL,wxT("Application"));
+    HANDLE hLog = ::OpenEventLog(nullptr,wxT("Application"));
     if(!hLog){
         letrace("cannot open the Application event log");
         goto done;
@@ -153,7 +153,7 @@ save_info:
 done:
     if(hLog) ::CloseEventLog(hLog);
     delete [] buffer; delete cfg;
-    return NULL;
+    return nullptr;
 }
 
 /** @} */

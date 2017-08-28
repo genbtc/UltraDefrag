@@ -44,7 +44,7 @@ void *BtdThread::Entry()
 {
     itrace("boot registration tracking started");
 
-    HKEY hKey = NULL; HANDLE hEvent = NULL;
+    HKEY hKey = nullptr; HANDLE hEvent = nullptr;
     if(::RegOpenKeyExW(HKEY_LOCAL_MACHINE,
       L"SYSTEM\\CurrentControlSet\\Control\\Session Manager",
       0,KEY_NOTIFY,&hKey) != ERROR_SUCCESS){
@@ -52,8 +52,8 @@ void *BtdThread::Entry()
         goto done;
     }
 
-    hEvent = ::CreateEvent(NULL,FALSE,FALSE,NULL);
-    if(hEvent == NULL){
+    hEvent = ::CreateEvent(nullptr,FALSE,FALSE, nullptr);
+    if(hEvent == nullptr){
         letrace("cannot create event for SMSS key tracking");
         goto done;
     }
@@ -85,7 +85,7 @@ done:
     if(hEvent) ::CloseHandle(hEvent);
     if(hKey) ::RegCloseKey(hKey);
     itrace("boot registration tracking stopped");
-    return NULL;
+    return nullptr;
 }
 
 // =======================================================================

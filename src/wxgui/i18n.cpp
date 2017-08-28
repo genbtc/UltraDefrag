@@ -40,7 +40,7 @@
 //                            Global variables
 // =======================================================================
 
-wxLocale *g_locale = NULL;
+wxLocale *g_locale = nullptr;
 
 // =======================================================================
 //                         Internationalization

@@ -350,7 +350,7 @@ void *ConfigThread::Entry()
 
 done:
     itrace("configuration tracking stopped");
-    return NULL;
+    return nullptr;
 }
 
 // =======================================================================

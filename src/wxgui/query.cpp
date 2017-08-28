@@ -153,7 +153,7 @@ void *QueryThread::Entry()
         if(m_startquery){
             result = udefrag_start_query(m_letter,m_qType,m_flags,m_mapSize,
                 reinterpret_cast<udefrag_progress_callback>(ProgressCallback),
-                reinterpret_cast<udefrag_terminator>(Terminator),m_qp,NULL
+                reinterpret_cast<udefrag_terminator>(Terminator),m_qp, nullptr
             );
             if(result < 0 && !g_mainFrame->m_stopped){
                 etrace("Disk Processing Failure.");
@@ -163,7 +163,7 @@ void *QueryThread::Entry()
             m_startquery = false;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 void QueryThread::ProgressCallback(udefrag_progress_info *pi, void *p)

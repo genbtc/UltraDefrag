@@ -964,7 +964,7 @@ static int optimize_routine(udefrag_job_parameters *jp)
         jp->pi.clusters_to_process = \
             jp->pi.processed_clusters + count_clusters(jp,start_lcn) + clusters_to_optimize(jp,pt);
         
-        /* cleanup space in the beginning of the disk */
+        /* cleanup space in the beginning of the disk (fragments?) */
         move_files_to_back(jp,&end_lcn);
         if(jp->termination_router((void *)jp)){
             /* the pass is completed */

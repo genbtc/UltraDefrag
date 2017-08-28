@@ -197,7 +197,7 @@ void MainFrame::InitFilesList()
     // ensure that the list will cover integral number of items
     m_filesListHeight = 0xFFFFFFFF; // prevent expansion of the list
 
-    Connect(wxEVT_SIZE,wxSizeEventHandler(MainFrame::FilesOnListSize),NULL,this);
+    Connect(wxEVT_SIZE,wxSizeEventHandler(MainFrame::FilesOnListSize), nullptr,this);
 
     InitPopupMenus();
     ListSortInfo *m_sortinfo = new ListSortInfo();

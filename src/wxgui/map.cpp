@@ -146,7 +146,7 @@ char *ClusterMap::ScaleMap(int scaled_size)
     // dtrace("map size = %u, scaled size = %u",map_size,scaled_size);
 
     if(scaled_size == map_size)
-        return NULL; // no need to scale
+        return nullptr; // no need to scale
 
     char *scaledMap = new char[scaled_size];
 

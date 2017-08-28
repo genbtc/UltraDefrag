@@ -162,7 +162,7 @@ void JobThread::ProcessVolume(int index)
         m_flags |= g_mainFrame->m_repeat ? UD_JOB_REPEAT : 0;
         result = udefrag_start_job(m_letter,m_jobType,m_flags,m_mapSize,
             reinterpret_cast<udefrag_progress_callback>(ProgressCallback),
-            reinterpret_cast<udefrag_terminator>(Terminator),NULL
+            reinterpret_cast<udefrag_terminator>(Terminator), nullptr
         );
     }
 
@@ -213,7 +213,7 @@ void *JobThread::Entry()
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 // =======================================================================

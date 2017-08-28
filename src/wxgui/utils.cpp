@@ -55,7 +55,7 @@ typedef HRESULT (__stdcall *URLMON_PROCEDURE)(
  */
 bool Utils::CheckAdminRights(void)
 {
-    PSID psid = NULL;
+    PSID psid = nullptr;
     SID_IDENTIFIER_AUTHORITY SystemSidAuthority = {SECURITY_NT_AUTHORITY};
     if(!::AllocateAndInitializeSid(&SystemSidAuthority,2,
       SECURITY_BUILTIN_DOMAIN_RID,DOMAIN_ALIAS_RID_ADMINS,
@@ -65,7 +65,7 @@ bool Utils::CheckAdminRights(void)
     }
 
     BOOL is_member = false;
-    if(!::CheckTokenMembership(NULL,psid,&is_member)){
+    if(!::CheckTokenMembership(nullptr,psid,&is_member)){
         letrace("cannot check token membership");
         if(psid) ::FreeSid(psid);
         return false;
@@ -99,7 +99,7 @@ bool Utils::DownloadFile(const wxString& url, const wxString& path)
         return false;
 
     HRESULT result = pfnURLDownloadToFileW(
-        NULL,url.wc_str(),path.wc_str(),0,NULL);
+        nullptr,url.wc_str(),path.wc_str(),0, nullptr);
     if(result != S_OK){
         etrace("URLDownloadToFile failed "
             "with code 0x%x",(UINT)result);
@@ -118,12 +118,12 @@ bool Utils::DownloadFile(const wxString& url, const wxString& path)
  */
 void Utils::GaRequest(const wxString& path)
 {
-    srand((unsigned int)time(NULL));
+    srand((unsigned int)time(nullptr));
     int utmn = (rand() << 16) + rand();
     int utmhid = (rand() << 16) + rand();
     int cookie = (rand() << 16) + rand();
     int random = (rand() << 16) + rand();
-    __int64 today = (__int64)time(NULL);
+    __int64 today = (__int64)time(nullptr);
 
     wxString url;
 
@@ -163,28 +163,28 @@ void Utils::GaRequest(const wxString& path)
  */
 wxBitmap * Utils::LoadPngResource(const wchar_t *name)
 {
-    HRSRC resource = ::FindResource(NULL,name,RT_RCDATA);
+    HRSRC resource = ::FindResource(nullptr,name,RT_RCDATA);
     if(!resource){
         letrace("cannot find %ls resource",name);
-        return NULL;
+        return nullptr;
     }
 
-    HGLOBAL handle = ::LoadResource(NULL,resource);
+    HGLOBAL handle = ::LoadResource(nullptr,resource);
     if(!handle){
         letrace("cannot load %ls resource",name);
-        return NULL;
+        return nullptr;
     }
 
     char *data = (char *)::LockResource(handle);
     if(!data){
         letrace("cannot lock %ls resource",name);
-        return NULL;
+        return nullptr;
     }
 
-    DWORD size = ::SizeofResource(NULL,resource);
+    DWORD size = ::SizeofResource(nullptr,resource);
     if(!size){
         letrace("cannot get size of %ls resource",name);
-        return NULL;
+        return nullptr;
     }
 
     wxMemoryInputStream is(data,size);
@@ -333,15 +333,15 @@ int Utils::MessageDialog(wxFrame *parent,
     // once from icon to bitmap and then back to icon;
     // since it causes the icon to look untidy we're using
     // direct icon loading here
-    LPCWSTR id = NULL;
+    LPCWSTR id = nullptr;
     if(icon == wxART_QUESTION) id = IDI_QUESTION;
     else if(icon == wxART_WARNING) id = IDI_EXCLAMATION;
     else if(icon == wxART_ERROR) id = IDI_HAND;
     else if(icon == wxART_INFORMATION) id = IDI_ASTERISK;
 
-    HICON hIcon = NULL;
+    HICON hIcon = nullptr;
     if(id){
-        hIcon = ::LoadIcon(NULL,id);
+        hIcon = ::LoadIcon(nullptr,id);
         if(!hIcon) letrace("cannot load icon for \"%ls\"",icon.wc_str());
     }
 
@@ -493,7 +493,7 @@ void Utils::createDirectoryRecursively(const std::wstring &directory) {
 
     // Create the last directory on the path (the recursive calls will have taken
     // care of the parent directories by now)
-    BOOL result = ::CreateDirectoryW(directory.c_str(), NULL);
+    BOOL result = ::CreateDirectoryW(directory.c_str(), nullptr);
     if(result == FALSE) {
       throw std::runtime_error("Could not create directory");
     }
