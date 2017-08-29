@@ -118,15 +118,16 @@ void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
     event.SetClientData((void *)cacheEntry);
     wxPostEvent(g_mainFrame,event);
 
-    if ((pi->completion_status > 0) && (pi->isfragfileslist = 1)){
+    if (pi->completion_status > 0) {
+        pi->isfragfileslist = TRUE;
         //g_jpPtr = pi->jp;   //set Global Pointer back to &jp->
         cacheEntry->pi.fragmented_files_prb = pi->fragmented_files_prb;
 
         event.SetId(ID_PopulateFilesList); //populate the fragmented-files-list tab's listview.
         event.SetInt(letter);
-        //event.SetClientData((void *)cacheEntry); //instead of sending this, the target is using cacheEntry instead.
+        
         wxPostEvent(g_mainFrame,event);
-        //dtrace("Successfully sent Fragmented Files list over to MainFrame::FilesPopulateList()");
+        dtrace("Successfully sent Fragmented Files list over to MainFrame::FilesPopulateList()");
         event.SetId(ID_UpdateVolumeStatus);//updates status column with "Analyzed.", etc (on finished)
         wxPostEvent(g_mainFrame,event);
         return; //shortcut past a redundant redrawmap and updatestatusbar
@@ -178,7 +179,7 @@ void JobThread::ProcessVolume(int index)
     wxPostEvent(g_mainFrame,event);
 }
 
-void *JobThread::Entry()
+void* JobThread::Entry()
 {
     while(!g_mainFrame->CheckForTermination(200)){
         if(m_launch){
@@ -219,7 +220,12 @@ void *JobThread::Entry()
 // =======================================================================
 //                            Event handlers
 // =======================================================================
-int MainFrame::getmapsize(){
+
+/**
+ * \brief Determine how large the Cluster Map should be (window size)
+ * \return A total number of cells/blocks. 
+ */
+int MainFrame::GetMapSize(){
     int width, height; g_mainFrame->m_cMap->GetClientSize(&width,&height);
     int block_size = CheckOption(wxT("UD_MAP_BLOCK_SIZE"));
     int line_width = CheckOption(wxT("UD_GRID_LINE_WIDTH"));
@@ -229,6 +235,12 @@ int MainFrame::getmapsize(){
     return (blocks_per_line * lines);
 }
 
+/**
+ * \brief Event function. User starts the job, telling us what job it is.
+ * Disable GUI elements, do program housekeeping, then calculate the job parameters.
+ * Gets the job done.
+ * \param event 
+ */
 void MainFrame::OnStartJob(wxCommandEvent& event)
 {
     if(m_busy) return;
@@ -315,10 +327,14 @@ void MainFrame::OnStartJob(wxCommandEvent& event)
         m_jobThread->m_jobType = MFT_OPTIMIZATION_JOB;
         break;
     }
-    m_jobThread->m_mapSize = getmapsize();
+    m_jobThread->m_mapSize = GetMapSize();
     m_jobThread->m_launch = true;
 }
 
+
+/**
+ * \brief Event function. User stops the job. Stop Button.
+ */
 void MainFrame::OnJobCompletion(wxCommandEvent& WXUNUSED(event))
 {
     // unlock everything after the job completion
@@ -350,10 +366,14 @@ void MainFrame::OnJobCompletion(wxCommandEvent& WXUNUSED(event))
     dtrace("The Job Has Completed Fully."); //Final Complete Message.
     //Handle cleanup of any single file defragmenting vars.
     m_jobThread->m_flags = 0;
-    m_jobThread->singlefile = FALSE;
+    m_jobThread->singlefile = false;
     wxUnsetEnv(L"UD_CUT_FILTER");
 }
 
+
+/**
+ * \brief Pause Button Start.
+ */
 void MainFrame::SetPause()
 {
     m_menuBar->FindItem(ID_Pause)->Check(true);
@@ -366,6 +386,10 @@ void MainFrame::SetPause()
     ProcessCommandEvent(ID_AdjustTaskbarIconOverlay);
 }
 
+
+/**
+ * \brief Pause Button Stop.
+ */
 void MainFrame::ReleasePause()
 {
     m_menuBar->FindItem(ID_Pause)->Check(false);
@@ -378,12 +402,19 @@ void MainFrame::ReleasePause()
     ProcessCommandEvent(ID_AdjustTaskbarIconOverlay);
 }
 
+/**
+ * \brief Pause Button Handler. Event Function. 
+ * Uses SetPause() & ReleasePause()
+ */
 void MainFrame::OnPause(wxCommandEvent& WXUNUSED(event))
 {
     m_paused = m_paused ? false : true;
     if(m_paused) SetPause(); else ReleasePause();
 }
 
+/**
+ * \brief Stop Button Handler. Event Function. 
+ */
 void MainFrame::OnStop(wxCommandEvent& WXUNUSED(event))
 {
     m_paused = false;
@@ -391,6 +422,9 @@ void MainFrame::OnStop(wxCommandEvent& WXUNUSED(event))
     m_stopped = true;
 }
 
+/**
+ * \brief Repeat Button Handler. Event Function. 
+ */
 void MainFrame::OnRepeat(wxCommandEvent& WXUNUSED(event))
 {
     if(!m_busy){
@@ -400,6 +434,9 @@ void MainFrame::OnRepeat(wxCommandEvent& WXUNUSED(event))
     }
 }
 
+/**
+ * \brief Repair Button Handler. Event Function. 
+ */
 void MainFrame::OnRepair(wxCommandEvent& WXUNUSED(event))
 {
     if(m_busy) return;
@@ -417,7 +454,7 @@ void MainFrame::OnRepair(wxCommandEvent& WXUNUSED(event))
     /*
     create command line to check disk for corruption:
     CHKDSK {drive} /F ................. check the drive and correct problems
-    PING -n {seconds + 1} localhost ... pause for the specified seconds
+    PING -n {seconds + 1} localhost ... trick to pause for n seconds afterwards
     */
     wxFileName path(wxT("%windir%\\system32\\cmd.exe"));
     path.Normalize(); wxString cmd(path.GetFullPath());
@@ -429,6 +466,7 @@ void MainFrame::OnRepair(wxCommandEvent& WXUNUSED(event))
     cmd << wxT("& chkdsk %D /F ");
     cmd << wxT("& echo. ");
     cmd << wxT("& echo ------------------------------------------------- ");
+    //Pause for 11 seconds after the check completes, so you can actually read it:
     cmd << wxT("& ping -n 11 localhost >nul ");
     cmd << wxT(") ");
     cmd << wxT("& echo. ");
@@ -454,6 +492,10 @@ void MainFrame::OnDefaultAction(wxCommandEvent& WXUNUSED(event))
     }
 }
 
+/**
+ * \brief The Job Failed. Print an Error message 
+ * \param event 
+ */
 void MainFrame::OnDiskProcessingFailure(wxCommandEvent& event)
 {
     wxString caption;

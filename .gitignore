@@ -110,3 +110,5 @@ src/wxgui/Debug/*
 src/.vs/Udefrag-VS/v15/Browse.VC.opendb
 src/.vs/Udefrag-VS/v15/Solution.VC.db-shm
 src/.vs/Udefrag-VS/v15/Solution.VC.db-wal
+src/dll/udefrag/Release/*.tlog
+*.tlog

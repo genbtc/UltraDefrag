@@ -30,6 +30,13 @@
 // Ideas by Stefan Pendl <stefanpe@users.sourceforge.net>
 // and Dmitri Arkhangelski <dmitriar@gmail.com>.
 
+#ifdef _DEBUG
+    #ifndef _CRTDBG_MAP_ALLOC
+    #define _CRTDBG_MAP_ALLOC  
+    #include <stdlib.h>  
+    #include <crtdbg.h>
+    #endif
+#endif
 // =======================================================================
 //                            Declarations
 // =======================================================================
@@ -234,6 +241,8 @@ IMPLEMENT_APP(App)
 MainFrame::MainFrame()
     :wxFrame(nullptr,wxID_ANY,wxT("UltraDefrag"))
 {
+    _CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );  
+    _CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );  
     g_mainFrame = this;
     m_vList = nullptr;
     m_cMap = nullptr;
@@ -400,7 +409,7 @@ MainFrame::MainFrame()
 }
 
 /**
- * @brief Deinitializes main window.
+ * @brief Destructor for main window. Save Config. Free Resources. Close.
  */
 MainFrame::~MainFrame()
 {
@@ -426,10 +435,8 @@ MainFrame::~MainFrame()
 }
 
 /**
- * @brief Returns true if the program
- * is going to be terminated.
- * @param[in] time timeout interval,
- * in milliseconds.
+ * @brief Returns true if the program is going to be terminated.
+ * @param[in] time timeout interval, in milliseconds.
  */
 bool MainFrame::CheckForTermination(int time)
 {
@@ -449,9 +456,10 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     // action menu
     EVT_MENU_RANGE(ID_Analyze, ID_MftOpt,
                    MainFrame::OnStartJob)
-    // includes: ID_Analyze = 1,    ID_Defrag,
+    // includes jobs: ID_Analyze = 1,    ID_Defrag,
     //      ID_QuickOpt,    ID_FullOpt,    ID_MftOpt,
     // and now     ID_MoveToFront,     ID_MoveToEnd,
+    // but we dont use those in this menu
 
     EVT_MENU(ID_Pause, MainFrame::OnPause)
     EVT_MENU(ID_Stop,  MainFrame::OnStop)

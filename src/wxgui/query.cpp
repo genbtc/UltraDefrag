@@ -91,6 +91,9 @@ void MainFrame::QueryClusters(wxCommandEvent& event){
     
     int id = event.GetId();
     m_queryThread->m_qp = new udefrag_query_parameters();
+    m_queryThread->m_qp->guiFinished = FALSE;
+    m_queryThread->m_qp->engineFinished = FALSE;
+    m_queryThread->m_qp->startGUI = TRUE;
     WxTextCtrl1->Clear();
     
 //Launched from Menu:
@@ -120,9 +123,9 @@ void MainFrame::QueryClusters(wxCommandEvent& event){
 
     m_queryThread->m_querypath = (wchar_t *)itemtext.fn_str();
     m_queryThread->m_qp->path = m_queryThread->m_querypath;
-    m_queryThread->m_letter = (char)(itemtext[0]); //find the drive-letter of the fragmented files tab.
-        
-    m_queryThread->m_mapSize = getmapsize();
+    m_queryThread->m_letter = (char)itemtext[0]; //find the drive-letter of the file
+    
+    m_queryThread->m_mapSize = GetMapSize();
     
     switch(id){
     case ID_QueryClusters:
@@ -145,15 +148,15 @@ void MainFrame::QueryClusters(wxCommandEvent& event){
 ***=========================================================================**/
 //better off with a struct to pass any variables we need IN. Such as:
 // drive_letter. query_type. File Path.  (combine/variables set above)
-void *QueryThread::Entry()
+void* QueryThread::Entry()
 {
     int result;
 
     while(!g_mainFrame->CheckForTermination(200)){
         if(m_startquery){
             result = udefrag_start_query(m_letter,m_qType,m_flags,m_mapSize,
-                reinterpret_cast<udefrag_progress_callback>(ProgressCallback),
-                reinterpret_cast<udefrag_terminator>(Terminator),m_qp, nullptr
+                reinterpret_cast<udefrag_query_progress_callback>(PostProgressCallback),
+                reinterpret_cast<udefrag_terminator>(Terminator),*m_qp, nullptr
             );
             if(result < 0 && !g_mainFrame->m_stopped){
                 etrace("Disk Processing Failure.");
@@ -166,47 +169,62 @@ void *QueryThread::Entry()
     return nullptr;
 }
 
-void QueryThread::ProgressCallback(udefrag_progress_info *pi, void *p)
-{
-    //Copied from Job.cpp function of same-name
-    if (pi->completion_status > 0){
-        dtrace("The Completion Status Was 0. Begin Populating The Query Tab Here.");
-        //cannot access member variable m_qp from in here.
-        //would rather call a new member function.
-        g_mainFrame->m_queryThread->DisplayQueryResults();
+//Copied from Job.cpp function of same-name
+void QueryThread::PostProgressCallback(udefrag_query_parameters *qp, void *p)
+{    
+    if (qp->startGUI) {
+        dtrace("Begin Populating The Query Tab Here!:");
+        g_mainFrame->m_queryThread->DisplayQueryResults(qp);
+        //memcpy(g_mainFrame->m_queryThread->m_qp,qp,sizeof(udefrag_query_parameters));
+        //memcpy(&g_mainFrame->m_queryThread->m_qp->filedisp,&qp->filedisp,sizeof(winx_file_disposition));
+        qp->guiFinished = TRUE;
     }
+    else
+        dtrace("Query CallBack, Did Nothing...waaiting.");
 }
 
-void QueryThread::DisplayQueryResults()
+/**
+ * \brief Show the results of the query: (Fragments, Clusters, VCNs) in the Query Tab Textboxes.
+ * \param m_qp make Param dont overrides the querythreads external m_qp var for now.
+ */
+void QueryThread::DisplayQueryResults(udefrag_query_parameters *qp)
 {
     ULONGLONG i;
     winx_blockmap *block;
-
+    qp->guiFinished = TRUE;
+    memcpy(m_qp,qp,sizeof(udefrag_query_parameters));
+    //store the values again
+    //qp.path = jp->qp.path;
+    //qp.filedisp = jp->qp.filedisp;
     dtrace("The File's path is: %ws",m_qp->path);
-//    dtrace("The File has #clusters: %d",m_qp->filedisp.clusters);
-//    itrace("The File has #fragments: %d",m_qp->filedisp.fragments);
     wxString line;
+    dtrace("The File has #clusters: %d",m_qp->filedisp.clusters);
+    dtrace("The File has #fragments: %d",m_qp->filedisp.fragments);
     line.Printf(_("Fragments: %I64u , Length(clusters): %I64u \n"),m_qp->filedisp.fragments, m_qp->filedisp.clusters);
     g_mainFrame->WxTextCtrl1->Freeze(); 
     g_mainFrame->WxTextCtrl1->AppendText(line.c_str());
     for(block = m_qp->filedisp.blockmap, i = 0; block; block = block->next, i++){
-        //itrace("file part #%I64u start: %I64u, length: %I64u\n"),i,block->lcn,block->length);
+        itrace("file part #%I64u start: %I64u, length: %I64u\n",i,block->lcn,block->length);
         line.Printf(_("Fragment #%I64u starts @ %I64u, length: %I64u clusters.\n"),i,block->lcn,block->length);
         
         g_mainFrame->WxTextCtrl1->AppendText(line.c_str());
 
         if(block->next == m_qp->filedisp.blockmap) break;
     }
-    g_mainFrame->WxTextCtrl1->Thaw(); 
+    m_qp->guiFinished = TRUE;
+    //memcpy(qp,g_mainFrame->m_queryThread->m_qp,sizeof(udefrag_query_parameters));
+    g_mainFrame->WxTextCtrl1->Thaw();
     gui_query_finished();
 }
 
 void MainFrame::OnQueryCompletion(wxCommandEvent& WXUNUSED(event))
 {
+    wxUnsetEnv(L"UD_CUT_FILTER");
     m_busy = false;
     m_queryThread->m_flags = 0;
-    m_queryThread->singlefile = FALSE;
-    wxUnsetEnv(L"UD_CUT_FILTER");    
+    m_queryThread->singlefile = false;    
+    m_queryThread->m_qp->guiFinished = TRUE;
+    m_queryThread->m_qp->startGUI = FALSE;
 }
 
 int QueryThread::Terminator(void *p)

@@ -190,6 +190,7 @@ void deliver_progress_info(udefrag_job_parameters *jp,int completion_status)
     
     /* deliver information to the caller */
     jp->cb(&pi,jp->p);
+    /* where stuff happens ^ */
     jp->progress_refresh_time = winx_xtime();
     if(jp->udo.dbgprint_level >= DBG_PARANOID)
         winx_dbg_print_header(0x20,0,D"progress update");
@@ -214,7 +215,6 @@ static int killer(void *p)
     winx_dbg_print_header(0,0,I"*");
     winx_dbg_print_header(0x20,0,I"termination requested by caller");
     winx_dbg_print_header(0,0,I"*");
-    gui_fileslist_finished();//must be called.
     return 1;
 }
 
@@ -236,14 +236,19 @@ static int terminator(void *p)
     /* continue */
     return 0;
 }
+BOOL listsCleaned = FALSE;
 
 /**
+ * \brief Runs the start of the job. Repeat Main Function.
+ * \param p is a pointer to the job.
+ * \return status
  */
 static DWORD WINAPI start_job(LPVOID p)
 {
     udefrag_job_parameters *jp = (udefrag_job_parameters *)p;
     char *action;
-    int result = 0;
+    int result = -1;
+    listsCleaned = FALSE;
 
     /* check job flags */
     if(jp->udo.job_flags & UD_JOB_REPEAT)
@@ -288,7 +293,6 @@ static DWORD WINAPI start_job(LPVOID p)
         result = movefile_to_start_or_end(jp,0);
         break;
     default:
-        result = 0;
         break;
     }
 
@@ -311,20 +315,27 @@ static DWORD WINAPI start_job(LPVOID p)
  * @brief Destroys list of free regions, 
  * list of files and list of fragmented files.
  */
+
 void destroy_lists(udefrag_job_parameters *jp)
 {
     ULONGLONG start,end;
     start = winx_xtime();
-    dtrace("Destroying list of free regions, list of files and " \
-           "PRB of fragmented files for Drive: %c...",jp->volume_letter);
-    if(jp->fragmented_files){
-        dtrace("Deleting jp->fragmented_files...");
-        prb_destroy(jp->fragmented_files,NULL);
+    if (jp->fragmented_files) {
+        dtrace("Destroying PRB jp->fragmented_files for Drive: %c...",jp->volume_letter);
+        prb_destroy(jp->fragmented_files, NULL);
+        jp->fragmented_files = NULL;
     }
-    winx_scan_disk_release(jp->filelist);
-    winx_release_free_volume_regions(jp->free_regions);
+    if (jp->filelist) {
+        dtrace("Releasing jp->filelist...");
+        winx_ftw_release(jp->filelist);
+    }
+    if (jp->free_regions) {
+        dtrace("Releasing jp->free_regions...");
+        winx_release_free_volume_regions(jp->free_regions);
+    }
     end = winx_xtime();
     dtrace("Cleanup Finished. The list-deletion took: %d msec.",end-start);
+    listsCleaned = TRUE;
 }
 
 /**
@@ -336,9 +347,20 @@ void destroy_lists(udefrag_job_parameters *jp)
  */ 
 static DWORD WINAPI wait_delete_lists_thread(LPVOID p)
 {
+    udefrag_job_parameters *jp = (udefrag_job_parameters *)p;
+    int delwaitcount = 0;
     while(!gui_finished)
+    {
+        delwaitcount++;
+        dtrace("Sleeping 250ms waiting for GUI to come back. Wait Count = %d", delwaitcount);
         winx_sleep(250);
-    destroy_lists((udefrag_job_parameters *)p);
+    }
+    if (jp == NULL)
+    {
+        etrace("Error. Trying to clear a list thats already gone. JP was null.");
+        return 1;
+    }
+    destroy_lists(jp);
     wait_delete_thread_finished = TRUE;
     winx_exit_thread(0);
     return 0;
@@ -380,7 +402,8 @@ int udefrag_start_job(char volume_letter,udefrag_job_type job_type,int flags,
     udefrag_job_parameters jp;
     ULONGLONG time = 0;
     int use_limit = 0;
-    int result = -1;
+    int result;
+    int delwaitcount = 0;
     
     /* initialize the job */
     memset(&jp,0,sizeof(udefrag_job_parameters));
@@ -430,7 +453,7 @@ int udefrag_start_job(char volume_letter,udefrag_job_type job_type,int flags,
     
     /* run the job in separate thread */
     //if <0 this must mean that the job creation failed, so gracefully go to done.
-    if(winx_create_thread(start_job,(PVOID)&jp) < 0){
+    if(winx_create_thread(start_job,(LPVOID)&jp) < 0){
         free_map(&jp);
         release_options(&jp);
         goto done;
@@ -492,9 +515,13 @@ done:
     // without clearing the memory, deletion of lists will fail/break/segfault.
     // This has to be kept in mind in the terminator also, to reset variables.
     if (result > 0){
-        winx_create_thread(wait_delete_lists_thread,(PVOID)&jp);
-        while(!gui_finished || !wait_delete_thread_finished)
+        dtrace("Job Complete. Creating deletion Thread with 333ms timeout ->");
+        winx_create_thread(wait_delete_lists_thread,(LPVOID)&jp);
+        while(!gui_finished || !wait_delete_thread_finished){
+            dtrace("Sleeping 333ms waiting for deletion to complete. Wait Count = %d", delwaitcount);            
+            delwaitcount++;
             winx_sleep(333);
+        }
         gui_finished = FALSE;
         wait_delete_thread_finished = FALSE;
     }
@@ -512,9 +539,9 @@ done:
  * @return A string containing default formatted results
  * of the disk defragmentation job. NULL indicates failure.
  * @note This function is used in console and native applications.
- * NOT the gui.
+ * NOT the gui. (Console only)
  */
-char *udefrag_get_results(udefrag_progress_info *pi)
+char* udefrag_get_results(udefrag_progress_info *pi)
 {
     #define MSG_LENGTH 4095
     char *msg;
@@ -554,8 +581,7 @@ char *udefrag_get_results(udefrag_progress_info *pi)
 }
 
 /**
- * @brief Releases memory allocated
- * by udefrag_get_results.
+ * @brief Console. Releases memory allocated by udefrag_get_results.
  * @param[in] results the string to be released.
  */
 void udefrag_release_results(char *results)
@@ -569,7 +595,7 @@ void udefrag_release_results(char *results)
  * @param[in] error_code the error code.
  * @return A human readable description.
  */
-char *udefrag_get_error_description(int error_code)
+char* udefrag_get_error_description(int error_code)
 {
     switch(error_code){
     case UDEFRAG_UNKNOWN_ERROR:
@@ -724,28 +750,25 @@ int udefrag_set_log_file_path(void)
         if(path == NULL){
             etrace("failed to query %%SystemDrive%%");
             goto fail;
-        } else {
-            filename = winx_wcsdup(native_path);
-            if(filename == NULL){
-                etrace("cannot allocate memory for filename");
-                winx_free(path);
-                goto fail;
-            } else {
-                winx_path_extract_filename(filename);
-                winx_free(native_path);
-                native_path = winx_swprintf(L"\\??\\%ws\\UltraDefrag_Logs\\%ws",path,filename);
-                if(native_path == NULL){
-                    etrace("cannot build %%SystemDrive%%\\UltraDefrag_Logs\\{filename}");
-                    winx_free(filename); winx_free(path);
-                    goto fail;
-                } else {
-                    /* delete old logfile from the temporary folder */
-                    winx_delete_file(native_path);
-                }
-                winx_free(filename);
-            }
-            winx_free(path);
         }
+        filename = winx_wcsdup(native_path);
+        if(filename == NULL){
+            etrace("cannot allocate memory for filename");
+            winx_free(path);
+            goto fail;
+        }
+        winx_path_extract_filename(filename);
+        winx_free(native_path);
+        native_path = winx_swprintf(L"\\??\\%ws\\UltraDefrag_Logs\\%ws",path,filename);
+        if(native_path == NULL){
+            etrace("cannot build %%SystemDrive%%\\UltraDefrag_Logs\\{filename}");
+            winx_free(filename); winx_free(path);
+            goto fail;
+        }
+        /* delete old logfile from the temporary folder */
+        winx_delete_file(native_path);
+        winx_free(filename);
+        winx_free(path);
         /* ensure that target path exists */
         if(create_target_directory(native_path) < 0) goto fail;
     }

@@ -48,8 +48,8 @@ extern "C" {
 #define MAX_DOS_DRIVES 26
 #define MAXFSNAME      32  /* I think, that's enough */
 
-int udefrag_init_library(void);
-void udefrag_unload_library(void);
+extern int udefrag_init_library(void);
+extern void udefrag_unload_library(void);
 
 typedef struct _volume_info {
     char letter;
@@ -62,10 +62,10 @@ typedef struct _volume_info {
     ULONGLONG bytes_per_cluster;
 } volume_info;
 
-volume_info *udefrag_get_vollist(int skip_removable);
-void udefrag_release_vollist(volume_info *v);
-int udefrag_validate_volume(char volume_letter,int skip_removable);
-int udefrag_get_volume_information(char volume_letter,volume_info *v);
+extern volume_info *udefrag_get_vollist(int skip_removable);
+extern void udefrag_release_vollist(volume_info *v);
+extern int udefrag_validate_volume(char volume_letter,int skip_removable);
+extern int udefrag_get_volume_information(char volume_letter,volume_info *v);
 
 typedef enum {
     ANALYSIS_JOB = 0,
@@ -116,7 +116,7 @@ enum {
     SPACE_STATES                 /* this must always be the last */
 };
 
-#define UNKNOWN_SPACE FRAGM_SPACE
+#define UNKNOWN_SPACE DEFAULT_GRAY
 
 typedef struct _udefrag_progress_info {
     unsigned long files;              /* number of files */
@@ -150,24 +150,31 @@ typedef struct _udefrag_progress_info {
 typedef void  (*udefrag_progress_callback)(udefrag_progress_info *pi, void *p);
 typedef int   (*udefrag_terminator)(void *p);
 
-int udefrag_start_job(char volume_letter,udefrag_job_type job_type,int flags,
+extern int udefrag_start_job(char volume_letter,udefrag_job_type job_type,int flags,
     int cluster_map_size,udefrag_progress_callback cb,udefrag_terminator t,void *p);
 
-char *udefrag_get_results(udefrag_progress_info *pi);
-void udefrag_release_results(char *results);
+extern char *udefrag_get_results(udefrag_progress_info *pi);
+extern void udefrag_release_results(char *results);
 
-char *udefrag_get_error_description(int error_code);
+extern char *udefrag_get_error_description(int error_code);
 
-int udefrag_set_log_file_path(void);
+extern int udefrag_set_log_file_path(void);
 
-void gui_fileslist_finished(void);
+extern void gui_fileslist_finished(void);
+
 int convert_path_to_native(wchar_t *path, wchar_t **native_path);
 
 /*Begin Query.C definitions */
+/**
+ * \brief path,filedisp,guiFinished,engineFinished,startGUI
+ */
 typedef struct _udefrag_query_parameters {
     wchar_t *path;      /* Path from the GUI. What to query */
     winx_file_disposition filedisp;
     //something else
+    int guiFinished;
+    int engineFinished;
+    int startGUI;
 } udefrag_query_parameters;
 
 typedef enum {
@@ -175,10 +182,13 @@ typedef enum {
     QUERY_GET_FREE_REGIONS
 } udefrag_query_type;
 
-int udefrag_start_query(char volume_letter,udefrag_query_type job_type,int flags,int cluster_map_size,
-    udefrag_progress_callback cb,udefrag_terminator t,udefrag_query_parameters *qp,void *p);
+typedef void (*udefrag_query_progress_callback)(udefrag_query_parameters *qp, void *p);
 
-void gui_query_finished(void);
+extern int udefrag_start_query(char volume_letter,udefrag_query_type job_type,int flags,int cluster_map_size,
+    udefrag_query_progress_callback qpcb,udefrag_terminator t,udefrag_query_parameters qp,void *p);
+
+extern void gui_query_finished(void);
+
 
 //auxiliary.c
 double calc_percentage(ULONGLONG x,ULONGLONG y);

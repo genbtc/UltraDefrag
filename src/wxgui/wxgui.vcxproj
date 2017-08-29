@@ -63,7 +63,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
-      <AdditionalDependencies>zenwinx.lib;udefrag.lib;lua5.1a.lib;wxmsw28u_adv.lib;wxmsw28u_core.lib;wxpng.lib;wxzlib.lib;wxbase28u.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;ole32.lib;oleaut32.lib;uuid.lib;powrprof.lib;comctl32.lib;wsock32.lib;odbc32.lib;shell32.lib</AdditionalDependencies>
+      <AdditionalDependencies>zenwinx.lib;udefrag.lib;lua5.1a.lib;wxmsw28u_adv.lib;wxmsw28u_core.lib;wxpng.lib;wxzlib.lib;wxbase28u.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;ole32.lib;oleaut32.lib;uuid.lib;powrprof.lib;comctl32.lib;wsock32.lib;odbc32.lib;shell32.lib;msvcrtd.lib</AdditionalDependencies>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreAllDefaultLibraries>
@@ -78,6 +78,7 @@
       </TargetMachine>
       <AdditionalLibraryDirectories>$(LibraryPath);$(SolutionDir)$(Configuration)</AdditionalLibraryDirectories>
       <EnableUAC />
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib;libcmt.lib;libcmtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <ClCompile />
     <ClCompile>
@@ -90,7 +91,7 @@
       </TreatWChar_tAsBuiltInType>
       <RuntimeTypeInfo>
       </RuntimeTypeInfo>
-      <PreprocessorDefinitions>NDEBUG;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WIN32;WIN32;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ShowIncludes>false</ShowIncludes>
       <UseUnicodeForAssemblerListing>
       </UseUnicodeForAssemblerListing>

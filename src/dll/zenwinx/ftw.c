@@ -771,7 +771,7 @@ winx_file_info *winx_scan_disk(char volume_letter, int flags,
         void *user_defined_data)
 {
     winx_file_info *filelist = NULL;
-    wchar_t rootpath[] = L"\\??\\A:\\";
+    wchar_t *rootpath = L"\\??\\A:\\";
     winx_volume_information v;
     ULONGLONG time;
     

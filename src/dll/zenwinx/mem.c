@@ -119,8 +119,8 @@ int winx_create_global_heap(void)
         return (-1);
     }
     
-    /* reserve 1 MB of memory for the out of memory condition handling */
-    reserved_memory = (char *)winx_tmalloc(1024 * 1024);
+    /* reserve 2 MB of memory for the out of memory condition handling */
+    reserved_memory = (char *)winx_tmalloc(2 * 1024 * 1024);
     return 0;
 }
 

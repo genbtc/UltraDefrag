@@ -175,7 +175,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>DEBUG;BUILD_DLL;WIN32;_MBCS;USE_WINSDK;_CRT_SECURE_NO_WARNINGS;_CONSOLE;_USRDLL;ZENWINX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEBUG;_DEBUG;BUILD_DLL;WIN32;_WIN32;_MBCS;USE_WINSDK;_CRT_SECURE_NO_WARNINGS;_CONSOLE;_USRDLL;ZENWINX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ErrorReporting>
       </ErrorReporting>
       <BufferSecurityCheck>false</BufferSecurityCheck>

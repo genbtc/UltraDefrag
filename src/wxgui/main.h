@@ -229,7 +229,7 @@ enum {
 #define SMALL_SPACING  DPI(5)
 #define LARGE_SPACING  DPI(11)
 
-#define DEFAULT_DRY_RUN          0
+#define DEFAULT_DRY_RUN          1  //genbtc TODO: change this for production.
 #define DEFAULT_FREE_COLOR_R   255
 #define DEFAULT_FREE_COLOR_G   255
 #define DEFAULT_FREE_COLOR_B   255
@@ -238,7 +238,7 @@ enum {
 #define DEFAULT_GRID_COLOR_B     0
 #define DEFAULT_GRID_LINE_WIDTH  1
 #define DEFAULT_MAP_BLOCK_SIZE   4
-#define DEFAULT_MINIMIZE_TO_SYSTEM_TRAY          0
+#define DEFAULT_MINIMIZE_TO_SYSTEM_TRAY          1
 #define DEFAULT_SECONDS_FOR_SHUTDOWN_REJECTION  60
 #define DEFAULT_SHOW_MENU_ICONS                  1
 #define DEFAULT_SHOW_PROGRESS_IN_TASKBAR         1
@@ -385,7 +385,7 @@ public:
 
     virtual void *Entry();
     
-    void DisplayQueryResults();
+    void DisplayQueryResults(udefrag_query_parameters* qp);
     
     bool m_startquery;
     wchar_t *m_querypath;
@@ -394,10 +394,10 @@ public:
     int m_mapSize;
     char m_letter;
     udefrag_query_type m_qType;
-    udefrag_query_parameters *m_qp;
+    udefrag_query_parameters* m_qp;
 
 private:
-    static void ProgressCallback(udefrag_progress_info *pi, void *p);
+    static void PostProgressCallback(udefrag_query_parameters* qp, void* p);
     static int Terminator(void *p);    
 };
 
@@ -677,7 +677,7 @@ public:
     wxMenu     *m_DriveSubMenu;         //genBTC Right Click Popup Menu
     wxTextCtrl *WxTextCtrl1;
 private:
-    int getmapsize();       //genBTC - used by job.cpp & query.cpp
+    int GetMapSize();       //genBTC - used by job.cpp & query.cpp
     void InitQueryMenu();   //genBTC query.cpp
     void InitPopupMenus();              //genBTC Right Click Popup Menu
     void InitMenu();
@@ -686,7 +686,7 @@ private:
     void InitVolList();
     void InitFilesList();    //genBTC FilesList.cpp
     void ReadAppConfiguration();
-    void ReadUserPreferences();
+    //void ReadUserPreferences();
     void ReleasePause();
     void RemoveTaskbarIconOverlay();
     void SaveAppConfiguration();

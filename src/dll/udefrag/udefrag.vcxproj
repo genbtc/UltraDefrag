@@ -150,7 +150,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <MinimalRebuild>false</MinimalRebuild>
-      <PreprocessorDefinitions>DEBUG;BUILD_DLL;WIN32;_MBCS;USE_WINSDK;_CRT_SECURE_NO_WARNINGS;_CONSOLE;_USRDLL;UDEFRAG_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;BUILD_DLL;_WIN32;WIN32;_MBCS;USE_WINSDK;_CRT_SECURE_NO_WARNINGS;_CONSOLE;_USRDLL;UDEFRAG_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <CompileAs>Default</CompileAs>
       <ErrorReporting>None</ErrorReporting>

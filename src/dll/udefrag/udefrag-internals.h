@@ -220,13 +220,16 @@ struct file_counters {
 
 typedef int  (*udefrag_termination_router)(void /*udefrag_job_parameters*/ *p);
 
+/**
+ * \brief aka "jp->". Job Parameters = A whole littany of objects. Kitchen Sink. Passed back and forth All-The-Time. Holds State too.
+ */
 typedef struct _udefrag_job_parameters {
     unsigned char volume_letter;                /* volume letter */
     udefrag_job_type job_type;                  /* type of requested job */
     udefrag_progress_callback cb;               /* progress update callback */
-    udefrag_terminator t;                       /* termination callback */
+    udefrag_terminator t;                       /* termination callback {wxgui.exe!QueryThread::Terminator(void *)} */
     void *p;                                    /* pointer to user defined data to be passed to both callbacks */
-    udefrag_termination_router termination_router;  /* address of procedure triggering job termination */
+    udefrag_termination_router termination_router;  /* address of procedure triggering job termination {udefrag.dll!query_terminator(void *)}*/
     ULONGLONG start_time;                       /* time of the job launch */
     ULONGLONG progress_refresh_time;            /* time of the last progress refresh */
     udefrag_options udo;                        /* job options */
@@ -249,7 +252,8 @@ typedef struct _udefrag_job_parameters {
     int progress_trigger;                       /* a trigger used for debugging purposes */
     struct _mft_zone mft_zone;                  /* disposition of the mft zone; as it is before the volume processing */
     int win_version;                            /* Windows version */
-    udefrag_query_parameters *qp;               /* Embed a pointer to Query_parameters inside this for query.c */
+    udefrag_query_parameters qp;               /* Embed a pointer to Query_parameters inside this for query.c */
+    udefrag_query_progress_callback qpcb;       /* query progress update callback */
 } udefrag_job_parameters;
 
 int get_options(udefrag_job_parameters *jp);
@@ -294,7 +298,7 @@ int exclude_by_fragments(winx_file_info *f,udefrag_job_parameters *jp);
 int exclude_by_size(winx_file_info *f,udefrag_job_parameters *jp);
 int expand_fragmented_files_list(winx_file_info *f,udefrag_job_parameters *jp);
 void truncate_fragmented_files_list(winx_file_info *f,udefrag_job_parameters *jp);
-winx_blockmap *build_fragments_list(winx_file_info *f,ULONGLONG *n_fragments);
+winx_blockmap* build_fragments_list(winx_file_info *f,ULONGLONG *n_fragments);
 void release_fragments_list(winx_blockmap **fragments);
 void clear_currently_excluded_flag(udefrag_job_parameters *jp);
 
@@ -335,13 +339,12 @@ enum {
 };
 int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end);
 
-//needed to un-static this and move this from udefrag.c to here for query.c to use it/work.
 void deliver_progress_info(udefrag_job_parameters *jp,int completion_status);
 
-
 /*Begin Query.C definitions */
+//void otherCleanupFunction(udefrag_job_parameters* jp);
 int query_get_VCNlist(udefrag_job_parameters *jp);
 int query_get_freeRegions(udefrag_job_parameters *jp);
-
+void queryDeliverProgressInfo(udefrag_job_parameters *jp);
     
 #endif /* _UDEFRAG_INTERNALS_H_ */

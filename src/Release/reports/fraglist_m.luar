@@ -1,0 +1,19 @@
+-- UltraDefrag report for disk M:
+
+format_version = 7
+
+volume_letter = "M"
+computer_name = "EOFL-PC"
+
+current_time = {
+	year = 2017,
+	month = 08,
+	day = 29,
+	hour = 09,
+	min = 13,
+	sec = 28,
+	isdst = false
+}
+
+files = {
+}
