@@ -345,6 +345,5 @@ void deliver_progress_info(udefrag_job_parameters *jp,int completion_status);
 //void otherCleanupFunction(udefrag_job_parameters* jp);
 int query_get_VCNlist(udefrag_job_parameters *jp);
 int query_get_freeRegions(udefrag_job_parameters *jp);
-void queryDeliverProgressInfo(udefrag_job_parameters *jp);
     
 #endif /* _UDEFRAG_INTERNALS_H_ */

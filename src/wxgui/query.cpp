@@ -91,7 +91,6 @@ void MainFrame::QueryClusters(wxCommandEvent& event){
     
     int id = event.GetId();
     m_queryThread->m_qp = new udefrag_query_parameters();
-    m_queryThread->m_qp->guiFinished = FALSE;
     m_queryThread->m_qp->engineFinished = FALSE;
     m_queryThread->m_qp->startGUI = TRUE;
     WxTextCtrl1->Clear();
@@ -154,7 +153,7 @@ void* QueryThread::Entry()
 
     while(!g_mainFrame->CheckForTermination(200)){
         if(m_startquery){
-            result = udefrag_start_query(m_letter,m_qType,m_flags,m_mapSize,
+            result = udefrag_starts_query(m_letter,m_qType,m_flags,m_mapSize,
                 reinterpret_cast<udefrag_query_progress_callback>(PostProgressCallback),
                 reinterpret_cast<udefrag_terminator>(Terminator),*m_qp, nullptr
             );
@@ -175,9 +174,6 @@ void QueryThread::PostProgressCallback(udefrag_query_parameters *qp, void *p)
     if (qp->startGUI) {
         dtrace("Begin Populating The Query Tab Here!:");
         g_mainFrame->m_queryThread->DisplayQueryResults(qp);
-        //memcpy(g_mainFrame->m_queryThread->m_qp,qp,sizeof(udefrag_query_parameters));
-        //memcpy(&g_mainFrame->m_queryThread->m_qp->filedisp,&qp->filedisp,sizeof(winx_file_disposition));
-        qp->guiFinished = TRUE;
     }
     else
         dtrace("Query CallBack, Did Nothing...waaiting.");
@@ -191,7 +187,6 @@ void QueryThread::DisplayQueryResults(udefrag_query_parameters *qp)
 {
     ULONGLONG i;
     winx_blockmap *block;
-    qp->guiFinished = TRUE;
     memcpy(m_qp,qp,sizeof(udefrag_query_parameters));
     //store the values again
     //qp.path = jp->qp.path;
@@ -211,7 +206,6 @@ void QueryThread::DisplayQueryResults(udefrag_query_parameters *qp)
 
         if(block->next == m_qp->filedisp.blockmap) break;
     }
-    m_qp->guiFinished = TRUE;
     //memcpy(qp,g_mainFrame->m_queryThread->m_qp,sizeof(udefrag_query_parameters));
     g_mainFrame->WxTextCtrl1->Thaw();
     gui_query_finished();
@@ -223,7 +217,6 @@ void MainFrame::OnQueryCompletion(wxCommandEvent& WXUNUSED(event))
     m_busy = false;
     m_queryThread->m_flags = 0;
     m_queryThread->singlefile = false;    
-    m_queryThread->m_qp->guiFinished = TRUE;
     m_queryThread->m_qp->startGUI = FALSE;
 }
 

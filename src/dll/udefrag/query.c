@@ -36,9 +36,11 @@
 //  this involves making the GUI aware of the already existing structures.
  */
 
-#include "udefrag-internals.h"
-//#include "query.h"
+/************************************************************/
+/*                    The query.c code                      */
+/************************************************************/
 
+#include "udefrag-internals.h"
 
 static int query_killer(void *p)
 {
@@ -49,8 +51,6 @@ static int query_killer(void *p)
     return 1;
 }
 
-/**
- */
 static int query_terminator(void *p)
 {
     udefrag_job_parameters *jp = (udefrag_job_parameters *)p;
@@ -67,6 +67,7 @@ static int query_terminator(void *p)
     /* continue */
     return 0;
 }
+
 BOOL isGUIqueryFinishedBoolean = FALSE;
 void gui_query_finished(void)
 {
@@ -75,7 +76,7 @@ void gui_query_finished(void)
 }
 static DWORD WINAPI query_wait_delete_lists_thread(LPVOID p)
 {
-    udefrag_job_parameters *jp = (udefrag_job_parameters *)p;
+/*    udefrag_job_parameters *jp = (udefrag_job_parameters *)p;
     int delwaitcount;
     if (jp == NULL)
     {
@@ -94,21 +95,17 @@ static DWORD WINAPI query_wait_delete_lists_thread(LPVOID p)
         dtrace("---Sleeping 150ms waiting for deletion to complete. Wait Count = %d", delwaitcount);
         delwaitcount++;
         winx_sleep(150);
-        dtrace("jp->qp.guiFinished: %d and isGuiQueryFinished: %d ", jp->qp.guiFinished, (int)isGUIqueryFinishedBoolean);
     } while (!isGUIqueryFinishedBoolean);
 
-    winx_scan_disk_release(jp->filelist);
-    winx_release_free_volume_regions(jp->free_regions);
-    if(jp->fragmented_files) 
-        prb_destroy(jp->fragmented_files,NULL);
-
+    destroy_lists(jp);
     jp->qp.engineFinished = TRUE;
+
     winx_exit_thread(0);
-    return 0;
+    return 0;*/
 }
 
 
-static DWORD WINAPI start_query(LPVOID p)
+static DWORD WINAPI query_starter(LPVOID p)
 {
     udefrag_job_parameters *jp = (udefrag_job_parameters *)p;
     int result = -1;
@@ -138,12 +135,7 @@ static DWORD WINAPI start_query(LPVOID p)
     return 0;
 }
 
-/************************************************************/
-/*                    The query.c code                      */
-/************************************************************/
-
-
-int udefrag_start_query(char volume_letter,udefrag_query_type query_type,int flags,int cluster_map_size,
+int udefrag_starts_query(char volume_letter,udefrag_query_type query_type,int flags,int cluster_map_size,
         udefrag_query_progress_callback qpcb,udefrag_terminator t,udefrag_query_parameters qp,void *p)
 {
     udefrag_job_parameters jp;
@@ -169,8 +161,6 @@ int udefrag_start_query(char volume_letter,udefrag_query_type query_type,int fla
     jp.p = p;
     isGUIqueryFinishedBoolean = FALSE;
     jp.qp = qp; //establish the Query Parameters variable.
-    //memcpy(&jp.qp,&qp,sizeof(udefrag_job_parameters));  //choice 2 no
-    //memset(&jp.qp,0,sizeof(udefrag_job_parameters));  //choice 3 no    
 
     jp.termination_router = query_terminator;
 
@@ -191,30 +181,16 @@ int udefrag_start_query(char volume_letter,udefrag_query_type query_type,int fla
     }
 
     //Create and manage the start_query Thread.
-    if(winx_create_thread(start_query,(LPVOID)&jp) < 0){
+    if(winx_create_thread(query_starter,(LPVOID)&jp) < 0){
         etrace("The query Failed to start for some reason.");
         goto done;
     }
     do {
         winx_sleep(jp.udo.refresh_interval);
     } while(jp.pi.completion_status == 0);
-    //Either Running or Finished. Deliver the status to the other thread.
-    //Query Callback. send over the parameters, and a useless p pointer.
-    //queryDeliverProgressInfo(&jp);
-    //Done.
 
-    
-    /* make a copy of jp->pi */
-    memcpy(&qp_pass,&jp.qp,sizeof(udefrag_query_parameters));
-    //store the values again
-    qp_pass.path = jp.qp.path;
-    qp_pass.filedisp = jp.qp.filedisp;
-    //make the call
-    jp.qpcb(&jp.qp, &qp_pass);
+    jp.qpcb(&jp.qp, &jp.p);
 
-    /* cleanup */
-    //destroy_lists(&jp);
-    //jp.qp.engineFinished = TRUE;
     dtrace("Cleanup in progress.");
     //destroy_file_blocks_tree(&jp);
     //free_map(&jp);
@@ -229,39 +205,18 @@ done:
     /* cleanup */
     result = jp.pi.completion_status;
     delwaitcount = 0;
-    //Code to handle the filelists deletion after GUI finishes showing the query
-    // Needs to wait until it gets a response. If this thread exits too soon
-    // without clearing the memory, deletion of lists will fail/break/segfault.
-    // This has to be kept in mind in the terminator also, to reset variables.
-    if (result > 0){
-        dtrace("Job Complete. Creating deletion Thread with 333ms timeout ->");
-        winx_create_thread(query_wait_delete_lists_thread,(LPVOID)&jp);
-        while(!jp.qp.engineFinished){
-            dtrace("-Sleeping 2000ms waiting for deletion to complete. Wait Count = %d", delwaitcount);            
-            delwaitcount++;
-            winx_sleep(2000);
-        }
-    }
-    else {
-        destroy_lists(&jp);
-        dtrace("DESTROYING LISTS IN THE EDGE CASE THAT YOU NEVER THOUGHT WOULD HAPPEN!");
-    }
+    do {
+        dtrace("---Sleeping 150ms waiting for deletion to complete. Wait Count = %d", delwaitcount);
+        delwaitcount++;
+        winx_sleep(150);
+    } while (!isGUIqueryFinishedBoolean);
+
+    destroy_lists(&jp);
     jp.qp.engineFinished = TRUE;
     if(result < 0) return result;
     return (result > 0) ? 0 : (-1);
 }
 
-/*void queryDeliverProgressInfo(udefrag_job_parameters *jp)
-{
-    udefrag_query_parameters qp;
-    /* make a copy of jp->pi #1#
-    memcpy(&qp,&jp->qp,sizeof(udefrag_query_parameters));
-    //store the values again
-    qp.path = jp->qp.path;
-    qp.filedisp = jp->qp.filedisp;
-    //make the call
-    jp->qpcb(&jp->qp, &qp);
-}*/
 
 /************************************************************/
 /*              Query #1                                    */
@@ -282,14 +237,8 @@ int query_get_VCNlist(udefrag_job_parameters *jp)
             return (-1);
         }
     }
-    //jp->qp.filedisp = file->disp;
-    memcpy(&jp->qp.filedisp,&file->disp,sizeof(winx_file_disposition));
-    //memcpy(&jp->qp.filedisp.blockmap,&file->disp.blockmap,sizeof(winx_blockmap));
-
-    //for(block = file->disp.blockmap, i = 0; block; block = block->next, i++){
-    //    if(block->next == file->disp.blockmap) break;    }
-    dtrace("The VCNList Query itself has been Completed. Throwing back to job..");
-
+    jp->qp.filedisp = file->disp;
+    dtrace("The VCNList Query has been stored in the qp. Throwing back to QueryThread to display it..");
 /*    winx_scan_disk_release(jp->filelist);
     winx_release_free_volume_regions(jp->free_regions);
     if(jp->fragmented_files) 
@@ -299,7 +248,7 @@ int query_get_VCNlist(udefrag_job_parameters *jp)
     /*cleanup*/
     //winx_free(file);
     winx_free(native_path);
-    //clear_currently_excluded_flag(jp); //again?
+    clear_currently_excluded_flag(jp); //again?
     winx_fclose(jp->fVolume);
     jp->fVolume = NULL;
     return 0;

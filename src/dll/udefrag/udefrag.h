@@ -172,7 +172,6 @@ typedef struct _udefrag_query_parameters {
     wchar_t *path;      /* Path from the GUI. What to query */
     winx_file_disposition filedisp;
     //something else
-    int guiFinished;
     int engineFinished;
     int startGUI;
 } udefrag_query_parameters;
@@ -184,7 +183,7 @@ typedef enum {
 
 typedef void (*udefrag_query_progress_callback)(udefrag_query_parameters *qp, void *p);
 
-extern int udefrag_start_query(char volume_letter,udefrag_query_type job_type,int flags,int cluster_map_size,
+extern int udefrag_starts_query(char volume_letter,udefrag_query_type job_type,int flags,int cluster_map_size,
     udefrag_query_progress_callback qpcb,udefrag_terminator t,udefrag_query_parameters qp,void *p);
 
 extern void gui_query_finished(void);
