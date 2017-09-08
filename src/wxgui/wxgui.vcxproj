@@ -14,7 +14,7 @@
     <ProjectGuid>{C73D366C-824B-483C-94E9-1CD584C2396F}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
     <ProjectName>wxgui</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>7.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -22,13 +22,12 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>Windows7.1SDK</PlatformToolset>
-    <UseOfAtl>false</UseOfAtl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
     <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -41,17 +40,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <GenerateManifest>
-    </GenerateManifest>
-    <IncludePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;C:\Software\Boost165;$(IncludePath)</IncludePath>
-    <ReferencePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;C:\Software\Boost165\lib32-msvc-14.1;$(ReferencePath)</ReferencePath>
-    <LibraryPath>$(SolutionDir)lua-lib;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86;C:\Software\Boost165\lib32-msvc-14.1;$(LibraryPath)</LibraryPath>
-    <LinkIncremental>
-    </LinkIncremental>
-    <IgnoreImportLibrary>true</IgnoreImportLibrary>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <PropertyGroup>
     <GenerateManifest>
     </GenerateManifest>
     <IncludePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;C:\Software\Boost165;$(IncludePath)</IncludePath>
@@ -73,12 +62,14 @@
       <TypeLibraryResourceID />
       <RandomizedBaseAddress />
       <DataExecutionPrevention />
-      <ShowProgress>LinkVerbose</ShowProgress>
+      <ShowProgress>
+      </ShowProgress>
       <TargetMachine>
       </TargetMachine>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration)</AdditionalLibraryDirectories>
       <EnableUAC />
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;libcmt.lib;libcmtd.lib</IgnoreSpecificDefaultLibraries>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <ClCompile />
     <ClCompile>
@@ -95,10 +86,9 @@
       <ShowIncludes>false</ShowIncludes>
       <UseUnicodeForAssemblerListing>
       </UseUnicodeForAssemblerListing>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <BufferSecurityCheck>
-      </BufferSecurityCheck>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
       <ForceConformanceInForLoopScope />
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
@@ -107,8 +97,7 @@
       <FloatingPointModel />
       <SDLCheck>false</SDLCheck>
       <UseFullPaths>true</UseFullPaths>
-      <FunctionLevelLinking>
-      </FunctionLevelLinking>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
       <AdditionalOptions>/GA %(AdditionalOptions)</AdditionalOptions>
       <CallingConvention />
@@ -116,7 +105,7 @@
       <ProgramDataBaseFileName />
     </ClCompile>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>$(WXWIDGETSDIR)\include;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(WXWIDGETSDIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions />
     </ResourceCompile>
     <ProjectReference>
@@ -132,15 +121,15 @@
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>
       </OptimizeReferences>
-      <ShowProgress>LinkVerbose</ShowProgress>
+      <ShowProgress>
+      </ShowProgress>
       <LinkStatus>
       </LinkStatus>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
       <EnableCOMDATFolding>
       </EnableCOMDATFolding>
-      <LinkTimeCodeGeneration>
-      </LinkTimeCodeGeneration>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <ProfileGuidedDatabase />
       <RandomizedBaseAddress />
       <DataExecutionPrevention />
@@ -158,8 +147,7 @@
       <UseUnicodeForAssemblerListing>
       </UseUnicodeForAssemblerListing>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <BufferSecurityCheck>
-      </BufferSecurityCheck>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
       <CompileAs>Default</CompileAs>
       <TreatWChar_tAsBuiltInType />
       <ForceConformanceInForLoopScope />
@@ -170,10 +158,8 @@
       <FloatingPointModel>
       </FloatingPointModel>
       <PreprocessorDefinitions>NDEBUG;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <MinimalRebuild>
-      </MinimalRebuild>
-      <FunctionLevelLinking>
-      </FunctionLevelLinking>
+      <MinimalRebuild>false</MinimalRebuild>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <DebugInformationFormat>
       </DebugInformationFormat>
@@ -187,7 +173,7 @@
       <ProgramDataBaseFileName />
     </ClCompile>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>$(WXWIDGETSDIR)\include;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(WXWIDGETSDIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions />
     </ResourceCompile>
     <ProjectReference />
