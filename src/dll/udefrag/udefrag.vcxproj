@@ -19,7 +19,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfAtl>Static</UseOfAtl>
     <UseOfMfc>Static</UseOfMfc>
@@ -47,19 +47,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(WindowsSdkDir)include;$(VCInstallDir)include</IncludePath>
-    <ReferencePath>$(WindowsSdkDir)include;$(VCInstallDir)include</ReferencePath>
     <LinkIncremental>
     </LinkIncremental>
-    <LibraryPath>$(WindowsSdkDir)lib;$(VCInstallDir)lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(WindowsSdkDir)include;$(VCInstallDir)include</IncludePath>
-    <ReferencePath>$(WindowsSdkDir)include;$(VCInstallDir)include</ReferencePath>
     <LinkIncremental>
     </LinkIncremental>
-    <LibraryPath>$(WindowsSdkDir)lib;$(VCInstallDir)lib</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -165,7 +159,6 @@
       <PrecompiledHeaderOutputFile />
       <AssemblerOutput>NoListing</AssemblerOutput>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>$(IncludePath);</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ntdll.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ntdll.lib;comsupp.lib;kernel32.lib</AdditionalDependencies>
@@ -184,7 +177,7 @@
       <SetChecksum />
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ShowProgress>LinkVerbose</ShowProgress>
-      <AdditionalLibraryDirectories>$(LibraryPath);$(SolutionDir)$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ForceSymbolReferences>
       </ForceSymbolReferences>
       <OptimizeReferences>false</OptimizeReferences>
