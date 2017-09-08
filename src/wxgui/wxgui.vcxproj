@@ -43,16 +43,16 @@
   <PropertyGroup>
     <GenerateManifest>
     </GenerateManifest>
-    <IncludePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;C:\Software\Boost165;$(IncludePath)</IncludePath>
-    <ReferencePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;C:\Software\Boost165\lib32-msvc-14.1;$(ReferencePath)</ReferencePath>
-    <LibraryPath>$(SolutionDir)lua-lib;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86;C:\Software\Boost165\lib32-msvc-14.1;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;$(WXWIDGETSDIR)\lib\vc141_dll\mswu;C:\Software\Boost165;$(IncludePath)</IncludePath>
+    <ReferencePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;$(WXWIDGETSDIR)\lib\vc141_dll;C:\Software\Boost165\lib32-msvc-14.1;$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(SolutionDir)lua-lib;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86;$(WXWIDGETSDIR)\lib\vc141_dll;C:\Software\Boost165\lib32-msvc-14.1;$(LibraryPath)</LibraryPath>
     <LinkIncremental>
     </LinkIncremental>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
-      <AdditionalDependencies>zenwinx.lib;udefrag.lib;lua5.1a.lib;wxmsw28u_adv.lib;wxmsw28u_core.lib;wxpng.lib;wxzlib.lib;wxbase28u.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;ole32.lib;oleaut32.lib;uuid.lib;powrprof.lib;comctl32.lib;wsock32.lib;odbc32.lib;shell32.lib;msvcrtd.lib</AdditionalDependencies>
+      <AdditionalDependencies>zenwinx.lib;udefrag.lib;lua5.1a.lib;wxmsw30u_adv.lib;wxmsw30u_core.lib;wxpng.lib;wxzlib.lib;wxbase30u.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;ole32.lib;oleaut32.lib;uuid.lib;powrprof.lib;comctl32.lib;wsock32.lib;odbc32.lib;shell32.lib;msvcrtd.lib</AdditionalDependencies>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreAllDefaultLibraries>
@@ -64,8 +64,7 @@
       <DataExecutionPrevention />
       <ShowProgress>
       </ShowProgress>
-      <TargetMachine>
-      </TargetMachine>
+      <TargetMachine>MachineX86</TargetMachine>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration)</AdditionalLibraryDirectories>
       <EnableUAC />
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;libcmt.lib;libcmtd.lib</IgnoreSpecificDefaultLibraries>
@@ -115,7 +114,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Link>
-      <AdditionalDependencies>zenwinx.lib;udefrag.lib;lua5.1a.lib;wxmsw28u_adv.lib;wxmsw28u_core.lib;wxpng.lib;wxzlib.lib;wxbase28u.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;ole32.lib;oleaut32.lib;uuid.lib;powrprof.lib;comctl32.lib;wsock32.lib;odbc32.lib;shell32.lib</AdditionalDependencies>
+      <AdditionalDependencies>zenwinx.lib;udefrag.lib;lua5.1a.lib;wxmsw30u_adv.lib;wxmsw30u_core.lib;wxpng.lib;wxzlib.lib;wxbase30u.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;ole32.lib;oleaut32.lib;uuid.lib;powrprof.lib;comctl32.lib;wsock32.lib;odbc32.lib;shell32.lib;</AdditionalDependencies>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -135,11 +134,11 @@
       <DataExecutionPrevention />
       <ProgramDatabaseFile />
       <TypeLibraryResourceID />
-      <TargetMachine>
-      </TargetMachine>
+      <TargetMachine>MachineX86</TargetMachine>
       <EnableUAC />
       <ImageHasSafeExceptionHandlers />
       <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib;libcmt.lib;libcmtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <ClCompile />
     <ClCompile>

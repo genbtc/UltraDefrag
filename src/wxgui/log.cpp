@@ -40,7 +40,7 @@
 //                                Logging
 // =======================================================================
 
-void Log::DoLog(wxLogLevel level,const wxChar *msg,time_t timestamp)
+void Log::DoLogRecord(wxLogLevel level,const wxChar *msg,time_t timestamp)
 {
     #define INFO_FMT  (I wxCharStringFmtSpec)
     #define DEBUG_FMT (D wxCharStringFmtSpec)

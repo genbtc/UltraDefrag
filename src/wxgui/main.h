@@ -93,9 +93,18 @@ typedef enum {
     TBPF_PAUSED	= 0x8
 } TBPFLAG;
 
+#ifndef _UDEFRAG_VERSION_H
+#define _UDEFRAG_VERSION_H
 #include "../include/version.h"
+#endif
+#ifndef _UDEFRAG_INCLUDED_ZENWINX_H
+#define _UDEFRAG_INCLUDED_ZENWINX_H
 #include "../dll/zenwinx/zenwinx.h"
+#endif
+#ifndef _UDEFRAG_INCLUDED_UDEFRAG_H
+#define _UDEFRAG_INCLUDED_UDEFRAG_H
 #include "../dll/udefrag/udefrag.h"
+#endif
 
 // =======================================================================
 //                              Constants
@@ -292,7 +301,7 @@ public:
     Log()  { delete SetActiveTarget(this); };
     ~Log() { SetActiveTarget(nullptr); };
 
-    virtual void DoLog(wxLogLevel level,
+    virtual void DoLogRecord(wxLogLevel level,
         const wxChar *msg,time_t timestamp);
 };
 

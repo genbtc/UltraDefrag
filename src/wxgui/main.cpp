@@ -260,8 +260,7 @@ MainFrame::MainFrame()
     // set main window title
     wxString *instdir = new wxString();
     //genBTC re-arranged the below, A LOT.
-    wxStandardPaths stdpaths;
-    wxFileName exepath(stdpaths.GetExecutablePath());
+	wxFileName exepath(wxStandardPaths::Get().GetExecutablePath());
     wxString cd = exepath.GetPath();
     if((wxGetEnv(wxT("UD_INSTALL_DIR"),instdir))&&(cd.CmpNoCase(*instdir) == 0)) {
         itrace("current directory matches installation location, so it isn't portable");
