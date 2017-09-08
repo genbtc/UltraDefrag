@@ -21,7 +21,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
     <UseOfAtl>false</UseOfAtl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -29,7 +29,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -44,24 +44,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>
     </GenerateManifest>
-    <IncludePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;C:\Software\Boost165</IncludePath>
-    <ReferencePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;C:\Software\Boost165\lib32-msvc-14.1</ReferencePath>
-    <LibraryPath>$(SolutionDir)lua-lib;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86;C:\Software\Boost165\lib32-msvc-14.1</LibraryPath>
+    <IncludePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;C:\Software\Boost165;$(IncludePath)</IncludePath>
+    <ReferencePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;C:\Software\Boost165\lib32-msvc-14.1;$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(SolutionDir)lua-lib;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86;C:\Software\Boost165\lib32-msvc-14.1;$(LibraryPath)</LibraryPath>
     <LinkIncremental>
     </LinkIncremental>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
-    <SourcePath>$(IncludePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>
     </GenerateManifest>
-    <IncludePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;C:\Software\Boost165</IncludePath>
-    <ReferencePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;C:\Software\Boost165\lib32-msvc-14.1</ReferencePath>
-    <LibraryPath>$(SolutionDir)lua-lib;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86;C:\Software\Boost165\lib32-msvc-14.1</LibraryPath>
+    <IncludePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;C:\Software\Boost165;$(IncludePath)</IncludePath>
+    <ReferencePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;C:\Software\Boost165\lib32-msvc-14.1;$(ReferencePath)</ReferencePath>
+    <LibraryPath>$(SolutionDir)lua-lib;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86;C:\Software\Boost165\lib32-msvc-14.1;$(LibraryPath)</LibraryPath>
     <LinkIncremental>
     </LinkIncremental>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
-<SourcePath>$(IncludePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
@@ -78,7 +76,7 @@
       <ShowProgress>LinkVerbose</ShowProgress>
       <TargetMachine>
       </TargetMachine>
-      <AdditionalLibraryDirectories>$(LibraryPath);$(SolutionDir)$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration)</AdditionalLibraryDirectories>
       <EnableUAC />
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;libcmt.lib;libcmtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
@@ -115,7 +113,6 @@
       <AdditionalOptions>/GA %(AdditionalOptions)</AdditionalOptions>
       <CallingConvention />
       <OmitFramePointers />
-      <AdditionalIncludeDirectories>$(IncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName />
     </ClCompile>
     <ResourceCompile>
@@ -153,7 +150,7 @@
       </TargetMachine>
       <EnableUAC />
       <ImageHasSafeExceptionHandlers />
-      <AdditionalLibraryDirectories>$(LibraryPath);$(SolutionDir)$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration)</AdditionalLibraryDirectories>
     </Link>
     <ClCompile />
     <ClCompile>
@@ -187,7 +184,6 @@
       <UseFullPaths>true</UseFullPaths>
       <Optimization>Disabled</Optimization>
       <OmitFramePointers />
-      <AdditionalIncludeDirectories>$(IncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName />
     </ClCompile>
     <ResourceCompile>
