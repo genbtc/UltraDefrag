@@ -23,7 +23,6 @@
  * @addtogroup File
  * @{
  */
-
 #include "ntndk.h"
 #include "zenwinx.h"
 #include "ntfs.h"
@@ -1710,7 +1709,7 @@ static int ntfs_scan_disk_helper(char volume_letter,
     ftw_progress_callback pcb, ftw_terminator t,
     void *user_defined_data, winx_file_info **filelist)
 {
-    wchar_t path[] = L"\\??\\A:";
+	wchar_t* path = L"\\??\\A:";
     int result;
     mft_scan_parameters sp;
     winx_file_info *f;

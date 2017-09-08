@@ -23,9 +23,6 @@
  * @{
  */
 
-#include "ntndk.h"
-#include "zenwinx.h"
-
 #if defined(__GNUC__)
 #ifndef _WIN64
 ULONGLONG __udivdi3(ULONGLONG n, ULONGLONG d)

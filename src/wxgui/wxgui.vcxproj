@@ -14,13 +14,14 @@
     <ProjectGuid>{C73D366C-824B-483C-94E9-1CD584C2396F}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
     <ProjectName>wxgui</ProjectName>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v100</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <UseOfAtl>false</UseOfAtl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -28,7 +29,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
-    <PlatformToolset>v100</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -41,25 +42,26 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <GenerateManifest>true</GenerateManifest>
-    <IncludePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;$(WindowsSdkDir)include;$(VCInstallDir)include</IncludePath>
-    <ReferencePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;$(WindowsSdkDir)include;$(VCInstallDir)include;$(WINSDKBASE)include</ReferencePath>
-    <LibraryPath>$(SolutionDir)lua-lib;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86;$(WindowsSdkDir)lib;$(VCInstallDir)lib</LibraryPath>
+    <GenerateManifest>
+    </GenerateManifest>
+    <IncludePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;C:\Software\Boost165</IncludePath>
+    <ReferencePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;C:\Software\Boost165\lib32-msvc-14.1</ReferencePath>
+    <LibraryPath>$(SolutionDir)lua-lib;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86;C:\Software\Boost165\lib32-msvc-14.1</LibraryPath>
     <LinkIncremental>
     </LinkIncremental>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
-    <SourcePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;$(WindowsSdkDir)include;$(VCInstallDir)atlmfc\src\mfc;$(VCInstallDir)atlmfc\src\mfcm;$(VCInstallDir)atlmfc\src\atl;$(VCInstallDir)crt\src;</SourcePath>
+    <SourcePath>$(IncludePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>
     </GenerateManifest>
-    <IncludePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;$(WindowsSdkDir)include;$(VCInstallDir)include</IncludePath>
-    <ReferencePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;$(WindowsSdkDir)include;$(VCInstallDir)include;$(WINSDKBASE)include</ReferencePath>
-    <LibraryPath>$(SolutionDir)lua-lib;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86;$(WindowsSdkDir)lib;$(VCInstallDir)lib</LibraryPath>
+    <IncludePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;C:\Software\Boost165</IncludePath>
+    <ReferencePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;C:\Software\Boost165\lib32-msvc-14.1</ReferencePath>
+    <LibraryPath>$(SolutionDir)lua-lib;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86;C:\Software\Boost165\lib32-msvc-14.1</LibraryPath>
     <LinkIncremental>
     </LinkIncremental>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
-    <SourcePath>$(WXWIDGETSDIR)\include;$(WXWIDGETSDIR)\lib\vc_libwinsdk-X86\mswu;$(WindowsSdkDir)include;$(VCInstallDir)atlmfc\src\mfc;$(VCInstallDir)atlmfc\src\mfcm;$(VCInstallDir)atlmfc\src\atl;$(VCInstallDir)crt\src;</SourcePath>
+<SourcePath>$(IncludePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
