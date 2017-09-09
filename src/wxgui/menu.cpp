@@ -47,39 +47,39 @@ void MainFrame::InitMenu()
 {
     // create when done menu
     wxMenu *menuWhenDone = new wxMenu;
-    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneNone,"None");
-    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneExit,"Exit");
-    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneStandby,"Standby");
-    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneHibernate,"Hibernate");
-    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneLogoff,"Logoff");
-    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneReboot,"Reboot");
-    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneShutdown,"Shutdown");
+    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneNone,L"None");
+    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneExit,L"Exit");
+    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneStandby,L"Standby");
+    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneHibernate,L"Hibernate");
+    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneLogoff,L"Logoff");
+    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneReboot,L"Reboot");
+    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneShutdown,L"Shutdown");
 
     // create action menu
     wxMenu *m_menuAction = new wxMenu;
-    m_menuAction->Append(ID_Analyze);
-    m_menuAction->Append(ID_Defrag);
-    m_menuAction->Append(ID_QuickOpt);
-    m_menuAction->Append(ID_FullOpt);
-    m_menuAction->Append(ID_MftOpt);
-    m_menuAction->UD_AppendCheckItem(ID_Pause,"Pause");
-    m_menuAction->Append(ID_Stop);
+    m_menuAction->Append(ID_Analyze,L"Analyze");
+    m_menuAction->Append(ID_Defrag,L"Defragment");
+    m_menuAction->Append(ID_QuickOpt,L"Quick Optimize");
+    m_menuAction->Append(ID_FullOpt,L"Full Optimize");
+    m_menuAction->Append(ID_MftOpt,L"MFT Optimize");
+    m_menuAction->UD_AppendCheckItem(ID_Pause,L"Pause");
+    m_menuAction->Append(ID_Stop,L"Stop");
     m_menuAction->AppendSeparator();
-    m_menuAction->UD_AppendCheckItem(ID_Repeat,"Repeat");
+    m_menuAction->UD_AppendCheckItem(ID_Repeat,L"Repeat");
     m_menuAction->AppendSeparator();
-    m_menuAction->Append(ID_ShowReport);
+    m_menuAction->Append(ID_ShowReport,L"Show Report");
     m_menuAction->AppendSeparator();
-    m_menuAction->UD_AppendCheckItem(ID_SkipRem,"Skip Removable");
-    m_menuAction->Append(ID_Rescan);
+    m_menuAction->UD_AppendCheckItem(ID_SkipRem,L"Skip Removable");
+    m_menuAction->Append(ID_Rescan,L"Rescan");
     m_menuAction->AppendSeparator();
-    m_menuAction->Append(ID_Repair);
+    m_menuAction->Append(ID_Repair,L"Repair");
     m_menuAction->AppendSeparator();
     m_subMenuWhenDone = \
         m_menuAction->AppendSubMenu(
-            menuWhenDone, wxEmptyString
+            menuWhenDone, "SubMenu WhenDone"
         );
     m_menuAction->AppendSeparator();
-    m_menuAction->Append(ID_Exit);
+    m_menuAction->Append(ID_Exit,L"Exit");
 
     // create Query menu by genBTC) - Query.cpp
     //title is set @ Line 246, and added to the menubar.
@@ -88,9 +88,9 @@ void MainFrame::InitMenu()
 
     // create language menu
     m_menuLanguage = new wxMenu;
-    m_menuLanguage->Append(ID_LangTranslateOnline);
-    m_menuLanguage->Append(ID_LangTranslateOffline);
-    m_menuLanguage->Append(ID_LangOpenFolder);
+    m_menuLanguage->Append(ID_LangTranslateOnline,L"Translate Langs Online");
+    m_menuLanguage->Append(ID_LangTranslateOffline,L"Translate Langs Offline");
+    m_menuLanguage->Append(ID_LangOpenFolder,L"Open Langs Folder");
     m_menuLanguage->AppendSeparator();
 
     wxString AppLocaleDir(wxGetCwd());
@@ -157,77 +157,77 @@ void MainFrame::InitMenu()
 
     // create boot configuration menu
     wxMenu *menuBootConfig = new wxMenu;
-    menuBootConfig->UD_AppendCheckItem(ID_BootEnable,"Boot D Enabled");
-    menuBootConfig->Append(ID_BootScript);
+    menuBootConfig->UD_AppendCheckItem(ID_BootEnable,L"Boot D Enabled");
+    menuBootConfig->Append(ID_BootScript,L"BootScript");
 
     // create sorting configuration menu
     wxMenu *menuSortingConfig = new wxMenu;
-    menuSortingConfig->UD_AppendRadioItem(ID_SortByPath,"Sort By Path");
-    menuSortingConfig->UD_AppendRadioItem(ID_SortBySize,"Sort By Size");
-    menuSortingConfig->UD_AppendRadioItem(ID_SortByCreationDate,"Sort By Creation Date");
-    menuSortingConfig->UD_AppendRadioItem(ID_SortByModificationDate,"Sort By Modification Date");
-    menuSortingConfig->UD_AppendRadioItem(ID_SortByLastAccessDate,"Sort By Access Date");
+    menuSortingConfig->UD_AppendRadioItem(ID_SortByPath,L"Sort By Path");
+    menuSortingConfig->UD_AppendRadioItem(ID_SortBySize,L"Sort By Size");
+    menuSortingConfig->UD_AppendRadioItem(ID_SortByCreationDate,L"Sort By Creation Date");
+    menuSortingConfig->UD_AppendRadioItem(ID_SortByModificationDate,L"Sort By Modification Date");
+    menuSortingConfig->UD_AppendRadioItem(ID_SortByLastAccessDate,L"Sort By Access Date");
     menuSortingConfig->AppendSeparator();
-    menuSortingConfig->UD_AppendRadioItem(ID_SortAscending,"Sort Ascending");
-    menuSortingConfig->UD_AppendRadioItem(ID_SortDescending,"Sort Descending");
+    menuSortingConfig->UD_AppendRadioItem(ID_SortAscending,L"Sort Ascending");
+    menuSortingConfig->UD_AppendRadioItem(ID_SortDescending,L"Sort Descending");
 
     // create settings menu
     wxMenu *menuSettings = new wxMenu;
     m_subMenuLanguage = \
         menuSettings->AppendSubMenu(
-            m_menuLanguage, wxEmptyString
+            m_menuLanguage, "SubMenu Language"
         );
-    menuSettings->Append(ID_GuiOptions);
+    menuSettings->Append(ID_GuiOptions,L"GUI Options");
     m_subMenuSortingConfig = \
         menuSettings->AppendSubMenu(
-            menuSortingConfig, wxEmptyString
+            menuSortingConfig, "SubMenu SortingConfig"
         );
     m_subMenuBootConfig = \
         menuSettings->AppendSubMenu(
-            menuBootConfig, wxEmptyString
+            menuBootConfig, "SubMenu BootConfig"
         );
 
-    menuSettings->Append(ID_ChooseFont);
+    menuSettings->Append(ID_ChooseFont,L"Choose Font");
 
     // create debug menu
     wxMenu *menuDebug = new wxMenu;
-    menuDebug->Append(ID_DebugLog);
-    menuDebug->Append(ID_DebugSend);
+    menuDebug->Append(ID_DebugLog,L"Debug Log");
+    menuDebug->Append(ID_DebugSend,L"Debug Send");
 
     // create upgrade menu
     wxMenu *menuUpgrade = new wxMenu;
-    menuUpgrade->UD_AppendRadioItem(ID_HelpUpgradeNone,"Help Upgrade None");
-    menuUpgrade->UD_AppendRadioItem(ID_HelpUpgradeStable,"Help Upgrade Stable");
-    menuUpgrade->UD_AppendRadioItem(ID_HelpUpgradeAll,"Help Upgrade All");
+    menuUpgrade->UD_AppendRadioItem(ID_HelpUpgradeNone,L"Help Upgrade None");
+    menuUpgrade->UD_AppendRadioItem(ID_HelpUpgradeStable,L"Help Upgrade Stable");
+    menuUpgrade->UD_AppendRadioItem(ID_HelpUpgradeAll,L"Help Upgrade All");
     menuUpgrade->AppendSeparator();
-    menuUpgrade->Append(ID_HelpUpgradeCheck);
+    menuUpgrade->Append(ID_HelpUpgradeCheck,L"Help Upgrade Check");
 
     // create help menu
     wxMenu *menuHelp = new wxMenu;
-    menuHelp->Append(ID_HelpContents);
+    menuHelp->Append(ID_HelpContents,L"Help Contents");
     menuHelp->AppendSeparator();
-    menuHelp->Append(ID_HelpBestPractice);
-    menuHelp->Append(ID_HelpFaq);
-    menuHelp->Append(ID_HelpLegend);
+    menuHelp->Append(ID_HelpBestPractice,L"Help Best Practices");
+    menuHelp->Append(ID_HelpFaq,L"Help FAQ");
+    menuHelp->Append(ID_HelpLegend,L"Help Legend");
     menuHelp->AppendSeparator();
     m_subMenuDebug = \
         menuHelp->AppendSubMenu(
-            menuDebug, wxEmptyString
+            menuDebug, "SubMenu Debug"
         );
     menuHelp->AppendSeparator();
     m_subMenuUpgrade = \
         menuHelp->AppendSubMenu(
-            menuUpgrade, wxEmptyString
+            menuUpgrade, "SubMenu Upgrade"
         );
     menuHelp->AppendSeparator();
-    menuHelp->Append(ID_HelpAbout);
+    menuHelp->Append(ID_HelpAbout,L"Help About");
 
     // create main menu
     m_menuBar = new wxMenuBar;
-    m_menuBar->Append(m_menuAction, wxEmptyString);
-    m_menuBar->Append(menuQuery   , _("&Query"));
-    m_menuBar->Append(menuSettings, wxEmptyString);
-    m_menuBar->Append(menuHelp    , wxEmptyString);
+    m_menuBar->Append(m_menuAction, "Menu Action");
+    m_menuBar->Append(menuQuery   , "&Query");
+    m_menuBar->Append(menuSettings, "Menu Settings");
+    m_menuBar->Append(menuHelp    , "Menu Help");
 
     SetMenuBar(m_menuBar);
 
