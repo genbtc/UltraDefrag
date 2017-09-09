@@ -57,7 +57,7 @@ int winx_create_mutex(wchar_t *name,HANDLE *phandle)
     if(!NT_SUCCESS(status)){
         *phandle = NULL;
         strace(status,"cannot create/open %ws",name);
-        return (-1);
+        return -1;
     }
     return 0;
 }
@@ -88,7 +88,7 @@ int winx_open_mutex(wchar_t *name,HANDLE *phandle)
     if(!NT_SUCCESS(status)){
         *phandle = NULL;
         strace(status,"cannot open %ws",name);
-        return (-1);
+        return -1;
     }
     return 0;
 }
@@ -108,7 +108,7 @@ int winx_release_mutex(HANDLE h)
     status = NtReleaseMutant(h,NULL);
     if(!NT_SUCCESS(status)){
         strace(status,"cannot release mutex");
-        return (-1);
+        return -1;
     }
     return 0;
 }

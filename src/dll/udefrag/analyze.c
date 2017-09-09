@@ -104,7 +104,7 @@ void adjust_move_at_once_parameter(udefrag_job_parameters *jp)
     jp->clusters_at_once = bytes_at_once / jp->v_info.bytes_per_cluster;
     if(jp->clusters_at_once == 0)
         jp->clusters_at_once ++;
-    winx_bytes_to_hr(bytes_at_once,0,buffer,sizeof(buffer));
+    winx_bytes_to_hr(bytes_at_once,0,buffer,sizeof buffer);
     itrace("the program will move %s (%I64u clusters) at once",
         buffer, jp->clusters_at_once);
 }
@@ -145,7 +145,7 @@ int get_volume_information(udefrag_job_parameters *jp)
     
     /* update global variables holding drive geometry */
     if(winx_get_volume_information(jp->volume_letter,&jp->v_info) < 0)
-        return (-1);
+        return -1;
     
     /* don't touch dirty volumes */
     if(jp->v_info.is_dirty)
@@ -154,13 +154,13 @@ int get_volume_information(udefrag_job_parameters *jp)
     jp->pi.total_space = jp->v_info.total_bytes;
     jp->pi.free_space = jp->v_info.free_bytes;
     itrace("total clusters: %I64u",jp->v_info.total_clusters);
-    jp->pi.used_clusters = jp->v_info.total_clusters - (jp->v_info.free_bytes / jp->v_info.bytes_per_cluster);
+    jp->pi.used_clusters = jp->v_info.total_clusters - jp->v_info.free_bytes / jp->v_info.bytes_per_cluster;
     itrace("used clusters : %I64u",jp->pi.used_clusters);
     itrace("cluster size: %I64u",jp->v_info.bytes_per_cluster);
     /* validate geometry */
     if(!jp->v_info.total_clusters || !jp->v_info.bytes_per_cluster){
         etrace("wrong volume geometry detected");
-        return (-1);
+        return -1;
     }
     adjust_move_at_once_parameter(jp);
     /* check partition type */
@@ -221,7 +221,7 @@ static int get_free_space_layout(udefrag_job_parameters *jp)
     jp->free_regions = winx_get_free_volume_regions(jp->volume_letter,
         WINX_GVR_ALLOW_PARTIAL_SCAN,process_free_region,(void *)jp);
     
-    winx_bytes_to_hr(jp->v_info.free_bytes,2,buffer,sizeof(buffer));
+    winx_bytes_to_hr(jp->v_info.free_bytes,2,buffer,sizeof buffer);
     itrace("free space amount : %s",buffer);
     itrace("free regions count: %u",jp->free_regions_count);
     
@@ -238,7 +238,7 @@ static int get_free_space_layout(udefrag_job_parameters *jp)
 int check_region(udefrag_job_parameters *jp,ULONGLONG lcn,ULONGLONG length)
 {
     if(lcn < jp->v_info.total_clusters \
-      && (lcn + length) <= jp->v_info.total_clusters)
+      && lcn + length <= jp->v_info.total_clusters)
         return 1;
     
     return 0;
@@ -348,7 +348,7 @@ int exclude_by_fragment_size(winx_file_info *f,udefrag_job_parameters *jp)
 int exclude_by_fragments(winx_file_info *f,udefrag_job_parameters *jp)
 {
     if(jp->udo.fragments_limit == 0) return 0;
-    return (f->disp.fragments < jp->udo.fragments_limit) ? 1 : 0;
+    return f->disp.fragments < jp->udo.fragments_limit ? 1 : 0;
 }
 
 /**
@@ -612,7 +612,7 @@ static int find_files(udefrag_job_parameters *jp)
             filter,progress_callback,terminator,(void *)jp);
     }
     if(jp->filelist == NULL && !jp->termination_router((void *)jp))
-        return (-1);
+        return -1;
     
     /* calculate number of fragmented files; redraw map */
     for(f = jp->filelist; f; f = f->next){
@@ -763,7 +763,7 @@ static int fragmented_files_compare(const void *prb_a, const void *prb_b, void *
 
     /* sort files in descending order by number of fragments */
     if(a->disp.fragments != b->disp.fragments)
-        return (a->disp.fragments < b->disp.fragments) ? 1 : (-1);
+        return a->disp.fragments < b->disp.fragments ? 1 : -1;
 
     /* if files have equal number of fragments, sort 'em by path */
     return winx_wcsicmp(a->path, b->path);
@@ -896,14 +896,14 @@ int analyze(udefrag_job_parameters *jp)
     
     /* scan volume for free space areas */
     if(get_free_space_layout(jp) < 0)
-        return (-1);
+        return -1;
     
     /* redraw mft zone in light magenta */
     get_mft_zones_layout(jp);
     
     /* search for files */
     if(find_files(jp) < 0)
-        return (-1);
+        return -1;
     
     /* redraw well known locked files in green */
     redraw_well_known_locked_files(jp);

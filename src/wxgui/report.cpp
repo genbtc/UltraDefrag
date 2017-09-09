@@ -50,14 +50,14 @@ void MainFrame::OnShowReport(wxCommandEvent& WXUNUSED(event))
     while(i != -1){
         char letter = (char)m_vList->GetItemText(i)[0];
         wxString path = wxString::Format(
-            (".\\reports\\fraglist_%c.luar"),
+            ".\\reports\\fraglist_%c.luar",
             winx_tolower(letter));
         wxFileName report(path); report.Normalize();
         if(report.FileExists()){
             wxString args = wxString::Format(
-                (".\\scripts\\udreportcnv.lua \"%ls\" . -v"),
+                ".\\scripts\\udreportcnv.lua \"%ls\" . -v",
                 report.GetFullPath().wc_str());
-            Utils::ShellExec(lua.GetFullPath(),("open"),args);
+            Utils::ShellExec(lua.GetFullPath(),"open",args);
         }
         i = m_vList->GetNextSelected(i);
     }

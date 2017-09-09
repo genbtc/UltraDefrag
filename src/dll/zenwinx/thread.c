@@ -55,7 +55,7 @@ int winx_create_thread(PTHREAD_START_ROUTINE start_addr,PVOID parameter)
                     0,0,0,0,start_addr,parameter,&hThread,NULL);
     if(!NT_SUCCESS(status)){
         strace(status,"cannot create thread");
-        return (-1);
+        return -1;
     }
     NtCloseSafe(hThread);
     return 0;

@@ -100,7 +100,7 @@ int winx_setenv(wchar_t *name, wchar_t *value)
     }
     if(!NT_SUCCESS(status)){
         strace(status,"cannot set %ws",name);
-        return (-1);
+        return -1;
     }
     return 0;
 }

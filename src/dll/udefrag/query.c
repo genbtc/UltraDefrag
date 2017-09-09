@@ -214,7 +214,7 @@ done:
     destroy_lists(&jp);
     jp.qp.engineFinished = TRUE;
     if(result < 0) return result;
-    return (result > 0) ? 0 : (-1);
+    return result > 0 ? 0 : -1;
 }
 
 
@@ -234,7 +234,7 @@ int query_get_VCNlist(udefrag_job_parameters *jp)
         if(_wcsicmp(file->path,native_path) == 0) break;
         if(file->next == jp->filelist){
             etrace("Abnormal error. Could not match path to any scanned file...");
-            return (-1);
+            return -1;
         }
     }
     jp->qp.filedisp = file->disp;

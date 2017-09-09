@@ -178,7 +178,7 @@ void IntTranslateKey(PKEYBOARD_INPUT_DATA InputData, KBD_RECORD *kbd_rec)
     static DWORD dwControlKeyState;
 
     kbd_rec->wVirtualScanCode = InputData->MakeCode;
-    kbd_rec->bKeyDown = (InputData->Flags & KEY_BREAK) ? FALSE : TRUE;
+    kbd_rec->bKeyDown = InputData->Flags & KEY_BREAK ? FALSE : TRUE;
 
     IntUpdateControlKeyState(&dwControlKeyState, InputData);
     kbd_rec->dwControlKeyState = dwControlKeyState;

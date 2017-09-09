@@ -89,7 +89,7 @@ void winx_path_extract_filename(wchar_t *path)
     if(!n) return;
     
     for(i = n - 1; i >= 0; i--){
-        if(path[i] == '\\' && (i != n - 1)){
+        if(path[i] == '\\' && i != n - 1){
             /* path[i+1] points to filename */
             i++;
             for(j = 0; path[i]; i++, j++)
@@ -113,10 +113,10 @@ wchar_t *winx_get_module_filename(void)
     wchar_t *path;
     int size;
     
-    RtlZeroMemory(&pi,sizeof(pi));
+    RtlZeroMemory(&pi,sizeof pi);
     status = NtQueryInformationProcess(NtCurrentProcess(),
                     ProcessBasicInformation,&pi,
-                    sizeof(pi),NULL);
+                    sizeof pi,NULL);
     if(!NT_SUCCESS(status)){
         strace(status,"cannot query basic process information");
         return NULL;
@@ -149,12 +149,12 @@ int winx_create_path(wchar_t *path)
     size_t n;
     
     if(path == NULL)
-        return (-1);
+        return -1;
 
     /* path must contain at least \??\X: */
-    if(wcsstr(path,L"\\??\\") != path || wcschr(path,':') != (path + 5)){
+    if(wcsstr(path,L"\\??\\") != path || wcschr(path,':') != path + 5){
         etrace("native path must be specified");
-        return (-1);
+        return -1;
     }
 
     n = wcslen(L"\\??\\X:\\");
@@ -177,7 +177,7 @@ int winx_create_path(wchar_t *path)
         if(winx_create_directory(path) < 0){
             *p = '\\';
             etrace("cannot create %ws",path);
-            return (-1);
+            return -1;
         }
         *p = '\\';
         p ++;
@@ -186,7 +186,7 @@ int winx_create_path(wchar_t *path)
     /* create target directory */
     if(winx_create_directory(path) < 0){
         etrace("cannot create %ws",path);
-        return (-1);
+        return -1;
     }
     
     return 0;

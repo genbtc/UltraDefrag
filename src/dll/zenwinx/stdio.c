@@ -103,8 +103,8 @@ int winx_putch(int ch)
  */
 int winx_puts(const char *string)
 {
-    if(!string) return (-1);
-    return winx_printf("%s\n",string) ? 0 : (-1);
+    if(!string) return -1;
+    return winx_printf("%s\n",string) ? 0 : -1;
 }
 
 /**
@@ -166,7 +166,7 @@ int winx_kb_read(KBD_RECORD *kbd_rec,int msec)
     DbgCheck1(kbd_rec,-1);
 
     do{
-        if(kb_read(&kbd,msec) < 0) return (-1);
+        if(kb_read(&kbd,msec) < 0) return -1;
         IntTranslateKey(&kbd,kbd_rec);
     } while(!kbd_rec->bKeyDown); /* skip key up events */
     return (int)kbd_rec->AsciiChar;
@@ -188,12 +188,12 @@ int winx_breakhit(int msec)
     KBD_RECORD kbd_rec;
 
     do{
-        if(kb_read(&kbd,msec) < 0) return (-1);
+        if(kb_read(&kbd,msec) < 0) return -1;
         IntTranslateKey(&kbd,&kbd_rec);
     } while(!kbd_rec.bKeyDown); /* skip key up events */
-    if((kbd.Flags & KEY_E1) && (kbd.MakeCode == 0x1d)) return 0;
+    if(kbd.Flags & KEY_E1 && kbd.MakeCode == 0x1d) return 0;
     /*winx_printf("\nwinx_breakhit(): Other key was pressed.\n");*/
-    return (-1);
+    return -1;
 }
 
 /**
@@ -333,11 +333,11 @@ int winx_prompt(char *prompt,char *string,int n,winx_history *h)
 
     if(!string){
         winx_printf("\nwinx_prompt: invalid string!\n");
-        return (-1);
+        return -1;
     }
     if(n <= 0){
         winx_printf("\nwinx_prompt: invalid string length %d!\n",n);
-        return (-1);
+        return -1;
     }
     
     if(!prompt) prompt = "";
@@ -348,7 +348,7 @@ int winx_prompt(char *prompt,char *string,int n,winx_history *h)
     
     /* keep string always null terminated */
     RtlZeroMemory(string,n);
-    for(i = 0; i < (n - 1); i ++){
+    for(i = 0; i < n - 1; i ++){
         /* read keyboard until an ordinary character appearance */
         do {
             do{
@@ -424,16 +424,16 @@ int winx_prompt(char *prompt,char *string,int n,winx_history *h)
                 /* redraw the prompt */
                 _snprintf(buffer,buffer_length,"%s%s",prompt,string);
                 buffer[buffer_length - 1] = 0;
-                _snprintf(format,sizeof(format),"\r%%-%us",line_length);
-                format[sizeof(format) - 1] = 0;
+                _snprintf(format,sizeof format,"\r%%-%us",line_length);
+                format[sizeof format - 1] = 0;
                 winx_printf(format,buffer);
                 /*
                 * redraw the prompt again to set carriage position
                 * exactly behind the string printed
                 */
                 line_length = (int)strlen(prompt) + (int)strlen(string);
-                _snprintf(format,sizeof(format),"\r%%-%us",line_length);
-                format[sizeof(format) - 1] = 0;
+                _snprintf(format,sizeof format,"\r%%-%us",line_length);
+                format[sizeof format - 1] = 0;
                 winx_printf(format,buffer);
                 continue;
             }
@@ -463,11 +463,11 @@ done:
     if(string[0]){
         winx_add_history_entry(h,string);
     }
-    return (i+1);
+    return i+1;
     
 fail:
     winx_free(buffer);
-    return (-1);
+    return -1;
 }
 
 /* returns 1 if break or escape was pressed, zero otherwise */
@@ -554,11 +554,11 @@ int winx_print_strings(char **strings,int line_width,
     /* check other parameters */
     if(!line_width){
         etrace("line_width = 0!");
-        return (-1);
+        return -1;
     }
     if(!max_rows){
         etrace("max_rows = 0!");
-        return (-1);
+        return -1;
     }
     if(prompt == NULL) prompt = DEFAULT_PAGING_PROMPT_TO_HIT_ANY_KEY;
     
@@ -593,7 +593,7 @@ int winx_print_strings(char **strings,int line_width,
                 /* skip sequence */
                 j++;
                 if(j == length) goto print_rest_of_string;
-                if((strings[i][j] == '\n' && r) || (strings[i][j] == '\r' && n)){
+                if(strings[i][j] == '\n' && r || strings[i][j] == '\r' && n){
                     continue;
                 } else {
                     if(strings[i][j] == '\n' || strings[i][j] == '\r'){
@@ -649,7 +649,7 @@ int winx_print_strings(char **strings,int line_width,
 print_rest_of_string:
         line_buffer[index] = 0;
         if(print_line(line_buffer,prompt,max_rows,&rows_printed,
-            (strings[i+1] == NULL) ? 1 : 0)) goto cleanup;
+            strings[i+1] == NULL ? 1 : 0)) goto cleanup;
     }
 
 cleanup:

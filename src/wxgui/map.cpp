@@ -113,9 +113,9 @@ void ClusterMap::OnEraseBackground(wxEraseEvent& event)
         // expand free space to reduce flicker
         HDC hdc = GetDC((HWND)GetHandle());
 
-        char free_r = (char)g_mainFrame->CheckOption(("UD_FREE_COLOR_R"));
-        char free_g = (char)g_mainFrame->CheckOption(("UD_FREE_COLOR_G"));
-        char free_b = (char)g_mainFrame->CheckOption(("UD_FREE_COLOR_B"));
+        char free_r = (char)g_mainFrame->CheckOption("UD_FREE_COLOR_R");
+        char free_g = (char)g_mainFrame->CheckOption("UD_FREE_COLOR_G");
+        char free_b = (char)g_mainFrame->CheckOption("UD_FREE_COLOR_B");
         HBRUSH brush = ::CreateSolidBrush(RGB(free_r,free_g,free_b));
 
         RECT rc; rc.left = m_width; rc.top = 0;
@@ -169,10 +169,10 @@ char *ClusterMap::ScaleMap(int scaled_size)
         used_cells = map_size / ratio;
         for(int i = 0; i < used_cells; i++){
             int states[SPACE_STATES];
-            memset(states,0,sizeof(states));
+            memset(states,0,sizeof states);
             bool mft_detected = false;
 
-            int sequence_length = (i < used_cells - 1) ? \
+            int sequence_length = i < used_cells - 1 ? \
                 ratio : map_size - i * ratio;
 
             for(int j = 0; j < sequence_length; j++){
@@ -208,17 +208,17 @@ void ClusterMap::OnPaint(wxPaintEvent& WXUNUSED(event))
     JobsCacheEntry *currentJob;
     int width, height; GetClientSize(&width,&height);
 
-    int block_size = g_mainFrame->CheckOption(("UD_MAP_BLOCK_SIZE"));
-    int line_width = g_mainFrame->CheckOption(("UD_GRID_LINE_WIDTH"));
+    int block_size = g_mainFrame->CheckOption("UD_MAP_BLOCK_SIZE");
+    int line_width = g_mainFrame->CheckOption("UD_GRID_LINE_WIDTH");
 
     int cell_size = block_size + line_width;
     int blocks_per_line = cell_size ? (width - line_width) / cell_size : 0;
     int lines = cell_size ? (height - line_width) / cell_size : 0;
 
     // fill map by the free color
-    char free_r = (char)g_mainFrame->CheckOption(("UD_FREE_COLOR_R"));
-    char free_g = (char)g_mainFrame->CheckOption(("UD_FREE_COLOR_G"));
-    char free_b = (char)g_mainFrame->CheckOption(("UD_FREE_COLOR_B"));
+    char free_r = (char)g_mainFrame->CheckOption("UD_FREE_COLOR_R");
+    char free_g = (char)g_mainFrame->CheckOption("UD_FREE_COLOR_G");
+    char free_b = (char)g_mainFrame->CheckOption("UD_FREE_COLOR_B");
     HBRUSH brush = ::CreateSolidBrush(RGB(free_r,free_g,free_b));
     RECT rc; rc.left = rc.top = 0; rc.right = width; rc.bottom = height;
     ::FillRect(m_cacheDC,&rc,brush); ::DeleteObject(brush);
@@ -226,9 +226,9 @@ void ClusterMap::OnPaint(wxPaintEvent& WXUNUSED(event))
 
     // draw grid lines.
     if(line_width){
-        char grid_r = (char)g_mainFrame->CheckOption(("UD_GRID_COLOR_R"));
-        char grid_g = (char)g_mainFrame->CheckOption(("UD_GRID_COLOR_G"));
-        char grid_b = (char)g_mainFrame->CheckOption(("UD_GRID_COLOR_B"));
+        char grid_r = (char)g_mainFrame->CheckOption("UD_GRID_COLOR_R");
+        char grid_g = (char)g_mainFrame->CheckOption("UD_GRID_COLOR_G");
+        char grid_b = (char)g_mainFrame->CheckOption("UD_GRID_COLOR_B");
         brush = ::CreateSolidBrush(RGB(grid_r,grid_g,grid_b));
         for(int i = 0; i < blocks_per_line + 1; i++){
             RECT rc; rc.left = cell_size * i; rc.top = 0;

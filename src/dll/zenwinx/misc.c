@@ -62,10 +62,10 @@ int winx_get_os_version(void)
 {
     OSVERSIONINFOW v;
     
-    v.dwOSVersionInfoSize = sizeof(v);
+    v.dwOSVersionInfoSize = sizeof v;
     RtlGetVersion(&v);
 
-    return (v.dwMajorVersion * 10 + v.dwMinorVersion);
+    return v.dwMajorVersion * 10 + v.dwMinorVersion;
 }
 
 /**
@@ -113,14 +113,14 @@ int winx_query_symbolic_link(wchar_t *name, wchar_t *buffer, int length)
     HANDLE hLink;
     ULONG size;
 
-    DbgCheck3(name,buffer,(length > 0),-1);
+    DbgCheck3(name,buffer, length > 0,-1);
     
     RtlInitUnicodeString(&us,name);
     InitializeObjectAttributes(&oa,&us,OBJ_CASE_INSENSITIVE,NULL,NULL);
     status = NtOpenSymbolicLinkObject(&hLink,SYMBOLIC_LINK_QUERY,&oa);
     if(!NT_SUCCESS(status)){
         strace(status,"cannot open %ls",name);
-        return (-1);
+        return -1;
     }
     us.Buffer = buffer;
     us.Length = 0;
@@ -130,7 +130,7 @@ int winx_query_symbolic_link(wchar_t *name, wchar_t *buffer, int length)
     (void)NtClose(hLink);
     if(!NT_SUCCESS(status)){
         strace(status,"cannot query %ls",name);
-        return (-1);
+        return -1;
     }
     buffer[length - 1] = 0;
     return 0;
@@ -165,7 +165,7 @@ int winx_set_system_error_mode(unsigned int mode)
                     sizeof(int));
     if(!NT_SUCCESS(status)){
         strace(status,"cannot set system error mode %u",mode);
-        return (-1);
+        return -1;
     }
     return 0;
 }
@@ -229,7 +229,7 @@ wchar_t *winx_get_windows_boot_options(void)
         winx_free(data);
         return NULL;
     }
-    data_buffer = (wchar_t *)(data->Data);
+    data_buffer = (wchar_t *)data->Data;
     data_length = data->DataLength >> 1;
     if(data_length == 0) empty_value = TRUE;
     
@@ -272,7 +272,7 @@ int winx_windows_in_safe_mode(void)
     int safe_boot = 0;
     
     boot_options = winx_get_windows_boot_options();
-    if(!boot_options) return (-1);
+    if(!boot_options) return -1;
     
     /* search for SAFEBOOT */
     _wcsupr(boot_options);

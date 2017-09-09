@@ -94,14 +94,14 @@ void MainFrame::InitMenu()
     m_menuLanguage->AppendSeparator();
 
     wxString AppLocaleDir(wxGetCwd());
-    AppLocaleDir.Append(("/locale"));
+    AppLocaleDir.Append("/locale");
     if(!wxDirExists(AppLocaleDir)){
         itrace("lang dir not found: %ls",AppLocaleDir.wc_str());
-        AppLocaleDir = wxGetCwd() + ("/../wxgui/locale");
+        AppLocaleDir = wxGetCwd() + "/../wxgui/locale";
     }
     if(!wxDirExists(AppLocaleDir)){
         etrace("lang dir not found: %ls",AppLocaleDir.wc_str());
-        AppLocaleDir = wxGetCwd() + ("/../../wxgui/locale");
+        AppLocaleDir = wxGetCwd() + "/../../wxgui/locale";
     }
 
     wxDir dir(AppLocaleDir);
@@ -109,23 +109,23 @@ void MainFrame::InitMenu()
 
     if(!dir.IsOpened()){
         etrace("can't open lang dir: %ls",AppLocaleDir.wc_str());
-        info = g_locale->FindLanguageInfo(("en_US"));
+        info = g_locale->FindLanguageInfo("en_US");
         m_menuLanguage->AppendRadioItem(ID_LocaleChange \
             + info->Language, info->Description);
     } else {
         wxString folder;
         wxArrayString langArray;
 
-        bool cont = dir.GetFirst(&folder, ("*"), wxDIR_DIRS);
+        bool cont = dir.GetFirst(&folder, "*", wxDIR_DIRS);
 
         while(cont){
             info = g_locale->FindLanguageInfo(folder);
             if(info){
-                if(info->Description == ("Chinese")){
-                    langArray.Add(("Chinese (Traditional)"));
+                if(info->Description == "Chinese"){
+                    langArray.Add("Chinese (Traditional)");
                 } else {
-                    if(info->Description == ("English")){
-                        langArray.Add(("English (U.K.)"));
+                    if(info->Description == "English"){
+                        langArray.Add("English (U.K.)");
                     } else {
                         langArray.Add(info->Description);
                     }
@@ -232,7 +232,7 @@ void MainFrame::InitMenu()
     SetMenuBar(m_menuBar);
 
     // set menu icons
-    if(CheckOption(("UD_SHOW_MENU_ICONS"))){
+    if(CheckOption("UD_SHOW_MENU_ICONS")){
         UD_SetMenuIcon(ID_Analyze         , glass );
         UD_SetMenuIcon(ID_Defrag          , defrag);
         UD_SetMenuIcon(ID_QuickOpt        , quick );
@@ -261,20 +261,20 @@ void MainFrame::InitMenu()
     if(item) item->Check(true);
 
     wxConfigBase *cfg = wxConfigBase::Get();
-    wxString sorting = cfg->Read(("/Algorithm/Sorting"),("path"));
-    if(sorting == ("path")){
+    wxString sorting = cfg->Read("/Algorithm/Sorting","path");
+    if(sorting == "path"){
         m_menuBar->FindItem(ID_SortByPath)->Check();
-    } else if(sorting == ("size")){
+    } else if(sorting == "size"){
         m_menuBar->FindItem(ID_SortBySize)->Check();
-    } else if(sorting == ("c_time")){
+    } else if(sorting == "c_time"){
         m_menuBar->FindItem(ID_SortByCreationDate)->Check();
-    } else if(sorting == ("m_time")){
+    } else if(sorting == "m_time"){
         m_menuBar->FindItem(ID_SortByModificationDate)->Check();
-    } else if(sorting == ("a_time")){
+    } else if(sorting == "a_time"){
         m_menuBar->FindItem(ID_SortByLastAccessDate)->Check();
     }
-    wxString order = cfg->Read(("/Algorithm/SortingOrder"),("asc"));
-    if(order == ("asc")){
+    wxString order = cfg->Read("/Algorithm/SortingOrder","asc");
+    if(order == "asc"){
         m_menuBar->FindItem(ID_SortAscending)->Check();
     } else {
         m_menuBar->FindItem(ID_SortDescending)->Check();

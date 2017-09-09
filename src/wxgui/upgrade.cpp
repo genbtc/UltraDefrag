@@ -62,18 +62,18 @@ void *UpgradeThread::Entry()
             * Use a subfolder to prevent configuration files
             * reload (see ConfigThread::Entry() for details).
             */
-            dir << ("\\data");
+            dir << "\\data";
             if(!wxDirExists(dir)) wxMkdir(dir);
 
             wxString url((""));
             wxString path(dir);
 
             if(m_level == UPGRADE_ALL){
-                url << (VERSION_URL);
-                path << ("\\version.ini");
+                url << VERSION_URL;
+                path << "\\version.ini";
             } else {
-                url << (STABLE_VERSION_URL);
-                path << ("\\stable-version.ini");
+                url << STABLE_VERSION_URL;
+                path << "\\stable-version.ini";
             }
 
             if(Utils::DownloadFile(url,path)){
@@ -180,7 +180,7 @@ void MainFrame::ShowUpgradeDialog(wxCommandEvent& event)
     {
         wxString url(("http://ultradefrag.sourceforge.net"));
         if(!wxLaunchDefaultBrowser(url))
-            Utils::ShowError(("Cannot open %ls!"),url.wc_str());
+            Utils::ShowError("Cannot open %ls!",url.wc_str());
     }
 }
 

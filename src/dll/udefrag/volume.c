@@ -102,7 +102,7 @@ int udefrag_get_volume_information(char volume_letter,volume_info *v)
     
     /* set error mode to ignore missing removable drives */
     if(winx_set_system_error_mode(INTERNAL_SEM_FAILCRITICALERRORS) < 0)
-        return (-1);
+        return -1;
 
     result = internal_validate_volume(volume_letter,0,v);
 
@@ -128,7 +128,7 @@ int udefrag_validate_volume(char volume_letter,int skip_removable)
 
     /* set error mode to ignore missing removable drives */
     if(winx_set_system_error_mode(INTERNAL_SEM_FAILCRITICALERRORS) < 0)
-        return (-1);
+        return -1;
     result = internal_validate_volume(volume_letter,skip_removable,&v);
     /* try to restore error mode to default state */
     winx_set_system_error_mode(1); /* equal to SetErrorMode(0) */
@@ -155,7 +155,7 @@ static int internal_validate_volume(char volume_letter,int skip_removable,volume
     int type;
     
     if(v == NULL)
-        return (-1);
+        return -1;
 
     /* convert volume letter to uppercase */
     volume_letter = winx_toupper(volume_letter);
@@ -164,7 +164,7 @@ static int internal_validate_volume(char volume_letter,int skip_removable,volume
     v->is_removable = FALSE;
     v->is_dirty = FALSE;
     type = winx_get_drive_type(volume_letter);
-    if(type < 0) return (-1);
+    if(type < 0) return -1;
     if(type == DRIVE_CDROM){
         itrace("Disk %c: is on cdrom drive.",volume_letter);
         return UDEFRAG_CDROM;
@@ -190,7 +190,7 @@ static int internal_validate_volume(char volume_letter,int skip_removable,volume
     * required to exclude missing floppies.
     */
     if(winx_get_volume_information(volume_letter,&volume_info) < 0)
-        return (-1);
+        return -1;
     
     v->total_space.QuadPart = volume_info.total_bytes;
     v->free_space.QuadPart = volume_info.free_bytes;

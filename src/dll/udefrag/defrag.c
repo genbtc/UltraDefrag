@@ -295,7 +295,7 @@ static int defrag_routine(udefrag_job_parameters *jp)
     jp->fVolume = winx_vopen(winx_toupper(jp->volume_letter));
     if(jp->fVolume == NULL){
         jp->pi.pass_number ++; /* the pass is completed */
-        return (-1);
+        return -1;
     }
 
     jp->pi.clusters_to_process = jp->pi.processed_clusters + defrag_cc_routine(jp);
@@ -336,7 +336,7 @@ static int defrag_routine(udefrag_job_parameters *jp)
                         }
                         defragmented_files ++;
                         defragmented_entirely ++;
-                        moved_entirely += (jp->pi.moved_clusters - x);
+                        moved_entirely += jp->pi.moved_clusters - x;
                     } else {
                         etrace("Defrag failure for %ws",file->path);
                     }
@@ -356,7 +356,7 @@ static int defrag_routine(udefrag_job_parameters *jp)
                     for(fr = fragments; fr; fr = next_fr){
                         head_fr = fragments;
                         next_fr = fr->next;
-                        if(fr->vcn < min_vcn || (fr->vcn + fr->length > max_vcn))
+                        if(fr->vcn < min_vcn || fr->vcn + fr->length > max_vcn)
                             winx_list_remove((list_entry **)(void *)&fragments,(list_entry *)(void *)fr);
                         if(fragments == NULL) goto completed;
                         if(next_fr == head_fr) break;
@@ -436,7 +436,7 @@ move_clusters:
                 if(defrag_succeeded){
                     defragmented_files ++;
                     defragmented_partially ++;
-                    moved_partially += (jp->pi.moved_clusters - x);
+                    moved_partially += jp->pi.moved_clusters - x;
                 }
             }
         }
@@ -451,15 +451,15 @@ completed:
     */
 
     /* display amount of moved data and number of defragmented files */
-    winx_bytes_to_hr(moved_entirely * bpc,2,buffer,sizeof(buffer));
+    winx_bytes_to_hr(moved_entirely * bpc,2,buffer,sizeof buffer);
     itrace("%I64u files defragmented entirely, %I64u clusters (%s) moved", \
             defragmented_entirely,moved_entirely, buffer);
 
-    winx_bytes_to_hr(moved_partially * bpc,2,buffer,sizeof(buffer));
+    winx_bytes_to_hr(moved_partially * bpc,2,buffer,sizeof buffer);
     itrace("%I64u files defragmented partially, %I64u clusters (%s) moved", \
             defragmented_partially,moved_partially, buffer);
 
-    winx_bytes_to_hr(jp->pi.moved_clusters * bpc,2,buffer,sizeof(buffer));
+    winx_bytes_to_hr(jp->pi.moved_clusters * bpc,2,buffer,sizeof buffer);
     itrace("%I64u files defragmented overall, %I64u clusters (%s) moved (total)", \
             defragmented_files,jp->pi.moved_clusters, buffer);
 
@@ -599,7 +599,7 @@ int defragment(udefrag_job_parameters *jp)
     }
     
     stop_timing("defragmentation",time,jp);
-    return (jp->termination_router((void *)jp)) ? 0 : overall_result;
+    return jp->termination_router((void *)jp) ? 0 : overall_result;
 }
 
 /** @} */

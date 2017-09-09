@@ -165,7 +165,7 @@ size_t winx_fread(void *buffer,size_t size,size_t count,WINX_FILE *f)
         return count;
     }
     f->roffset.QuadPart += (size_t)iosb.Information;
-    return ((size_t)iosb.Information / size);
+    return (size_t)iosb.Information / size;
 }
 
 /**
@@ -199,7 +199,7 @@ static size_t winx_fwrite_helper(const void *buffer,size_t size,size_t count,WIN
         return count;
     }
     f->woffset.QuadPart += (size_t)iosb.Information;
-    return ((size_t)iosb.Information / size);
+    return (size_t)iosb.Information / size;
 }
 
 /**
@@ -294,7 +294,7 @@ int winx_ioctl(WINX_FILE *f,
     if(out_buffer) RtlZeroMemory(out_buffer,out_size);
     
     if(pbytes_returned) *pbytes_returned = 0;
-    if((code >> 16) == FILE_DEVICE_FILE_SYSTEM){
+    if(code >> 16 == FILE_DEVICE_FILE_SYSTEM){
         status = NtFsControlFile(f->hFile,NULL,NULL,NULL,
             &iosb,code,in_buffer,in_size,out_buffer,out_size);
     } else {
@@ -311,7 +311,7 @@ int winx_ioctl(WINX_FILE *f,
         } else {
             strace(status,"IOCTL %u failed",code);
         }
-        return (-1);
+        return -1;
     }
     if(pbytes_returned) *pbytes_returned = (int)iosb.Information;
     return 0;
@@ -331,7 +331,7 @@ int winx_fflush(WINX_FILE *f)
     status = NtFlushBuffersFile(f->hFile,&iosb);
     if(!NT_SUCCESS(status)){
         strace(status,"cannot flush file buffers");
-        return (-1);
+        return -1;
     }
     return 0;
 }
@@ -419,7 +419,7 @@ int winx_create_directory(const wchar_t *path)
     /* if it already exists then return success */
     if(status == STATUS_OBJECT_NAME_COLLISION) return 0;
     strace(status,"cannot create %ws",path);
-    return (-1);
+    return -1;
 }
 
 /**
@@ -440,7 +440,7 @@ int winx_delete_file(const wchar_t *filename)
     status = NtDeleteFile(&oa);
     if(!NT_SUCCESS(status)){
         strace(status,"cannot delete %ws",filename);
-        return (-1);
+        return -1;
     }
     return 0;
 }

@@ -45,7 +45,7 @@ int winx_enable_privilege(unsigned long luid)
     status = RtlAdjustPrivilege((SIZE_T)luid, TRUE, FALSE, &WasEnabled);
     if(!NT_SUCCESS(status)){
         strace(status,"cannot enable privilege %x",(UINT)luid);
-        return (-1);
+        return -1;
     }
     return 0;
 }

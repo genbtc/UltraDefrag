@@ -73,7 +73,7 @@ bool Utils::CheckAdminRights(void)
 
     if(!is_member) itrace("the user is not a member of administrators group");
     if(psid) ::FreeSid(psid);
-    return (is_member == 0 ? false : true);
+    return is_member == 0 ? false : true;
 }
 
 /**
@@ -127,14 +127,14 @@ void Utils::GaRequest(const wxString& path)
 
     wxString url;
 
-    url << ("http://www.google-analytics.com/__utm.gif?utmwv=4.6.5");
-    url << wxString::Format(("&utmn=%u"),utmn);
-    url << ("&utmhn=ultradefrag.sourceforge.net");
-    url << wxString::Format(("&utmhid=%u&utmr=-"),utmhid);
-    url << ("&utmp=") << path;
-    url << ("&utmac=");
-    url << ("UA-15890458-1");
-    url << wxString::Format(("&utmcc=__utma%%3D%u.%u.%I64u.%I64u.%I64u.") \
+    url << "http://www.google-analytics.com/__utm.gif?utmwv=4.6.5";
+    url << wxString::Format("&utmn=%u",utmn);
+    url << "&utmhn=ultradefrag.sourceforge.net";
+    url << wxString::Format("&utmhid=%u&utmr=-",utmhid);
+    url << "&utmp=" << path;
+    url << "&utmac=";
+    url << "UA-15890458-1";
+    url << wxString::Format("&utmcc=__utma%%3D%u.%u.%I64u.%I64u.%I64u." \
         ("50%%3B%%2B__utmz%%3D%u.%I64u.27.2.utmcsr%%3Dgoogle.com%%7Cutmccn%%3D") \
         ("(referral)%%7Cutmcmd%%3Dreferral%%7Cutmcct%%3D%%2F%%3B"),
         cookie,random,today,today,today,cookie,today);
@@ -148,11 +148,11 @@ void Utils::GaRequest(const wxString& path)
     * Use a subfolder to prevent configuration files
     * reload (see ConfigThread::Entry() for details).
     */
-    dir << ("\\data");
+    dir << "\\data";
     if(!wxDirExists(dir)) wxMkdir(dir);
 
     wxString file(dir);
-    file << ("\\__utm.gif");
+    file << "\\__utm.gif";
     if(DownloadFile(url,file))
         wxRemoveFile(file);
 }
@@ -198,11 +198,11 @@ wxBitmap * Utils::LoadPngResource(const wchar_t *name)
 void Utils::OpenHandbook(const wxString& page, const wxString& anchor)
 {
     wxString path;
-    path = ("./handbook/") + page;
+    path = "./handbook/" + page;
 
     if(wxFileExists(path)){
         path = wxGetCwd();
-        path.Replace(("\\"),("/"));
+        path.Replace("\\","/");
         if(!anchor.IsEmpty()){
             /*
             * wxLaunchDefaultBrowser
@@ -212,37 +212,37 @@ void Utils::OpenHandbook(const wxString& page, const wxString& anchor)
             * and opening it instead.
             */
             wxString redirector(("./handbook/"));
-            redirector << page << (".") << anchor << (".html");
+            redirector << page << "." << anchor << ".html";
             if(!wxFileExists(redirector)){
                 wxTextFile file;
                 file.Create(redirector);
-                file.AddLine(("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">"));
-                file.AddLine(("<html><head><meta http-equiv=\"Refresh\" content=\"0; URL=") \
-                    + page + ("#") + anchor + ("\">"));
-                file.AddLine(("</head><body>"));
-                file.AddLine(("Redirecting... if the page has not been redirected automatically click "));
-                file.AddLine(("<a href=\"") + page + ("#") + anchor + ("\">here</a>."));
-                file.AddLine(("</body></html>"));
+                file.AddLine("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
+                file.AddLine("<html><head><meta http-equiv=\"Refresh\" content=\"0; URL=" \
+                    + page + "#" + anchor + "\">");
+                file.AddLine("</head><body>");
+                file.AddLine("Redirecting... if the page has not been redirected automatically click ");
+                file.AddLine("<a href=\"" + page + "#" + anchor + "\">here</a>.");
+                file.AddLine("</body></html>");
                 file.Write();
                 file.Close();
             }
-            path << ("/") << redirector;
+            path << "/" << redirector;
         } else {
-            path << ("/handbook/") << page;
+            path << "/handbook/" << page;
         }
     } else {
-        path = ("http://ultradefrag.sourceforge.net");
-        path << ("/handbook/") << page;
+        path = "http://ultradefrag.sourceforge.net";
+        path << "/handbook/" << page;
         if(!anchor.IsEmpty())
-            path << ("#") << anchor;
+            path << "#" << anchor;
     }
 
     itrace("%ls",path.wc_str());
-    if(path.Left(4) == ("http")) {
+    if(path.Left(4) == "http") {
         if(!wxLaunchDefaultBrowser(path))
-            ShowError(("Cannot open %ls!"),path.wc_str());
+            ShowError("Cannot open %ls!",path.wc_str());
     } else {
-        ShellExec(path,("open"));
+        ShellExec(path,"open");
     }
 }
 
@@ -264,7 +264,7 @@ bool Utils::SetProcessPriority(int priority)
     if(!result) letrace("cannot set process priority");
 
     ::CloseHandle(hProcess);
-    return (result != 0 ? true : false);
+    return result != 0 ? true : false;
 }
 
 /**
@@ -277,8 +277,8 @@ void Utils::ShellExec(
     int show, int flags)
 {
     SHELLEXECUTEINFO se;
-    memset(&se,0,sizeof(se));
-    se.cbSize = sizeof(se);
+    memset(&se,0,sizeof se);
+    se.cbSize = sizeof se;
 
     se.fMask = SEE_MASK_FLAG_NO_UI;
     if(flags & SHELLEX_NOASYNC)
@@ -296,7 +296,7 @@ void Utils::ShellExec(
             action.wc_str(), file.wc_str(),
             parameters.wc_str());
         if(!(flags & SHELLEX_SILENT)){
-            ShowError(("Cannot %ls %ls %ls"),
+            ShowError("Cannot %ls %ls %ls",
                 action.wc_str(), file.wc_str(),
                 parameters.wc_str());
         }
@@ -364,16 +364,16 @@ int Utils::MessageDialog(wxFrame *parent,
         wxBOTTOM | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL,
         LARGE_SPACING);
     contents->Add(msg, wxGBPosition(0, 1), wxDefaultSpan,
-        (wxALL & ~wxTOP) | wxALIGN_CENTER_HORIZONTAL | \
+        wxALL & ~wxTOP | wxALIGN_CENTER_HORIZONTAL | \
         wxALIGN_CENTER_VERTICAL,LARGE_SPACING);
 
     wxButton *ok = new wxButton(&dlg,wxID_OK,text1);
     wxButton *cancel = new wxButton(&dlg,wxID_CANCEL,text2);
 
     // Burmese needs Padauk font for display
-    if(g_locale->GetCanonicalName().Left(2) == ("my")){
+    if(g_locale->GetCanonicalName().Left(2) == "my"){
         wxFont textFont = msg->GetFont();
-        if(!textFont.SetFaceName(("Padauk"))){
+        if(!textFont.SetFaceName("Padauk")){
             etrace("Padauk font needed for correct Burmese text display not found");
         } else {
             textFont.SetPointSize(textFont.GetPointSize() + 2);
@@ -423,7 +423,7 @@ void Utils::ShowError(const wxChar* format, ...)
     va_end(args);
 
     wxString log = _("Open &log");
-    log.Replace(("&"),(""));
+    log.Replace("&","");
 
     if(MessageDialog(g_mainFrame,_("Error!"),
       wxART_ERROR,log,_("&Cancel"),message) == wxID_OK)
@@ -435,7 +435,7 @@ void Utils::ShowError(const wxChar* format, ...)
 wxString Utils::ConvertChartoWxString(char* input)
 {
     #if wxUSE_UNICODE
-        int size = sizeof(input) + 1;
+        int size = sizeof input + 1;
         wchar_t *buffer = new wchar_t[size*4];  // 32bit chars?
         wxEncodingConverter wxec;
         wxec.Init(wxFONTENCODING_ISO8859_1, wxFONTENCODING_UNICODE, wxCONVERT_SUBSTITUTE);
@@ -500,8 +500,8 @@ void Utils::createDirectoryRecursively(const std::wstring &directory) {
   } else { // Specified directory name already exists as a file or directory
 
     bool isDirectoryOrJunction =
-      ((fileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) ||
-      ((fileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != 0);
+      (fileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0 ||
+      (fileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != 0;
 
     if(!isDirectoryOrJunction) {
       throw std::runtime_error(

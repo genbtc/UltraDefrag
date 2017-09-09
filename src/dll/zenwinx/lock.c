@@ -48,7 +48,7 @@ winx_spin_lock *winx_init_spin_lock(char *name)
     winx_spin_lock *sl;
     
     /* attach PID to lock the current process only */
-    id = (unsigned int)(DWORD_PTR)(NtCurrentTeb()->ClientId.UniqueProcess);
+    id = (unsigned int)(DWORD_PTR)NtCurrentTeb()->ClientId.UniqueProcess;
     fullname = winx_swprintf(L"\\%hs_%u",name,id);
     if(fullname == NULL){
         etrace("not enough memory for %s",name);
@@ -90,10 +90,10 @@ int winx_acquire_spin_lock(winx_spin_lock *sl,int msec)
     NTSTATUS status;
 
     if(sl == NULL)
-        return (-1);
+        return -1;
     
     if(sl->hEvent == NULL)
-        return (-1);
+        return -1;
 
     if(msec != INFINITE)
         interval.QuadPart = -((signed long)msec * 10000);
@@ -101,7 +101,7 @@ int winx_acquire_spin_lock(winx_spin_lock *sl,int msec)
         interval.QuadPart = MAX_WAIT_INTERVAL;
     status = NtWaitForSingleObject(sl->hEvent,FALSE,&interval);
     if(status != WAIT_OBJECT_0)
-        return (-1);
+        return -1;
 
     return 0;
 }
@@ -116,14 +116,14 @@ int winx_release_spin_lock(winx_spin_lock *sl)
     NTSTATUS status;
     
     if(sl == NULL)
-        return (-1);
+        return -1;
     
     if(sl->hEvent == NULL)
-        return (-1);
+        return -1;
     
     status = NtSetEvent(sl->hEvent,NULL);
     if(status != STATUS_SUCCESS)
-        return (-1);
+        return -1;
     
     return 0;
 }

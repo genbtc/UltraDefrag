@@ -80,13 +80,13 @@ int winx_get_drive_type(char letter)
     letter = winx_toupper(letter);
     if(letter < 'A' || letter > 'Z'){
         etrace("invalid letter %c",letter);
-        return (-1);
+        return -1;
     }
     
     /* check for the drive existence */
     link_name[4] = (wchar_t)letter;
     if(winx_query_symbolic_link(link_name,link_target,MAX_TARGET_LENGTH) < 0)
-        return (-1);
+        return -1;
     
     /* check for an assignment made by subst command */
     if(wcsstr(link_target,L"\\??\\") == (wchar_t *)link_target)
@@ -116,14 +116,14 @@ int winx_get_drive_type(char letter)
             return drive_type;
     } else {
         strace(status,"cannot get device map");
-        return (-1);
+        return -1;
     }
     
     /* try to define exactly again which type has the specified drive */
     /* note that the drive motor can be powered on during this check */
     hRoot = OpenRootDirectory(letter);
     if(hRoot == NULL)
-        return (-1);
+        return -1;
     RtlZeroMemory(&ffdi,sizeof(FILE_FS_DEVICE_INFORMATION));
     status = NtQueryVolumeInformationFile(hRoot,&iosb,
                     &ffdi,sizeof(FILE_FS_DEVICE_INFORMATION),
@@ -131,7 +131,7 @@ int winx_get_drive_type(char letter)
     NtClose(hRoot);
     if(!NT_SUCCESS(status)){
         strace(status,"cannot get volume type for \'%c\'",letter);
-        return (-1);
+        return -1;
     }
 
     /* detect remote/cd/dvd/unknown drives */
@@ -198,7 +198,7 @@ static int get_drive_geometry(HANDLE hRoot,winx_volume_information *v)
                 sizeof(FILE_FS_SIZE_INFORMATION),FileFsSizeInformation);
     if(!NT_SUCCESS(status)){
         strace(status,"cannot get geometry of drive %c:",v->volume_letter);
-        return (-1);
+        return -1;
     }
     
     /* fill all geometry related fields of the output structure */
@@ -217,10 +217,10 @@ static int get_drive_geometry(HANDLE hRoot,winx_volume_information *v)
     if(f != NULL){
         if(winx_ioctl(f,IOCTL_DISK_GET_DRIVE_GEOMETRY,
           "get_drive_geometry: device geometry request",NULL,0,
-          &dg,sizeof(dg),NULL) >= 0){
+          &dg,sizeof dg,NULL) >= 0){
             v->device_capacity = dg.Cylinders.QuadPart * \
                 dg.TracksPerCylinder * dg.SectorsPerTrack * dg.BytesPerSector;
-            winx_bytes_to_hr(v->device_capacity,1,buffer,sizeof(buffer));
+            winx_bytes_to_hr(v->device_capacity,1,buffer,sizeof buffer);
             itrace("%c: device capacity = %s",v->volume_letter,buffer);
         }
         winx_fclose(f);
@@ -257,7 +257,7 @@ static int get_filesystem_name(HANDLE hRoot,winx_volume_information *v)
     if(!NT_SUCCESS(status)){
         strace(status,"cannot get file system name of drive %c:",v->volume_letter);
         winx_free(pfa);
-        return (-1);
+        return -1;
     }
     
     /*
@@ -291,7 +291,7 @@ static int get_ntfs_data(winx_volume_information *v)
     /* open the volume */
     f = winx_vopen(v->volume_letter);
     if(f == NULL)
-        return (-1);
+        return -1;
     
     /* get ntfs data */
     result = winx_ioctl(f,FSCTL_GET_NTFS_VOLUME_DATA,
@@ -320,7 +320,7 @@ static void get_volume_label(HANDLE hRoot,winx_volume_information *v)
     v->label[0] = 0;
     
     /* allocate memory */
-    buffer_size = (sizeof(FILE_FS_VOLUME_INFORMATION) - sizeof(wchar_t)) + (MAX_PATH + 1) * sizeof(wchar_t);
+    buffer_size = sizeof(FILE_FS_VOLUME_INFORMATION) - sizeof(wchar_t) + (MAX_PATH + 1) * sizeof(wchar_t);
     ffvi = winx_malloc(buffer_size);
     
     /* try to get actual label */
@@ -359,7 +359,7 @@ static void get_volume_dirty_flag(winx_volume_information *v)
         "get_volume_dirty_flag: dirty flag request",
         NULL,0,&dirty_flag,sizeof(ULONG),NULL);
     winx_fclose(f);
-    if(result >= 0 && (dirty_flag & VOLUME_IS_DIRTY)){
+    if(result >= 0 && dirty_flag & VOLUME_IS_DIRTY){
         etrace("%c: volume is dirty! Run CHKDSK to repair it.",
             v->volume_letter);
         v->is_dirty = 1;
@@ -381,7 +381,7 @@ int winx_get_volume_information(char volume_letter,winx_volume_information *v)
     
     /* check input data correctness */
     if(v == NULL)
-        return (-1);
+        return -1;
 
     /* ensure that it will work on w2k */
     volume_letter = winx_toupper(volume_letter);
@@ -391,23 +391,23 @@ int winx_get_volume_information(char volume_letter,winx_volume_information *v)
     v->volume_letter = volume_letter;
 
     if(volume_letter < 'A' || volume_letter > 'Z')
-        return (-1);
+        return -1;
     
     /* open root directory */
     hRoot = OpenRootDirectory(volume_letter);
     if(hRoot == NULL)
-        return (-1);
+        return -1;
     
     /* get drive geometry */
     if(get_drive_geometry(hRoot,v) < 0){
         NtClose(hRoot);
-        return (-1);
+        return -1;
     }
     
     /* get the name of contained file system */
     if(get_filesystem_name(hRoot,v) < 0){
         NtClose(hRoot);
-        return (-1);
+        return -1;
     }
     
     /* get name of the volume */
@@ -660,7 +660,7 @@ winx_volume_region *winx_sub_volume_region(winx_volume_region *rlist,
         if(r->lcn >= lcn + length) break;
         if(r->lcn + r->length > lcn){
             /* sure, at least a part of region is inside a specified range */
-            if(r->lcn >= lcn && (r->lcn + r->length) <= (lcn + length)){
+            if(r->lcn >= lcn && r->lcn + r->length <= lcn + length){
                 /*
                 * list entry is inside a specified range
                 * |--------------------|
@@ -671,8 +671,8 @@ winx_volume_region *winx_sub_volume_region(winx_volume_region *rlist,
                     (list_entry *)r);
                 goto next_region;
             }
-            if(r->lcn < lcn && (r->lcn + r->length) > lcn && \
-              (r->lcn + r->length) <= (lcn + length)){
+            if(r->lcn < lcn && r->lcn + r->length > lcn && \
+              r->lcn + r->length <= lcn + length){
                 /*
                 * cut the right side of the list entry
                 *     |--------------------|
@@ -681,7 +681,7 @@ winx_volume_region *winx_sub_volume_region(winx_volume_region *rlist,
                 r->length = lcn - r->lcn;
                 goto next_region;
             }
-            if(r->lcn >= lcn && r->lcn < (lcn + length)){
+            if(r->lcn >= lcn && r->lcn < lcn + length){
                 /*
                 * cut the left side of the list entry
                 * |--------------------|
@@ -694,7 +694,7 @@ winx_volume_region *winx_sub_volume_region(winx_volume_region *rlist,
                 rlist = winx_add_volume_region(rlist,new_lcn,new_length);
                 goto next_region;
             }
-            if(r->lcn < lcn && (r->lcn + r->length) > (lcn + length)){
+            if(r->lcn < lcn && r->lcn + r->length > lcn + length){
                 /*
                 * specified range is inside list entry
                 *   |----|

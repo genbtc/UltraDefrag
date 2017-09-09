@@ -94,8 +94,8 @@ void MainFrame::UpdateStatusBar(wxCommandEvent& event)
     UD_SetStatusText(2, _("fragmented"), fragmented);
     UD_SetStatusText(3, _("compressed"), compressed);
 
-    char s[32]; winx_bytes_to_hr(mft_size,2,s,sizeof(s));
-    SetStatusText(wxString::Format(("%hs MFT/SYS"),s), 4);
+    char s[32]; winx_bytes_to_hr(mft_size,2,s,sizeof s);
+    SetStatusText(wxString::Format("%hs MFT/SYS",s), 4);
 }
 
 #undef UD_SetStatusIcon

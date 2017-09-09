@@ -120,7 +120,7 @@ static int save_lua_report(udefrag_job_parameters *jp)
     utf8_path = (char *)winx_tmalloc(MAX_UTF8_PATH_LENGTH);
     if(utf8_path == NULL){
         mtrace();
-        return (-1);
+        return -1;
     }
     
     path = get_report_path(jp);
@@ -133,7 +133,7 @@ static int save_lua_report(udefrag_job_parameters *jp)
         if(f == NULL){
             winx_free(path);
             winx_free(utf8_path);
-            return (-1);
+            return -1;
         }
     }
 
@@ -146,10 +146,10 @@ static int save_lua_report(udefrag_job_parameters *jp)
     } else {
         wcscpy(compname,L"nil");
     }
-    winx_to_utf8(utf8_compname,sizeof(utf8_compname),compname);
+    winx_to_utf8(utf8_compname,sizeof utf8_compname,compname);
     memset(&tm,0,sizeof(winx_time));
     (void)winx_get_local_time(&tm);
-    (void)_snprintf(buffer,sizeof(buffer),
+    (void)_snprintf(buffer,sizeof buffer,
         "-- UltraDefrag report for disk %c:\r\n\r\n"
         "format_version = 7\r\n\r\n"
         "volume_letter = \"%c\"\r\n"
@@ -168,7 +168,7 @@ static int save_lua_report(udefrag_job_parameters *jp)
         (int)tm.year,(int)tm.month,(int)tm.day,
         (int)tm.hour,(int)tm.minute,(int)tm.second
         );
-    buffer[sizeof(buffer) - 1] = 0;
+    buffer[sizeof buffer - 1] = 0;
     (void)winx_fwrite(buffer,1,strlen(buffer),f);
     
     /* print body */
@@ -196,7 +196,7 @@ static int save_lua_report(udefrag_job_parameters *jp)
         else
             status = " - ";
         
-        (void)_snprintf(buffer, sizeof(buffer),
+        (void)_snprintf(buffer, sizeof buffer,
             "\t{fragments = %u,"
             "size = %I64u,"
             "comment = \"%s\","
@@ -207,7 +207,7 @@ static int save_lua_report(udefrag_job_parameters *jp)
             comment,
             status
             );
-        buffer[sizeof(buffer) - 1] = 0;
+        buffer[sizeof buffer - 1] = 0;
         (void)winx_fwrite(buffer,1,strlen(buffer),f);
 
         if(file->path != NULL){

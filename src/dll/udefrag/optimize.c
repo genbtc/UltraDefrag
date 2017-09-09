@@ -68,7 +68,7 @@ static int cleanup_space(udefrag_job_parameters *jp, winx_file_info *file,
     current_vcn = block->vcn;
     while(clusters_to_cleanup){
         /* use last free region */
-        if(jp->free_regions == NULL) return (-1);
+        if(jp->free_regions == NULL) return -1;
         rgn = NULL;
         for(r = jp->free_regions->prev; r; r = r->prev){
             if(r->length > 0 && \
@@ -79,12 +79,12 @@ static int cleanup_space(udefrag_job_parameters *jp, winx_file_info *file,
             }
             if(r->prev == jp->free_regions->prev) break;
         }
-        if(rgn == NULL) return (-1);
+        if(rgn == NULL) return -1;
         
         n = min(rgn->length,clusters_to_cleanup);
         target = rgn->lcn + rgn->length - n;
         if(move_file(file,current_vcn,n,target,jp) < 0)
-            return (-2);
+            return -2;
         current_vcn += n;
         clusters_to_cleanup -= n;
     }
@@ -168,7 +168,7 @@ static int optimize_file(winx_file_info *f,udefrag_job_parameters *jp)
     
     /* check whether the file is locked or not */
     if(is_file_locked(f,jp))
-        return (-1);
+        return -1;
 
     /* reset counters */
     jp->pi.total_moves = 0;
@@ -294,7 +294,7 @@ move_the_file:
 
 done:
     if(jp->termination_router((void *)jp)) return 1;
-    return (clusters_to_process > 0) ? (-1) : 1;
+    return clusters_to_process > 0 ? -1 : 1;
 }
 
 /**
@@ -347,7 +347,7 @@ static int optimize_directories(udefrag_job_parameters *jp)
     /* open the volume */
     jp->fVolume = winx_vopen(winx_toupper(jp->volume_letter));
     if(jp->fVolume == NULL)
-        return (-1);
+        return -1;
 
     time = start_timing("directories optimization",jp);
 
@@ -367,7 +367,7 @@ static int optimize_directories(udefrag_job_parameters *jp)
     
     /* display amount of moved data and number of optimized directories */
     itrace("%I64u directories optimized",optimized_dirs);
-    winx_bytes_to_hr(jp->pi.moved_clusters * jp->v_info.bytes_per_cluster,2,buffer,sizeof(buffer));
+    winx_bytes_to_hr(jp->pi.moved_clusters * jp->v_info.bytes_per_cluster,2,buffer,sizeof buffer);
     itrace("%I64u clusters (%s) moved",jp->pi.moved_clusters,buffer);
     stop_timing("directories optimization",time,jp);
 
@@ -437,7 +437,7 @@ static int optimize_mft_routine(udefrag_job_parameters *jp)
     /* open the volume */
     jp->fVolume = winx_vopen(winx_toupper(jp->volume_letter));
     if(jp->fVolume == NULL)
-        return (-1);
+        return -1;
 
     time = start_timing("mft optimization",jp);
 
@@ -466,12 +466,12 @@ static int optimize_mft_routine(udefrag_job_parameters *jp)
     }
 
     /* display amount of moved data */
-    winx_bytes_to_hr(jp->pi.moved_clusters * jp->v_info.bytes_per_cluster,2,buffer,sizeof(buffer));
+    winx_bytes_to_hr(jp->pi.moved_clusters * jp->v_info.bytes_per_cluster,2,buffer,sizeof buffer);
     itrace("%I64u clusters (%s) moved",jp->pi.moved_clusters, buffer);
     jobruntime = stop_timing("mft optimization",time,jp);
-    overall_speed = (jp->pi.moved_clusters * jp->v_info.bytes_per_cluster) / ((double)jobruntime / 1000);
+    overall_speed = jp->pi.moved_clusters * jp->v_info.bytes_per_cluster / ((double)jobruntime / 1000);
     //re-use the buffer charbuffer to display the average transfer speed in human readable form.
-    winx_bytes_to_hr((ULONGLONG)overall_speed,3,buffer,sizeof(buffer));
+    winx_bytes_to_hr((ULONGLONG)overall_speed,3,buffer,sizeof buffer);
     itrace("Avg. Speed = %s/s", buffer);
     /* cleanup */
     clear_currently_excluded_flag(jp);
@@ -498,28 +498,28 @@ static int files_compare(const void *prb_a, const void *prb_b, void *prb_param)
     if(jp->udo.sorting_flags & UD_SORT_BY_SIZE){
         /* sort files of equal sizes by path */
         if(a->disp.clusters == b->disp.clusters) goto paths_compare;
-        result = (a->disp.clusters > b->disp.clusters) ? 1 : (-1);
+        result = a->disp.clusters > b->disp.clusters ? 1 : -1;
         goto done;
     }
     
     if(jp->udo.sorting_flags & UD_SORT_BY_CREATION_TIME){
         /* sort files of equal creation times by path */
         if(a->creation_time == b->creation_time) goto paths_compare;
-        result = (a->creation_time > b->creation_time) ? 1 : (-1);
+        result = a->creation_time > b->creation_time ? 1 : -1;
         goto done;
     }
 
     if(jp->udo.sorting_flags & UD_SORT_BY_MODIFICATION_TIME){
         /* sort files of equal last modification times by path */
         if(a->last_modification_time == b->last_modification_time) goto paths_compare;
-        result = (a->last_modification_time > b->last_modification_time) ? 1 : (-1);
+        result = a->last_modification_time > b->last_modification_time ? 1 : -1;
         goto done;
     }
 
     if(jp->udo.sorting_flags & UD_SORT_BY_ACCESS_TIME){
         /* sort files of equal last access times by path */
         if(a->last_access_time == b->last_access_time) goto paths_compare;
-        result = (a->last_access_time > b->last_access_time) ? 1 : (-1);
+        result = a->last_access_time > b->last_access_time ? 1 : -1;
         goto done;
     }
 
@@ -527,7 +527,7 @@ paths_compare:
     result = winx_wcsicmp(a->path, b->path);
     
 done:
-    if(jp->udo.sorting_flags & UD_SORT_DESCENDING) result *= (-1);
+    if(jp->udo.sorting_flags & UD_SORT_DESCENDING) result *= -1;
     return result;
 }
 
@@ -605,7 +605,7 @@ static void move_files_to_front(udefrag_job_parameters *jp,
     
     /* display amount of moved data */
     itrace("%I64u clusters moved",jp->pi.moved_clusters);
-    winx_bytes_to_hr(jp->pi.moved_clusters * jp->v_info.bytes_per_cluster,1,buffer,sizeof(buffer));
+    winx_bytes_to_hr(jp->pi.moved_clusters * jp->v_info.bytes_per_cluster,1,buffer,sizeof buffer);
     itrace("%s moved",buffer);
     stop_timing("file moving to front",time,jp);
 }
@@ -706,7 +706,7 @@ static void move_files_to_back(udefrag_job_parameters *jp,ULONGLONG *start_lcn)
 done:
     /* display amount of moved data */
     itrace("%I64u clusters moved",jp->pi.moved_clusters);
-    winx_bytes_to_hr(jp->pi.moved_clusters * jp->v_info.bytes_per_cluster,1,buffer,sizeof(buffer));
+    winx_bytes_to_hr(jp->pi.moved_clusters * jp->v_info.bytes_per_cluster,1,buffer,sizeof buffer);
     itrace("%s moved",buffer);
     stop_timing("file moving to end",time,jp);
 }
@@ -856,7 +856,7 @@ static void cut_off_sorted_out_files(udefrag_job_parameters *jp,struct prb_table
 
 done:
     itrace("%I64u clusters skipped",jp->already_optimized_clusters);
-    winx_bytes_to_hr(jp->already_optimized_clusters * jp->v_info.bytes_per_cluster,1,buffer,sizeof(buffer));
+    winx_bytes_to_hr(jp->already_optimized_clusters * jp->v_info.bytes_per_cluster,1,buffer,sizeof buffer);
     itrace("%s skipped",buffer);
     stop_timing("cutting off sorted out files",time,jp);
 }
@@ -884,7 +884,7 @@ static ULONGLONG count_clusters(udefrag_job_parameters *jp,ULONGLONG start_lcn)
         if(rgn->next == jp->free_regions) break;
     }
     jp->p_counters.searching_time += winx_xtime() - time;
-    return (jp->v_info.total_clusters - start_lcn - n);
+    return jp->v_info.total_clusters - start_lcn - n;
 }
 
 /**
@@ -930,7 +930,7 @@ static int optimize_routine(udefrag_job_parameters *jp)
     /* open the volume */
     jp->fVolume = winx_vopen(winx_toupper(jp->volume_letter));
     if(jp->fVolume == NULL)
-        return (-1);
+        return -1;
 
     time = start_timing("optimization",jp);
 

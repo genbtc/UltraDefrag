@@ -610,8 +610,8 @@ prb_t_insert (struct prb_traverser *trav,
     {
       trav->prb_table = tree;
       trav->prb_node =
-        ((struct prb_node *)
-         ((char *) p - offsetof (struct prb_node, prb_data)));
+        (struct prb_node *)
+        ((char *) p - offsetof (struct prb_node, prb_data));
       return *p;
     }
   else

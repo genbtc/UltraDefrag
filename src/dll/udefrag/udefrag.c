@@ -77,7 +77,7 @@ BOOL wait_delete_thread_finished = FALSE; //related to wait_delete_lists_thread(
 int udefrag_init_library(void)
 {
     if(winx_init_library() < 0)
-        return (-1);
+        return -1;
 
     /* deny installation/upgrade */
     if(winx_get_os_version() >= WINDOWS_VISTA){
@@ -174,7 +174,7 @@ void deliver_progress_info(udefrag_job_parameters *jp,int completion_status)
                 for(k = 1; k < jp->cluster_map.n_colors; k++){
                     n = jp->cluster_map.array[i][k];
                     if(n >= maximum){ /* support of colors precedence  */
-                        if((k != MFT_ZONE_SPACE && k != FREE_SPACE) || !mft_zone_detected){
+                        if(k != MFT_ZONE_SPACE && k != FREE_SPACE || !mft_zone_detected){
                             maximum = n;
                             index = k;
                         }
@@ -203,7 +203,7 @@ void deliver_progress_info(udefrag_job_parameters *jp,int completion_status)
         if(p1 >= jp->progress_trigger){
             winx_dbg_print_header('>',0,D"progress %3u.%02u%% completed, "
                 "trigger %3u", p1, p2, jp->progress_trigger);
-            jp->progress_trigger = (p1 / 10) * 10 + 10;
+            jp->progress_trigger = p1 / 10 * 10 + 10;
         }
     }
 }
@@ -529,7 +529,7 @@ done:
         destroy_lists(&jp);
 
     if(result < 0) return result;
-    return (result > 0) ? 0 : (-1);
+    return result > 0 ? 0 : -1;
 }
 
 /**
@@ -553,11 +553,11 @@ char* udefrag_get_results(udefrag_progress_info *pi)
     /* allocate memory */
     msg = (char *)winx_malloc(MSG_LENGTH + 1);
 
-    (void)winx_bytes_to_hr(pi->total_space,2,total_space,sizeof(total_space));
-    (void)winx_bytes_to_hr(pi->free_space,2,free_space,sizeof(free_space));
+    (void)winx_bytes_to_hr(pi->total_space,2,total_space,sizeof total_space);
+    (void)winx_bytes_to_hr(pi->free_space,2,free_space,sizeof free_space);
 
     p = calc_percentage(pi->fragments,pi->files);
-    ip = (unsigned int)(p);
+    ip = (unsigned int)p;
     if(ip < 100) ip = 100; /* fix round off error */
     ifr = (unsigned int)(pi->fragmentation * 100.00);
 
@@ -683,7 +683,7 @@ static int create_target_directory(wchar_t *path)
     path_copy = winx_wcsdup(path);
     if(path_copy == NULL){
         etrace("not enough memory");
-        return (-1);
+        return -1;
     }
     
     winx_path_remove_filename(path_copy);
@@ -737,7 +737,7 @@ int udefrag_set_log_file_path(void)
     winx_free(path);
     if(native_path == NULL){
         etrace("cannot build native path");
-        return (-1);
+        return -1;
     }
     
     /* delete old logfile */
@@ -781,7 +781,7 @@ int udefrag_set_log_file_path(void)
     return 0;
 fail:
     winx_free(native_path);
-    return (-1);
+    return -1;
 }
 
 
@@ -818,7 +818,7 @@ int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
     jp->fVolume = winx_vopen(winx_toupper(jp->volume_letter));
     if(jp->fVolume == NULL){
         etrace("Abnormal Error. Could not open volume handle!");
-        return (-1);
+        return -1;
     }
     /* reset outer/job counters */
     jp->pi.total_moves = 0;
@@ -842,7 +842,7 @@ int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
             if(_wcsicmp(file->path,native_path) == 0) break;
             if(file->next == jp->filelist){
                 etrace("Abnormal error. Could not match path to any scanned file...");
-                result = (-1); goto cleanup;
+                result = -1; goto cleanup;
             }
         }
         /* at this point we should have the file's winx_file_info object in *file */
@@ -854,7 +854,7 @@ int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
         /* check whether we can move it or not */
         if(!can_move(file,jp)){
             etrace("File cannot be moved because reasons."); //should have a better error message.
-            result = (-1); goto cleanup;
+            result = -1; goto cleanup;
         }
         filelength = file->disp.clusters;
         jp->pi.clusters_to_process = filelength;        
@@ -862,10 +862,10 @@ int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
         region = start_or_end ? find_first_free_region(jp,0,filelength,NULL) 
     						  : find_last_free_region(jp, 0,filelength,NULL);
         writeposition = start_or_end ? region->lcn 
-    							     :(region->lcn + region->length - filelength);
+    							     :region->lcn + region->length - filelength;
         if (!region){
             etrace("No contiguous region could be found large enough to hold the selected file.");
-            result = (-1); goto cleanup;
+            result = -1; goto cleanup;
         }
 
     	//color the file as in-progress. need to memcpy it to save the old-location to UN-color it after.
@@ -902,12 +902,12 @@ int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
             if (jp->pi.processed_clusters > 0)
                 jp->pi.processed_clusters -= filelength;    //somehow needed, otherwise volume status is exactly +100% higher than it should be after a cancel.
             etrace("Moving failed for some reason."); //should have a better error message.
-            result = (-1);  goto endnicely;
+            result = -1;  goto endnicely;
         }
         /* Print status messages */
         filesize = jp->pi.moved_clusters * jp->v_info.bytes_per_cluster;
         totalfilesize += filesize;
-        winx_bytes_to_hr(filesize,2,buffer,sizeof(buffer));
+        winx_bytes_to_hr(filesize,2,buffer,sizeof buffer);
         if(jp->udo.dbgprint_level >= DBG_DETAILED){
             dtrace("After: The File has %I64u fragments & resides @ LCN: %I64u",file->disp.fragments,file->disp.blockmap->lcn);
             dtrace("%I64u clusters (%s) moved",jp->pi.moved_clusters, buffer);
@@ -918,9 +918,9 @@ int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
 cleanup:
     jobruntime = stop_timing(headerstring,time,jp);
     overall_speed = totalfilesize / ((double)jobruntime / 1000);    
-    winx_bytes_to_hr(totalfilesize,3,buffer,sizeof(buffer));
+    winx_bytes_to_hr(totalfilesize,3,buffer,sizeof buffer);
     itrace("Finished. Total Files Moved: %I64u out of %d. (%s) ",jp->pi.total_moves,jp->udo.cut_filter.count,buffer);
-    winx_bytes_to_hr((ULONGLONG)overall_speed,3,buffer,sizeof(buffer));
+    winx_bytes_to_hr((ULONGLONG)overall_speed,3,buffer,sizeof buffer);
     itrace("Avg. Speed = %s/s", buffer);
 endnicely:    
     winx_flush_dbg_log(0);

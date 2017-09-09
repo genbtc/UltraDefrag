@@ -80,7 +80,7 @@ void MainFrame::InitQueryMenu()
 	
 	m_panel3->SetSizer( bSizer4 );
     bSizer4->Fit( m_panel3 );
-    m_notebook1->AddPage( m_panel3, ("Query"), false );   
+    m_notebook1->AddPage( m_panel3, "Query", false );   
 }
 
 /**=========================================================================**

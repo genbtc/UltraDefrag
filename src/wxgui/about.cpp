@@ -85,7 +85,7 @@ void MainFrame::OnHelpAbout(wxCommandEvent& WXUNUSED(event))
     version->SetFont(fontBig);
 
     wxStaticText *copyright = new wxStaticText(&dlg,wxID_ANY,
-        ("(C) 2007-2015 UltraDefrag development team"));
+        "(C) 2007-2015 UltraDefrag development team");
     wxStaticText *description = new wxStaticText(&dlg,wxID_ANY,
         _("An open source defragmentation utility."));
     wxStaticText *credits = new wxStaticText(&dlg,wxID_ANY,
@@ -95,9 +95,9 @@ void MainFrame::OnHelpAbout(wxCommandEvent& WXUNUSED(event))
         _("UltraDefrag website"),HOMEPAGE);
 
     // Burmese needs Padauk font for display
-    if(g_locale->GetCanonicalName().Left(2) == ("my")){
+    if(g_locale->GetCanonicalName().Left(2) == "my"){
         wxFont textFont = description->GetFont();
-        if(!textFont.SetFaceName(("Padauk"))){
+        if(!textFont.SetFaceName("Padauk")){
             etrace("Padauk font needed for correct Burmese text display not found");
         } else {
             textFont.SetPointSize(textFont.GetPointSize() + 2);

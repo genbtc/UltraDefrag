@@ -62,7 +62,7 @@ int winx_create_event(wchar_t *name,int type,HANDLE *phandle)
     if(!NT_SUCCESS(status)){
         *phandle = NULL;
         strace(status,"cannot create %ws",name);
-        return (-1);
+        return -1;
     }
     return 0;
 }
@@ -90,7 +90,7 @@ int winx_open_event(wchar_t *name,int flags,HANDLE *phandle)
     if(!NT_SUCCESS(status)){
         *phandle = NULL;
         strace(status,"cannot open %ws",name);
-        return (-1);
+        return -1;
     }
     return 0;
 }

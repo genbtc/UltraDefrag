@@ -181,12 +181,12 @@ int winx_get_system_time(winx_time *t)
     NTSTATUS status;
     
     if(t == NULL)
-        return (-1);
+        return -1;
     
     status = NtQuerySystemTime(&SystemTime);
     if(status != STATUS_SUCCESS){
         strace(status,"NtQuerySystemTime failed");
-        return (-1);
+        return -1;
     }
     
     RtlTimeToTimeFields(&SystemTime,&TimeFields);
@@ -216,18 +216,18 @@ int winx_get_local_time(winx_time *t)
     NTSTATUS status;
     
     if(t == NULL)
-        return (-1);
+        return -1;
     
     status = NtQuerySystemTime(&SystemTime);
     if(status != STATUS_SUCCESS){
         strace(status,"NtQuerySystemTime failed");
-        return (-1);
+        return -1;
     }
     
     status = RtlSystemTimeToLocalTime(&SystemTime,&LocalTime);
     if(status != STATUS_SUCCESS){
         strace(status,"RtlSystemTimeToLocalTime failed");
-        return (-1);
+        return -1;
     }
     
     RtlTimeToTimeFields(&LocalTime,&TimeFields);
@@ -256,13 +256,13 @@ int winx_filetime2timefields(ULONGLONG input,TIME_FIELDS *output)
     int status;
 
     if(output == NULL)
-        return (-1);
+        return -1;
 
     SystemTime.QuadPart = input;
     status = RtlSystemTimeToLocalTime(&SystemTime,&LocalTime);
     if(status != STATUS_SUCCESS){
         strace(status,"RtlSystemTimeToLocalTime failed");
-        return (-1);
+        return -1;
     }
 
     RtlTimeToTimeFields(&LocalTime,output);
@@ -280,7 +280,7 @@ int winx_filetime2timefields(ULONGLONG input,TIME_FIELDS *output)
 int winx_timefields2winxtime(TIME_FIELDS input,winx_time *output)
 {
     if(output == NULL)
-        return (-1);
+        return -1;
 
     output->year = input.Year;
     output->month = input.Month;

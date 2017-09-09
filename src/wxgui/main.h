@@ -310,7 +310,7 @@ public:
     virtual bool OnInit();
     virtual int  OnExit();
     virtual void OnInitCmdLine(wxCmdLineParser& parser) {
-        parser.AddSwitch(("s"),("setup"),("setup"));
+        parser.AddSwitch("s","setup","setup");
     }
 
     static void InitLocale();
@@ -793,7 +793,7 @@ public:
         const wxString& anchor = wxEmptyString);
     static bool SetProcessPriority(int priority);
     static void ShellExec(const wxString& file,
-        const wxString& action = ("open"),
+        const wxString& action = "open",
         const wxString& parameters = wxEmptyString,
         int show = SW_SHOW, int flags = 0);
     static void ShowError(const wxChar* format, ...);

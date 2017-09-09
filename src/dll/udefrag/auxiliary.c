@@ -89,7 +89,7 @@ ULONGLONG stop_timing(char *operation_name,ULONGLONG start_time,udefrag_job_para
     
     returntime = time = winx_xtime() - start_time;
     seconds = time / 1000;
-    winx_time2str(seconds,buffer,sizeof(buffer));
+    winx_time2str(seconds,buffer,sizeof buffer);
     time -= seconds * 1000;
     winx_dbg_print_header(0,0,I"%s of %c: completed in %s %I64ums",
         operation_name,jp->volume_letter,buffer,time);
@@ -112,7 +112,7 @@ static void dbg_print_single_counter(udefrag_job_parameters *jp,ULONGLONG counte
 
     time = counter;
     seconds = time / 1000;
-    winx_time2str(seconds,buffer,sizeof(buffer));
+    winx_time2str(seconds,buffer,sizeof buffer);
     time -= seconds * 1000;
     
     p = calc_percentage(counter,jp->p_counters.overall_time);
@@ -137,7 +137,7 @@ void dbg_print_performance_counters(udefrag_job_parameters *jp)
     
     time = jp->p_counters.overall_time;
     seconds = time / 1000;
-    winx_time2str(seconds,buffer,sizeof(buffer));
+    winx_time2str(seconds,buffer,sizeof buffer);
     time -= seconds * 1000;
     winx_dbg_print_header(0,0,I"*");
     itrace("volume processing completed in %s %I64ums:",buffer,time);
@@ -156,16 +156,16 @@ void dbg_print_footer(udefrag_job_parameters *jp)
 {
     winx_dbg_print_header(0,0,I"*");
     winx_dbg_print_header(0,0,I"Processing of %c: %s",
-        jp->volume_letter, (jp->pi.completion_status > 0) ? "succeeded" : "failed");
+        jp->volume_letter, jp->pi.completion_status > 0 ? "succeeded" : "failed");
     winx_dbg_print_header(0,0,I"*");
 }
 
 double calc_percentage(ULONGLONG x,ULONGLONG y)
 {
     if(y == 0) 
-        return (0.00);
+        return 0.00;
     else 
-        return ( ( (double)x / (double)y ) * 100.00 );
+        return (double)x / (double)y * 100.00;
 }
 
 /** @} */

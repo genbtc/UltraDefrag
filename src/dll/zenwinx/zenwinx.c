@@ -47,9 +47,9 @@ int winx_init_library(void)
 {
     winx_init_case_tables();
     if(winx_create_global_heap() < 0)
-        return (-1);
+        return -1;
     if(winx_dbg_init() < 0)
-        return (-1);
+        return -1;
     return 0;
 }
 
@@ -79,9 +79,9 @@ static void print_post_scriptum(char *msg,NTSTATUS Status)
 {
     char buffer[256];
 
-    _snprintf(buffer,sizeof(buffer),"\n%s: %x: %s\n\n",
+    _snprintf(buffer,sizeof buffer,"\n%s: %x: %s\n\n",
         msg,(UINT)Status,winx_get_status_description(Status));
-    buffer[sizeof(buffer) - 1] = 0;
+    buffer[sizeof buffer - 1] = 0;
     /* winx_printf cannot be used here */
     winx_print(buffer);
 }

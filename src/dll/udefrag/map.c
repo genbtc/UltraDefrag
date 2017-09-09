@@ -75,11 +75,11 @@ int allocate_map(int map_size,udefrag_job_parameters *jp)
     /* get volume information */
     if(winx_get_volume_information(jp->volume_letter,&jp->v_info) < 0){
         etrace("Couldn't get volume information for Drive: %c",jp->volume_letter);
-        return (-1);
+        return -1;
     }
     if(jp->v_info.total_clusters == 0){
         etrace("Abnormal Error. Volume info said total_clusters == 0");
-        return (-1);
+        return -1;
     }
 
     /* allocate memory */
@@ -89,7 +89,7 @@ int allocate_map(int map_size,udefrag_job_parameters *jp)
         return UDEFRAG_NO_MEM;
     }
     array_size = map_size * SPACE_STATES * sizeof(ULONGLONG);
-    jp->cluster_map.array = (ULONGLONG(*)[SPACE_STATES])(winx_tmalloc(array_size));
+    jp->cluster_map.array = (ULONGLONG(*)[SPACE_STATES])winx_tmalloc(array_size);
     if(jp->cluster_map.array == NULL){
         etrace("cannot allocate %u bytes of memory",
             array_size);
@@ -190,7 +190,7 @@ void colorize_map_region(udefrag_job_parameters *jp,
         cell = lcn / jp->cluster_map.clusters_per_cell;
         offset = lcn % jp->cluster_map.clusters_per_cell;
         if(cell >= jp->cluster_map.map_size) return;
-        while(cell < (jp->cluster_map.map_size - 1) && length){
+        while(cell < jp->cluster_map.map_size - 1 && length){
             n = min(length,jp->cluster_map.clusters_per_cell - offset);
             jp->cluster_map.array[cell][new_color] += n;
             if(new_color != MFT_ZONE_SPACE){

@@ -72,9 +72,9 @@ void Log::DoLogRecord(wxLogLevel level,const wxChar *msg,time_t timestamp)
 void MainFrame::OnDebugLog(wxCommandEvent& WXUNUSED(event))
 {
     wxString logpath;
-    if(!wxGetEnv(("UD_LOG_FILE_PATH"),&logpath)){
-        wxMessageBox(("Logging to a file is turned off."),
-            ("Cannot open log file!"),wxOK | wxICON_HAND,this);
+    if(!wxGetEnv("UD_LOG_FILE_PATH",&logpath)){
+        wxMessageBox("Logging to a file is turned off.",
+            "Cannot open log file!",wxOK | wxICON_HAND,this);
     } else {
         wxFileName file(logpath);
         file.Normalize();
@@ -87,7 +87,7 @@ void MainFrame::OnDebugLog(wxCommandEvent& WXUNUSED(event))
 
 void MainFrame::OnDebugSend(wxCommandEvent& WXUNUSED(event))
 {
-    Utils::OpenHandbook(("Troubleshooting.html"));
+    Utils::OpenHandbook("Troubleshooting.html");
 }
 
 /** @} */

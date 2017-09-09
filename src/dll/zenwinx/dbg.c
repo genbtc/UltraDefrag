@@ -111,10 +111,10 @@ int dbg_get_local_time(winx_time *t)
     NTSTATUS status;
     
     status = NtQuerySystemTime(&SystemTime);
-    if(status != STATUS_SUCCESS) return (-1);
+    if(status != STATUS_SUCCESS) return -1;
     
     status = RtlSystemTimeToLocalTime(&SystemTime,&LocalTime);
-    if(status != STATUS_SUCCESS) return (-1);
+    if(status != STATUS_SUCCESS) return -1;
     
     RtlTimeToTimeFields(&LocalTime,&TimeFields);
     t->year = TimeFields.Year;
@@ -146,9 +146,9 @@ int winx_dbg_init(void)
 
     if(!hListSynchEvent){
         /* attach PID to lock the current process only */
-        id = (unsigned int)(DWORD_PTR)(NtCurrentTeb()->ClientId.UniqueProcess);
+        id = (unsigned int)(DWORD_PTR)NtCurrentTeb()->ClientId.UniqueProcess;
         name = winx_swprintf(L"\\winx_dbg_list_lock_%u",id);
-        if(name == NULL) return (-1);
+        if(name == NULL) return -1;
         
         RtlInitUnicodeString(&us,name);
         InitializeObjectAttributes(&oa,&us,0,NULL,NULL);
@@ -156,16 +156,16 @@ int winx_dbg_init(void)
             &oa,SynchronizationEvent,1);
         if(!NT_SUCCESS(status)){
             hListSynchEvent = NULL;
-            return (-1);
+            return -1;
         }
     }
     if(!hLogSynchEvent){
         /* attach PID to lock the current process only */
-        id = (unsigned int)(DWORD_PTR)(NtCurrentTeb()->ClientId.UniqueProcess);
+        id = (unsigned int)(DWORD_PTR)NtCurrentTeb()->ClientId.UniqueProcess;
         name = winx_swprintf(L"\\winx_dbg_log_lock_%u",id);
         if(name == NULL){
             NtCloseSafe(hListSynchEvent);
-            return (-1);
+            return -1;
         }
         
         RtlInitUnicodeString(&us,name);
@@ -175,7 +175,7 @@ int winx_dbg_init(void)
         if(!NT_SUCCESS(status)){
             hLogSynchEvent = NULL;
             NtCloseSafe(hListSynchEvent);
-            return (-1);
+            return -1;
         }
     }
     return 0;
@@ -298,7 +298,7 @@ static void deliver_message(char *string)
     
     /* write the process id into the buffer */
     dbuffer = (DBG_OUTPUT_DEBUG_STRING_BUFFER *)BaseAddress;
-    dbuffer->ProcessId = (DWORD)(DWORD_PTR)(NtCurrentTeb()->ClientId.UniqueProcess);
+    dbuffer->ProcessId = (DWORD)(DWORD_PTR)NtCurrentTeb()->ClientId.UniqueProcess;
 
     (void)strncpy(dbuffer->Msg,string,DBG_OUT_BUFFER_SIZE);
     dbuffer->Msg[DBG_OUT_BUFFER_SIZE - 1] = 0;
@@ -307,7 +307,7 @@ static void deliver_message(char *string)
     length = (int)strlen(dbuffer->Msg);
     if(length > 0){
         if(dbuffer->Msg[length-1] != '\n'){
-            if(length == (DBG_OUT_BUFFER_SIZE - 1)){
+            if(length == DBG_OUT_BUFFER_SIZE - 1){
                 dbuffer->Msg[length-1] = '\n';
             } else {
                 dbuffer->Msg[length] = '\n';
@@ -437,9 +437,9 @@ static void *winx_get_error_description(ULONG error,int *encoding)
     if(!NT_SUCCESS(Status))
         return NULL; /* no appropriate message found */
     if(encoding){
-        *encoding = (mre->Flags & MESSAGE_RESOURCE_UNICODE) ? ENC_UTF16 : ENC_ANSI;
+        *encoding = mre->Flags & MESSAGE_RESOURCE_UNICODE ? ENC_UTF16 : ENC_ANSI;
     }
-    return (void *)(mre->Text);
+    return (void *)mre->Text;
 }
 
 /**
@@ -612,7 +612,7 @@ void winx_dbg_print_header(char ch, int width, const char *format, ...)
                 prefix = D; body += strlen(D);
             }
             length = (int)strlen(body);
-            if(length > (width - 4)){
+            if(length > width - 4){
                 /* print string not decorated */
                 winx_dbg_print(0,"%s",string);
             } else {

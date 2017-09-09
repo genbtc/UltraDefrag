@@ -103,7 +103,7 @@ static int get_boot_exec_list(struct cmd **list)
         L"Session Manager",qt,(PVOID)list,NULL);
     if(!NT_SUCCESS(status)){
         strace(status,"cannot get list of boot execute commands");
-        return (-1);
+        return -1;
     }
     return 0;
 }
@@ -131,12 +131,12 @@ static int cmd_compare(wchar_t *reg_cmd,const wchar_t *cmd)
     long_cmd = winx_swprintf(L"autocheck %ws",cmd);
     if(long_cmd == NULL){
         mtrace();
-        return (-1);
+        return -1;
     }
         
     result = winx_wcsicmp(long_cmd,reg_cmd);
     winx_free(long_cmd);
-    return (result == 0) ? 1 : 0;
+    return result == 0 ? 1 : 0;
 }
 
 /**
@@ -173,7 +173,7 @@ static int save_boot_exec_list(struct cmd *list)
     winx_free(commands);
     if(!NT_SUCCESS(status)){
         strace(status,"cannot save list of boot execute commands");
-        return (-1);
+        return -1;
     }
     return 0;
 }
@@ -212,7 +212,7 @@ static void destroy_boot_exec_list(struct cmd *list)
 int winx_bootex_check(const wchar_t *command)
 {
     struct cmd *c, *list = NULL;
-    int result = (-1);
+    int result = -1;
 
     DbgCheck1(command,-1);
     
@@ -252,7 +252,7 @@ int winx_bootex_register(const wchar_t *command)
     struct cmd *prev_command = NULL;
     int cmd_found = 0;
     wchar_t *cmd_copy;
-    int result = (-1);
+    int result = -1;
     
     DbgCheck1(command,-1);
 
@@ -305,7 +305,7 @@ int winx_bootex_unregister(const wchar_t *command)
 {
     struct cmd *c, *list = NULL;
     struct cmd *head, *next = NULL;
-    int result = (-1);
+    int result = -1;
     
     DbgCheck1(command,-1);
 

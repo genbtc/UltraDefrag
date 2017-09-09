@@ -116,7 +116,7 @@ int winx_create_global_heap(void)
         /* trace macro cannot be used here */
         /* winx_printf cannot be used here */
         winx_print("\nCannot create global memory heap!\n");
-        return (-1);
+        return -1;
     }
     
     /* reserve 2 MB of memory for the out of memory condition handling */

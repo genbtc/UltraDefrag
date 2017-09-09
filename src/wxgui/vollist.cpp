@@ -51,9 +51,9 @@ void MainFrame::InitVolList()
     m_vListFont = new wxFont(m_vList->GetFont());
 
     // set mono-space font for the list unless Burmese translation is selected
-    if(g_locale->GetCanonicalName().Left(2) != ("my")){
+    if(g_locale->GetCanonicalName().Left(2) != "my"){
         wxFont font = m_vList->GetFont();
-        if(font.SetFaceName(("Lucida Console"))){
+        if(font.SetFaceName("Lucida Console")){
             font.SetPointSize(DPI(9));
             m_vList->SetFont(font);
         }
@@ -90,15 +90,15 @@ void MainFrame::InitVolList()
     // attach drive icons
     int size = g_iconSize;
     wxImageList *list = new wxImageList(size,size);
-    g_fixedIcon          = list->Add(wxIcon(("fixed")           , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
-    g_fixedDirtyIcon     = list->Add(wxIcon(("fixed_dirty")     , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
-    g_removableIcon      = list->Add(wxIcon(("removable")       , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
-    g_removableDirtyIcon = list->Add(wxIcon(("removable_dirty") , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
+    g_fixedIcon          = list->Add(wxIcon("fixed"           , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
+    g_fixedDirtyIcon     = list->Add(wxIcon("fixed_dirty"     , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
+    g_removableIcon      = list->Add(wxIcon("removable"       , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
+    g_removableDirtyIcon = list->Add(wxIcon("removable_dirty" , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
     m_vList->SetImageList(list,wxIMAGE_LIST_SMALL);
 
     // ensure that the list will cover integral number of items
     m_vListHeight = 0xFFFFFFFF; // prevent expansion of the list
-    m_vList->InsertItem(0,("hi"),0);
+    m_vList->InsertItem(0,"hi",0);
     ProcessCommandEvent(ID_AdjustListHeight);
 
     Connect(wxEVT_SIZE,wxSizeEventHandler(MainFrame::OnListSize), nullptr,this);
@@ -205,7 +205,7 @@ void MainFrame::AdjustListColumns(wxCommandEvent& event)
     dtrace("client width ......... %d", width);
     dtrace("total column width ... %d", cwidth);
 
-    for(int i = 0; i < (LIST_COLUMNS - 1); i++) {
+    for(int i = 0; i < LIST_COLUMNS - 1; i++) {
         int w = m_w[i] = (int)floor(m_r[i] * width);
         m_vList->SetColumnWidth(i, w);
         dtrace("column %d width ....... %d", i, w);
@@ -228,7 +228,7 @@ void MainFrame::AdjustListHeight(wxCommandEvent& WXUNUSED(event))
 
     // avoid recursion
     if(height == m_vListHeight) return;
-    bool expand = (height > m_vListHeight) ? true : false;
+    bool expand = height > m_vListHeight ? true : false;
     m_vListHeight = height;
 
     if(!m_vList->GetColumnCount()) return;
@@ -342,17 +342,17 @@ void MainFrame::UpdateVolumeInformation(wxCommandEvent& event)
     }
     dtrace("Updated Volume Information for Drive: %c", v->letter);
     char s[32]; wxString string;
-    ::winx_bytes_to_hr((ULONGLONG)(v->total_space.QuadPart),2,s,sizeof(s));
-    string.Printf(("%hs"),s); m_vList->SetItem(index,3,string);
+    ::winx_bytes_to_hr((ULONGLONG)v->total_space.QuadPart,2,s,sizeof s);
+    string.Printf("%hs",s); m_vList->SetItem(index,3,string);
 
-    ::winx_bytes_to_hr((ULONGLONG)(v->free_space.QuadPart),2,s,sizeof(s));
-    string.Printf(("%hs"),s); m_vList->SetItem(index,4,string);
+    ::winx_bytes_to_hr((ULONGLONG)v->free_space.QuadPart,2,s,sizeof s);
+    string.Printf("%hs",s); m_vList->SetItem(index,4,string);
 
     double total = (double)v->total_space.QuadPart;
     double free = (double)v->free_space.QuadPart;
-    double d = (total > 0) ? free / total : 0;
+    double d = total > 0 ? free / total : 0;
     int p = (int)(100 * d);
-    string.Printf(("%u %%"),p); m_vList->SetItem(index,5,string);
+    string.Printf("%u %%",p); m_vList->SetItem(index,5,string);
 
     delete v;
 }
@@ -418,7 +418,7 @@ void MainFrame::UpdateVolumeStatus(wxCommandEvent& event)
     }
     m_vList->SetItem(index,1,status);
 
-    wxString fragmentation = wxString::Format(("%5.2lf %%"),
+    wxString fragmentation = wxString::Format("%5.2lf %%",
         cacheEntry->pi.fragmentation);
     m_vList->SetItem(index,2,fragmentation);
 }
@@ -434,8 +434,8 @@ void MainFrame::PopulateList(wxCommandEvent& event)
 
     for(int i = 0; v[i].letter; i++){
         wxString label;
-        label.Printf(("%-10ls %ls"),
-            wxString::Format(("%c: [%hs]"),
+        label.Printf("%-10ls %ls",
+            wxString::Format("%c: [%hs]",
             v[i].letter,v[i].fsname).wc_str(),
             v[i].label);
         m_vList->InsertItem(i,label);
@@ -454,7 +454,7 @@ void MainFrame::PopulateList(wxCommandEvent& event)
         // encode the drive-letter char as an int + 2000 in the EventID, and listen on a range of ID's from 2065-2090 (A-Z)
         // when clicked, this ID will run FilesList::RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event) @ fileslist.cpp
     }
-    m_RClickPopupMenu1->AppendSubMenu(m_DriveSubMenu,("Move file to Drive:"));    //add the submenu to the menu.
+    m_RClickPopupMenu1->AppendSubMenu(m_DriveSubMenu,"Move file to Drive:");    //add the submenu to the menu.
 
     ProcessCommandEvent(ID_AdjustListColumns);
 

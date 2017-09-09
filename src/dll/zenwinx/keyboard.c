@@ -202,7 +202,7 @@ static int kb_light_up_indicators(HANDLE hKbDevice,USHORT LedFlags)
     if(!NT_SUCCESS(status) || status == STATUS_PENDING){
         strace(status,"cannot light up the keyboard"
             " indicators 0x%x",(UINT)LedFlags);
-        return (-1);
+        return -1;
     }
     
     return 0;
@@ -233,7 +233,7 @@ static int kb_check(HANDLE hKbDevice)
     }
     if(!NT_SUCCESS(status) || status == STATUS_PENDING){
         strace(status,"cannot get keyboard indicators state");
-        return (-1);
+        return -1;
     }
 
     LedFlags = kip.LedFlags;
@@ -286,7 +286,7 @@ static int kb_open_device(int device_number)
                 device_name,(UINT)status);
             winx_printf("%s\n",winx_get_status_description((ULONG)status));
         }
-        return (-1);
+        return -1;
     }
     
     /* ensure that we have opened a really connected keyboard */
@@ -294,7 +294,7 @@ static int kb_open_device(int device_number)
         etrace("invalid keyboard device %ws",device_name);
         winx_printf("\nInvalid keyboard device %ws!\n",device_name);
         NtCloseSafe(hKbDevice);
-        return (-1);
+        return -1;
     }
     
     /* create an event for the kb_wait_for_input procedure */
@@ -303,7 +303,7 @@ static int kb_open_device(int device_number)
     if(winx_create_event(event_name,SynchronizationEvent,&hKbEvent) < 0){
         winx_printf("\nCannot create %ws event!\n",event_name);
         NtCloseSafe(hKbDevice);
-        return (-1);
+        return -1;
     }
     (void)NtClearEvent(hKbEvent);
     
@@ -323,7 +323,7 @@ static int kb_open_device(int device_number)
     winx_printf("\nkb array is full!\n");
     winx_destroy_event(hKbEvent);
     NtCloseSafe(hKbDevice);
-    return (-1);
+    return -1;
 }
 
 /**
@@ -337,16 +337,16 @@ static int kb_open(void)
     int i;
 
     /* initialize kb array */
-    memset((void *)kb,0,sizeof(kb));
+    memset((void *)kb,0,sizeof kb);
     number_of_keyboards = 0;
  
     /* create synchronization event for safe access to kids array */
     _snwprintf(event_name,64,L"\\winx_kb_synch_event_%u",
-        (unsigned int)(DWORD_PTR)(NtCurrentTeb()->ClientId.UniqueProcess));
+        (unsigned int)(DWORD_PTR)NtCurrentTeb()->ClientId.UniqueProcess);
     event_name[63] = 0;
     if(winx_create_event(event_name,SynchronizationEvent,&hKbSynchEvent) < 0){
         winx_printf("\nCannot create %ws event!\n\n",event_name);
-        return (-1);
+        return -1;
     }
     (void)NtSetEvent(hKbSynchEvent,NULL);
 
@@ -364,12 +364,12 @@ static int kb_open(void)
                 kb[i].device_number);
             /* stop all threads */
             kb_close();
-            return (-1);
+            return -1;
         }
     }
     
     /* return zero if at least one keyboard found */
-    return (kb[0].hKbDevice) ? 0 : (-1);
+    return kb[0].hKbDevice ? 0 : -1;
 }
 
 /**
@@ -483,7 +483,7 @@ int kb_read(PKEYBOARD_INPUT_DATA pKID,int msec_timeout)
         if(Status != WAIT_OBJECT_0){
             winx_printf("\nkb_read: synchronization failed: 0x%x\n",(UINT)Status);
             winx_printf("%s\n\n",winx_get_status_description((ULONG)Status));
-            return (-1);
+            return -1;
         }
 
         /* pop item from the keyboard queue */
@@ -507,12 +507,12 @@ int kb_read(PKEYBOARD_INPUT_DATA pKID,int msec_timeout)
                 kb_read_time_elapsed = 1;
                 break;
             }
-            if(xtime && (winx_xtime() - xtime >= msec_timeout)){
+            if(xtime && winx_xtime() - xtime >= msec_timeout){
                 kb_read_time_elapsed = 1; break;
             }
         }
     }
-    return (-1);
+    return -1;
 }
 
 /** @} */

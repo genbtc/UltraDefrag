@@ -202,7 +202,7 @@ static int blocks_compare(const void *prb_a, const void *prb_b, void *prb_param)
     b = (struct file_block *)prb_b;
     
     if(a->block->lcn < b->block->lcn)
-        return (-1);
+        return -1;
     if(a->block->lcn == b->block->lcn)
         return 0;
     return 1;
@@ -248,10 +248,10 @@ int add_block_to_file_blocks_tree(udefrag_job_parameters *jp, winx_file_info *fi
 	void **p;
 
 	if(file == NULL || block == NULL)
-        return (-1);
+        return -1;
     
     if(jp->file_blocks == NULL)
-        return (-1);
+        return -1;
 
     fb = (struct file_block *)winx_malloc(sizeof *fb);
     fb->file = file;
@@ -277,10 +277,10 @@ int remove_block_from_file_blocks_tree(udefrag_job_parameters *jp, winx_blockmap
     struct file_block b;
     
     if(block == NULL)
-        return (-1);
+        return -1;
     
     if(jp->file_blocks == NULL)
-        return (-1);
+        return -1;
 
     b.file = NULL;
     b.block = block;

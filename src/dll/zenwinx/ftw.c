@@ -223,7 +223,7 @@ int winx_ftw_dump_file(winx_file_info *f,
             * files this happens quite frequently.
             */
             if(block == f->disp.blockmap || \
-              block->lcn != (block->prev->lcn + block->prev->length)){
+              block->lcn != block->prev->lcn + block->prev->length){
                 f->disp.fragments ++;
             }
         }
@@ -251,7 +251,7 @@ dump_failed:
     winx_list_destroy((list_entry **)(void *)&f->disp.blockmap);
     winx_free(filemap);
     winx_defrag_fclose(hFile);
-    return (-1);
+    return -1;
 }
 
 /**
@@ -364,11 +364,11 @@ static int ftw_add_root_directory(wchar_t *path, int flags,
     NTSTATUS status;
     
     if(path == NULL)
-        return (-1);
+        return -1;
     
     if(path[0] == 0){
         etrace("path is empty");
-        return (-1);
+        return -1;
     }
     
     /* insert new item to the file list */
@@ -425,7 +425,7 @@ static int ftw_add_root_directory(wchar_t *path, int flags,
             winx_free(f->name);
             winx_free(f->path);
             winx_list_remove((list_entry **)(void *)filelist,(list_entry *)f);
-            return (-1);
+            return -1;
         }
     }
     
@@ -549,7 +549,7 @@ static int ftw_helper(wchar_t *path, int flags,
         if(f == NULL){
             winx_free(file_listing);
             NtClose(hDir);
-            return (-1);
+            return -1;
         }
         
         //trace(D"%ws\n%ws",f->name,f->path);
@@ -559,7 +559,7 @@ static int ftw_helper(wchar_t *path, int flags,
             itrace("terminated by user");
             winx_free(file_listing);
             NtClose(hDir);
-            return (-2);
+            return -2;
         }
         
         /* call the callback routines */
@@ -571,7 +571,7 @@ static int ftw_helper(wchar_t *path, int flags,
             skip_children = fcb(f,user_defined_data);
 
         /* scan subdirectories if requested */
-        if(is_directory(f) && (flags & WINX_FTW_RECURSIVE) && !skip_children){
+        if(is_directory(f) && flags & WINX_FTW_RECURSIVE && !skip_children){
             /* don't follow reparse points! */
             if(!is_reparse_point(f)){
                 result = ftw_helper(f->path,flags,fcb,pcb,t,user_defined_data,filelist);
@@ -587,7 +587,7 @@ static int ftw_helper(wchar_t *path, int flags,
     /* terminated */
     winx_free(file_listing);
     NtClose(hDir);
-    return (-2);
+    return -2;
 }
 
 /**
@@ -739,7 +739,7 @@ winx_file_info *winx_ftw(wchar_t *path, int flags,
         }
     }
     
-    if(ftw_helper(path,flags,fcb,pcb,t,user_defined_data,&filelist) == (-1) && \
+    if(ftw_helper(path,flags,fcb,pcb,t,user_defined_data,&filelist) == -1 && \
       !(flags & WINX_FTW_ALLOW_PARTIAL_SCAN)){
         /* destroy list */
         winx_ftw_release(filelist);
@@ -799,7 +799,7 @@ winx_file_info *winx_scan_disk(char volume_letter, int flags,
     
     /* collect information about root directory */
     rootpath[4] = (wchar_t)volume_letter;
-    if(ftw_add_root_directory(rootpath,flags,fcb,pcb,t,user_defined_data,&filelist) == (-1) && \
+    if(ftw_add_root_directory(rootpath,flags,fcb,pcb,t,user_defined_data,&filelist) == -1 && \
       !(flags & WINX_FTW_ALLOW_PARTIAL_SCAN)){
         /* destroy list */
         winx_ftw_release(filelist);
@@ -809,7 +809,7 @@ winx_file_info *winx_scan_disk(char volume_letter, int flags,
 
     /* collect information about entire directory tree */
     flags |= WINX_FTW_RECURSIVE;
-    if(ftw_helper(rootpath,flags,fcb,pcb,t,user_defined_data,&filelist) == (-1) && \
+    if(ftw_helper(rootpath,flags,fcb,pcb,t,user_defined_data,&filelist) == -1 && \
       !(flags & WINX_FTW_ALLOW_PARTIAL_SCAN)){
         /* destroy list */
         winx_ftw_release(filelist);

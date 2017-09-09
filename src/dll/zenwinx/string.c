@@ -52,7 +52,7 @@ void winx_init_case_tables(void)
 {
     int i;
     
-    for(i = 0; i < sizeof(u16_uppercase) / sizeof(wchar_t); i++){
+    for(i = 0; i < sizeof u16_uppercase / sizeof(wchar_t); i++){
         if(u16_uppercase[i] == 0) u16_uppercase[i] = (wchar_t)i;
         if(u16_lowercase[i] == 0) u16_lowercase[i] = (wchar_t)i;
     }
@@ -190,7 +190,7 @@ int winx_wcsicmp(const wchar_t *s1, const wchar_t *s2)
     int result = 0;
     
     if(s1 == NULL || s2 == NULL)
-        return (!s1 && !s2) ? 0 : 1;
+        return !s1 && !s2 ? 0 : 1;
     
     do {
         result = (int)(fast_towlower(*s1) - fast_towlower(*s2));
@@ -294,7 +294,7 @@ static int wcsmatch_helper(wchar_t *string, wchar_t *mask)
     }
     
     while(*mask == '*') mask ++;
-    return (*string == 0 && *mask == 0) ? 1 : 0;
+    return *string == 0 && *mask == 0 ? 1 : 0;
 }
 
 /**
@@ -339,7 +339,7 @@ static int wcsmatch_icase_helper(wchar_t *string, wchar_t *mask)
     }
     
     while(*mask == '*') mask ++;
-    return (*string == 0 && *mask == 0) ? 1 : 0;
+    return *string == 0 && *mask == 0 ? 1 : 0;
 }
 
 /**
@@ -503,7 +503,7 @@ int winx_patcomp(winx_patlist *patterns,wchar_t *string,wchar_t *delim,int flags
     wchar_t *s;
     
     if(patterns == NULL || string == NULL || delim == NULL)
-        return (-1);
+        return -1;
     
     /* reset patterns structure */
     patterns->flags = flags;
@@ -519,7 +519,7 @@ int winx_patcomp(winx_patlist *patterns,wchar_t *string,wchar_t *delim,int flags
     if(s == NULL){
         etrace("cannot allocate %u bytes of memory",
             (wcslen(string) + 1) * sizeof(wchar_t));
-        return (-1);
+        return -1;
     }
     
     /* replace all delimiters by zeros */
@@ -706,7 +706,7 @@ ULONGLONG winx_hr_to_bytes(char *string)
 
     n = (ULONGLONG)_atoi64(string);
 
-    for(i = 0, m = 1024; i < sizeof(suffixes) / sizeof(char *); i++, m <<= 10){
+    for(i = 0, m = 1024; i < sizeof suffixes / sizeof(char *); i++, m <<= 10){
         if(winx_stristr(string,suffixes[i])){
             suffix_found = 1;
             break;
@@ -747,22 +747,22 @@ void winx_to_utf8(char *dst,int size,wchar_t *src)
     for(i = j = 0; src[i]; i++){
         c = src[i];
         if(c < 0x80){
-            if(j > (size - 2)) break;
+            if(j > size - 2) break;
             dst[j] = (char)c;
             j ++;
         } else if(c < 0x800){ /* 0x80 - 0x7FF: 2 bytes */
-            if(j > (size - 3)) break;
-            b2 = 0x80 | (c & 0x3F);
+            if(j > size - 3) break;
+            b2 = 0x80 | c & 0x3F;
             c >>= 6;
             b1 = 0xC0 | c;
             dst[j] = (char)b1;
             dst[j+1] = (char)b2;
             j += 2;
         } else { /* 0x800 - 0xFFFF: 3 bytes */
-            if(j > (size - 4)) break;
-            b3 = 0x80 | (c & 0x3F);
+            if(j > size - 4) break;
+            b3 = 0x80 | c & 0x3F;
             c >>= 6;
-            b2 = 0x80 | (c & 0x3F);
+            b2 = 0x80 | c & 0x3F;
             c >>= 6;
             b1 = 0xE0 | c;
             dst[j] = (char)b1;

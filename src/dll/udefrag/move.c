@@ -92,8 +92,8 @@ extern int can_move(winx_file_info *f, udefrag_job_parameters *jp)
 
 	/* skip files of zero length */
 	if (f->disp.clusters == 0 || \
-		(f->disp.blockmap->next == f->disp.blockmap && \
-			f->disp.blockmap->length == 0)) {
+		f->disp.blockmap->next == f->disp.blockmap && \
+		f->disp.blockmap->length == 0) {
 		f->user_defined_flags |= UD_FILE_IMPROPER_STATE;
 		return 0;
 	}
@@ -191,7 +191,7 @@ static int move_file_clusters(winx_file_info *f,HANDLE hFile,ULONGLONG startVcn,
     }
     
     if(jp->termination_router((void *)jp))
-        return (-1);
+        return -1;
     
     if(jp->udo.dry_run){
         jp->pi.moved_clusters += n_clusters;
@@ -205,7 +205,7 @@ static int move_file_clusters(winx_file_info *f,HANDLE hFile,ULONGLONG startVcn,
     * little portions of data at once.
     */
     while(n_clusters){
-        if(jp->termination_router((void *)jp)) return (-1);
+        if(jp->termination_router((void *)jp)) return -1;
         clusters_to_move = min(jp->clusters_at_once,n_clusters);
         /* setup movefile descriptor and make the call */
         memset(&mfd,0,sizeof(MOVEFILE_DESCRIPTOR));
@@ -228,7 +228,7 @@ static int move_file_clusters(winx_file_info *f,HANDLE hFile,ULONGLONG startVcn,
         if(!NT_SUCCESS(status)){
             strace(status,"cannot move file clusters of %ws",f->path);
             jp->pi.processed_clusters += n_clusters;
-            return (-1);
+            return -1;
         }
         jp->pi.moved_clusters += clusters_to_move;
         jp->pi.processed_clusters += clusters_to_move;
@@ -418,7 +418,7 @@ static int compare_file_dispositions(winx_file_info *f1, winx_file_info *f2)
 
     /* validate arguments */
     if(f1 == NULL || f2 == NULL)
-        return (-1);
+        return -1;
     
     /* get lists of fragments */
     map1 = build_fragments_list(f1,&n1);
@@ -437,9 +437,9 @@ equal_maps:
     
     /* comapare maps */
     for(b1 = map1, b2 = map2; b1 && b2; b1 = b1->next, b2 = b2->next){
-        if((b1->vcn != b2->vcn) 
-          || (b1->lcn != b2->lcn)
-          || (b1->length != b2->length))
+        if(b1->vcn != b2->vcn 
+          || b1->lcn != b2->lcn
+          || b1->length != b2->length)
             break;
         if(b1->next == map1 && b2->next == map2) goto equal_maps;
         if(b1->next == map1 || b2->next == map2) break;
@@ -524,7 +524,7 @@ extern int move_file(winx_file_info *f,
         etrace("invalid parameter");
         f->user_defined_flags |= UD_FILE_IMPROPER_STATE;
         jp->p_counters.moving_time += winx_xtime() - time;
-        return (-1);
+        return -1;
     }
     
     path = f->path ? f->path : L"(null)";
@@ -553,7 +553,7 @@ extern int move_file(winx_file_info *f,
         DbgPrintBlocksOfFile(f->disp.blockmap);
         f->user_defined_flags |= UD_FILE_IMPROPER_STATE;
         jp->p_counters.moving_time += winx_xtime() - time;
-        return (-1);
+        return -1;
     }
     
     first_block = get_first_block_of_cluster_chain(f,vcn);
@@ -562,7 +562,7 @@ extern int move_file(winx_file_info *f,
             "file bounds requested for %ws",path);
         f->user_defined_flags |= UD_FILE_IMPROPER_STATE;
         jp->p_counters.moving_time += winx_xtime() - time;
-        return (-1);
+        return -1;
     }
     
     if(!check_region(jp,target,length)){
@@ -570,7 +570,7 @@ extern int move_file(winx_file_info *f,
             "free space available on target block for %ws",path);
         f->user_defined_flags |= UD_FILE_IMPROPER_STATE;
         jp->p_counters.moving_time += winx_xtime() - time;
-        return (-1);
+        return -1;
     }
     
     /* save file properties */
@@ -587,7 +587,7 @@ extern int move_file(winx_file_info *f,
         colorize_file(jp,f,old_color);
         /*jp->pi.processed_clusters += length;*/
         jp->p_counters.moving_time += winx_xtime() - time;
-        return (-1);
+        return -1;
     }
     
     /* move the file */
@@ -648,7 +648,7 @@ extern int move_file(winx_file_info *f,
         /* remove target space from the free space pool */
         jp->free_regions = winx_sub_volume_region(jp->free_regions,target,length);
         jp->p_counters.moving_time += winx_xtime() - time;
-        return (-1);
+        return -1;
     }
 
     /*
@@ -720,19 +720,19 @@ extern int move_file(winx_file_info *f,
     if(became_fragmented && !is_excluded(f)){
         if(!was_fragmented || was_excluded){
             jp->pi.fragmented ++;
-            jp->pi.fragments += (new_file_info.disp.fragments - 1);
+            jp->pi.fragments += new_file_info.disp.fragments - 1;
             jp->pi.bad_fragments += new_file_info.disp.fragments;
             jp->pi.bad_clusters += new_file_info.disp.clusters;
         } else {
-            jp->pi.fragments -= (f->disp.fragments - new_file_info.disp.fragments);
-            jp->pi.bad_fragments -= (f->disp.fragments - new_file_info.disp.fragments);
-            jp->pi.bad_clusters -= (f->disp.clusters - new_file_info.disp.clusters);
+            jp->pi.fragments -= f->disp.fragments - new_file_info.disp.fragments;
+            jp->pi.bad_fragments -= f->disp.fragments - new_file_info.disp.fragments;
+            jp->pi.bad_clusters -= f->disp.clusters - new_file_info.disp.clusters;
         }
     }
     if(!became_fragmented || is_excluded(f)){
         if(was_fragmented && !was_excluded){
             jp->pi.fragmented --;
-            jp->pi.fragments -= (f->disp.fragments - 1);
+            jp->pi.fragments -= f->disp.fragments - 1;
             jp->pi.bad_fragments -= f->disp.fragments;
             jp->pi.bad_clusters -= f->disp.clusters;
         }
@@ -756,7 +756,7 @@ extern int move_file(winx_file_info *f,
         expand_fragmented_files_list(f,jp);
 
     jp->p_counters.moving_time += winx_xtime() - time;
-    return (moving_result == DETERMINED_MOVING_PARTIAL_SUCCESS) ? (-1) : 0;
+    return moving_result == DETERMINED_MOVING_PARTIAL_SUCCESS ? -1 : 0;
 }
 
 /** @} */

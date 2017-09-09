@@ -112,7 +112,7 @@ void MainFrame::OnBootEnable(wxCommandEvent& WXUNUSED(event))
 
 void MainFrame::OnBootChange(wxCommandEvent& event)
 {
-    m_btdEnabled = (event.GetInt() > 0);
+    m_btdEnabled = event.GetInt() > 0;
     m_menuBar->FindItem(ID_BootEnable)->Check(m_btdEnabled);
     m_toolBar->ToggleTool(ID_BootEnable,m_btdEnabled);
 }

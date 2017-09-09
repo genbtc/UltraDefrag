@@ -115,7 +115,7 @@ static void ReleaseTaskbarInstance(ITaskbarList3 *taskBar)
 
 void MainFrame::SetTaskbarIconOverlay(const wxString& icon, const wxString& text)
 {
-    if(!CheckOption(("UD_SHOW_TASKBAR_ICON_OVERLAY"))) return;
+    if(!CheckOption("UD_SHOW_TASKBAR_ICON_OVERLAY")) return;
 
     ITaskbarList3 *taskBar = GetTaskbarInstance();
 
@@ -187,19 +187,19 @@ void MainFrame::SetTaskbarProgressValue(ULONGLONG completed, ULONGLONG total)
 
 void MainFrame::AdjustTaskbarIconOverlay(wxCommandEvent& WXUNUSED(event))
 {
-    if(!CheckOption(("UD_SHOW_TASKBAR_ICON_OVERLAY"))){
+    if(!CheckOption("UD_SHOW_TASKBAR_ICON_OVERLAY")){
         RemoveTaskbarIconOverlay(); return;
     }
 
     if(m_busy){
         if(m_paused){
             SetTaskbarIconOverlay(
-                ("overlay_paused"),
+                "overlay_paused",
                 _("The job is paused")
             );
         } else {
             SetTaskbarIconOverlay(
-                ("overlay_running"),
+                "overlay_running",
                 _("The job is running")
             );
         }
