@@ -237,7 +237,7 @@ void MainFrame::Shutdown(wxCommandEvent& WXUNUSED(event))
         // suspend, request permission from apps and drivers
         if(!SetSuspendState(FALSE,FALSE,FALSE)){
             letrace("cannot suspend the system");
-            Utils::ShowError("Cannot suspend the system!");
+            Utils::ShowError(L"Cannot suspend the system!");
         }
         return;
     }
@@ -245,7 +245,7 @@ void MainFrame::Shutdown(wxCommandEvent& WXUNUSED(event))
         // hibernate, request permission from apps and drivers
         if(!SetSuspendState(TRUE,FALSE,FALSE)){
             letrace("cannot hibernate the computer");
-            Utils::ShowError("Cannot hibernate the computer!");
+            Utils::ShowError(L"Cannot hibernate the computer!");
         }
         return;
     }
@@ -264,7 +264,7 @@ void MainFrame::Shutdown(wxCommandEvent& WXUNUSED(event))
               SHTDN_REASON_MAJOR_OTHER | SHTDN_REASON_MINOR_OTHER | \
               SHTDN_REASON_FLAG_PLANNED)){
                 letrace("cannot log the user off");
-                Utils::ShowError("Cannot log the user off!");
+                Utils::ShowError(L"Cannot log the user off!");
             }
         }
     } else if(action == WHEN_DONE_REBOOT){
@@ -275,7 +275,7 @@ void MainFrame::Shutdown(wxCommandEvent& WXUNUSED(event))
               SHTDN_REASON_MAJOR_OTHER | SHTDN_REASON_MINOR_OTHER | \
               SHTDN_REASON_FLAG_PLANNED)){
                 letrace("cannot reboot the computer");
-                Utils::ShowError("Cannot reboot the computer!");
+                Utils::ShowError(L"Cannot reboot the computer!");
             }
         }
     } else if(action == WHEN_DONE_SHUTDOWN){
@@ -286,7 +286,7 @@ void MainFrame::Shutdown(wxCommandEvent& WXUNUSED(event))
               SHTDN_REASON_MAJOR_OTHER | SHTDN_REASON_MINOR_OTHER | \
               SHTDN_REASON_FLAG_PLANNED)){
                 letrace("cannot shut the computer down");
-                Utils::ShowError("Cannot shut the computer down!");
+                Utils::ShowError(L"Cannot shut the computer down!");
             }
         }
     }

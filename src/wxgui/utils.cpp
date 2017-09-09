@@ -135,8 +135,8 @@ void Utils::GaRequest(const wxString& path)
     url << "&utmac=";
     url << "UA-15890458-1";
     url << wxString::Format("&utmcc=__utma%%3D%u.%u.%I64u.%I64u.%I64u." \
-        ("50%%3B%%2B__utmz%%3D%u.%I64u.27.2.utmcsr%%3Dgoogle.com%%7Cutmccn%%3D") \
-        ("(referral)%%7Cutmcmd%%3Dreferral%%7Cutmcct%%3D%%2F%%3B"),
+        "50%%3B%%2B__utmz%%3D%u.%I64u.27.2.utmcsr%%3Dgoogle.com%%7Cutmccn%%3D" \
+        "(referral)%%7Cutmcmd%%3Dreferral%%7Cutmcct%%3D%%2F%%3B",
         cookie,random,today,today,today,cookie,today);
 
     wxFileName target((".\\tmp"));
@@ -175,7 +175,7 @@ wxBitmap * Utils::LoadPngResource(const wchar_t *name)
         return nullptr;
     }
 
-    char *data = (char *)::LockResource(handle);
+	auto data = ::LockResource(handle);
     if(!data){
         letrace("cannot lock %ls resource",name);
         return nullptr;
@@ -240,7 +240,7 @@ void Utils::OpenHandbook(const wxString& page, const wxString& anchor)
     itrace("%ls",path.wc_str());
     if(path.Left(4) == "http") {
         if(!wxLaunchDefaultBrowser(path))
-            ShowError("Cannot open %ls!",path.wc_str());
+            ShowError(ConvertChartoWxString("Cannot open %ls!"),path.wc_str());
     } else {
         ShellExec(path,"open");
     }
@@ -296,7 +296,7 @@ void Utils::ShellExec(
             action.wc_str(), file.wc_str(),
             parameters.wc_str());
         if(!(flags & SHELLEX_SILENT)){
-            ShowError("Cannot %ls %ls %ls",
+            ShowError(ConvertChartoWxString("Cannot %ls %ls %ls"),
                 action.wc_str(), file.wc_str(),
                 parameters.wc_str());
         }
@@ -478,14 +478,13 @@ void Utils::DrawSingleRectangleBorder(HDC m_cacheDC,int xblock,int yblock,int li
 }
 
 void Utils::createDirectoryRecursively(const std::wstring &directory) {
-  static const std::wstring separators(L"\\/");
 
   // If the specified directory name doesn't exist, do our thing
   DWORD fileAttributes = ::GetFileAttributesW(directory.c_str());
   if(fileAttributes == INVALID_FILE_ATTRIBUTES) {
 
     // Recursively do it all again for the parent directory, if any
-    std::size_t slashIndex = directory.find_last_of(separators);
+    std::size_t slashIndex = directory.find_last_of(ConvertChartoWxString("\\/"));
     if(slashIndex != std::wstring::npos) {
       createDirectoryRecursively(directory.substr(0, slashIndex));
     }

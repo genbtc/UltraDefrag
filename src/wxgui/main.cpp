@@ -84,10 +84,10 @@ static int out_of_memory_handler(size_t n)
 {
     int choice = MessageBox(
         g_mainFrame ? (HWND)g_mainFrame->GetHandle() : NULL,
-        ("Try to release some memory by closing\n")
-        ("other applications and click Retry then\n")
-        ("or click Cancel to terminate the program."),
-        ("UltraDefrag: out of memory!"),
+		wxT("Try to release some memory by closing\n")
+		wxT("other applications and click Retry then\n")
+		wxT("or click Cancel to terminate the program."),
+		wxT("UltraDefrag: out of memory!"),
         MB_RETRYCANCEL | MB_ICONHAND);
     if(choice == IDCANCEL){
         winx_flush_dbg_log(FLUSH_IN_OUT_OF_MEMORY);
@@ -187,7 +187,7 @@ bool App::OnInit()
     else g_iconSize = 32;
 
     // support taskbar icon overlay setup on shell restart
-    g_TaskbarIconMsg = ::RegisterWindowMessage("TaskbarButtonCreated");
+    g_TaskbarIconMsg = ::RegisterWindowMessageA("TaskbarButtonCreated");
     if(!g_TaskbarIconMsg) letrace("cannot register TaskbarButtonCreated message");
 
     // create main window

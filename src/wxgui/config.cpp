@@ -166,9 +166,9 @@ void MainFrame::SaveAppConfiguration()
 // =======================================================================
 
 #define UD_AdjustOption(name) { \
-    if(!wxGetEnv(("UD_") (#name),NULL)) \
-        wxSetEnv(("UD_") (#name), \
-            wxString::Format(("%u"),DEFAULT_##name)); \
+    if(!wxGetEnv(wxT("UD_") wxT(#name),NULL)) \
+        wxSetEnv(wxT("UD_") wxT(#name), \
+            wxString::Format(wxT("%u"),DEFAULT_##name)); \
 }
 
 void MainFrame::ReadUserPreferences(wxCommandEvent& WXUNUSED(event))

@@ -81,7 +81,7 @@ void MainFrame::OnDebugLog(wxCommandEvent& WXUNUSED(event))
         ::winx_flush_dbg_log(0);
         logpath = file.GetFullPath();
         if(!wxLaunchDefaultBrowser(logpath))
-            Utils::ShowError("Cannot open %ls!",logpath.wc_str());
+            Utils::ShowError(Utils::ConvertChartoWxString("Cannot open %ls!"),logpath.wc_str());
     }
 }
 

@@ -289,7 +289,7 @@ void MainFrame::OnLangTranslateOnline(wxCommandEvent& WXUNUSED(event))
 {
     wxString url(("https://www.transifex.com/projects/p/ultradefrag/resource/main/"));
     if(!wxLaunchDefaultBrowser(url))
-        Utils::ShowError("Cannot open %ls!",url.wc_str());
+        Utils::ShowError(Utils::ConvertChartoWxString("Cannot open %ls!"),url.wc_str());
 }
 
 void MainFrame::OnLangTranslateOffline(wxCommandEvent& WXUNUSED(event))
@@ -305,7 +305,7 @@ void MainFrame::OnLangOpenFolder(wxCommandEvent& WXUNUSED(event))
         etrace("po dir not found: %ls",AppPoDir.wc_str());
     } else {
         if(!wxLaunchDefaultBrowser(AppPoDir))
-            Utils::ShowError("Cannot open %ls!",AppPoDir.wc_str());
+            Utils::ShowError(Utils::ConvertChartoWxString("Cannot open %ls!"),AppPoDir.wc_str());
     }
 }
 

@@ -165,6 +165,8 @@ void MainFrame::OnHelpUpgrade(wxCommandEvent& event)
             // ...and check it now
         case ID_HelpUpgradeCheck:
             m_upgradeThread->m_check = true;
+    default: 
+    	break;
     }
 }
 
@@ -180,7 +182,7 @@ void MainFrame::ShowUpgradeDialog(wxCommandEvent& event)
     {
         wxString url(("http://ultradefrag.sourceforge.net"));
         if(!wxLaunchDefaultBrowser(url))
-            Utils::ShowError("Cannot open %ls!",url.wc_str());
+            Utils::ShowError(Utils::ConvertChartoWxString("Cannot open %ls!"),url.wc_str());
     }
 }
 
