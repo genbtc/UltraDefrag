@@ -312,7 +312,8 @@ public:
 
 	void OnInitCmdLine(wxCmdLineParser& parser) override
     {
-        parser.AddSwitch("s","setup","setup");
+		parser.AddSwitch("v", "verbose", "verbose");
+		parser.AddSwitch("s","setup","setup");
     }
 
 	static void InitAndSetLocale(int id);
