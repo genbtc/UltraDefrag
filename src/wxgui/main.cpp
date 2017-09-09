@@ -234,8 +234,8 @@ IMPLEMENT_APP(App)
 MainFrame::MainFrame()
     :wxFrame(nullptr,wxID_ANY,"UltraDefrag")
 {
-    _CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );  
-    _CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );  
+    //_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );  
+    //_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );  
     g_mainFrame = this;
     m_vList = nullptr;
     m_cMap = nullptr;
@@ -244,7 +244,7 @@ MainFrame::MainFrame()
     m_paused = false;
 
     // set main window icon
-	wxTopLevelWindowMSW::SetIcons(wxICON(appicon));
+	wxTopLevelWindowMSW::SetIcons(wxIcon("appicon"));
 
     // read configuration
     ReadAppConfiguration();

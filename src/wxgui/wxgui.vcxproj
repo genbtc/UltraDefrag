@@ -43,8 +43,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <GenerateManifest>
-    </GenerateManifest>
+    <GenerateManifest>false</GenerateManifest>
     <IncludePath>C:\Software\Boost165;$(IncludePath)</IncludePath>
     <ReferencePath>C:\Software\Boost165\lib32-msvc-14.1;$(ReferencePath)</ReferencePath>
     <LibraryPath>C:\Software\Boost165\lib32-msvc-14.1;$(LibraryPath)</LibraryPath>
@@ -54,7 +53,6 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
-      <AdditionalDependencies>zenwinx.lib;udefrag.lib;lua5.1a.lib;wxmsw30u_adv.lib;wxmsw30u_core.lib;wxpng.lib;wxzlib.lib;wxbase30u.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;ole32.lib;oleaut32.lib;uuid.lib;powrprof.lib;comctl32.lib;wsock32.lib;odbc32.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreAllDefaultLibraries>
@@ -68,9 +66,9 @@
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);$(SolutionDir)lua-lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EnableUAC />
-      <IgnoreSpecificDefaultLibraries>msvcrt.lib</IgnoreSpecificDefaultLibraries>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <LinkStatus>false</LinkStatus>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;lua5.1a.lib;powrprof.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile />
     <ClCompile>

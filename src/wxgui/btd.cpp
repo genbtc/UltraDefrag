@@ -68,7 +68,7 @@ void *BtdThread::Entry()
         }
         while(!g_mainFrame->CheckForTermination(1)){
             if(::WaitForSingleObject(hEvent,100) == WAIT_OBJECT_0){
-                int result = ::winx_bootex_check(L"defrag_native");
+                int result = ::winx_bootex_check(Utils::ConvertChartoWxString("defrag_native"));
                 if(result >= 0){
                     itrace("boot time defragmenter %hs",
                         result > 0 ? "enabled" : "disabled");
@@ -105,8 +105,8 @@ void MainFrame::OnBootEnable(wxCommandEvent& WXUNUSED(event))
         m_menuBar->FindItem(ID_BootEnable)->Check(m_btdEnabled);
         m_toolBar->ToggleTool(ID_BootEnable,m_btdEnabled);
     } else {
-        if(m_btdEnabled) Utils::ShowError(wxT("Cannot disable the boot time defragmenter!"));
-        else  Utils::ShowError(wxT("Cannot enable the boot time defragmenter!"));
+        if(m_btdEnabled) Utils::ShowError(Utils::ConvertChartoWxString("Cannot disable the boot time defragmenter!"));
+        else  Utils::ShowError(Utils::ConvertChartoWxString("Cannot enable the boot time defragmenter!"));
     }
 }
 

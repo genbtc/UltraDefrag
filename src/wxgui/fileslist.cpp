@@ -96,8 +96,8 @@ bool sortcol5 (FilesListItem i,FilesListItem j) {
     //sorts DE-scending by default
     wxDateTime ldDate1, ldDate2;
     bool lbRetVal = true;
-    ldDate1.ParseFormat( i.col5, L"%m/%d/%Y %H:%M:%S" );
-    ldDate2.ParseFormat( j.col5, L"%m/%d/%Y %H:%M:%S" );
+    ldDate1.ParseFormat( i.col5, "%m/%d/%Y %H:%M:%S" );
+    ldDate2.ParseFormat( j.col5, "%m/%d/%Y %H:%M:%S" );
     if ( ldDate1.IsEarlierThan( ldDate2 ) )
         lbRetVal = false;
     return lbRetVal;
@@ -303,7 +303,7 @@ void FilesList::RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event)
 wxString Utils::makefiltertext(wxString itemtext)
 {
     wxString filtertext;
-    filtertext << L"\"" << itemtext << L"\";";
+    filtertext << "\"" << itemtext << "\";";
     return filtertext;
 }
 /**
@@ -329,7 +329,7 @@ void FilesList::RClickDefragMoveSingle(wxCommandEvent& event)
         Utils::extendfiltertext(selitem,&filtertext);
         i = GetNextSelected(i);
     }
-    wxSetEnv(L"UD_CUT_FILTER",filtertext);
+    wxSetEnv("UD_CUT_FILTER",filtertext);
     g_mainFrame->m_jobThread->singlefile = TRUE;
     //Job.cpp @ MainFrame::OnJobCompletion @ Line 301-303 handles single-file mode.
     //Job.cpp @ MainFrame::OnJobCompletion @ Line 358-361 handles cleanup.
@@ -365,7 +365,7 @@ void FilesList::RClickOpenExplorer(wxCommandEvent& event)
 {
     wxString itemtext = GetListItem().GetText();
     wxString xec;
-    xec << L"/select,\"" << itemtext << L"\"";
+    xec << "/select,\"" << itemtext << "\"";
     Utils::ShellExec("explorer.exe","open",xec); //This OPENS the file itself using the default handler.    
 }
 
@@ -550,7 +550,7 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
 wxString FilesList::OnGetItemText(long item, long column) const
 {
     wxCHECK_MSG(item >= 0 && item < (long)allitems.size(),
-        L"", L"Invalid item index in FilesList::OnGetItemText");
+        "", "Invalid item index in FilesList::OnGetItemText");
     
     switch (column) {
         case 0:
@@ -566,8 +566,8 @@ wxString FilesList::OnGetItemText(long item, long column) const
         case 5:
             return allitems[item].col5;
         default:
-            wxFAIL_MSG(L"Invalid column index in FilesList::OnGetItemText");
+            wxFAIL_MSG("Invalid column index in FilesList::OnGetItemText");
     }
-    return L"";    
+    return "";    
 }
 /** @} */
