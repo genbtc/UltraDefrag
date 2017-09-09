@@ -137,8 +137,19 @@ bool App::OnInit()
         "gui.ini","",wxCONFIG_USE_RELATIVE_PATH);
     wxConfigBase::Set(cfg);
 
-    // enable i18n support
-    InitLocale();
+	// get initial language selection
+	int langid = 0;
+	if (cfg->HasGroup("Language")) {
+		langid = int(cfg->Read("/Language/Selected", langid));
+	}
+	else {
+		langid = g_locale->GetSystemLanguage();
+		//set to english if unknown.
+		if (langid == wxLANGUAGE_UNKNOWN)
+			langid = wxLANGUAGE_ENGLISH_US;
+	}
+	// enable i18n support (translations + defaults)
+    InitAndSetLocale(langid);
 
     // save report translation on setup
     wxString cmdLine(GetCommandLine());
@@ -304,8 +315,8 @@ MainFrame::MainFrame()
 
     m_splitter->SplitHorizontally(m_vList,m_cMap);
 
-    int height = GetClientSize().GetHeight();
-    int maxPanelHeight = height - DPI(MIN_PANEL_HEIGHT) - m_splitter->GetSashSize();
+	const int height = GetClientSize().GetHeight();
+	const int maxPanelHeight = height - DPI(MIN_PANEL_HEIGHT) - m_splitter->GetSashSize();
     if(m_separatorPosition < DPI(MIN_PANEL_HEIGHT)) m_separatorPosition = DPI(MIN_PANEL_HEIGHT);
     else if(m_separatorPosition > maxPanelHeight) m_separatorPosition = maxPanelHeight;
     m_splitter->SetSashPosition(m_separatorPosition);

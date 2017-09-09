@@ -76,52 +76,37 @@ void MainFrame::UD_UpdateMenuItemLabel(int id,wxString label,wxString accel) con
 	}
 }
 
-void App::InitLocale()
+void App::InitAndSetLocale(int id)
 {
-    g_locale = new wxLocale();
+	g_locale = new wxLocale();
 
-    // add translations missing from wxWidgets
-    UD_LNG(wxUD_LANGUAGE_BOSNIAN,           "bs"   , LANG_BOSNIAN  , SUBLANG_BOSNIAN_BOSNIA_HERZEGOVINA_LATIN, wxLayout_LeftToRight, "Bosnian");
-    UD_LNG(wxUD_LANGUAGE_ILOKO,             "ilo"  , 0             , 0              , wxLayout_LeftToRight, "Iloko");
-    UD_LNG(wxUD_LANGUAGE_KAPAMPANGAN,       "pam"  , 0             , 0              , wxLayout_LeftToRight, "Kapampangan");
-    UD_LNG(wxUD_LANGUAGE_NORWEGIAN,         "no"   , LANG_NORWEGIAN, SUBLANG_DEFAULT, wxLayout_LeftToRight, "Norwegian");
-    UD_LNG(wxUD_LANGUAGE_WARAY_WARAY,       "war"  , 0             , 0              , wxLayout_LeftToRight, "Waray-Waray");
-    UD_LNG(wxUD_LANGUAGE_ACOLI,             "ach"  , 0             , 0              , wxLayout_LeftToRight, "Acoli");
-    UD_LNG(wxUD_LANGUAGE_SINHALA_SRI_LANKA, "si_LK", 0             , 0              , wxLayout_LeftToRight, "Sinhala (Sri Lanka)");
+	// add translations missing from wxWidgets
+	UD_LNG(wxUD_LANGUAGE_BOSNIAN, "bs", LANG_BOSNIAN, SUBLANG_BOSNIAN_BOSNIA_HERZEGOVINA_LATIN, wxLayout_LeftToRight, "Bosnian");
+	UD_LNG(wxUD_LANGUAGE_ILOKO, "ilo", 0, 0, wxLayout_LeftToRight, "Iloko");
+	UD_LNG(wxUD_LANGUAGE_KAPAMPANGAN, "pam", 0, 0, wxLayout_LeftToRight, "Kapampangan");
+	UD_LNG(wxUD_LANGUAGE_NORWEGIAN, "no", LANG_NORWEGIAN, SUBLANG_DEFAULT, wxLayout_LeftToRight, "Norwegian");
+	UD_LNG(wxUD_LANGUAGE_WARAY_WARAY, "war", 0, 0, wxLayout_LeftToRight, "Waray-Waray");
+	UD_LNG(wxUD_LANGUAGE_ACOLI, "ach", 0, 0, wxLayout_LeftToRight, "Acoli");
+	UD_LNG(wxUD_LANGUAGE_SINHALA_SRI_LANKA, "si_LK", 0, 0, wxLayout_LeftToRight, "Sinhala (Sri Lanka)");
 
-    // get initial language selection
-    int id = wxLANGUAGE_ENGLISH_US;
-	const auto cfg = wxConfigBase::Get();
-    if(cfg->HasGroup("Language")){
-        id = int(cfg->Read("/Language/Selected", id));
-    } else {
-        id = g_locale->GetSystemLanguage();
-        if(id == wxLANGUAGE_UNKNOWN)
-            id = wxLANGUAGE_ENGLISH_US;
-    }
+	// apply language selection
+	g_locale->Init(id);
 
-    SetLocale(id);
+	//default location path:
+	g_locale->AddCatalogLookupPathPrefix("locale");
+
+	// location paths for development
+	g_locale->AddCatalogLookupPathPrefix("../wxgui/locale");
+	g_locale->AddCatalogLookupPathPrefix("../../wxgui/locale");
+
+	g_locale->AddCatalog("UltraDefrag");
 }
-
-void App::SetLocale(int id)
-{
-    // apply language selection
-    g_locale->Init(id);
-    g_locale->AddCatalogLookupPathPrefix("locale");
-
-    // locations for development
-    g_locale->AddCatalogLookupPathPrefix("../wxgui/locale");
-    g_locale->AddCatalogLookupPathPrefix("../../wxgui/locale");
-
-    g_locale->AddCatalog("UltraDefrag");
-}
-
 /**
  * @brief Manages translation changes.
  */
 void MainFrame::OnLocaleChange(wxCommandEvent& event)
 {
-    App::SetLocale(event.GetId() - ID_LocaleChange);
+    App::InitAndSetLocale(event.GetId() - ID_LocaleChange);
 
     // update menu labels and tool bar tool-tips
 
@@ -235,7 +220,7 @@ void MainFrame::OnLocaleChange(wxCommandEvent& event)
 
     // update list status fields
     for(int i = 0; i < m_vList->GetItemCount(); i++){
-        int letter = (int)m_vList->GetItemText(i)[0];
+	    const int letter = int(m_vList->GetItemText(i)[0]);
         wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,ID_UpdateVolumeStatus);
         event.SetInt(letter); ProcessEvent(event);
     }

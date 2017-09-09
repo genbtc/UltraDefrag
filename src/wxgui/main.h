@@ -315,8 +315,7 @@ public:
         parser.AddSwitch("s","setup","setup");
     }
 
-    static void InitLocale();
-    static void SetLocale(int id);
+	static void InitAndSetLocale(int id);
     static void SaveReportTranslation();
 
 private:
@@ -587,7 +586,7 @@ public:
 
     WXLRESULT MSWWindowProc(WXUINT msg,WXWPARAM wParam,WXLPARAM lParam) override;
 
-    bool CheckForTermination(int time);
+	static bool CheckForTermination(int time);
 
     // action menu handlers
     void OnStartJob(wxCommandEvent& event);
