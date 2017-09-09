@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <ItemGroup>
+    <!--Includes wxWidgets property page: in VS2010 appears in Configuration category, in VS2012 appears in Common category.-->
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\wxWidgetsNuGet.xml"/>
+  </ItemGroup>
+  <PropertyGroup>
+    <!--wxWidgetsOptions Defaults; UI settings override-->
+    <!--Each appear to be re-evaluated during build: in VS2010 are re-evaluated on condition-param change, in VS2012 are re-evaluated at a time before they are used in the build.-->
+    <wxWidgets Condition="'$(WXWIN)'!='' And $(wxWidgets)==''">$(WXWIN)</wxWidgets>
+    <LIBTYPE_SUFFIX Condition="'$(LIBTYPE_SUFFIX)'==''">dll</LIBTYPE_SUFFIX>
+    <wxMSVC_VERSION Condition="'$(wxMSVC_VERSION)'==''"/>
+    <BuildwxWidgets Condition="'$(BuildwxWidgets)'==''">false</BuildwxWidgets>
+    <wxTOOLKIT_PREFIX Condition="'$(wxTOOLKIT_PREFIX)'==''">msw</wxTOOLKIT_PREFIX>
+    <PrintMSBuildVars Condition="'$(PrintMSBuildVars)'==''">false</PrintMSBuildVars>
+    <COMPILER_PREFIX>vc</COMPILER_PREFIX>
+    <ARCH_SUFFIX Condition="'$(Platform)'=='x64'">_x64</ARCH_SUFFIX>
+    <ARCH_SUFFIX Condition="'$(Platform)'=='Itanium'">_ia64</ARCH_SUFFIX>
+    <ARCH_SUFFIX Condition="'$(Platform)'=='Win32'"/>
+    <WXDEBUGFLAG Condition="'$(UseDebugLibraries)'=='true'">d</WXDEBUGFLAG>
+    <WXDEBUGFLAG Condition="'$(UseDebugLibraries)'!='true'"/>
+	<!--TODO: Is this used anywhere? I think it is an artifact from an old technique-->
+    <WXUNICODEFLAG>u</WXUNICODEFLAG>
+	<!--Issue here in automatic deduction of wxMSVC_VERSION is $(PlatformToolsetVersion) isn't defined until after NuGet insertion of this .props file; this is now done in the .targets file.-->
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(wxWidgets)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(wxWidgets)\include\msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRTDBG_MAP_ALLOC;_WINDOWS;__WXMSW__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(LIBTYPE_SUFFIX)'=='dll'">WXUSINGDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <!--Might be better to add NOPCH to PreprocessorDefinitions in the debug configuration?-->
+      <PreprocessorDefinitions Condition="'$(WXDEBUGFLAG)'=='d'">__WXDEBUG__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Platform)'=='Win32'">WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(wxTOOLKIT_PREFIX)'=='mswuniv'">__WXUNIVERSAL__;wxTOOLKIT_PREFIX=mswuniv;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(wxMSVC_VERSION)'!=''">wxMSVC_VERSION=$(wxMSVC_VERSION);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(PrecompiledHeaderFile)'==''">wx/wxprec.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(ProjectDir)$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(wxWidgets)\lib\$(COMPILER_PREFIX)$(wxMSVC_VERSION)$(ARCH_SUFFIX)_$(LIBTYPE_SUFFIX);%(Link.AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(wxWidgets)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+</Project>

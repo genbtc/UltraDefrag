@@ -30,17 +30,10 @@
 // Ideas by Stefan Pendl <stefanpe@users.sourceforge.net>
 // and Dmitri Arkhangelski <dmitriar@gmail.com>.
 
-#ifdef _DEBUG
-    #ifndef _CRTDBG_MAP_ALLOC
-    #define _CRTDBG_MAP_ALLOC  
-    #include <stdlib.h>  
-    #include <crtdbg.h>
-    #endif
-#endif
 // =======================================================================
 //                            Declarations
 // =======================================================================
-
+#include "wx/wxprec.h"
 #include "main.h"
 
 #if !defined(__GNUC__)
@@ -64,17 +57,17 @@ UINT g_TaskbarIconMsg;         // taskbar icon overlay setup on shell restart
 void *StatThread::Entry()
 {
     bool enabled = true; wxString s;
-    if(wxGetEnv(wxT("UD_DISABLE_USAGE_TRACKING"),&s))
-        if(s.Cmp(wxT("1")) == 0) enabled = false;
+    if(wxGetEnv(("UD_DISABLE_USAGE_TRACKING"),&s))
+        if(s.Cmp(("1")) == 0) enabled = false;
 
     if(enabled){
 #ifndef _WIN64
-        Utils::GaRequest(wxT("/appstat/gui-x86.html"));
+        Utils::GaRequest(("/appstat/gui-x86.html"));
 #else
     #if defined(_IA64_)
-        Utils::GaRequest(wxT("/appstat/gui-ia64.html"));
+        Utils::GaRequest(("/appstat/gui-ia64.html"));
     #else
-        Utils::GaRequest(wxT("/appstat/gui-x64.html"));
+        Utils::GaRequest(("/appstat/gui-x64.html"));
     #endif
 #endif
     }
@@ -91,10 +84,10 @@ static int out_of_memory_handler(size_t n)
 {
     int choice = MessageBox(
         g_mainFrame ? (HWND)g_mainFrame->GetHandle() : NULL,
-        wxT("Try to release some memory by closing\n")
-        wxT("other applications and click Retry then\n")
-        wxT("or click Cancel to terminate the program."),
-        wxT("UltraDefrag: out of memory!"),
+        ("Try to release some memory by closing\n")
+        ("other applications and click Retry then\n")
+        ("or click Cancel to terminate the program."),
+        ("UltraDefrag: out of memory!"),
         MB_RETRYCANCEL | MB_ICONHAND);
     if(choice == IDCANCEL){
         winx_flush_dbg_log(FLUSH_IN_OUT_OF_MEMORY);
@@ -112,14 +105,14 @@ static int out_of_memory_handler(size_t n)
 bool App::OnInit()
 {
     // initialize wxWidgets
-    SetAppName(wxT("UltraDefrag"));
+    SetAppName(("UltraDefrag"));
     wxInitAllImageHandlers();
     if(!wxApp::OnInit())
         return false;
 
     // initialize udefrag library
     if(::udefrag_init_library() < 0){
-        wxLogError(wxT("Initialization failed!"));
+        wxLogError(("Initialization failed!"));
         return false;
     }
 
@@ -131,17 +124,17 @@ bool App::OnInit()
 #endif
 
     // initialize debug log
-    wxFileName logpath(wxT(".\\logs\\ultradefrag.log"));
+    wxFileName logpath((".\\logs\\ultradefrag.log"));
     logpath.Normalize();
-    wxSetEnv(wxT("UD_LOG_FILE_PATH"),logpath.GetFullPath());
+    wxSetEnv(("UD_LOG_FILE_PATH"),logpath.GetFullPath());
     ::udefrag_set_log_file_path();
 
     // initialize logging
     m_log = new Log();
 
     // use global config object for internal settings
-    wxFileConfig *cfg = new wxFileConfig(wxT(""),wxT(""),
-        wxT("gui.ini"),wxT(""),wxCONFIG_USE_RELATIVE_PATH);
+    wxFileConfig *cfg = new wxFileConfig((""),(""),
+        ("gui.ini"),(""),wxCONFIG_USE_RELATIVE_PATH);
     wxConfigBase::Set(cfg);
 
     // enable i18n support
@@ -149,7 +142,7 @@ bool App::OnInit()
 
     // save report translation on setup
     wxString cmdLine(GetCommandLine());
-    if(cmdLine.Find(wxT("--setup")) != wxNOT_FOUND){
+    if(cmdLine.Find(("--setup")) != wxNOT_FOUND){
         SaveReportTranslation();
         ::winx_flush_dbg_log(0);
         delete m_log;
@@ -162,8 +155,8 @@ bool App::OnInit()
     // check for administrative rights
     if(!Utils::CheckAdminRights()){
         wxMessageDialog dlg(nullptr,
-            wxT("Administrative rights are needed to run the program!"),
-            wxT("UltraDefrag"),wxOK | wxICON_ERROR
+            ("Administrative rights are needed to run the program!"),
+            ("UltraDefrag"),wxOK | wxICON_ERROR
         );
         dlg.ShowModal(); Cleanup();
         return false;
@@ -174,8 +167,8 @@ bool App::OnInit()
     if(!g_synchEvent){
         letrace("cannot create synchronization event");
         wxMessageDialog dlg(nullptr,
-            wxT("Cannot create synchronization event!"),
-            wxT("UltraDefrag"),wxOK | wxICON_ERROR
+            ("Cannot create synchronization event!"),
+            ("UltraDefrag"),wxOK | wxICON_ERROR
         );
         dlg.ShowModal(); Cleanup();
         return false;
@@ -194,7 +187,7 @@ bool App::OnInit()
     else g_iconSize = 32;
 
     // support taskbar icon overlay setup on shell restart
-    g_TaskbarIconMsg = ::RegisterWindowMessage(wxT("TaskbarButtonCreated"));
+    g_TaskbarIconMsg = ::RegisterWindowMessage(("TaskbarButtonCreated"));
     if(!g_TaskbarIconMsg) letrace("cannot register TaskbarButtonCreated message");
 
     // create main window
@@ -239,7 +232,7 @@ IMPLEMENT_APP(App)
  * @brief Initializes main window.
  */
 MainFrame::MainFrame()
-    :wxFrame(nullptr,wxID_ANY,wxT("UltraDefrag"))
+    :wxFrame(nullptr,wxID_ANY,("UltraDefrag"))
 {
     _CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );  
     _CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );  
@@ -262,15 +255,15 @@ MainFrame::MainFrame()
     //genBTC re-arranged the below, A LOT.
 	wxFileName exepath(wxStandardPaths::Get().GetExecutablePath());
     wxString cd = exepath.GetPath();
-    if((wxGetEnv(wxT("UD_INSTALL_DIR"),instdir))&&(cd.CmpNoCase(*instdir) == 0)) {
+    if((wxGetEnv(("UD_INSTALL_DIR"),instdir))&&(cd.CmpNoCase(*instdir) == 0)) {
         itrace("current directory matches installation location, so it isn't portable");
         itrace("installation location: %ls",instdir->wc_str());
-        m_title = new wxString(wxT(VERSIONINTITLE));
+        m_title = new wxString((VERSIONINTITLE));
     } else {
         itrace("current directory differs from installation location, so it is portable");
         itrace("current directory: %ls",cd.wc_str());
-        wxSetEnv(wxT("UD_IS_PORTABLE"),wxT("1"));
-        m_title = new wxString(wxT(VERSIONINTITLE_PORTABLE));
+        wxSetEnv(("UD_IS_PORTABLE"),("1"));
+        m_title = new wxString((VERSIONINTITLE_PORTABLE));
     }
     //genBTC re-arranged the above, A LOT.
     ProcessCommandEvent(ID_SetWindowTitle);
@@ -334,7 +327,7 @@ MainFrame::MainFrame()
 	m_panel1->SetSizer( bSizer2 );
 
 	//Finish Tab1 - Add the Panel1(Splitter+sizer2) to the notebook.
-	m_notebook1->AddPage( m_panel1, wxT("Drives"), false );
+	m_notebook1->AddPage( m_panel1, ("Drives"), false );
 
 	//make a 2nd panel inside the notebook to hold the 2nd page(a grid)
 	m_panel2 = new wxPanel( m_notebook1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
@@ -351,14 +344,14 @@ MainFrame::MainFrame()
     bSizer3->Fit( m_panel2 );
 
 	//Finish Tab 2 - Add the Panel2(page2list+sizer3) to the notebook.
-	m_notebook1->AddPage( m_panel2, wxT("Files"), false );
+	m_notebook1->AddPage( m_panel2, ("Files"), false );
 
     //Finish Notebook & initialize
 	bSizer1->Add( m_notebook1, 1, wxEXPAND, 1 );
 	this->SetSizer( bSizer1 );
 
     // check the boot time defragmenter presence
-    wxFileName btdFile(wxT("%SystemRoot%\\system32\\defrag_native.exe"));
+    wxFileName btdFile(("%SystemRoot%\\system32\\defrag_native.exe"));
     btdFile.Normalize();
     bool btd = btdFile.FileExists();
     m_menuBar->FindItem(ID_BootEnable)->Enable(btd);
@@ -379,7 +372,7 @@ MainFrame::MainFrame()
     m_crashInfoThread = new CrashInfoThread();
 
     wxConfigBase *cfg = wxConfigBase::Get();
-    int ulevel = (int)cfg->Read(wxT("/Upgrade/Level"),1);
+    int ulevel = (int)cfg->Read(("/Upgrade/Level"),1);
     wxMenuItem *item = m_menuBar->FindItem(ID_HelpUpgradeNone + ulevel);
     if(item) item->Check();
 
@@ -389,9 +382,9 @@ MainFrame::MainFrame()
     m_systemTrayIcon = new SystemTrayIcon();
     if(!m_systemTrayIcon->IsOk()){
         etrace("system tray icon initialization failed");
-        wxSetEnv(wxT("UD_MINIMIZE_TO_SYSTEM_TRAY"),wxT("0"));
+        wxSetEnv(("UD_MINIMIZE_TO_SYSTEM_TRAY"),("0"));
     }
-    SetSystemTrayIcon(wxT("tray"),wxT("UltraDefrag"));
+    SetSystemTrayIcon(("tray"),("UltraDefrag"));
 
     // set localized text
     ProcessCommandEvent(ID_LocaleChange + g_locale->GetLanguage());
@@ -552,8 +545,8 @@ WXLRESULT MainFrame::MSWWindowProc(WXUINT msg,WXWPARAM wParam,WXLPARAM lParam)
 void MainFrame::SetWindowTitle(wxCommandEvent& event)
 {
     if(event.GetString().IsEmpty()){
-        if(CheckOption(wxT("UD_DRY_RUN"))){
-            SetTitle(*m_title + wxT(" (Dry Run)"));
+        if(CheckOption(("UD_DRY_RUN"))){
+            SetTitle(*m_title + (" (Dry Run)"));
         } else {
             SetTitle(*m_title);
         }
@@ -578,7 +571,7 @@ void MainFrame::OnMove(wxMoveEvent& event)
     }
 
     // hide window on minimization if system tray icon is turned on
-    if(CheckOption(wxT("UD_MINIMIZE_TO_SYSTEM_TRAY")) && IsIconized()) Hide();
+    if(CheckOption(("UD_MINIMIZE_TO_SYSTEM_TRAY")) && IsIconized()) Hide();
 
     event.Skip();
 }
@@ -603,22 +596,22 @@ void MainFrame::OnExit(wxCommandEvent& WXUNUSED(event))
 // help menu handlers
 void MainFrame::OnHelpContents(wxCommandEvent& WXUNUSED(event))
 {
-    Utils::OpenHandbook(wxT("index.html"));
+    Utils::OpenHandbook(("index.html"));
 }
 
 void MainFrame::OnHelpBestPractice(wxCommandEvent& WXUNUSED(event))
 {
-    Utils::OpenHandbook(wxT("Tips.html"));
+    Utils::OpenHandbook(("Tips.html"));
 }
 
 void MainFrame::OnHelpFaq(wxCommandEvent& WXUNUSED(event))
 {
-    Utils::OpenHandbook(wxT("FAQ.html"));
+    Utils::OpenHandbook(("FAQ.html"));
 }
 
 void MainFrame::OnHelpLegend(wxCommandEvent& WXUNUSED(event))
 {
-    Utils::OpenHandbook(wxT("GUI.html"),wxT("cluster_map_legend"));
+    Utils::OpenHandbook(("GUI.html"),("cluster_map_legend"));
 }
 
 /** @} */

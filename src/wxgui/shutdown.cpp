@@ -33,7 +33,7 @@
 // =======================================================================
 //                            Declarations
 // =======================================================================
-
+#include "wx/wxprec.h"
 #include "main.h"
 #include <powrprof.h>
 
@@ -129,7 +129,7 @@ int MainFrame::ShowShutdownDialog(int action)
     }
 
     wxString s;
-    wxGetEnv(wxT("UD_SECONDS_FOR_SHUTDOWN_REJECTION"),&s);
+    wxGetEnv(("UD_SECONDS_FOR_SHUTDOWN_REJECTION"),&s);
     if(!s.ToULong(&dlg.seconds))
         dlg.seconds = DEFAULT_SECONDS_FOR_SHUTDOWN_REJECTION;
 
@@ -141,9 +141,9 @@ int MainFrame::ShowShutdownDialog(int action)
     wxButton *no = new wxButton(&dlg,wxID_CANCEL,_("&No"));
 
     // Burmese needs Padauk font for display
-    if(g_locale->GetCanonicalName().Left(2) == wxT("my")){
+    if(g_locale->GetCanonicalName().Left(2) == ("my")){
         wxFont textFont = question->GetFont();
-        if(!textFont.SetFaceName(wxT("Padauk"))){
+        if(!textFont.SetFaceName(("Padauk"))){
             etrace("Padauk font needed for correct Burmese text display not found");
         } else {
             textFont.SetPointSize(textFont.GetPointSize() + 2);
@@ -220,7 +220,7 @@ void MainFrame::Shutdown(wxCommandEvent& WXUNUSED(event))
     }
 
     if(action != WHEN_DONE_STANDBY && \
-      CheckOption(wxT("UD_SECONDS_FOR_SHUTDOWN_REJECTION"))){
+      CheckOption(("UD_SECONDS_FOR_SHUTDOWN_REJECTION"))){
         if(ShowShutdownDialog(action) != wxID_OK) return;
     }
 
@@ -237,7 +237,7 @@ void MainFrame::Shutdown(wxCommandEvent& WXUNUSED(event))
         // suspend, request permission from apps and drivers
         if(!SetSuspendState(FALSE,FALSE,FALSE)){
             letrace("cannot suspend the system");
-            Utils::ShowError(wxT("Cannot suspend the system!"));
+            Utils::ShowError(("Cannot suspend the system!"));
         }
         return;
     }
@@ -245,48 +245,48 @@ void MainFrame::Shutdown(wxCommandEvent& WXUNUSED(event))
         // hibernate, request permission from apps and drivers
         if(!SetSuspendState(TRUE,FALSE,FALSE)){
             letrace("cannot hibernate the computer");
-            Utils::ShowError(wxT("Cannot hibernate the computer!"));
+            Utils::ShowError(("Cannot hibernate the computer!"));
         }
         return;
     }
 
     // Shutdown command works better on remote
     // computers since it shows no confirmation.
-    wxFileName shutdown(wxT("%windir%\\system32\\shutdown.exe"));
-    wxFileName shell(wxT("%windir%\\system32\\cmd.exe"));
+    wxFileName shutdown(("%windir%\\system32\\shutdown.exe"));
+    wxFileName shell(("%windir%\\system32\\cmd.exe"));
     shutdown.Normalize(); shell.Normalize();
 
     if(action == WHEN_DONE_LOGOFF){
         if(shutdown.FileExists()){
-            Utils::ShellExec(shell.GetFullPath(),wxT("open"),wxT("/K shutdown -l"));
+            Utils::ShellExec(shell.GetFullPath(),("open"),("/K shutdown -l"));
         } else {
             if(!ExitWindowsEx(EWX_LOGOFF | EWX_FORCEIFHUNG,
               SHTDN_REASON_MAJOR_OTHER | SHTDN_REASON_MINOR_OTHER | \
               SHTDN_REASON_FLAG_PLANNED)){
                 letrace("cannot log the user off");
-                Utils::ShowError(wxT("Cannot log the user off!"));
+                Utils::ShowError(("Cannot log the user off!"));
             }
         }
     } else if(action == WHEN_DONE_REBOOT){
         if(shutdown.FileExists()){
-            Utils::ShellExec(shell.GetFullPath(),wxT("open"),wxT("/K shutdown -r -t 0"));
+            Utils::ShellExec(shell.GetFullPath(),("open"),("/K shutdown -r -t 0"));
         } else {
             if(!ExitWindowsEx(EWX_REBOOT | EWX_FORCEIFHUNG,
               SHTDN_REASON_MAJOR_OTHER | SHTDN_REASON_MINOR_OTHER | \
               SHTDN_REASON_FLAG_PLANNED)){
                 letrace("cannot reboot the computer");
-                Utils::ShowError(wxT("Cannot reboot the computer!"));
+                Utils::ShowError(("Cannot reboot the computer!"));
             }
         }
     } else if(action == WHEN_DONE_SHUTDOWN){
         if(shutdown.FileExists()){
-            Utils::ShellExec(shell.GetFullPath(),wxT("open"),wxT("/K shutdown -s -t 0"));
+            Utils::ShellExec(shell.GetFullPath(),("open"),("/K shutdown -s -t 0"));
         } else {
             if(!ExitWindowsEx(EWX_POWEROFF | EWX_FORCEIFHUNG,
               SHTDN_REASON_MAJOR_OTHER | SHTDN_REASON_MINOR_OTHER | \
               SHTDN_REASON_FLAG_PLANNED)){
                 letrace("cannot shut the computer down");
-                Utils::ShowError(wxT("Cannot shut the computer down!"));
+                Utils::ShowError(("Cannot shut the computer down!"));
             }
         }
     }

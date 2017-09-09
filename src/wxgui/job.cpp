@@ -33,7 +33,7 @@
 // =======================================================================
 //                            Declarations
 // =======================================================================
-
+#include "wx/wxprec.h"
 #include "main.h"
 
 // =======================================================================
@@ -68,22 +68,22 @@ void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
     if(pi->current_operation == VOLUME_ANALYSIS) op = 'A';
     if(pi->current_operation == VOLUME_DEFRAGMENTATION) op = 'D';
 
-    wxString title = wxString::Format(wxT("%c:  %c %6.2lf %%"),
+    wxString title = wxString::Format(("%c:  %c %6.2lf %%"),
         winx_toupper(g_mainFrame->m_jobThread->m_letter),op,pi->percentage
     );
-    if(g_mainFrame->CheckOption(wxT("UD_DRY_RUN"))) title += wxT(" (Dry Run)");
+    if(g_mainFrame->CheckOption(("UD_DRY_RUN"))) title += (" (Dry Run)");
 
     wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,ID_SetWindowTitle);
     event.SetString(title); wxPostEvent(g_mainFrame,event);
 
     g_mainFrame->SetSystemTrayIcon(g_mainFrame->m_paused ? \
-        wxT("tray_paused") : wxT("tray_running"),title);
+        ("tray_paused") : ("tray_running"),title);
 
     // set overall progress
     if(g_mainFrame->m_jobThread->m_jobType == ANALYSIS_JOB \
       || pi->current_operation != VOLUME_ANALYSIS)
     {
-        if(g_mainFrame->CheckOption(wxT("UD_SHOW_PROGRESS_IN_TASKBAR"))){
+        if(g_mainFrame->CheckOption(("UD_SHOW_PROGRESS_IN_TASKBAR"))){
             g_mainFrame->SetTaskbarProgressState(TBPF_NORMAL);
             if(pi->clusters_to_process){
                 g_mainFrame->SetTaskbarProgressValue(
@@ -198,7 +198,7 @@ void* JobThread::Entry()
 
                 /* advance overall progress to processed/selected */
                 g_mainFrame->m_processed ++;
-                if(g_mainFrame->CheckOption(wxT("UD_SHOW_PROGRESS_IN_TASKBAR"))){
+                if(g_mainFrame->CheckOption(("UD_SHOW_PROGRESS_IN_TASKBAR"))){
                     g_mainFrame->SetTaskbarProgressState(TBPF_NORMAL);
                     g_mainFrame->SetTaskbarProgressValue(
                         g_mainFrame->m_processed, g_mainFrame->m_selected
@@ -227,8 +227,8 @@ void* JobThread::Entry()
  */
 int MainFrame::GetMapSize(){
     int width, height; g_mainFrame->m_cMap->GetClientSize(&width,&height);
-    int block_size = CheckOption(wxT("UD_MAP_BLOCK_SIZE"));
-    int line_width = CheckOption(wxT("UD_GRID_LINE_WIDTH"));
+    int block_size = CheckOption(("UD_MAP_BLOCK_SIZE"));
+    int line_width = CheckOption(("UD_GRID_LINE_WIDTH"));
     int cell_size = block_size + line_width;
     int blocks_per_line = (width - line_width) / cell_size;
     int lines = (height - line_width) / cell_size;
@@ -271,30 +271,30 @@ void MainFrame::OnStartJob(wxCommandEvent& event)
 
     ReleasePause();
 
-    SetSystemTrayIcon(wxT("tray_running"),wxT("UltraDefrag"));
+    SetSystemTrayIcon(("tray_running"),("UltraDefrag"));
     ProcessCommandEvent(ID_AdjustTaskbarIconOverlay);
     /* set overall progress: normal 0% */
-    if(CheckOption(wxT("UD_SHOW_PROGRESS_IN_TASKBAR"))){
+    if(CheckOption(("UD_SHOW_PROGRESS_IN_TASKBAR"))){
         SetTaskbarProgressValue(0,1);
         SetTaskbarProgressState(TBPF_NORMAL);
     }
 
     // set sorting parameters
     if(m_menuBar->FindItem(ID_SortByPath)->IsChecked()){
-        wxSetEnv(wxT("UD_SORTING"),wxT("path"));
+        wxSetEnv(("UD_SORTING"),("path"));
     } else if(m_menuBar->FindItem(ID_SortBySize)->IsChecked()){
-        wxSetEnv(wxT("UD_SORTING"),wxT("size"));
+        wxSetEnv(("UD_SORTING"),("size"));
     } else if(m_menuBar->FindItem(ID_SortByCreationDate)->IsChecked()){
-        wxSetEnv(wxT("UD_SORTING"),wxT("c_time"));
+        wxSetEnv(("UD_SORTING"),("c_time"));
     } else if(m_menuBar->FindItem(ID_SortByModificationDate)->IsChecked()){
-        wxSetEnv(wxT("UD_SORTING"),wxT("m_time"));
+        wxSetEnv(("UD_SORTING"),("m_time"));
     } else if(m_menuBar->FindItem(ID_SortByLastAccessDate)->IsChecked()){
-        wxSetEnv(wxT("UD_SORTING"),wxT("a_time"));
+        wxSetEnv(("UD_SORTING"),("a_time"));
     }
     if(m_menuBar->FindItem(ID_SortAscending)->IsChecked()){
-        wxSetEnv(wxT("UD_SORTING_ORDER"),wxT("asc"));
+        wxSetEnv(("UD_SORTING_ORDER"),("asc"));
     } else {
-        wxSetEnv(wxT("UD_SORTING_ORDER"),wxT("desc"));
+        wxSetEnv(("UD_SORTING_ORDER"),("desc"));
     }
 
     //handle single file defragmenting launched from the right click context menu
@@ -354,7 +354,7 @@ void MainFrame::OnJobCompletion(wxCommandEvent& WXUNUSED(event))
 
     ReleasePause();
 
-    SetSystemTrayIcon(wxT("tray"),wxT("UltraDefrag"));
+    SetSystemTrayIcon(("tray"),("UltraDefrag"));
     ProcessCommandEvent(ID_SetWindowTitle);
     ProcessCommandEvent(ID_AdjustTaskbarIconOverlay);
     SetTaskbarProgressState(TBPF_NOPROGRESS);
@@ -381,8 +381,8 @@ void MainFrame::SetPause()
 
     Utils::SetProcessPriority(IDLE_PRIORITY_CLASS);
 
-    SetSystemTrayIcon(m_busy ? wxT("tray_paused") \
-        : wxT("tray"),wxT("UltraDefrag"));
+    SetSystemTrayIcon(m_busy ? ("tray_paused") \
+        : ("tray"),("UltraDefrag"));
     ProcessCommandEvent(ID_AdjustTaskbarIconOverlay);
 }
 
@@ -397,8 +397,8 @@ void MainFrame::ReleasePause()
 
     Utils::SetProcessPriority(NORMAL_PRIORITY_CLASS);
 
-    SetSystemTrayIcon(m_busy ? wxT("tray_running") \
-        : wxT("tray"),wxT("UltraDefrag"));
+    SetSystemTrayIcon(m_busy ? ("tray_running") \
+        : ("tray"),("UltraDefrag"));
     ProcessCommandEvent(ID_AdjustTaskbarIconOverlay);
 }
 
@@ -445,7 +445,7 @@ void MainFrame::OnRepair(wxCommandEvent& WXUNUSED(event))
     long i = m_vList->GetFirstSelected();
     while(i != -1){
         char letter = (char)m_vList->GetItemText(i)[0];
-        args << wxString::Format(wxT(" %c:"),letter);
+        args << wxString::Format((" %c:"),letter);
         i = m_vList->GetNextSelected(i);
     }
 
@@ -456,24 +456,24 @@ void MainFrame::OnRepair(wxCommandEvent& WXUNUSED(event))
     CHKDSK {drive} /F ................. check the drive and correct problems
     PING -n {seconds + 1} localhost ... trick to pause for n seconds afterwards
     */
-    wxFileName path(wxT("%windir%\\system32\\cmd.exe"));
+    wxFileName path(("%windir%\\system32\\cmd.exe"));
     path.Normalize(); wxString cmd(path.GetFullPath());
-    cmd << wxT(" /C ( ");
-    cmd << wxT("for %D in ( ") << args << wxT(" ) do ");
-    cmd << wxT("@echo. ");
-    cmd << wxT("& echo chkdsk %D ");
-    cmd << wxT("& echo. ");
-    cmd << wxT("& chkdsk %D /F ");
-    cmd << wxT("& echo. ");
-    cmd << wxT("& echo ------------------------------------------------- ");
+    cmd << (" /C ( ");
+    cmd << ("for %D in ( ") << args << (" ) do ");
+    cmd << ("@echo. ");
+    cmd << ("& echo chkdsk %D ");
+    cmd << ("& echo. ");
+    cmd << ("& chkdsk %D /F ");
+    cmd << ("& echo. ");
+    cmd << ("& echo ------------------------------------------------- ");
     //Pause for 11 seconds after the check completes, so you can actually read it:
-    cmd << wxT("& ping -n 11 localhost >nul ");
-    cmd << wxT(") ");
-    cmd << wxT("& echo. ");
-    cmd << wxT("& pause");
+    cmd << ("& ping -n 11 localhost >nul ");
+    cmd << (") ");
+    cmd << ("& echo. ");
+    cmd << ("& pause");
 
     itrace("Command Line: %ls", cmd.wc_str());
-    if(!wxExecute(cmd)) Utils::ShowError(wxT("Cannot execute cmd.exe program!"));
+    if(!wxExecute(cmd)) Utils::ShowError(wxString::Format("Cannot execute cmd.exe program!"));
 }
 
 void MainFrame::OnDefaultAction(wxCommandEvent& WXUNUSED(event))
@@ -502,30 +502,30 @@ void MainFrame::OnDiskProcessingFailure(wxCommandEvent& event)
     switch(m_jobThread->m_jobType){
     case ANALYSIS_JOB:
         caption = wxString::Format(
-            wxT("Analysis of %ls failed."),
+            ("Analysis of %ls failed."),
             event.GetString().wc_str()
         );
         break;
     case DEFRAGMENTATION_JOB:
         caption = wxString::Format(
-            wxT("Defragmentation of %ls failed."),
+            ("Defragmentation of %ls failed."),
             event.GetString().wc_str()
         );
         break;
     default:
         caption = wxString::Format(
-            wxT("Optimization of %ls failed."),
+            ("Optimization of %ls failed."),
             event.GetString().wc_str()
         );
         break;
     }
 
     int error = event.GetInt();
-    wxString msg = caption + wxT("\n") \
-        + wxString::Format(wxT("%hs"),
+    wxString msg = caption + ("\n") \
+        + wxString::Format(("%hs"),
         udefrag_get_error_description(error));
 
-    Utils::ShowError(wxT("%ls"),msg.wc_str());
+    Utils::ShowError(wxString::Format("%ls"),msg.wc_str());
 }
 
 /** @} */

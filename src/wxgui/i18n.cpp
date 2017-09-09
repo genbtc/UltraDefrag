@@ -33,7 +33,7 @@
 // =======================================================================
 //                            Declarations
 // =======================================================================
-
+#include "wx/wxprec.h"
 #include "main.h"
 
 // =======================================================================
@@ -50,9 +50,9 @@ wxLocale *g_locale = nullptr;
 #define UD_LNG(wxlang, canonical, winlang, winsublang, layout, desc) { \
     wxLanguageInfo info;                                  \
     info.Language = wxlang;                               \
-    info.CanonicalName = wxT(canonical);                  \
+    info.CanonicalName = (canonical);                  \
     info.LayoutDirection = layout;                        \
-    info.Description = wxT(desc);                         \
+    info.Description = (desc);                         \
     info.WinLang = winlang, info.WinSublang = winsublang; \
     g_locale->AddLanguage(info);                          \
 }
@@ -60,11 +60,11 @@ wxLocale *g_locale = nullptr;
 #define UD_UpdateMenuItemLabel(id,label,accel) { \
     if(::strlen(accel)){ \
         wxString ItemLabel = _(label); \
-        ItemLabel << wxT("\t") << wxT(accel); \
+        ItemLabel << ("\t") << (accel); \
         m_menuBar->FindItem(id)->SetItemLabel(ItemLabel); \
         if(m_toolBar->FindById(id)){ \
             ItemLabel = _(label); \
-            ItemLabel << wxT(" (") << wxT(accel) << wxT(")"); \
+            ItemLabel << (" (") << (accel) << (")"); \
             m_toolBar->SetToolShortHelp(id,ItemLabel); \
         } \
     } else { \
@@ -90,8 +90,8 @@ void App::InitLocale()
     // get initial language selection
     int id = wxLANGUAGE_ENGLISH_US;
     wxConfigBase *cfg = wxConfigBase::Get();
-    if(cfg->HasGroup(wxT("Language"))){
-        id = (int)cfg->Read(wxT("/Language/Selected"),id);
+    if(cfg->HasGroup(("Language"))){
+        id = (int)cfg->Read(("/Language/Selected"),id);
     } else {
         id = g_locale->GetSystemLanguage();
         if(id == wxLANGUAGE_UNKNOWN)
@@ -105,13 +105,13 @@ void App::SetLocale(int id)
 {
     // apply language selection
     g_locale->Init(id,wxLOCALE_CONV_ENCODING);
-    g_locale->AddCatalogLookupPathPrefix(wxT("locale"));
+    g_locale->AddCatalogLookupPathPrefix(("locale"));
 
     // locations for development
-    g_locale->AddCatalogLookupPathPrefix(wxT("../wxgui/locale"));
-    g_locale->AddCatalogLookupPathPrefix(wxT("../../wxgui/locale"));
+    g_locale->AddCatalogLookupPathPrefix(("../wxgui/locale"));
+    g_locale->AddCatalogLookupPathPrefix(("../../wxgui/locale"));
 
-    g_locale->AddCatalog(wxT("UltraDefrag"));
+    g_locale->AddCatalog(("UltraDefrag"));
 }
 
 /**
@@ -198,11 +198,11 @@ void MainFrame::OnLocaleChange(wxCommandEvent& event)
     UD_UpdateMenuItemLabel(ID_DebugSend , "Send bug &report" , "");
 
     // update tool-tips that differ from menu labels
-    wxString label = _("&Boot time scan"); label << wxT(" (F11)");
+    wxString label = _("&Boot time scan"); label << (" (F11)");
     m_toolBar->SetToolShortHelp(ID_BootEnable,label);
-    label = _("Boot time script"); label << wxT(" (F12)");
+    label = _("Boot time script"); label << (" (F12)");
     m_toolBar->SetToolShortHelp(ID_BootScript,label);
-    label = _("&Help"); label << wxT(" (F1)");
+    label = _("&Help"); label << (" (F1)");
     m_toolBar->SetToolShortHelp(ID_HelpContents,label);
 
     // update list column labels
@@ -223,9 +223,9 @@ void MainFrame::OnLocaleChange(wxCommandEvent& event)
     item.SetText(_("Last Modified")); m_filesList->SetColumn(5,item);
 
     // set mono-space font for the list unless Burmese translation is selected
-    if(g_locale->GetCanonicalName().Left(2) != wxT("my")){
+    if(g_locale->GetCanonicalName().Left(2) != ("my")){
         wxFont font = m_vList->GetFont();
-        if(font.SetFaceName(wxT("Lucida Console")))
+        if(font.SetFaceName(("Lucida Console")))
             m_vList->SetFont(font);
     } else {
         m_vList->SetFont(*m_vListFont);
@@ -255,14 +255,14 @@ void MainFrame::OnLocaleChange(wxCommandEvent& event)
 #define UD_AddTranslationString(key, value) { \
     wxString v = value; \
     file.AddLine(wxString::Format( \
-        wxT("%hs%ls"), key, v.wc_str()) \
+        ("%hs%ls"), key, v.wc_str()) \
     ); \
 }
 
 void App::SaveReportTranslation()
 {
     wxTextFile file;
-    file.Create(wxT("reports.lng"));
+    file.Create(("reports.lng"));
     UD_AddTranslationString("FRAGMENTED_FILES_ON = ", _("Fragmented files on"));
     UD_AddTranslationString("VISIT_HOMEPAGE      = ", _("Visit our Homepage") );
     UD_AddTranslationString("VIEW_REPORT_OPTIONS = ", _("View report options"));
@@ -287,25 +287,25 @@ void App::SaveReportTranslation()
 
 void MainFrame::OnLangTranslateOnline(wxCommandEvent& WXUNUSED(event))
 {
-    wxString url(wxT("https://www.transifex.com/projects/p/ultradefrag/resource/main/"));
+    wxString url(("https://www.transifex.com/projects/p/ultradefrag/resource/main/"));
     if(!wxLaunchDefaultBrowser(url))
-        Utils::ShowError(wxT("Cannot open %ls!"),url.wc_str());
+        Utils::ShowError(("Cannot open %ls!"),url.wc_str());
 }
 
 void MainFrame::OnLangTranslateOffline(wxCommandEvent& WXUNUSED(event))
 {
-    Utils::OpenHandbook(wxT("Translation.html"));
+    Utils::OpenHandbook(("Translation.html"));
 }
 
 void MainFrame::OnLangOpenFolder(wxCommandEvent& WXUNUSED(event))
 {
-    wxString AppPoDir(wxGetCwd() + wxT("/po"));
+    wxString AppPoDir(wxGetCwd() + ("/po"));
 
     if(!wxDirExists(AppPoDir)){
         etrace("po dir not found: %ls",AppPoDir.wc_str());
     } else {
         if(!wxLaunchDefaultBrowser(AppPoDir))
-            Utils::ShowError(wxT("Cannot open %ls!"),AppPoDir.wc_str());
+            Utils::ShowError(("Cannot open %ls!"),AppPoDir.wc_str());
     }
 }
 

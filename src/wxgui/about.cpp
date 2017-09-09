@@ -33,10 +33,10 @@
 // =======================================================================
 //                            Declarations
 // =======================================================================
-
+#include "wx/wxprec.h"
 #include "main.h"
 
-#define HOMEPAGE wxT("http://ultradefrag.sourceforge.net")
+#define HOMEPAGE "http://ultradefrag.sourceforge.net"
 
 class HomePageLink: public wxHyperlinkCtrl {
 public:
@@ -78,14 +78,14 @@ void MainFrame::OnHelpAbout(wxCommandEvent& WXUNUSED(event))
 
     wxStaticBitmap *bmp = new wxStaticBitmap(&dlg,wxID_ANY,wxBITMAP(ship));
 
-    wxStaticText *version = new wxStaticText(&dlg,wxID_ANY,wxT(VERSIONINTITLE));
+    wxStaticText *version = new wxStaticText(&dlg,wxID_ANY,VERSIONINTITLE);
     wxFont fontBig(*wxNORMAL_FONT);
     fontBig.SetPointSize(fontBig.GetPointSize() + 2);
     fontBig.SetWeight(wxFONTWEIGHT_BOLD);
     version->SetFont(fontBig);
 
     wxStaticText *copyright = new wxStaticText(&dlg,wxID_ANY,
-        wxT("(C) 2007-2015 UltraDefrag development team"));
+        ("(C) 2007-2015 UltraDefrag development team"));
     wxStaticText *description = new wxStaticText(&dlg,wxID_ANY,
         _("An open source defragmentation utility."));
     wxStaticText *credits = new wxStaticText(&dlg,wxID_ANY,
@@ -95,9 +95,9 @@ void MainFrame::OnHelpAbout(wxCommandEvent& WXUNUSED(event))
         _("UltraDefrag website"),HOMEPAGE);
 
     // Burmese needs Padauk font for display
-    if(g_locale->GetCanonicalName().Left(2) == wxT("my")){
+    if(g_locale->GetCanonicalName().Left(2) == ("my")){
         wxFont textFont = description->GetFont();
-        if(!textFont.SetFaceName(wxT("Padauk"))){
+        if(!textFont.SetFaceName(("Padauk"))){
             etrace("Padauk font needed for correct Burmese text display not found");
         } else {
             textFont.SetPointSize(textFont.GetPointSize() + 2);

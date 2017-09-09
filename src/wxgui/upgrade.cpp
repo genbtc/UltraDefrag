@@ -33,7 +33,7 @@
 // =======================================================================
 //                            Declarations
 // =======================================================================
-
+#include "wx/wxprec.h"
 #include "main.h"
 
 enum {
@@ -53,7 +53,7 @@ void *UpgradeThread::Entry()
 {
     while(!g_mainFrame->CheckForTermination(200)){
         if(m_check && m_level){
-            wxFileName target(wxT(".\\tmp"));
+            wxFileName target((".\\tmp"));
             target.Normalize();
             wxString dir(target.GetFullPath());
             if(!wxDirExists(dir)) wxMkdir(dir);
@@ -62,18 +62,18 @@ void *UpgradeThread::Entry()
             * Use a subfolder to prevent configuration files
             * reload (see ConfigThread::Entry() for details).
             */
-            dir << wxT("\\data");
+            dir << ("\\data");
             if(!wxDirExists(dir)) wxMkdir(dir);
 
-            wxString url(wxT(""));
+            wxString url((""));
             wxString path(dir);
 
             if(m_level == UPGRADE_ALL){
-                url << wxT(VERSION_URL);
-                path << wxT("\\version.ini");
+                url << (VERSION_URL);
+                path << ("\\version.ini");
             } else {
-                url << wxT(STABLE_VERSION_URL);
-                path << wxT("\\stable-version.ini");
+                url << (STABLE_VERSION_URL);
+                path << ("\\stable-version.ini");
             }
 
             if(Utils::DownloadFile(url,path)){
@@ -178,9 +178,9 @@ void MainFrame::ShowUpgradeDialog(wxCommandEvent& event)
     if(Utils::MessageDialog(this,_("You can upgrade me ^-^"),
       wxART_INFORMATION,_("&Upgrade"),_("&Cancel"),message) == wxID_OK)
     {
-        wxString url(wxT("http://ultradefrag.sourceforge.net"));
+        wxString url(("http://ultradefrag.sourceforge.net"));
         if(!wxLaunchDefaultBrowser(url))
-            Utils::ShowError(wxT("Cannot open %ls!"),url.wc_str());
+            Utils::ShowError(("Cannot open %ls!"),url.wc_str());
     }
 }
 

@@ -33,7 +33,7 @@
 // =======================================================================
 //                            Declarations
 // =======================================================================
-
+#include "wx/wxprec.h"
 #include "main.h"
 
 extern "C" {
@@ -47,8 +47,8 @@ extern "C" {
 //                      Application configuration
 // =======================================================================
 //reference these variables instead of magic-strings all over the source-files.
-wxString OPTIONSDIR = wxT(".\\options\\");
-wxString OPTIONSFILE = OPTIONSDIR + wxT("options.lua");
+wxString OPTIONSDIR = (".\\options\\");
+wxString OPTIONSFILE = OPTIONSDIR + ("options.lua");
 //options file should be in its own directory because of the change-tracker
 //change-tracker should not care about anything else being modified.
 
@@ -62,12 +62,12 @@ void MainFrame::ReadAppConfiguration()
     wxConfigBase *cfg = wxConfigBase::Get();
 
     // get window size and position
-    m_saved = cfg->HasGroup(wxT("MainFrame"));
-    m_x = (int)cfg->Read(wxT("/MainFrame/x"),0l);
-    m_y = (int)cfg->Read(wxT("/MainFrame/y"),0l);
-    m_width = (int)cfg->Read(wxT("/MainFrame/width"),
+    m_saved = cfg->HasGroup(("MainFrame"));
+    m_x = (int)cfg->Read(("/MainFrame/x"),0l);
+    m_y = (int)cfg->Read(("/MainFrame/y"),0l);
+    m_width = (int)cfg->Read(("/MainFrame/width"),
         DPI(MAIN_WINDOW_DEFAULT_WIDTH));
-    m_height = (int)cfg->Read(wxT("/MainFrame/height"),
+    m_height = (int)cfg->Read(("/MainFrame/height"),
         DPI(MAIN_WINDOW_DEFAULT_HEIGHT));
 
     // validate width and height
@@ -86,10 +86,10 @@ void MainFrame::ReadAppConfiguration()
 
     // now the window is surely inside of the screen
 
-    cfg->Read(wxT("/MainFrame/maximized"),&m_maximized,false);
+    cfg->Read(("/MainFrame/maximized"),&m_maximized,false);
 
     m_separatorPosition = (int)cfg->Read(
-        wxT("/MainFrame/SeparatorPosition"),
+        ("/MainFrame/SeparatorPosition"),
         (long)DPI(DEFAULT_LIST_HEIGHT)
     );
 
@@ -98,13 +98,13 @@ void MainFrame::ReadAppConfiguration()
         98.0/900, 97.0/900, 67.0/900
     };
     for(int i = 0; i < LIST_COLUMNS; i++){
-        cfg->Read(wxString::Format(wxT("/DrivesList/width%d"),i),
+        cfg->Read(wxString::Format(("/DrivesList/width%d"),i),
             &m_r[i], r[i]
         );
     }
 
-    cfg->Read(wxT("/Algorithm/RepeatAction"),&m_repeat,false);
-    cfg->Read(wxT("/Algorithm/SkipRemovableMedia"),&m_skipRem,true);
+    cfg->Read(("/Algorithm/RepeatAction"),&m_repeat,false);
+    cfg->Read(("/Algorithm/SkipRemovableMedia"),&m_skipRem,true);
 }
 
 /**
@@ -116,12 +116,12 @@ void MainFrame::ReadAppConfiguration()
 void MainFrame::SaveAppConfiguration()
 {
     wxConfigBase *cfg = wxConfigBase::Get();
-    cfg->Write(wxT("/MainFrame/x"),(long)m_x);
-    cfg->Write(wxT("/MainFrame/y"),(long)m_y);
-    cfg->Write(wxT("/MainFrame/width"),(long)m_width);
-    cfg->Write(wxT("/MainFrame/height"),(long)m_height);
-    cfg->Write(wxT("/MainFrame/maximized"),(long)IsMaximized());
-    cfg->Write(wxT("/MainFrame/SeparatorPosition"),
+    cfg->Write(("/MainFrame/x"),(long)m_x);
+    cfg->Write(("/MainFrame/y"),(long)m_y);
+    cfg->Write(("/MainFrame/width"),(long)m_width);
+    cfg->Write(("/MainFrame/height"),(long)m_height);
+    cfg->Write(("/MainFrame/maximized"),(long)IsMaximized());
+    cfg->Write(("/MainFrame/SeparatorPosition"),
         (long)m_splitter->GetSashPosition());
 
     int cwidth = 0;
@@ -129,35 +129,35 @@ void MainFrame::SaveAppConfiguration()
         cwidth += m_vList->GetColumnWidth(i);
 
     for(int i = 0; i < LIST_COLUMNS; i++){
-        cfg->Write(wxString::Format(wxT("/DrivesList/width%d"),i),
+        cfg->Write(wxString::Format(("/DrivesList/width%d"),i),
             (double)m_vList->GetColumnWidth(i) / (double)cwidth
         );
     }
 
-    cfg->Write(wxT("/Language/Selected"),(long)g_locale->GetLanguage());
+    cfg->Write(("/Language/Selected"),(long)g_locale->GetLanguage());
 
-    cfg->Write(wxT("/Algorithm/RepeatAction"),m_repeat);
-    cfg->Write(wxT("/Algorithm/SkipRemovableMedia"),m_skipRem);
+    cfg->Write(("/Algorithm/RepeatAction"),m_repeat);
+    cfg->Write(("/Algorithm/SkipRemovableMedia"),m_skipRem);
 
     // save sorting parameters
     if(m_menuBar->FindItem(ID_SortByPath)->IsChecked()){
-        cfg->Write(wxT("/Algorithm/Sorting"),wxT("path"));
+        cfg->Write(("/Algorithm/Sorting"),("path"));
     } else if(m_menuBar->FindItem(ID_SortBySize)->IsChecked()){
-        cfg->Write(wxT("/Algorithm/Sorting"),wxT("size"));
+        cfg->Write(("/Algorithm/Sorting"),("size"));
     } else if(m_menuBar->FindItem(ID_SortByCreationDate)->IsChecked()){
-        cfg->Write(wxT("/Algorithm/Sorting"),wxT("c_time"));
+        cfg->Write(("/Algorithm/Sorting"),("c_time"));
     } else if(m_menuBar->FindItem(ID_SortByModificationDate)->IsChecked()){
-        cfg->Write(wxT("/Algorithm/Sorting"),wxT("m_time"));
+        cfg->Write(("/Algorithm/Sorting"),("m_time"));
     } else if(m_menuBar->FindItem(ID_SortByLastAccessDate)->IsChecked()){
-        cfg->Write(wxT("/Algorithm/Sorting"),wxT("a_time"));
+        cfg->Write(("/Algorithm/Sorting"),("a_time"));
     }
     if(m_menuBar->FindItem(ID_SortAscending)->IsChecked()){
-        cfg->Write(wxT("/Algorithm/SortingOrder"),wxT("asc"));
+        cfg->Write(("/Algorithm/SortingOrder"),("asc"));
     } else {
-        cfg->Write(wxT("/Algorithm/SortingOrder"),wxT("desc"));
+        cfg->Write(("/Algorithm/SortingOrder"),("desc"));
     }
 
-    cfg->Write(wxT("/Upgrade/Level"),
+    cfg->Write(("/Upgrade/Level"),
         (long)m_upgradeThread->m_level);
 }
 
@@ -166,9 +166,9 @@ void MainFrame::SaveAppConfiguration()
 // =======================================================================
 
 #define UD_AdjustOption(name) { \
-    if(!wxGetEnv(wxT("UD_") wxT(#name),NULL)) \
-        wxSetEnv(wxT("UD_") wxT(#name), \
-            wxString::Format(wxT("%u"),DEFAULT_##name)); \
+    if(!wxGetEnv(("UD_") (#name),NULL)) \
+        wxSetEnv(("UD_") (#name), \
+            wxString::Format(("%u"),DEFAULT_##name)); \
 }
 
 void MainFrame::ReadUserPreferences(wxCommandEvent& WXUNUSED(event))
@@ -177,37 +177,37 @@ void MainFrame::ReadUserPreferences(wxCommandEvent& WXUNUSED(event))
     * The program should be configurable
     * through the options.lua file only.
     */
-    wxUnsetEnv(wxT("UD_DBGPRINT_LEVEL"));
-    wxUnsetEnv(wxT("UD_DISABLE_REPORTS"));
-    wxUnsetEnv(wxT("UD_DRY_RUN"));
-    wxUnsetEnv(wxT("UD_EX_FILTER"));
-    wxUnsetEnv(wxT("UD_FILE_SIZE_THRESHOLD"));
-    wxUnsetEnv(wxT("UD_FRAGMENT_SIZE_THRESHOLD"));
-    wxUnsetEnv(wxT("UD_FRAGMENTATION_THRESHOLD"));
-    wxUnsetEnv(wxT("UD_FRAGMENTS_THRESHOLD"));
-    wxUnsetEnv(wxT("UD_FREE_COLOR_R"));
-    wxUnsetEnv(wxT("UD_FREE_COLOR_G"));
-    wxUnsetEnv(wxT("UD_FREE_COLOR_B"));
-    wxUnsetEnv(wxT("UD_GRID_COLOR_R"));
-    wxUnsetEnv(wxT("UD_GRID_COLOR_G"));
-    wxUnsetEnv(wxT("UD_GRID_COLOR_B"));
-    wxUnsetEnv(wxT("UD_GRID_LINE_WIDTH"));
-    wxUnsetEnv(wxT("UD_IN_FILTER"));
-    wxUnsetEnv(wxT("UD_LOG_FILE_PATH"));
-    wxUnsetEnv(wxT("UD_MAP_BLOCK_SIZE"));
-    wxUnsetEnv(wxT("UD_MINIMIZE_TO_SYSTEM_TRAY"));
-    wxUnsetEnv(wxT("UD_OPTIMIZER_FILE_SIZE_THRESHOLD"));
-    wxUnsetEnv(wxT("UD_REFRESH_INTERVAL"));
-    wxUnsetEnv(wxT("UD_SECONDS_FOR_SHUTDOWN_REJECTION"));
-    wxUnsetEnv(wxT("UD_SHOW_MENU_ICONS"));
-    wxUnsetEnv(wxT("UD_SHOW_PROGRESS_IN_TASKBAR"));
-    wxUnsetEnv(wxT("UD_SHOW_TASKBAR_ICON_OVERLAY"));
-    wxUnsetEnv(wxT("UD_SORTING"));
-    wxUnsetEnv(wxT("UD_SORTING_ORDER"));
-    wxUnsetEnv(wxT("UD_TIME_LIMIT"));
+    wxUnsetEnv(("UD_DBGPRINT_LEVEL"));
+    wxUnsetEnv(("UD_DISABLE_REPORTS"));
+    wxUnsetEnv(("UD_DRY_RUN"));
+    wxUnsetEnv(("UD_EX_FILTER"));
+    wxUnsetEnv(("UD_FILE_SIZE_THRESHOLD"));
+    wxUnsetEnv(("UD_FRAGMENT_SIZE_THRESHOLD"));
+    wxUnsetEnv(("UD_FRAGMENTATION_THRESHOLD"));
+    wxUnsetEnv(("UD_FRAGMENTS_THRESHOLD"));
+    wxUnsetEnv(("UD_FREE_COLOR_R"));
+    wxUnsetEnv(("UD_FREE_COLOR_G"));
+    wxUnsetEnv(("UD_FREE_COLOR_B"));
+    wxUnsetEnv(("UD_GRID_COLOR_R"));
+    wxUnsetEnv(("UD_GRID_COLOR_G"));
+    wxUnsetEnv(("UD_GRID_COLOR_B"));
+    wxUnsetEnv(("UD_GRID_LINE_WIDTH"));
+    wxUnsetEnv(("UD_IN_FILTER"));
+    wxUnsetEnv(("UD_LOG_FILE_PATH"));
+    wxUnsetEnv(("UD_MAP_BLOCK_SIZE"));
+    wxUnsetEnv(("UD_MINIMIZE_TO_SYSTEM_TRAY"));
+    wxUnsetEnv(("UD_OPTIMIZER_FILE_SIZE_THRESHOLD"));
+    wxUnsetEnv(("UD_REFRESH_INTERVAL"));
+    wxUnsetEnv(("UD_SECONDS_FOR_SHUTDOWN_REJECTION"));
+    wxUnsetEnv(("UD_SHOW_MENU_ICONS"));
+    wxUnsetEnv(("UD_SHOW_PROGRESS_IN_TASKBAR"));
+    wxUnsetEnv(("UD_SHOW_TASKBAR_ICON_OVERLAY"));
+    wxUnsetEnv(("UD_SORTING"));
+    wxUnsetEnv(("UD_SORTING_ORDER"));
+    wxUnsetEnv(("UD_TIME_LIMIT"));
 
     /* interpret options.lua file */
-    lua_State *L; int status; wxString error = wxT("");
+    lua_State *L; int status; wxString error = ("");
     wxFileName path(OPTIONSFILE);
     path.Normalize();
     if(!path.FileExists()){
@@ -229,13 +229,13 @@ void MainFrame::ReadUserPreferences(wxCommandEvent& WXUNUSED(event))
 
     status = luaL_dofile(L,path.GetFullPath().char_str());
     if(status != 0){
-        error += wxT("cannot interpret ") + path.GetFullPath();
+        error += ("cannot interpret ") + path.GetFullPath();
         etrace("%ls",error.wc_str());
         if(!lua_isnil(L,-1)){
             const char *msg = lua_tostring(L,-1);
             if(!msg) msg = "(error object is not a string)";
             etrace("%hs",msg);
-            error += wxString::Format(wxT("\n%hs"),msg);
+            error += wxString::Format(("\n%hs"),msg);
             lua_pop(L, 1);
         }
     }
@@ -261,14 +261,14 @@ done:
 
     // reset log file path
     wxString v;
-    if(wxGetEnv(wxT("UD_LOG_FILE_PATH"),&v)){
+    if(wxGetEnv(("UD_LOG_FILE_PATH"),&v)){
         wxFileName logpath(v); logpath.Normalize();
-        wxSetEnv(wxT("UD_LOG_FILE_PATH"),logpath.GetFullPath());
+        wxSetEnv(("UD_LOG_FILE_PATH"),logpath.GetFullPath());
     }
     ::udefrag_set_log_file_path();
 
     if(!error.IsEmpty()){
-        wxMessageDialog dlg(this,error,wxT("UltraDefrag"),
+        wxMessageDialog dlg(this,error,("UltraDefrag"),
             wxOK | wxICON_ERROR/* | wxSTAY_ON_TOP*/);
         dlg.ShowModal();
     }
@@ -359,16 +359,16 @@ done:
 
 void MainFrame::OnGuiOptions(wxCommandEvent& WXUNUSED(event))
 {
-    if(m_title->Find(wxT("Portable")) != wxNOT_FOUND)
-        Utils::ShellExec(wxT("notepad"),wxT("open"),OPTIONSFILE);
+    if(m_title->Find(("Portable")) != wxNOT_FOUND)
+        Utils::ShellExec(("notepad"),("open"),OPTIONSFILE);
     else
-        Utils::ShellExec(OPTIONSFILE,wxT("open"));
+        Utils::ShellExec(OPTIONSFILE,("open"));
 }
 
 void MainFrame::OnBootScript(wxCommandEvent& WXUNUSED(event))
 {
-    wxFileName script(wxT("%SystemRoot%\\system32\\ud-boot-time.cmd"));
-    script.Normalize(); Utils::ShellExec(script.GetFullPath(),wxT("edit"));
+    wxFileName script(("%SystemRoot%\\system32\\ud-boot-time.cmd"));
+    script.Normalize(); Utils::ShellExec(script.GetFullPath(),("edit"));
 }
 
 void MainFrame::ChooseFont(wxCommandEvent& WXUNUSED(event))

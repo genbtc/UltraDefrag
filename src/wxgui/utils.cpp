@@ -33,7 +33,7 @@
 // =======================================================================
 //                            Declarations
 // =======================================================================
-
+#include "wx/wxprec.h"
 #include "main.h"
 #include <stdexcept>
 
@@ -91,7 +91,7 @@ bool Utils::DownloadFile(const wxString& url, const wxString& path)
     * here because it may immediately delete
     * the file after its creation.
     */
-    wxDynamicLibrary lib(wxT("urlmon"));
+    wxDynamicLibrary lib(("urlmon"));
     wxDYNLIB_FUNCTION(URLMON_PROCEDURE,
         URLDownloadToFileW, lib);
 
@@ -127,19 +127,19 @@ void Utils::GaRequest(const wxString& path)
 
     wxString url;
 
-    url << wxT("http://www.google-analytics.com/__utm.gif?utmwv=4.6.5");
-    url << wxString::Format(wxT("&utmn=%u"),utmn);
-    url << wxT("&utmhn=ultradefrag.sourceforge.net");
-    url << wxString::Format(wxT("&utmhid=%u&utmr=-"),utmhid);
-    url << wxT("&utmp=") << path;
-    url << wxT("&utmac=");
-    url << wxT("UA-15890458-1");
-    url << wxString::Format(wxT("&utmcc=__utma%%3D%u.%u.%I64u.%I64u.%I64u.") \
-        wxT("50%%3B%%2B__utmz%%3D%u.%I64u.27.2.utmcsr%%3Dgoogle.com%%7Cutmccn%%3D") \
-        wxT("(referral)%%7Cutmcmd%%3Dreferral%%7Cutmcct%%3D%%2F%%3B"),
+    url << ("http://www.google-analytics.com/__utm.gif?utmwv=4.6.5");
+    url << wxString::Format(("&utmn=%u"),utmn);
+    url << ("&utmhn=ultradefrag.sourceforge.net");
+    url << wxString::Format(("&utmhid=%u&utmr=-"),utmhid);
+    url << ("&utmp=") << path;
+    url << ("&utmac=");
+    url << ("UA-15890458-1");
+    url << wxString::Format(("&utmcc=__utma%%3D%u.%u.%I64u.%I64u.%I64u.") \
+        ("50%%3B%%2B__utmz%%3D%u.%I64u.27.2.utmcsr%%3Dgoogle.com%%7Cutmccn%%3D") \
+        ("(referral)%%7Cutmcmd%%3Dreferral%%7Cutmcct%%3D%%2F%%3B"),
         cookie,random,today,today,today,cookie,today);
 
-    wxFileName target(wxT(".\\tmp"));
+    wxFileName target((".\\tmp"));
     target.Normalize();
     wxString dir(target.GetFullPath());
     if(!wxDirExists(dir)) wxMkdir(dir);
@@ -148,11 +148,11 @@ void Utils::GaRequest(const wxString& path)
     * Use a subfolder to prevent configuration files
     * reload (see ConfigThread::Entry() for details).
     */
-    dir << wxT("\\data");
+    dir << ("\\data");
     if(!wxDirExists(dir)) wxMkdir(dir);
 
     wxString file(dir);
-    file << wxT("\\__utm.gif");
+    file << ("\\__utm.gif");
     if(DownloadFile(url,file))
         wxRemoveFile(file);
 }
@@ -198,11 +198,11 @@ wxBitmap * Utils::LoadPngResource(const wchar_t *name)
 void Utils::OpenHandbook(const wxString& page, const wxString& anchor)
 {
     wxString path;
-    path = wxT("./handbook/") + page;
+    path = ("./handbook/") + page;
 
     if(wxFileExists(path)){
         path = wxGetCwd();
-        path.Replace(wxT("\\"),wxT("/"));
+        path.Replace(("\\"),("/"));
         if(!anchor.IsEmpty()){
             /*
             * wxLaunchDefaultBrowser
@@ -211,38 +211,38 @@ void Utils::OpenHandbook(const wxString& page, const wxString& anchor)
             * So, we're making a redirector
             * and opening it instead.
             */
-            wxString redirector(wxT("./handbook/"));
-            redirector << page << wxT(".") << anchor << wxT(".html");
+            wxString redirector(("./handbook/"));
+            redirector << page << (".") << anchor << (".html");
             if(!wxFileExists(redirector)){
                 wxTextFile file;
                 file.Create(redirector);
-                file.AddLine(wxT("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">"));
-                file.AddLine(wxT("<html><head><meta http-equiv=\"Refresh\" content=\"0; URL=") \
-                    + page + wxT("#") + anchor + wxT("\">"));
-                file.AddLine(wxT("</head><body>"));
-                file.AddLine(wxT("Redirecting... if the page has not been redirected automatically click "));
-                file.AddLine(wxT("<a href=\"") + page + wxT("#") + anchor + wxT("\">here</a>."));
-                file.AddLine(wxT("</body></html>"));
+                file.AddLine(("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">"));
+                file.AddLine(("<html><head><meta http-equiv=\"Refresh\" content=\"0; URL=") \
+                    + page + ("#") + anchor + ("\">"));
+                file.AddLine(("</head><body>"));
+                file.AddLine(("Redirecting... if the page has not been redirected automatically click "));
+                file.AddLine(("<a href=\"") + page + ("#") + anchor + ("\">here</a>."));
+                file.AddLine(("</body></html>"));
                 file.Write();
                 file.Close();
             }
-            path << wxT("/") << redirector;
+            path << ("/") << redirector;
         } else {
-            path << wxT("/handbook/") << page;
+            path << ("/handbook/") << page;
         }
     } else {
-        path = wxT("http://ultradefrag.sourceforge.net");
-        path << wxT("/handbook/") << page;
+        path = ("http://ultradefrag.sourceforge.net");
+        path << ("/handbook/") << page;
         if(!anchor.IsEmpty())
-            path << wxT("#") << anchor;
+            path << ("#") << anchor;
     }
 
     itrace("%ls",path.wc_str());
-    if(path.Left(4) == wxT("http")) {
+    if(path.Left(4) == ("http")) {
         if(!wxLaunchDefaultBrowser(path))
-            ShowError(wxT("Cannot open %ls!"),path.wc_str());
+            ShowError(("Cannot open %ls!"),path.wc_str());
     } else {
-        ShellExec(path,wxT("open"));
+        ShellExec(path,("open"));
     }
 }
 
@@ -296,7 +296,7 @@ void Utils::ShellExec(
             action.wc_str(), file.wc_str(),
             parameters.wc_str());
         if(!(flags & SHELLEX_SILENT)){
-            ShowError(wxT("Cannot %ls %ls %ls"),
+            ShowError(("Cannot %ls %ls %ls"),
                 action.wc_str(), file.wc_str(),
                 parameters.wc_str());
         }
@@ -371,9 +371,9 @@ int Utils::MessageDialog(wxFrame *parent,
     wxButton *cancel = new wxButton(&dlg,wxID_CANCEL,text2);
 
     // Burmese needs Padauk font for display
-    if(g_locale->GetCanonicalName().Left(2) == wxT("my")){
+    if(g_locale->GetCanonicalName().Left(2) == ("my")){
         wxFont textFont = msg->GetFont();
-        if(!textFont.SetFaceName(wxT("Padauk"))){
+        if(!textFont.SetFaceName(("Padauk"))){
             etrace("Padauk font needed for correct Burmese text display not found");
         } else {
             textFont.SetPointSize(textFont.GetPointSize() + 2);
@@ -423,7 +423,7 @@ void Utils::ShowError(const wxChar* format, ...)
     va_end(args);
 
     wxString log = _("Open &log");
-    log.Replace(wxT("&"),wxT(""));
+    log.Replace(("&"),(""));
 
     if(MessageDialog(g_mainFrame,_("Error!"),
       wxART_ERROR,log,_("&Cancel"),message) == wxID_OK)
@@ -442,7 +442,6 @@ wxString Utils::ConvertChartoWxString(char* input)
         wxec.Convert(input, buffer);
         winx_free(input);
         wxString temp(buffer);
-        delete buffer;
         return temp;
     #else
         return wxString(input.c_str());

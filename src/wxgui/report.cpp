@@ -33,7 +33,7 @@
 // =======================================================================
 //                            Declarations
 // =======================================================================
-
+#include "wx/wxprec.h"
 #include "main.h"
 
 // =======================================================================
@@ -44,20 +44,20 @@ void MainFrame::OnShowReport(wxCommandEvent& WXUNUSED(event))
 {
     if(m_busy) return;
 
-    wxFileName lua(wxT(".\\lua5.1a_gui.exe")); lua.Normalize();
+    wxFileName lua((".\\lua5.1a_gui.exe")); lua.Normalize();
 
     long i = m_vList->GetFirstSelected();
     while(i != -1){
         char letter = (char)m_vList->GetItemText(i)[0];
         wxString path = wxString::Format(
-            wxT(".\\reports\\fraglist_%c.luar"),
+            (".\\reports\\fraglist_%c.luar"),
             winx_tolower(letter));
         wxFileName report(path); report.Normalize();
         if(report.FileExists()){
             wxString args = wxString::Format(
-                wxT(".\\scripts\\udreportcnv.lua \"%ls\" . -v"),
+                (".\\scripts\\udreportcnv.lua \"%ls\" . -v"),
                 report.GetFullPath().wc_str());
-            Utils::ShellExec(lua.GetFullPath(),wxT("open"),args);
+            Utils::ShellExec(lua.GetFullPath(),("open"),args);
         }
         i = m_vList->GetNextSelected(i);
     }

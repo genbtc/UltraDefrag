@@ -33,7 +33,7 @@
 // =======================================================================
 //                            Declarations
 // =======================================================================
-
+#include "wx/wxprec.h"
 #include "main.h"
 
 #define EVENT_BUFFER_SIZE (64 * 1024) /* 64 KB */
@@ -54,13 +54,13 @@ void *CrashInfoThread::Entry()
     wxArrayString info;
 
     // get time stamp of the last processed event
-    wxFileConfig *cfg = new wxFileConfig(wxT(""),wxT(""),
-        wxT("crash-info.ini"),wxT(""),wxCONFIG_USE_RELATIVE_PATH);
-    DWORD last_time_stamp = (DWORD)cfg->Read(wxT("/LastProcessedEvent/TimeStamp"),0l);
+    wxFileConfig *cfg = new wxFileConfig((""),(""),
+        ("crash-info.ini"),(""),wxCONFIG_USE_RELATIVE_PATH);
+    DWORD last_time_stamp = (DWORD)cfg->Read(("/LastProcessedEvent/TimeStamp"),0l);
     DWORD new_time_stamp = last_time_stamp;
 
     // collect information on application crashes
-    HANDLE hLog = ::OpenEventLog(nullptr,wxT("Application"));
+    HANDLE hLog = ::OpenEventLog(nullptr,("Application"));
     if(!hLog){
         letrace("cannot open the Application event log");
         goto done;
@@ -101,7 +101,7 @@ void *CrashInfoThread::Entry()
                     // handle UltraDefrag GUI and command line tool crashes only
                     if(strstr(data,"ultradefrag.exe") || strstr(data,"udefrag.exe")){
                         dtrace("crashed in the past: %hs",data);
-                        wxString s; s.Printf(wxT("%hs"),data); s.Trim(); info.Add(s);
+                        wxString s; s.Printf(("%hs"),data); s.Trim(); info.Add(s);
                         if(rec->TimeGenerated > new_time_stamp)
                             new_time_stamp = rec->TimeGenerated;
                     }
@@ -116,22 +116,22 @@ void *CrashInfoThread::Entry()
 save_info:
     if(!g_mainFrame->CheckForTermination(1) && !info.IsEmpty()){
         wxTextFile log;
-        log.Create(wxT("crash-info.log"));
-        log.AddLine(wxT("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
-        log.AddLine(wxT("                                                                                "));
-        log.AddLine(wxT("         If this file contains the UltraDefrag crash information                "));
-        log.AddLine(wxT("           you can help to fix the bug which caused the crash                   "));
-        log.AddLine(wxT("           by submitting this information to the bug tracker:                   "));
-        log.AddLine(wxT("        http://sourceforge.net/tracker/?group_id=199532&atid=969870             "));
-        log.AddLine(wxT("                                                                                "));
-        log.AddLine(wxT("         However, ensure that your computer is virus free: malware              "));
-        log.AddLine(wxT("        might easily break something inside of your operating system            "));
-        log.AddLine(wxT("        and cause application crashes thereafter. Send us your report           "));
-        log.AddLine(wxT("        if you suspect the crash is caused by UltraDefrag itself and            "));
-        log.AddLine(wxT("                   not by a broken operating system.                            "));
-        log.AddLine(wxT("                                                                                "));
-        log.AddLine(wxT("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
-        log.AddLine(wxT("                                                                                "));
+        log.Create(("crash-info.log"));
+        log.AddLine(("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
+        log.AddLine(("                                                                                "));
+        log.AddLine(("         If this file contains the UltraDefrag crash information                "));
+        log.AddLine(("           you can help to fix the bug which caused the crash                   "));
+        log.AddLine(("           by submitting this information to the bug tracker:                   "));
+        log.AddLine(("        http://sourceforge.net/tracker/?group_id=199532&atid=969870             "));
+        log.AddLine(("                                                                                "));
+        log.AddLine(("         However, ensure that your computer is virus free: malware              "));
+        log.AddLine(("        might easily break something inside of your operating system            "));
+        log.AddLine(("        and cause application crashes thereafter. Send us your report           "));
+        log.AddLine(("        if you suspect the crash is caused by UltraDefrag itself and            "));
+        log.AddLine(("                   not by a broken operating system.                            "));
+        log.AddLine(("                                                                                "));
+        log.AddLine(("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"));
+        log.AddLine(("                                                                                "));
         for(int i = 0; i < (int)info.Count(); i++) log.AddLine(info[i]);
         log.Write();
         log.Close();
@@ -139,7 +139,7 @@ save_info:
 
     // open the file in default browser
     if(!g_mainFrame->CheckForTermination(1) && !info.IsEmpty()){
-        wxFileName file(wxT("./crash-info.log"));
+        wxFileName file(("./crash-info.log"));
         file.Normalize();
         wxString logpath = file.GetFullPath();
         if(!wxLaunchDefaultBrowser(logpath))
@@ -148,7 +148,7 @@ save_info:
 
     // save time stamp of the last processed event
     if(!g_mainFrame->CheckForTermination(1))
-        cfg->Write(wxT("/LastProcessedEvent/TimeStamp"),(long)new_time_stamp);
+        cfg->Write(("/LastProcessedEvent/TimeStamp"),(long)new_time_stamp);
 
 done:
     if(hLog) ::CloseEventLog(hLog);

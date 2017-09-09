@@ -32,6 +32,7 @@
 /**=========================================================================**
 ***                        Declarations                                     **
 ***=========================================================================**/
+#include "wx/wxprec.h"
 #include "main.h"
 #include "udefrag-internals_flags.h"
 //#include "../dll/udefrag/query.h" //definitions are defined in udefrag.dll's .h's
@@ -79,7 +80,7 @@ void MainFrame::InitQueryMenu()
 	
 	m_panel3->SetSizer( bSizer4 );
     bSizer4->Fit( m_panel3 );
-    m_notebook1->AddPage( m_panel3, wxT("Query"), false );   
+    m_notebook1->AddPage( m_panel3, ("Query"), false );   
 }
 
 /**=========================================================================**

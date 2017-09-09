@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <!--These properties are here, in the .targets file, as their definition depends on information not available when the .props file is inserted into the .vcxproj by NuGet.-->
+    <!--Unfortunately it doesn't look like NuGet will allow me to put these properties into a separate .props file, then <Import> that .props file here.-->
+    <!--I've learned that sometimes $(UseDebugLibraries) can be unset due to MSVC project upgrade, or hand modification. We need it, so define it if it is unset.-->
+    <UseDebugLibraries Condition="'$(UseDebugLibraries)'=='' And '$(RuntimeLibrary)'=='MultiThreadedDebug'">true</UseDebugLibraries>
+    <UseDebugLibraries Condition="'$(UseDebugLibraries)'=='' And '$(RuntimeLibrary)'=='MultiThreadedDebugDll'">true</UseDebugLibraries>
+    <WXDEBUGFLAG Condition="'$(UseDebugLibraries)'=='true'">d</WXDEBUGFLAG>
+    <WXDEBUGFLAG Condition="'$(UseDebugLibraries)'!='true'"/>
+    <!--I'm not sure if I should, at the moment couple the MSVC Project's Unicode setting completely to the wxWidget's library. Perhaps one or the other being ANSI is a desired case?
+    <WXUNICODEFLAG Condition="'$(CharacterSet)'=='Unicode'">u</WXUNICODEFLAG>
+    <WXUNICODEFLAG Condition="'$(CharacterSet)'!='Unicode'"/>-->
+	<novPlatformToolsetVersion Condition="$(PlatformToolsetVersion)!=''">$([System.Text.RegularExpressions.Regex]::Replace('$(PlatformToolsetVersion)','v',''))</novPlatformToolsetVersion>
+    <wxMSVC_VERSION Condition="Exists('$(wxWidgets)\lib\$(COMPILER_PREFIX)$(novPlatformToolsetVersion)$(ARCH_SUFFIX)_$(LIBTYPE_SUFFIX)')">$(novPlatformToolsetVersion)</wxMSVC_VERSION>
+  </PropertyGroup>
+  <ItemGroup>
+    <!--wxWidget application's dynamically-linked dependencies ideally should be available within the output directory, so that the exe can be directly ran from that folder; name them here-->
+    <!--TODO:Make WorkingDirectoryDependency exclude the un-linked wx libraries? Not possible using current msvc\wx\setup.h-->
+    <WorkingDirectoryDependency Include="$(wxWidgets)\lib\$(COMPILER_PREFIX)$(wxMSVC_VERSION)$(ARCH_SUFFIX)_$(LIBTYPE_SUFFIX)\*$(WXUNICODEFLAG)$(WXDEBUGFLAG)_*pdb" Condition="'$(LIBTYPE_SUFFIX)'=='dll'"/>
+    <WorkingDirectoryDependency Include="$(wxWidgets)\lib\$(COMPILER_PREFIX)$(wxMSVC_VERSION)$(ARCH_SUFFIX)_$(LIBTYPE_SUFFIX)\*$(WXUNICODEFLAG)$(WXDEBUGFLAG)_*$(LIBTYPE_SUFFIX)" Condition="'$(LIBTYPE_SUFFIX)'=='dll'"/>
+    <WorkingDirectoryDependency Include="$(wxWidgets)\lib\$(COMPILER_PREFIX)$(wxMSVC_VERSION)$(ARCH_SUFFIX)_$(LIBTYPE_SUFFIX)\*$(WXUNICODEFLAG)$(WXDEBUGFLAG)_*$(LIBTYPE_SUFFIX).manifest" Condition="'$(LIBTYPE_SUFFIX)'=='dll'"/>
+  </ItemGroup>
+  <Target BeforeTargets="ClCompile" Name="SetCreatePCH" Label="SetCreatePCH">
+    <!--This target sets this package's .cpp file to Create the PCH. If a different .cpp file has that flag, it won't include this package's .cpp file in the project.-->
+    <PropertyGroup>
+      <AlreadySetCreatePCH Condition="%(ClCompile.PrecompiledHeader)=='Create'">true</AlreadySetCreatePCH>
+      <tempPreprocessorDefinitions>%(ClCompile.PreprocessorDefinitions)</tempPreprocessorDefinitions>
+      <!--Will be true if the user defined NOPCH in active configuration-->
+      <UserDefinedNOPCH>$(tempPreprocessorDefinitions.Contains("NOPCH"))</UserDefinedNOPCH>
+    </PropertyGroup>
+    <!--Only insert wxWidgetsNuGetCreatePCH.cpp if user didn't define NOPCH and user didn't already set a .cpp file to create PCH-->
+    <ItemGroup Condition="'$(AlreadySetCreatePCH)'!='true' And '$(UserDefinedNOPCH)'!='true'">
+      <ClCompile Include="$(MSBuildThisFileDirectory)\wxWidgetsNuGetCreatePCH.cpp" Condition="'$(AlreadySetCreatePCH)'!='true' And '$(UserDefinedNOPCH)'!='true'">
+        <PrecompiledHeader>Create</PrecompiledHeader>
+      </ClCompile>
+    </ItemGroup>
+    <!--If user defined NOPCH, change all ClCompile files to not use PCH-->
+    <ItemGroup Condition="'$(UserDefinedNOPCH)'=='true'">
+      <Temp Include="@(ClCompile)"/>
+      <ClCompile Remove="@(ClCompile)"/>
+      <ClCompile Include="@(Temp)">
+        <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      </ClCompile>
+    </ItemGroup>
+  </Target>
+  <Target BeforeTargets="ClCompile" Name="BuildwxWidgets" Label="BuildwxWidgets" Condition="'$(BuildwxWidgets)'=='true'">
+    <!--Target compiles wxWidgets w/ VisualStudio's toolset. Probably won't work if VS is targeting differentnly versioned toolset (e.g. VS2012 using non-updated VS2010 project).-->
+    <PropertyGroup>
+      <VCBinPath>$(VSINSTALLDIR)\VC\bin\</VCBinPath>
+      <!--<VCBinPath>$(MSBuildProgramFiles32)\Microsoft Visual Studio $(VisualStudioVersion)\VC\bin\</VCBinPath>-->
+      <VCBinPath Condition="'$(Platform)'=='x64'">$(VCBinPath)amd64\</VCBinPath>
+      <VCVarsSuffix Condition="'$(Platform)'!='x64'">32</VCVarsSuffix>
+      <VCVarsSuffix Condition="'$(Platform)'=='x64'">64</VCVarsSuffix>
+      <!--Two different versions of nmake exist for 32bit & 64bit archs. The correct vcvars32.bat or vcvars64.bat should be called before nmake is called.-->
+      <BuildStr>call "$(VCBinPath)vcvars$(VCVarsSuffix).bat" &amp;&amp; "$(VCBinPath)nmake" -f makefile.vc USE_GDIPLUS=1</BuildStr>
+      <BuildStr Condition="'$(Platform)'=='x64'">$(BuildStr) TARGET_CPU=AMD64</BuildStr>
+      <BuildStr Condition="'$(LIBTYPE_SUFFIX)'=='lib'">$(BuildStr) SHARED=0</BuildStr>
+      <BuildStr Condition="'$(LIBTYPE_SUFFIX)'=='dll'">$(BuildStr) SHARED=1</BuildStr>
+      <BuildStr Condition="'$(WXDEBUGFLAG)'=='d'">$(BuildStr) BUILD=debug</BuildStr>
+      <BuildStr Condition="'$(WXDEBUGFLAG)'!='d'">$(BuildStr) BUILD=release</BuildStr>
+      <BuildStr Condition="'$(wxMSVC_VERSION)'!=''">$(BuildStr) COMPILER_PREFIX=vc$(wxMSVC_VERSION)</BuildStr>
+      <BuildStr Condition="'$(wxWidgetsBuildOptions)'!=''">$(BuildStr) $(wxWidgetsBuildOptions)</BuildStr>
+    </PropertyGroup>
+    <Message Condition="'$(PrintMSBuildVars)'=='true'" Text="VSINSTALLDIR: $(VSINSTALLDIR)"/>
+    <Message Condition="'$(PrintMSBuildVars)'=='true'" Text="PlatformToolset: $(PlatformToolset)"/>
+    <Message Condition="'$(PrintMSBuildVars)'=='true'" Text="VisualStudioVersion: $(VisualStudioVersion)"/>
+    <Message Text="BuildStr: $(BuildStr)"/>
+    <Exec WorkingDirectory="$(wxWidgets)\build\msw" Command="$(BuildStr)"/>
+  </Target>
+  <!--The next few targets print messages, illuminating the changes this package had made on the build process (useful to diagnose what is going wrong).-->
+  <Target BeforeTargets="ClCompile" Name="PrintwxWidgetsPathUndefinedMessage" Label="PrintwxWidgetsPathUndefinedMessage" Condition="'$(wxWidgets)'==''">
+    <Message Text="This project uses the wxWidgetsTemplate NuGet Package; either the WXWIN environmental variable must be defined, or the path to the wxWidgets library be defined in the project properties (in the 'Referenced Packages'->wxWidgets page)."/>
+  </Target>
+  <Target BeforeTargets="ClCompile" Name="PrintClCompileVars" Label="PrintClCompileVars" Condition="'$(PrintMSBuildVars)'=='true'">
+    <Message Condition="@(ClCompile-&gt;'%(AdditionalIncludeDirectories)')!=''" Text="ClCompile.ClCompileAdditionalIncludeDirectories: %(AdditionalIncludeDirectories)"/>
+    <Message Condition="@(ClCompile-&gt;'%(PreprocessorDefinitions)')!=''" Text="ClCompile.PreprocessorDefinitions: %(PreprocessorDefinitions)"/>
+  </Target>
+  <Target BeforeTargets="Link" Name="PrintLinkVars" Label="PrintLinkVars" Condition="'$(PrintMSBuildVars)'=='true'">
+    <Message Condition="@(Link-&gt;'%(AdditionalLibraryDirectories)')!=''" Text="Link.AdditionalLibraryDirectories: %(AdditionalLibraryDirectories)"/>
+    <Message Condition="@(Link-&gt;'%(AdditionalDependencies)')!=''" Text="Link.AdditionalDependencies: %(AdditionalDependencies)"/>
+  </Target>
+  <Target BeforeTargets="ResourceCompile" Name="PrintResourceCompileVars" Label="PrintResourceCompileVars" Condition="'$(PrintMSBuildVars)'=='true'">
+    <Message Condition="@(ResourceCompile-&gt;'%(AdditionalIncludeDirectories)')!=''" Text="ResourceCompile.AdditionalIncludeDirectories: %(AdditionalIncludeDirectories)"/>
+  </Target>
+  <Target AfterTargets="AfterBuild" Name="WorkingDirectoryDependencyCopy" Label="WorkingDirectoryDependencyCopy" Inputs="@(WorkingDirectoryDependency)" Outputs="@(WorkingDirectoryDependency-&gt;'$(OutDir)%(Filename)%(Extension)'">
+    <!--Copies dependencies (e.g. wxWidgets .dll files) to $(OutDir)-->
+    <Copy SourceFiles="@(WorkingDirectoryDependency)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" UseHardlinksIfPossible="true"/>
+  </Target>
+  <Target AfterTargets="AfterClean" Name="WorkingDirectoryDependencyClean" Label="WorkingDirectoryDependencyClean">
+    <!--Cleans out dependencies copied by WorkingDirectoryDependencyCopy Target-->
+    <Delete Files="@(WorkingDirectoryDependency-&gt;'$(OutDir)%(Filename)%(Extension)')"/>
+  </Target>
+</Project>

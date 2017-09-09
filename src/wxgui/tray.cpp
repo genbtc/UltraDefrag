@@ -33,7 +33,7 @@
 // =======================================================================
 //                            Declarations
 // =======================================================================
-
+#include "wx/wxprec.h"
 #include "main.h"
 
 // =======================================================================
@@ -42,11 +42,11 @@
 
 void MainFrame::SetSystemTrayIcon(const wxString& icon, const wxString& tooltip)
 {
-    if(CheckOption(wxT("UD_MINIMIZE_TO_SYSTEM_TRAY"))){
+    if(CheckOption(("UD_MINIMIZE_TO_SYSTEM_TRAY"))){
         wxIcon i = wxIcon(icon,wxBITMAP_TYPE_ICO_RESOURCE,g_iconSize,g_iconSize);
         if(!m_systemTrayIcon->SetIcon(i,tooltip)){
             etrace("system tray icon setup failed");
-            wxSetEnv(wxT("UD_MINIMIZE_TO_SYSTEM_TRAY"),wxT("0"));
+            wxSetEnv(("UD_MINIMIZE_TO_SYSTEM_TRAY"),("0"));
         }
     }
 }
@@ -123,14 +123,14 @@ void SystemTrayIcon::OnLeftButtonUp(wxTaskBarIconEvent& WXUNUSED(event))
 
 void MainFrame::AdjustSystemTrayIcon(wxCommandEvent& WXUNUSED(event))
 {
-    if(CheckOption(wxT("UD_MINIMIZE_TO_SYSTEM_TRAY"))){
+    if(CheckOption(("UD_MINIMIZE_TO_SYSTEM_TRAY"))){
         if(!m_systemTrayIcon->IsIconInstalled()){
-            wxString icon(wxT("tray"));
+            wxString icon(("tray"));
             if(m_busy){
-                if(m_paused) icon = wxT("tray_paused");
-                else icon = wxT("tray_running");
+                if(m_paused) icon = ("tray_paused");
+                else icon = ("tray_running");
             }
-            SetSystemTrayIcon(icon,wxT("UltraDefrag"));
+            SetSystemTrayIcon(icon,("UltraDefrag"));
             if(m_systemTrayIcon->IsIconInstalled()){
                 if(IsIconized()) Hide();
             }

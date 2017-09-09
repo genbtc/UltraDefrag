@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectSchemaDefinitions xmlns="clr-namespace:Microsoft.Build.Framework.XamlTypes;assembly=Microsoft.Build.Framework" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+  <Rule Name="wxWidgetsNuGetRule" PageTemplate="tool" DisplayName="Referenced Packages" Order="0">
+    <!--xmlns="http://schemas.microsoft.com/build/2009/properties"-->
+    <Rule.DataSource>
+      <DataSource Persistence="UserFile" ItemType="" Label="" HasConfigurationCondition="false"/>
+    </Rule.DataSource>
+    <Rule.Categories>
+      <Category Name="wxWidgetsOptions" DisplayName="wxWidgets"/>
+    </Rule.Categories>
+    <!--Variables in the property pages are lazily evaluated I think.-->
+    <StringProperty Category="wxWidgetsOptions" Subtype="folder" Name="wxWidgets" DisplayName="wxWidgets path" Description="wxWidgets root location."/>
+    <EnumProperty Category="wxWidgetsOptions" Name="LIBTYPE_SUFFIX" DisplayName="SHARED" Description="Use dynamically-linked-build of wxWidgets (*.dll) or statically-linked-build of wxWidgets (*.lib)?">
+      <EnumValue Name="dll" DisplayName="dynamically-linked-build (*.dll or *.so)"/>
+      <EnumValue Name="lib" DisplayName="statically-linked-build (*.lib)"/>
+    </EnumProperty>
+    <EnumProperty Category="wxWidgetsOptions" Name="wxTOOLKIT_PREFIX" DisplayName="wxTOOLKIT_PREFIX" Description="Target wxToolKit">
+      <EnumValue Name="msw" DisplayName="msw"/>
+      <EnumValue Name="mswuniv" DisplayName="mswuniv"/>
+      <EnumValue Name="gtk2" DisplayName="gtk2"/>
+    </EnumProperty>
+    <EnumProperty Category="wxWidgetsOptions" Name="wxMSVC_VERSION" DisplayName="wxMSVC_VERSION" Description="$(wxMSVC_VERSION_autodetect) is an attempt to deduce this setting automatically. Change this to what it should be if there are problems finding the approprate library directory (e.g. ./lib/vc100_x64_dll/).">
+      <EnumValue Name="60" DisplayName="60"/>
+      <EnumValue Name="70" DisplayName="70"/>
+      <EnumValue Name="71" DisplayName="71"/>
+      <EnumValue Name="80" DisplayName="80"/>
+      <EnumValue Name="90" DisplayName="90"/>
+      <EnumValue Name="100" DisplayName="100"/>
+      <EnumValue Name="110" DisplayName="110"/>
+      <EnumValue Name="120" DisplayName="120"/>
+      <EnumValue Name="130" DisplayName="130"/>
+    </EnumProperty>
+    <BoolProperty Category="wxWidgetsOptions" Name="PrintMSBuildVars" DisplayName="Print MS Build Variables during compile?" Description="For diagnosis into wxWidgets unresolved external errors, when enabled, during the build this prints the compile, link, and resource include directories, the preprocessor definitions, and prints the list of libraries linked to."/>
+    <BoolProperty Category="wxWidgetsOptions" Name="BuildwxWidgets" DisplayName="Build wxWidgets library?" Description="Builds wxWidgets library using options above. If target wxWidgets configuration is already built then disable this option to speed up compilation. Uses appropriate build options based off of this project (e.g. if 64 bit, then will build 64 bit wxWidgets)."/>
+    <StringProperty Category="wxWidgetsOptions" Name="wxWidgetsBuildOptions" DisplayName="Additional build options" Description="Additional build options to be used if building wxWidgets, such as 'MONOLITHIC=1 UNICODE=0 CPPFLAGS='/Dsomething=1 /O3''. If it doesn't rebuild wxWidgets after you added an option here, you may need to clean the target build first (by entering 'clean' here)."/>
+  </Rule>
+</ProjectSchemaDefinitions>

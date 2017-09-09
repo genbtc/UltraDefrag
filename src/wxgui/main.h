@@ -19,6 +19,7 @@
 //  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 //////////////////////////////////////////////////////////////////////////
+#include <wx/wxprec.h>
 
 #ifndef _UDEFRAG_GUI_MAIN_H_
 #define _UDEFRAG_GUI_MAIN_H_
@@ -28,13 +29,12 @@
 // =======================================================================
 #include <string>
 
-#include <wx/wxprec.h>
-
 #ifndef WX_PRECOMP
 	#include <wx/wx.h>
 	#include <wx/frame.h>
 #endif
-
+#include <wx/thread.h>  //Not included by wx/wxprec.h
+#include <wx/xml/xml.h> //Not included by wx/wxprec.h
 #include <wx/artprov.h>
 #include <wx/cmdline.h>
 #include <wx/confbase.h>
@@ -310,7 +310,7 @@ public:
     virtual bool OnInit();
     virtual int  OnExit();
     virtual void OnInitCmdLine(wxCmdLineParser& parser) {
-        parser.AddSwitch(wxT("s"),wxT("setup"),wxT("setup"));
+        parser.AddSwitch(("s"),("setup"),("setup"));
     }
 
     static void InitLocale();
@@ -793,7 +793,7 @@ public:
         const wxString& anchor = wxEmptyString);
     static bool SetProcessPriority(int priority);
     static void ShellExec(const wxString& file,
-        const wxString& action = wxT("open"),
+        const wxString& action = ("open"),
         const wxString& parameters = wxEmptyString,
         int show = SW_SHOW, int flags = 0);
     static void ShowError(const wxChar* format, ...);
@@ -833,7 +833,7 @@ public:
 
 #define UD_SetMenuIcon(id, icon) { \
     wxBitmap *pic; wxString string; \
-    string.Printf(wxT("%hs%u"),#icon,g_iconSize); \
+    string.Printf(("%hs%u"),#icon,g_iconSize); \
     pic = Utils::LoadPngResource(string.wc_str()); \
     if(pic) m_menuBar->FindItem(id)->SetBitmap(*pic); \
     delete pic; \

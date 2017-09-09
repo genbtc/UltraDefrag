@@ -33,7 +33,7 @@
 // =======================================================================
 //                            Declarations
 // =======================================================================
-
+#include "wx/wxprec.h"
 #include "main.h"
 
 // =======================================================================
@@ -72,22 +72,22 @@ void Log::DoLogRecord(wxLogLevel level,const wxChar *msg,time_t timestamp)
 void MainFrame::OnDebugLog(wxCommandEvent& WXUNUSED(event))
 {
     wxString logpath;
-    if(!wxGetEnv(wxT("UD_LOG_FILE_PATH"),&logpath)){
-        wxMessageBox(wxT("Logging to a file is turned off."),
-            wxT("Cannot open log file!"),wxOK | wxICON_HAND,this);
+    if(!wxGetEnv(("UD_LOG_FILE_PATH"),&logpath)){
+        wxMessageBox(("Logging to a file is turned off."),
+            ("Cannot open log file!"),wxOK | wxICON_HAND,this);
     } else {
         wxFileName file(logpath);
         file.Normalize();
         ::winx_flush_dbg_log(0);
         logpath = file.GetFullPath();
         if(!wxLaunchDefaultBrowser(logpath))
-            Utils::ShowError(wxT("Cannot open %ls!"),logpath.wc_str());
+            Utils::ShowError("Cannot open %ls!",logpath.wc_str());
     }
 }
 
 void MainFrame::OnDebugSend(wxCommandEvent& WXUNUSED(event))
 {
-    Utils::OpenHandbook(wxT("Troubleshooting.html"));
+    Utils::OpenHandbook(("Troubleshooting.html"));
 }
 
 /** @} */

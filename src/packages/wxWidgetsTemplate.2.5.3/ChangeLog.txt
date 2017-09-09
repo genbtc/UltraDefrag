@@ -1,0 +1,53 @@
+2.5.3
+Fixed and improved auto-detection of wxWidgets library include path.
+Now prints a message when wxWidgets library path is unresolvable (WXWIN not defined, nor is path defined in properties).
+2.5.2
+Had to rename .props and .targets files to match id.
+2.5.1
+Fixed changelog bug last version.
+2.5.0
+Added autodetection of wxWidgets library include path.
+Changed default linkage to dynamic-link.
+Removed dependence on Release/Debug named configurations.
+Renamed a bunch of files, moved some properties into the .targets file.
+Moved property pages to 'Referenced Packages' as other CoApp package property
+pages are in that location.
+Added clean target, to clean wxWidgets dlls that were hardlinked/copied to
+$(OutDir) directory.
+Removed _CRT_SECURE_NO_WARNINGS definition.
+Added ChangeLog.
+2.4.3
+Added readme.
+Indented xml files correctly.
+Updated PCH.
+2.4.2
+Removed duplicate _UNICODE preprocessor definition.
+Followed Ray Satiro's suggestions for WorkingDirectoryDependencyCopy.
+Fixed issue when using VisualStudio's stdafx PCH.
+2.4.1
+Added GUI box to allow addition any parameters to nmake
+(which builds wxWidgets).
+2.4.0
+Changed name of package to MS Visual Studio wxWidgets Helper.
+id is still wxWidgetsTemplate (Template is a misnomer for this package).
+2.3.0
+Fixed wxMSVC_VERSION linkage issue observed by Vadim Zeitlin.
+Made it possible to build wxWidgets in VS build process,
+to build project's wxWidgets dependency before the project code is handled
+(see new menu item in Common Properties of Project Properties).
+Fixed bug in BUILD=$(Configuration) handling.
+2.2.0
+Fixed wxMSVC_VERSION linkage issue. Made it possible to build wxWidgets in VS
+build process.
+2.1.0
+Fixed wording in property page.
+2.0.0
+Fixed wxMSVC_VERSION default.
+1.9.0
+Cleaned things up; NOPCH definition disables PCH usage.
+1.8.0
+[retry] Now supports mswuniv target.
+1.7.0
+Now supports mswuniv target.
+1.0.0
+.props and .targets file should be inserted to vcxproj file properly now.

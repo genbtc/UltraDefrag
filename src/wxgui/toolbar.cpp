@@ -33,7 +33,7 @@
 // =======================================================================
 //                            Declarations
 // =======================================================================
-
+#include "wx/wxprec.h"
 #include "main.h"
 
 // =======================================================================
@@ -42,7 +42,7 @@
 
 #define UD_MakeToolItem(id, icon) { \
     wxString string; \
-    string.Printf(wxT("%hs%u"),#icon,g_iconSize); \
+    string.Printf(("%hs%u"),#icon,g_iconSize); \
     wxBitmap *pic = Utils::LoadPngResource(string.wc_str()); \
     if(pic){ \
         wxImage img = pic->ConvertToImage(); \
@@ -54,7 +54,7 @@
 
 #define UD_MakeToolCheckItem(id, icon) { \
     wxString string; \
-    string.Printf(wxT("%hs%u"),#icon,g_iconSize); \
+    string.Printf(("%hs%u"),#icon,g_iconSize); \
     wxBitmap *pic = Utils::LoadPngResource(string.wc_str()); \
     if(pic){ \
         wxImage img = pic->ConvertToImage(); \

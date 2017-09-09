@@ -49,7 +49,7 @@
 /**=========================================================================**
 ***                        Declarations                                     **
 ***=========================================================================**/
-
+#include "wx/wxprec.h"
 #include "main.h"
 #include "udefrag-internals_flags.h"
 #include <algorithm>
@@ -149,9 +149,9 @@ void MainFrame::InitFilesList()
     m_filesListFont = new wxFont(m_filesList->GetFont());
 
     // set mono-space font for the list unless Burmese translation is selected
-    if(g_locale->GetCanonicalName().Left(2) != wxT("my")){
+    if(g_locale->GetCanonicalName().Left(2) != ("my")){
         wxFont font = m_filesList->GetFont();
-        if(font.SetFaceName(wxT("Lucida"))){
+        if(font.SetFaceName(("Lucida"))){
             font.SetPointSize(DPI(9));
             m_filesList->SetFont(font);
         }
@@ -209,12 +209,12 @@ void MainFrame::InitFilesList()
 */
 void MainFrame::InitPopupMenus()
 {
-	m_RClickPopupMenu1 = new wxMenu(wxT(""));
-	m_RClickPopupMenu1->Append(ID_RPOPMENU_OPEN_EXPLORER_1004, wxT("Open in Explorer"), wxT(""), wxITEM_NORMAL);
-	m_RClickPopupMenu1->Append(ID_RPOPMENU_COPY_CLIPBOARD_1005, wxT("Copy path to clipboard"), wxT(""), wxITEM_NORMAL);
-	m_RClickPopupMenu1->Append(ID_RPOPMENU_DEFRAG_SINGLE_1006, wxT("Defragment Now"), wxT(""), wxITEM_NORMAL);
-	m_RClickPopupMenu1->Append(ID_RPOPMENU_DEFRAG_MOVE2FRONT_1007, wxT("Move to Front of Drive"), wxT(""), wxITEM_NORMAL);
-	m_RClickPopupMenu1->Append(ID_RPOPMENU_DEFRAG_MOVE2END_1008, wxT("Move to End of Drive"), wxT(""), wxITEM_NORMAL);
+	m_RClickPopupMenu1 = new wxMenu((""));
+	m_RClickPopupMenu1->Append(ID_RPOPMENU_OPEN_EXPLORER_1004, ("Open in Explorer"), (""), wxITEM_NORMAL);
+	m_RClickPopupMenu1->Append(ID_RPOPMENU_COPY_CLIPBOARD_1005, ("Copy path to clipboard"), (""), wxITEM_NORMAL);
+	m_RClickPopupMenu1->Append(ID_RPOPMENU_DEFRAG_SINGLE_1006, ("Defragment Now"), (""), wxITEM_NORMAL);
+	m_RClickPopupMenu1->Append(ID_RPOPMENU_DEFRAG_MOVE2FRONT_1007, ("Move to Front of Drive"), (""), wxITEM_NORMAL);
+	m_RClickPopupMenu1->Append(ID_RPOPMENU_DEFRAG_MOVE2END_1008, ("Move to End of Drive"), (""), wxITEM_NORMAL);
 	//Last Item is "Move File to Drive *: ", created in vollist.cpp because it needs the list of drives.
 }
 
@@ -366,7 +366,7 @@ void FilesList::RClickOpenExplorer(wxCommandEvent& event)
     wxString itemtext = GetListItem().GetText();
     wxString xec;
     xec << L"/select,\"" << itemtext << L"\"";
-    Utils::ShellExec(wxT("explorer.exe"),wxT("open"),xec); //This OPENS the file itself using the default handler.    
+    Utils::ShellExec(("explorer.exe"),("open"),xec); //This OPENS the file itself using the default handler.    
 }
 
 void FilesList::OnItemRClick(wxListEvent& event)
@@ -482,7 +482,7 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
             
             item.col0 = (const wchar_t *)(file->path + 4); /* skip the 4 chars: \??\  */
 
-            item.col1 = wxString::Format(wxT("%d"),file->disp.fragments);
+            item.col1 = wxString::Format(("%d"),file->disp.fragments);
 
             int bpc = m_volinfocache.bytes_per_cluster;
             item.col2bytes = file->disp.clusters * bpc;
@@ -491,19 +491,19 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
             item.col2 = wxString::FromUTF8(filesize_hr);
 
             if(is_directory(file))
-                item.col3 = wxT("[DIR]");
+                item.col3 = ("[DIR]");
             else if(is_compressed(file))
-                item.col3 = wxT("Compressed");
+                item.col3 = ("Compressed");
             else if(is_essential_boot_file(file)) //needed a flag from udefrag-internals.h (should manually #define it and only it)
-                item.col3 = wxT("[BOOT]");
+                item.col3 = ("[BOOT]");
             else if(is_mft_file(file))
-                item.col3 = wxT("[MFT]");
+                item.col3 = ("[MFT]");
             else
-                item.col3 = wxT("");
+                item.col3 = ("");
             if(is_locked(file))
-                item.col4 = wxT("Locked");
+                item.col4 = ("Locked");
             else
-                item.col4 = wxT("");
+                item.col4 = ("");
 
             // ULONGLONG time is stored in how many of 100 nanoseconds (0.1 microseconds) or (0.0001 milliseconds) or 0.0000001 seconds.
             //WindowsTickToUnixSeconds() (alternate way. unused.)
@@ -519,7 +519,7 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
                 (int)lmt.hour,(int)lmt.minute,(int)lmt.second
             );
             lmtbuffer[sizeof(lmtbuffer) - 1] = 0; //terminate with a 0.
-            item.col5 = wxString::Format(wxT("%hs"),lmtbuffer);
+            item.col5 = wxString::Format(("%hs"),lmtbuffer);
 
             m_filesList->allitems.push_back(item);  //store item in virtual list's container.
             currentitem++;
