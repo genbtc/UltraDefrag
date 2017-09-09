@@ -9,7 +9,7 @@
     <!--Each appear to be re-evaluated during build: in VS2010 are re-evaluated on condition-param change, in VS2012 are re-evaluated at a time before they are used in the build.-->
     <wxWidgets Condition="'$(WXWIN)'!='' And $(wxWidgets)==''">$(WXWIN)</wxWidgets>
     <LIBTYPE_SUFFIX Condition="'$(LIBTYPE_SUFFIX)'==''">dll</LIBTYPE_SUFFIX>
-    <wxMSVC_VERSION Condition="'$(wxMSVC_VERSION)'==''"/>
+    <wxMSVC_VERSION Condition="'$(wxMSVC_VERSION)'==''">100</wxMSVC_VERSION>
     <BuildwxWidgets Condition="'$(BuildwxWidgets)'==''">false</BuildwxWidgets>
     <wxTOOLKIT_PREFIX Condition="'$(wxTOOLKIT_PREFIX)'==''">msw</wxTOOLKIT_PREFIX>
     <PrintMSBuildVars Condition="'$(PrintMSBuildVars)'==''">false</PrintMSBuildVars>
