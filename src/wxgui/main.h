@@ -293,7 +293,7 @@ public:
     StatThread() : wxThread(wxTHREAD_JOINABLE) { Create(); Run(); }
     ~StatThread() { Wait(); }
 
-    virtual void *Entry();
+	void *Entry() override;
 };
 
 class Log: public wxLog {
@@ -307,9 +307,11 @@ public:
 
 class App: public wxApp {
 public:
-    virtual bool OnInit();
-    virtual int  OnExit();
-    virtual void OnInitCmdLine(wxCmdLineParser& parser) {
+	bool OnInit() override;
+	int  OnExit() override;
+
+	void OnInitCmdLine(wxCmdLineParser& parser) override
+    {
         parser.AddSwitch("s","setup","setup");
     }
 
@@ -329,7 +331,7 @@ public:
     BtdThread() : wxThread(wxTHREAD_JOINABLE) { Create(); Run(); }
     ~BtdThread() { Wait(); }
 
-    virtual void *Entry();
+	void *Entry() override;
 };
 
 class ConfigThread: public wxThread {
@@ -337,7 +339,7 @@ public:
     ConfigThread() : wxThread(wxTHREAD_JOINABLE) { Create(); Run(); }
     ~ConfigThread() { Wait(); }
 
-    virtual void *Entry();
+	void *Entry() override;
 };
 
 class CrashInfoThread: public wxThread {
@@ -345,7 +347,7 @@ public:
     CrashInfoThread() : wxThread(wxTHREAD_JOINABLE) { Create(); Run(); }
     ~CrashInfoThread() { Wait(); }
 
-    virtual void *Entry();
+	void *Entry() override;
 };
 
 class JobThread: public wxThread {
@@ -355,7 +357,7 @@ public:
     }
     ~JobThread() { Wait(); }
 
-    virtual void *Entry();
+	void *Entry() override;
 
     bool m_launch;
     wxArrayString *m_volumes;
@@ -379,7 +381,7 @@ public:
     }
     ~ListThread() { Wait(); }
 
-    virtual void *Entry();
+	void *Entry() override;
 
     bool m_rescan;
 };
@@ -392,7 +394,7 @@ public:
     }
     ~QueryThread() { Wait(); }
 
-    virtual void *Entry();
+	void *Entry() override;
     
     void DisplayQueryResults(udefrag_query_parameters* qp);
     
@@ -417,7 +419,7 @@ public:
     }
     ~UpgradeThread() { Wait(); }
 
-    virtual void *Entry();
+	void *Entry() override;
 
     bool m_check;
     int m_level;
@@ -428,7 +430,7 @@ private:
 
 class SystemTrayIcon: public wxTaskBarIcon {
 public:
-    virtual wxMenu *CreatePopupMenu();
+	wxMenu *CreatePopupMenu() override;
 
     void OnMenuShowHide(wxCommandEvent& event);
     void OnMenuPause(wxCommandEvent& event);
@@ -456,22 +458,22 @@ public:
 
 class ListSortInfo{
 public:
-        ListSortInfo()
-        {
-            SortAscending = false;
-            Column = 1; //pre-sorted by Fragments.
-        }
+        ListSortInfo(): ListCtrl(nullptr)
+	{
+		SortAscending = false;
+		Column = 1; //pre-sorted by Fragments.
+	}
 
-        bool SortAscending;
-        int Column;
-        class FilesList *ListCtrl;
-
+	bool SortAscending;
+    int Column;
+    class FilesList *ListCtrl;
 };
 struct FilesListItem{
     wxString col0,col1,col2,col3,col4,col5;
     ULONGLONG col2bytes;
     long currindex;
 };
+//TODO: Dont do this here?
 #include <vector>
 typedef std::vector<FilesListItem> FilesListItems;
 
@@ -479,8 +481,12 @@ typedef std::vector<FilesListItem> FilesListItems;
 class FilesList: public wxListCtrl {
 public:
     FilesList(wxWindow* parent, long style)
-      : wxListCtrl(parent,wxID_ANY,
-        wxDefaultPosition,wxDefaultSize,style) {}
+		: wxListCtrl(parent, wxID_ANY,
+		             wxDefaultPosition, wxDefaultSize, style), currentlyselected(0),
+		  currently_being_workedon_filenames(nullptr), n_lastItem(0)
+	{
+	}
+
     ~FilesList() {}
     
     FilesListItems allitems;    //data container for virtual list
@@ -534,7 +540,7 @@ public:
     DECLARE_EVENT_TABLE()    
 protected:
     //overload required for virtual mode.
-    virtual wxString OnGetItemText(long item, long column) const;    
+	wxString OnGetItemText(long item, long column) const override;    
 private:
     
 };
@@ -544,6 +550,10 @@ public:
     ClusterMap(wxWindow* parent);
     ~ClusterMap();
 
+	/**
+     * \brief 
+     * \param event 
+     */
     void OnEraseBackground(wxEraseEvent& event);
     void OnPaint(wxPaintEvent& event);
 
@@ -575,7 +585,7 @@ public:
     MainFrame();
     ~MainFrame();
 
-    WXLRESULT MSWWindowProc(WXUINT msg,WXWPARAM wParam,WXLPARAM lParam);
+    WXLRESULT MSWWindowProc(WXUINT msg,WXWPARAM wParam,WXLPARAM lParam) override;
 
     bool CheckForTermination(int time);
 
@@ -629,6 +639,7 @@ public:
     void OnDiskProcessingFailure(wxCommandEvent& event);
     void OnJobCompletion(wxCommandEvent& event);
     void OnQueryCompletion(wxCommandEvent& event);  //genBTC query.cpp
+	void UD_UpdateMenuItemLabel(int id, wxString label, wxString accel) const;
     void OnLocaleChange(wxCommandEvent& event);
     void ReadUserPreferences(wxCommandEvent& event);
     void RedrawMap(wxCommandEvent& event);
@@ -828,8 +839,8 @@ public:
 }
 
 //from menu.cpp
-#define UD_AppendCheckItem(id) AppendCheckItem(id, wxEmptyString)
-#define UD_AppendRadioItem(id) AppendRadioItem(id, wxEmptyString)
+#define UD_AppendCheckItem(id,name) AppendCheckItem(id, name)
+#define UD_AppendRadioItem(id,name) AppendRadioItem(id, name)
 
 #define UD_SetMenuIcon(id, icon) { \
     wxBitmap *pic; wxString string; \

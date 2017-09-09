@@ -511,4 +511,23 @@ void Utils::createDirectoryRecursively(const std::wstring &directory) {
   }
 }
 
+/**
+ * @brief Create a filter-string from a single path.
+ * @param[in] itemtext the filename path.
+ */
+wxString Utils::makefiltertext(wxString itemtext)
+{
+    wxString filtertext;
+    filtertext << "\"" << itemtext << "\";";
+    return filtertext;
+}
+/**
+ * @brief Appends a path to an existing filter-string.
+ * @param[in] itemtext the new path to append
+ * @param[in,out] extfiltertext the existing filter-string.
+ */
+void Utils::extendfiltertext(wxString itemtext,wxString *extfiltertext)
+{
+    *extfiltertext << Utils::makefiltertext(itemtext);
+}
 /** @} */

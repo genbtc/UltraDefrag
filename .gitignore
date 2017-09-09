@@ -113,3 +113,7 @@ src/.vs/Udefrag-VS/v15/Solution.VC.db-wal
 src/dll/udefrag/Release/*.tlog
 *.tlog
 src/wxgui/Release/upgrade.asm
+src/Release/wx*.pdb
+src/wxgui/*.asm
+src/wxgui/vc100.idb
+src/wxgui/vc100.pdb

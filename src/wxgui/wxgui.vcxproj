@@ -46,7 +46,7 @@
     <GenerateManifest>false</GenerateManifest>
     <IncludePath>C:\Software\Boost165;$(IncludePath)</IncludePath>
     <ReferencePath>C:\Software\Boost165\lib32-msvc-14.1;$(ReferencePath)</ReferencePath>
-    <LibraryPath>C:\Software\Boost165\lib32-msvc-14.1;$(LibraryPath);$(SolutionDir)lua-lib</LibraryPath>
+    <LibraryPath>C:\Software\Boost165\lib32-msvc-14.1;$(LibraryPath);$(SolutionDir)lua-lib;$(SolutionDir)$(Configuration)</LibraryPath>
     <LinkIncremental>
     </LinkIncremental>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
@@ -73,8 +73,7 @@
     <ClCompile />
     <ClCompile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <MinimalRebuild>false</MinimalRebuild>
       <TreatWChar_tAsBuiltInType>
@@ -83,9 +82,8 @@
       </RuntimeTypeInfo>
       <PreprocessorDefinitions>wxMSVC_VERSION=100;_NO_CRT_STDIO_INLINE;DEBUG;_DEBUG;_WIN32;WIN32;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ShowIncludes>false</ShowIncludes>
-      <UseUnicodeForAssemblerListing>
-      </UseUnicodeForAssemblerListing>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <UseUnicodeForAssemblerListing>true</UseUnicodeForAssemblerListing>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ForceConformanceInForLoopScope />
@@ -98,10 +96,11 @@
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
       <AdditionalOptions>/GA %(AdditionalOptions)</AdditionalOptions>
       <CallingConvention />
-      <OmitFramePointers />
+      <OmitFramePointers>false</OmitFramePointers>
       <ProgramDataBaseFileName />
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile />
+      <CompileAsManaged>false</CompileAsManaged>
     </ClCompile>
     <ResourceCompile>
       <AdditionalIncludeDirectories>$(WXWIDGETSDIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -111,6 +110,9 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
+    <Manifest>
+      <VerboseOutput>false</VerboseOutput>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Link>
@@ -144,7 +146,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <UseUnicodeForAssemblerListing>
       </UseUnicodeForAssemblerListing>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <CompileAs>Default</CompileAs>
       <TreatWChar_tAsBuiltInType />
@@ -155,7 +157,7 @@
       <WarningLevel>Level3</WarningLevel>
       <FloatingPointModel>
       </FloatingPointModel>
-      <PreprocessorDefinitions>NDEBUG;_WIN32;WIN32;_WINDOWS;WINVER=0x0400;__WXMSW__;WXUSINGDLL;wxUSE_GUI=1;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
@@ -166,9 +168,10 @@
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
       <AdditionalOptions>/GA %(AdditionalOptions)</AdditionalOptions>
       <UseFullPaths>true</UseFullPaths>
-      <Optimization>Disabled</Optimization>
+      <Optimization>Full</Optimization>
       <OmitFramePointers />
       <ProgramDataBaseFileName />
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <AdditionalIncludeDirectories>$(WXWIDGETSDIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -178,6 +181,9 @@
     <ProjectReference>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
+    <Manifest>
+      <VerboseOutput>false</VerboseOutput>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ResourceCompile Include="wxgui.rc" />

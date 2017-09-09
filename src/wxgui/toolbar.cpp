@@ -59,7 +59,7 @@
     if(pic){ \
         wxImage img = pic->ConvertToImage(); \
         wxBitmap bmp(img.ConvertToGreyscale()); \
-        m_toolBar->AddCheckTool(id,wxEmptyString,*pic,bmp); \
+        m_toolBar->AddCheckTool(id,string,*pic,bmp); \
         delete pic; \
     } \
 }

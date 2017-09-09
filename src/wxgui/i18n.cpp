@@ -57,21 +57,23 @@ wxLocale *g_locale = nullptr;
     g_locale->AddLanguage(info);                          \
 }
 
-#define UD_UpdateMenuItemLabel(id,label,accel) { \
-    if(::strlen(accel)){ \
-        wxString ItemLabel = _(label); \
-        ItemLabel << ("\t") << (accel); \
-        m_menuBar->FindItem(id)->SetItemLabel(ItemLabel); \
-        if(m_toolBar->FindById(id)){ \
-            ItemLabel = _(label); \
-            ItemLabel << (" (") << (accel) << (")"); \
-            m_toolBar->SetToolShortHelp(id,ItemLabel); \
-        } \
-    } else { \
-        m_menuBar->FindItem(id)->SetItemLabel(_(label)); \
-        if(m_toolBar->FindById(id)) \
-            m_toolBar->SetToolShortHelp(id,_(label)); \
-    } \
+void MainFrame::UD_UpdateMenuItemLabel(int id,wxString label,wxString accel) const
+{
+	if (::strlen(accel)) {
+		wxString ItemLabel = _(label);
+		ItemLabel << ("t") << (accel);
+		m_menuBar->FindItem(id)->SetItemLabel(ItemLabel);
+		if (m_toolBar->FindById(id)) {
+			ItemLabel = _(label);
+			ItemLabel << (" (") << (accel) << (")");
+			m_toolBar->SetToolShortHelp(id, ItemLabel);
+		}
+	}
+	else {
+		m_menuBar->FindItem(id)->SetItemLabel(_(label));
+		if (m_toolBar->FindById(id))
+			m_toolBar->SetToolShortHelp(id, _(label));
+	}
 }
 
 void App::InitLocale()
@@ -89,9 +91,9 @@ void App::InitLocale()
 
     // get initial language selection
     int id = wxLANGUAGE_ENGLISH_US;
-    wxConfigBase *cfg = wxConfigBase::Get();
+	const auto cfg = wxConfigBase::Get();
     if(cfg->HasGroup("Language")){
-        id = (int)cfg->Read("/Language/Selected",id);
+        id = int(cfg->Read("/Language/Selected", id));
     } else {
         id = g_locale->GetSystemLanguage();
         if(id == wxLANGUAGE_UNKNOWN)
@@ -104,7 +106,7 @@ void App::InitLocale()
 void App::SetLocale(int id)
 {
     // apply language selection
-    g_locale->Init(id,wxLOCALE_CONV_ENCODING);
+    g_locale->Init(id);
     g_locale->AddCatalogLookupPathPrefix("locale");
 
     // locations for development

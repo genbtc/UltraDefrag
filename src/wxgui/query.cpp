@@ -118,7 +118,7 @@ void MainFrame::QueryClusters(wxCommandEvent& event){
     //set the Analysis Mode to SINGLE file mode.
     // This probably can't work for all queries, but is fast.
     wxSetEnv(L"UD_CUT_FILTER",filtertext);
-    m_queryThread->singlefile = TRUE;
+    m_queryThread->singlefile = true;
     m_queryThread->m_flags |= UD_JOB_CONTEXT_MENU_HANDLER;
 
     m_queryThread->m_querypath = (wchar_t *)itemtext.fn_str();

@@ -47,13 +47,13 @@ void MainFrame::InitMenu()
 {
     // create when done menu
     wxMenu *menuWhenDone = new wxMenu;
-    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneNone);
-    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneExit);
-    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneStandby);
-    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneHibernate);
-    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneLogoff);
-    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneReboot);
-    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneShutdown);
+    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneNone,"None");
+    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneExit,"Exit");
+    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneStandby,"Standby");
+    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneHibernate,"Hibernate");
+    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneLogoff,"Logoff");
+    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneReboot,"Reboot");
+    menuWhenDone->UD_AppendRadioItem(ID_WhenDoneShutdown,"Shutdown");
 
     // create action menu
     wxMenu *m_menuAction = new wxMenu;
@@ -62,14 +62,14 @@ void MainFrame::InitMenu()
     m_menuAction->Append(ID_QuickOpt);
     m_menuAction->Append(ID_FullOpt);
     m_menuAction->Append(ID_MftOpt);
-    m_menuAction->UD_AppendCheckItem(ID_Pause);
+    m_menuAction->UD_AppendCheckItem(ID_Pause,"Pause");
     m_menuAction->Append(ID_Stop);
     m_menuAction->AppendSeparator();
-    m_menuAction->UD_AppendCheckItem(ID_Repeat);
+    m_menuAction->UD_AppendCheckItem(ID_Repeat,"Repeat");
     m_menuAction->AppendSeparator();
     m_menuAction->Append(ID_ShowReport);
     m_menuAction->AppendSeparator();
-    m_menuAction->UD_AppendCheckItem(ID_SkipRem);
+    m_menuAction->UD_AppendCheckItem(ID_SkipRem,"Skip Removable");
     m_menuAction->Append(ID_Rescan);
     m_menuAction->AppendSeparator();
     m_menuAction->Append(ID_Repair);
@@ -139,8 +139,8 @@ void MainFrame::InitMenu()
         langArray.Sort();
 
         // divide list of languages to three columns
-        unsigned int breakDelta = (unsigned int)ceil((double) \
-            (langArray.Count() + langArray.Count() % 2 + 4) / 3);
+        unsigned int breakDelta = static_cast<unsigned int>( \
+			ceil(double(langArray.Count() + langArray.Count() % 2 + 4) / 3));
         unsigned int breakCnt = breakDelta - 4;
         itrace("languages: %d, break count: %d, delta: %d",
             langArray.Count(), breakCnt, breakDelta);
@@ -157,19 +157,19 @@ void MainFrame::InitMenu()
 
     // create boot configuration menu
     wxMenu *menuBootConfig = new wxMenu;
-    menuBootConfig->UD_AppendCheckItem(ID_BootEnable);
+    menuBootConfig->UD_AppendCheckItem(ID_BootEnable,"Boot D Enabled");
     menuBootConfig->Append(ID_BootScript);
 
     // create sorting configuration menu
     wxMenu *menuSortingConfig = new wxMenu;
-    menuSortingConfig->UD_AppendRadioItem(ID_SortByPath);
-    menuSortingConfig->UD_AppendRadioItem(ID_SortBySize);
-    menuSortingConfig->UD_AppendRadioItem(ID_SortByCreationDate);
-    menuSortingConfig->UD_AppendRadioItem(ID_SortByModificationDate);
-    menuSortingConfig->UD_AppendRadioItem(ID_SortByLastAccessDate);
+    menuSortingConfig->UD_AppendRadioItem(ID_SortByPath,"Sort By Path");
+    menuSortingConfig->UD_AppendRadioItem(ID_SortBySize,"Sort By Size");
+    menuSortingConfig->UD_AppendRadioItem(ID_SortByCreationDate,"Sort By Creation Date");
+    menuSortingConfig->UD_AppendRadioItem(ID_SortByModificationDate,"Sort By Modification Date");
+    menuSortingConfig->UD_AppendRadioItem(ID_SortByLastAccessDate,"Sort By Access Date");
     menuSortingConfig->AppendSeparator();
-    menuSortingConfig->UD_AppendRadioItem(ID_SortAscending);
-    menuSortingConfig->UD_AppendRadioItem(ID_SortDescending);
+    menuSortingConfig->UD_AppendRadioItem(ID_SortAscending,"Sort Ascending");
+    menuSortingConfig->UD_AppendRadioItem(ID_SortDescending,"Sort Descending");
 
     // create settings menu
     wxMenu *menuSettings = new wxMenu;
@@ -196,9 +196,9 @@ void MainFrame::InitMenu()
 
     // create upgrade menu
     wxMenu *menuUpgrade = new wxMenu;
-    menuUpgrade->UD_AppendRadioItem(ID_HelpUpgradeNone);
-    menuUpgrade->UD_AppendRadioItem(ID_HelpUpgradeStable);
-    menuUpgrade->UD_AppendRadioItem(ID_HelpUpgradeAll);
+    menuUpgrade->UD_AppendRadioItem(ID_HelpUpgradeNone,"Help Upgrade None");
+    menuUpgrade->UD_AppendRadioItem(ID_HelpUpgradeStable,"Help Upgrade Stable");
+    menuUpgrade->UD_AppendRadioItem(ID_HelpUpgradeAll,"Help Upgrade All");
     menuUpgrade->AppendSeparator();
     menuUpgrade->Append(ID_HelpUpgradeCheck);
 
@@ -256,12 +256,12 @@ void MainFrame::InitMenu()
     m_menuBar->FindItem(ID_Repeat)->Check(m_repeat);
     m_menuBar->FindItem(ID_SkipRem)->Check(m_skipRem);
 
-    int id = g_locale->GetLanguage();
+	const int id = g_locale->GetLanguage();
     wxMenuItem *item = m_menuBar->FindItem(ID_LocaleChange + id);
     if(item) item->Check(true);
 
     wxConfigBase *cfg = wxConfigBase::Get();
-    wxString sorting = cfg->Read("/Algorithm/Sorting","path");
+	const wxString sorting = cfg->Read("/Algorithm/Sorting","path");
     if(sorting == "path"){
         m_menuBar->FindItem(ID_SortByPath)->Check();
     } else if(sorting == "size"){
@@ -273,7 +273,7 @@ void MainFrame::InitMenu()
     } else if(sorting == "a_time"){
         m_menuBar->FindItem(ID_SortByLastAccessDate)->Check();
     }
-    wxString order = cfg->Read("/Algorithm/SortingOrder","asc");
+	const wxString order = cfg->Read("/Algorithm/SortingOrder","asc");
     if(order == "asc"){
         m_menuBar->FindItem(ID_SortAscending)->Check();
     } else {

@@ -794,7 +794,7 @@ fail:
 **/
 int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
 {
-    int result,i,file_color,new_color;
+	int result, i, file_color;// , new_color;
     ULONGLONG time,jobruntime,filelength,filesize,totalfilesize,writeposition;
     double overall_speed;
     char buffer[32],*headerstring;

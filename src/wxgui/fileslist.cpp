@@ -277,44 +277,25 @@ END_EVENT_TABLE()
 
 void FilesList::RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event)
 {
-    wxString itemtext = GetListItem().GetText();
+	wxString itemtext = GetListItem().GetText();
 
-    wchar_t letter = (wchar_t)(event.GetId() - 2000);
-    wchar_t *srcfilename = _wcsdup(itemtext.wc_str());
-    wchar_t *dstfilename = _wcsdup(itemtext.wc_str());
+	const wchar_t letter = wchar_t(event.GetId() - 2000);
+	wchar_t *srcfilename = _wcsdup(itemtext.wc_str());
+	wchar_t *dstfilename = _wcsdup(itemtext.wc_str());
 
-    dstfilename[0] = letter;
+	dstfilename[0] = letter;
 
-    wchar_t *dstpath = _wcsdup(dstfilename);
-    winx_path_remove_filename(dstpath);
+	wchar_t *dstpath = _wcsdup(dstfilename);
+	winx_path_remove_filename(dstpath);
 
-    Utils::createDirectoryRecursively(dstpath);
-    MoveFile(srcfilename,dstfilename);
-//    dtrace("srcfilename was %ws",srcfilename);
-//    dtrace("dstfilename was %ws",dstfilename);
-//    dtrace("dst path was %ws",dstpath);
-    delete srcfilename;    delete dstfilename;    delete dstpath;
+	Utils::createDirectoryRecursively(dstpath);
+	MoveFile(srcfilename, dstfilename);
+	//    dtrace("srcfilename was %ws",srcfilename);
+	//    dtrace("dstfilename was %ws",dstfilename);
+	//    dtrace("dst path was %ws",dstpath);
+	delete srcfilename;    delete dstfilename;    delete dstpath;
 }
 
-/**
- * @brief Create a filter-string from a single path.
- * @param[in] itemtext the filename path.
- */
-wxString Utils::makefiltertext(wxString itemtext)
-{
-    wxString filtertext;
-    filtertext << "\"" << itemtext << "\";";
-    return filtertext;
-}
-/**
- * @brief Appends a path to an existing filter-string.
- * @param[in] itemtext the new path to append
- * @param[in,out] extfiltertext the existing filter-string.
- */
-void Utils::extendfiltertext(wxString itemtext,wxString *extfiltertext)
-{
-    *extfiltertext << Utils::makefiltertext(itemtext);
-}
 void FilesList::RClickDefragMoveSingle(wxCommandEvent& event)
 {
     wxString filtertext;
@@ -330,7 +311,7 @@ void FilesList::RClickDefragMoveSingle(wxCommandEvent& event)
         i = GetNextSelected(i);
     }
     wxSetEnv("UD_CUT_FILTER",filtertext);
-    g_mainFrame->m_jobThread->singlefile = TRUE;
+    g_mainFrame->m_jobThread->singlefile = true;
     //Job.cpp @ MainFrame::OnJobCompletion @ Line 301-303 handles single-file mode.
     //Job.cpp @ MainFrame::OnJobCompletion @ Line 358-361 handles cleanup.
     //FilesList.cpp @ MainFrame::FilesPopulateList @ Line 370-380 handles list-item-removal.

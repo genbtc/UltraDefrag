@@ -139,8 +139,8 @@ int udefrag_starts_query(char volume_letter,udefrag_query_type query_type,int fl
         udefrag_query_progress_callback qpcb,udefrag_terminator t,udefrag_query_parameters qp,void *p)
 {
     udefrag_job_parameters jp;
-    udefrag_query_parameters qp_pass;
-    int result,delwaitcount,callback;
+    //udefrag_query_parameters qp_pass;
+	int result, delwaitcount;// , callback;
 
     /* initialize the job */
     memset(&jp,0,sizeof(udefrag_job_parameters));

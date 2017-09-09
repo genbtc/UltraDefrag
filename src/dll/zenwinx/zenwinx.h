@@ -307,6 +307,7 @@ void winx_sleep(int msec);
 #define WINDOWS_VISTA  60 /* and Server 2008 */
 #define WINDOWS_7      61 /* and Server 2008 R2 */
 #define WINDOWS_8      62 /* and Server 2012 */
+#define WINDOWS_10     63 
 int winx_get_os_version(void);
 
 wchar_t *winx_get_windows_directory(void);
@@ -327,6 +328,7 @@ void winx_destroy_mutex(HANDLE h);
 
 /* path.c */
 void winx_path_remove_extension(wchar_t *path);
+//Removes the file name from a path. Writable.
 void winx_path_remove_filename(wchar_t *path);
 void winx_path_extract_filename(wchar_t *path);
 wchar_t *winx_get_module_filename(void);

@@ -222,6 +222,7 @@ int App::OnExit()
     return wxApp::OnExit();
 }
 
+//This is the Actual equivalent Int Main() Entry point. follow the trail.
 IMPLEMENT_APP(App)
 
 // =======================================================================
@@ -234,8 +235,8 @@ IMPLEMENT_APP(App)
 MainFrame::MainFrame()
     :wxFrame(nullptr,wxID_ANY,"UltraDefrag")
 {
-    //_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );  
-    //_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );  
+    _CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );  
+    _CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );  
     g_mainFrame = this;
     m_vList = nullptr;
     m_cMap = nullptr;
@@ -353,7 +354,7 @@ MainFrame::MainFrame()
     // check the boot time defragmenter presence
     wxFileName btdFile(("%SystemRoot%\\system32\\defrag_native.exe"));
     btdFile.Normalize();
-    bool btd = btdFile.FileExists();
+	const bool btd = btdFile.FileExists();
     m_menuBar->FindItem(ID_BootEnable)->Enable(btd);
     m_menuBar->FindItem(ID_BootScript)->Enable(btd);
     m_toolBar->EnableTool(ID_BootEnable,btd);
@@ -367,13 +368,14 @@ MainFrame::MainFrame()
     }
 
     // launch threads for time consuming operations
-    m_btdThread = btd ? new BtdThread() : NULL;
+    if (btd) m_btdThread = new BtdThread();
+    else m_btdThread = nullptr;
     m_configThread = new ConfigThread();
     m_crashInfoThread = new CrashInfoThread();
 
-    wxConfigBase *cfg = wxConfigBase::Get();
-    int ulevel = (int)cfg->Read("/Upgrade/Level",1);
-    wxMenuItem *item = m_menuBar->FindItem(ID_HelpUpgradeNone + ulevel);
+	const auto cfg = wxConfigBase::Get();
+	const int ulevel = int(cfg->Read("/Upgrade/Level", 1));
+	auto item = m_menuBar->FindItem(ID_HelpUpgradeNone + ulevel);
     if(item) item->Check();
 
     m_upgradeThread = new UpgradeThread(ulevel);
@@ -432,7 +434,7 @@ MainFrame::~MainFrame()
  */
 bool MainFrame::CheckForTermination(int time)
 {
-    DWORD result = ::WaitForSingleObject(g_synchEvent,(DWORD)time);
+	const DWORD result = ::WaitForSingleObject(g_synchEvent,DWORD(time));
     if(result == WAIT_FAILED){
         letrace("synchronization failed");
         return true;
