@@ -64,10 +64,10 @@ void MainFrame::InitVolList()
 
     // adjust widths so all the columns will fit to the window
     int width = m_vList->GetClientSize().GetWidth();// - border*4;//genBTC
-    int width = this->GetClientSize().GetWidth() - borderx * 8;
+    //int width = this->GetClientSize().GetWidth() - borderx * 8;
     int lastColumnWidth = width;
     dtrace("INIT - client width ......... %d", width);
-    dtrace("INIT - border width ......... %d", borderx);
+    //dtrace("INIT - border width ......... %d", borderx);
 
     int format[] = {
         wxLIST_FORMAT_LEFT, wxLIST_FORMAT_LEFT,
@@ -129,7 +129,7 @@ void DrivesList::OnKeyDown(wxKeyEvent& event)
 void DrivesList::OnKeyUp(wxKeyEvent& event)
 {
     if(!g_mainFrame->m_busy){
-        // dtrace("Modifier: %d ... KeyCode: %d",
+/*         dtrace("Modifier: %d ... KeyCode: %d", \
  *             event.GetModifiers(), event.GetKeyCode());
  */
         switch(event.GetKeyCode()){
@@ -287,7 +287,7 @@ void MainFrame::OnListSize(wxSizeEvent& event)
     // scale list columns; avoid horizontal scrollbar appearance
     wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED,ID_AdjustListColumns);
     evt.SetInt(new_width);
-    if(new_width < old_width){
+    if(new_width < old_width)
         GetEventHandler()->ProcessEvent(evt);
     else
         GetEventHandler()->AddPendingEvent(evt);

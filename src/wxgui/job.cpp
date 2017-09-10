@@ -123,24 +123,29 @@ void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
     event->SetInt(letter); event->SetClientData((void *)cacheEntry);
     g_mainFrame->GetEventHandler()->QueueEvent(event);
 
-    if (pi->completion_status > 0) {
-    event = new wxCommandEvent(wxEVT_COMMAND_MENU_SELECTED,ID_UpdateVolumeStatus);
-    event->SetInt(letter); g_mainFrame->GetEventHandler()->QueueEvent(event);
-    QueueCommandEvent(g_mainFrame,ID_RedrawMap);
-    QueueCommandEvent(g_mainFrame,ID_UpdateStatusBar);
-        event.SetId(ID_PopulateFilesList); //populate the fragmented-files-list tab's listview.
-        event.SetInt(letter);
-        
-        wxPostEvent(g_mainFrame,event);
+	if (pi->completion_status > 0) {
+		pi->isfragfileslist = TRUE;
+		//g_jpPtr = pi->jp;   //set Global Pointer back to &jp->
+		cacheEntry->pi.fragmented_files_prb = pi->fragmented_files_prb;
+
+		//populate the fragmented-files-list tab's listview.
+		event = new wxCommandEvent(wxEVT_COMMAND_MENU_SELECTED, ID_PopulateFilesList);
+		event->SetInt(letter);
+		g_mainFrame->GetEventHandler()->QueueEvent(event);
         dtrace("Successfully sent Fragmented Files list over to MainFrame::FilesPopulateList()");
-        event.SetId(ID_UpdateVolumeStatus);//updates status column with "Analyzed.", etc (on finished)
-        wxPostEvent(g_mainFrame,event);
+		//updates status column with "Analyzed.", etc (on finished)
+		event = new wxCommandEvent(wxEVT_COMMAND_MENU_SELECTED, ID_UpdateVolumeStatus);
+		g_mainFrame->GetEventHandler()->QueueEvent(event);
         return; //shortcut past a redundant redrawmap and updatestatusbar
     }
     //dtrace("Updating Volume Status,Redrawing Map, and Updating StatusBar.");
     // update Volume status
-    wxPostEvent(g_mainFrame,event);
-    // Update Clustermap and Statusbar.
+	event = new wxCommandEvent(wxEVT_COMMAND_MENU_SELECTED, ID_UpdateVolumeStatus);
+	event->SetInt(letter);
+	g_mainFrame->GetEventHandler()->QueueEvent(event);
+	// Update Clustermap and Statusbar.
+	QueueCommandEvent(g_mainFrame, ID_RedrawMap);
+	QueueCommandEvent(g_mainFrame, ID_UpdateStatusBar);
     //after this, it finishes udefrag_start_job @ udefrag.c line 421.
     //after that, it goes back to line 182 of this file, and line 197 calls ID_UpdateVolumeInformation.
 }
@@ -384,8 +389,8 @@ void MainFrame::OnJobCompletion(wxCommandEvent& WXUNUSED(event))
     SetTaskbarProgressState(TBPF_NOPROGRESS);
 
     // shutdown when requested
-    if(!m_stopped) ProcessCommandEvent(this,ID_Shutdown);
-        ProcessCommandEvent(ID_Shutdown);
+    if(!m_stopped)
+        ProcessCommandEvent(this,ID_Shutdown);
 
     dtrace("The Job Has Completed Fully."); //Final Complete Message.
     //Handle cleanup of any single file defragmenting vars.

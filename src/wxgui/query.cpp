@@ -101,7 +101,7 @@ void MainFrame::QueryClusters(wxCommandEvent& event){
         itemtext = m_filesList->GetListItem().GetText();
         WxFilePickerCtrl1->SetPath(itemtext);
         
-        ProcessCommandEvent(ID_SelectProperDrive);
+        ProcessCommandEvent(this,ID_SelectProperDrive);
         long i = m_filesList->GetFirstSelected();
         while(i != -1){
             wxString selitem = m_filesList->GetItemText(i);
@@ -162,7 +162,7 @@ void* QueryThread::Entry()
                 etrace("Disk Processing Failure.");
                 g_mainFrame->WxTextCtrl1->AppendText(L"Error executing Query.");
             }
-            PostCommandEvent(g_mainFrame,ID_QueryCompletion);
+			QueueCommandEvent(g_mainFrame,ID_QueryCompletion);
             m_startquery = false;
         }
     }

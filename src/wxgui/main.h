@@ -888,23 +888,12 @@ public:
         m_toolBar->EnableTool(id,false); \
 }
 
-//from menu.cpp
-#define UD_AppendCheckItem(id,name) AppendCheckItem(id, name)
-#define UD_AppendRadioItem(id,name) AppendRadioItem(id, name)
-
 #define UD_SetMenuIcon(id, icon) { \
     wxBitmap *pic; wxString string; \
     string.Printf(("%hs%u"),#icon,g_iconSize); \
     pic = Utils::LoadPngResource(string.wc_str()); \
     if(pic) m_menuBar->FindItem(id)->SetBitmap(*pic); \
     delete pic; \
-}
-
-#define UD_SetMarginWidth(menu) { \
-    wxMenuItemList list = menu->GetMenuItems(); \
-    size_t count = list.GetCount(); \
-    for(size_t i = 0; i < count; i++) \
-        list.Item(i)->GetData()->SetMarginWidth(g_iconSize); \
 }
 
 // =======================================================================

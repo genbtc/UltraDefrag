@@ -82,12 +82,10 @@
       </RuntimeTypeInfo>
       <PreprocessorDefinitions>wxMSVC_VERSION=100;_NO_CRT_STDIO_INLINE;DEBUG;_DEBUG;_WIN32;WIN32;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ShowIncludes>false</ShowIncludes>
-      <UseUnicodeForAssemblerListing>true</UseUnicodeForAssemblerListing>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ForceConformanceInForLoopScope />
-      <AssemblerOutput>NoListing</AssemblerOutput>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <FloatingPointModel />
       <SDLCheck>false</SDLCheck>

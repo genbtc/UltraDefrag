@@ -210,7 +210,7 @@ bool App::OnInit()
 			langid = wxLANGUAGE_ENGLISH_US;
 	}
 	// enable i18n support (translations + defaults)
-    InitAndSetLocale(langid);
+    SetLocale(langid);
 
     // save report translation on setup
     wxString cmdLine(GetCommandLine());
@@ -331,22 +331,28 @@ MainFrame::MainFrame()
     ReadAppConfiguration();
     ProcessCommandEvent(this,ID_ReadUserPreferences);
 
-    // set main window title
-    wxString instdir;
-    if(wxGetEnv(wxT("UD_INSTALL_DIR"),&instdir)){
-        wxFileName path(wxGetCwd()); path.Normalize();
-        wxString cd = path.GetFullPath();
-        itrace("current directory: %ls",ws(cd));
-        itrace("installation directory: %ls",ws(instdir));
-        if(cd.CmpNoCase(instdir) == 0){
-        m_title = new wxString(VERSIONINTITLE);
-    } else {
-        itrace("current directory differs from installation location, so it is portable");
-        itrace("current directory: %ls",cd.wc_str());
-        wxSetEnv("UD_IS_PORTABLE","1");
-        m_title = new wxString(VERSIONINTITLE_PORTABLE);
-    }
-    ProcessCommandEvent(this,ID_SetWindowTitle);
+	// set main window title
+	wxString instdir;
+	if (wxGetEnv(wxT("UD_INSTALL_DIR"), &instdir)) {
+		wxFileName path(wxGetCwd()); path.Normalize();
+		wxString cd = path.GetFullPath();
+		itrace("current directory: %ls", ws(cd));
+		itrace("installation directory: %ls", ws(instdir));
+		if (cd.CmpNoCase(instdir) == 0) {
+			itrace("current directory matches "
+				"installation location, so it isn't portable");
+			m_title = new wxString(wxT(VERSIONINTITLE));
+		}
+		else {
+			itrace("current directory differs from "
+				"installation location, so it is portable");
+			m_title = new wxString(wxT(VERSIONINTITLE_PORTABLE));
+		}
+	}
+	else {
+		m_title = new wxString(wxT(VERSIONINTITLE_PORTABLE));
+	}
+	ProcessCommandEvent(this, ID_SetWindowTitle);
 
     // set main window size and position
     SetSize(m_width,m_height);
@@ -466,8 +472,8 @@ MainFrame::MainFrame()
     }
     ProcessCommandEvent(this,ID_AdjustSystemTrayIcon);
 
-    // set localized text
-    ProcessCommandEvent(this,ID_LocaleChange \
+	// set localized text
+	ProcessCommandEvent(this, ID_LocaleChange + g_locale->GetLanguage());
 
     // allow disk processing
     m_jobThread = new JobThread();

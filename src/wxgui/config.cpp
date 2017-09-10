@@ -371,17 +371,19 @@ void MainFrame::OnBootScript(wxCommandEvent& WXUNUSED(event))
 }
 
 void MainFrame::ChooseFont(wxCommandEvent& WXUNUSED(event))
-    wxFontDialog* dialog = new wxFontDialog(this);
-    if (dialog->ShowModal() == wxID_OK){
-        wxFontData fontDataOUT = dialog->GetFontData();  //Get "font data" from dialog.
-        wxFont font = fontDataOUT.GetChosenFont();
-        m_vList->SetFont(font);
-        m_vList->Refresh();
-        //ProcessCommandEvent(ID_AdjustListColumns);
-        m_filesList->SetFont(font);
-        m_filesList->Refresh();
-        //ProcessCommandEvent(ID_AdjustFilesListColumns);
-        dtrace("Chose new Font = %ws,%d", font.GetFaceName().wc_str(),font.GetPointSize());
-    }
-    dialog->Destroy();
+{
+	wxFontDialog* dialog = new wxFontDialog(this);
+	if (dialog->ShowModal() == wxID_OK) {
+		wxFontData fontDataOUT = dialog->GetFontData();  //Get "font data" from dialog.
+		wxFont font = fontDataOUT.GetChosenFont();
+		m_vList->SetFont(font);
+		m_vList->Refresh();
+		//ProcessCommandEvent(ID_AdjustListColumns);
+		m_filesList->SetFont(font);
+		m_filesList->Refresh();
+		//ProcessCommandEvent(ID_AdjustFilesListColumns);
+		dtrace("Chose new Font = %ws,%d", font.GetFaceName().wc_str(), font.GetPointSize());
+	}
+	dialog->Destroy();
+}
 /** @} */

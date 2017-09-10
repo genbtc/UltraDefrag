@@ -58,22 +58,20 @@ wxLocale *g_locale = nullptr;
 }
 
 #define UD_UpdateMenuItemLabel(id,label,accel) { \
-{
-	if (::strlen(accel)) {
-		wxString ItemLabel = _(label);
-		ItemLabel << ("t") << (accel);
-		m_menuBar->FindItem(id)->SetItemLabel(ItemLabel);
-		if (m_toolBar->FindById(id)) {
-			ItemLabel = _(label);
-			ItemLabel << (" (") << (accel) << (")");
-			m_toolBar->SetToolShortHelp(id, ItemLabel);
-		}
-	}
-	else {
-		m_menuBar->FindItem(id)->SetItemLabel(_(label));
-		if (m_toolBar->FindById(id))
-			m_toolBar->SetToolShortHelp(id, _(label));
-	}
+    if(::strlen(accel)){ \
+        wxString ItemLabel = _(label); \
+        ItemLabel << wxT("\t") << wxT(accel); \
+        m_menuBar->FindItem(id)->SetItemLabel(ItemLabel); \
+        if(m_toolBar->FindById(id)){ \
+            ItemLabel = _(label); \
+            ItemLabel << wxT(" (") << wxT(accel) << wxT(")"); \
+            m_toolBar->SetToolShortHelp(id,ItemLabel); \
+        } \
+    } else { \
+        m_menuBar->FindItem(id)->SetItemLabel(_(label)); \
+        if(m_toolBar->FindById(id)) \
+            m_toolBar->SetToolShortHelp(id,_(label)); \
+    } \
 }
 
 void App::ResetLocale()
@@ -131,7 +129,6 @@ void App::SetLocale(int id)
         (void)g_locale->Init(wxLANGUAGE_ENGLISH_US);
     }
 
-
 	//default location path:
 	g_locale->AddCatalogLookupPathPrefix("locale");
 
@@ -146,7 +143,7 @@ void App::SetLocale(int id)
  */
 void MainFrame::OnLocaleChange(wxCommandEvent& event)
 {
-    App::InitAndSetLocale(event.GetId() - ID_LocaleChange);
+    App::SetLocale(event.GetId() - ID_LocaleChange);
 
     // reset the language menu check mark, just in case
     // SetLocale failed to set the requested language

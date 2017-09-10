@@ -235,7 +235,7 @@ wxListItem FilesList::GetListItem(long index,long col)
 
 void FilesList::ReSelectProperDrive(wxCommandEvent& event)
 {
-    ProcessCommandEvent(ID_SelectProperDrive);
+    ProcessCommandEvent(this,ID_SelectProperDrive);
 }
 void MainFrame::ReSelectProperDrive(wxCommandEvent& event)
 {
@@ -300,7 +300,7 @@ void FilesList::RClickDefragMoveSingle(wxCommandEvent& event)
 {
     wxString filtertext;
     currently_being_workedon_filenames = new wxArrayString;
-    ProcessCommandEvent(ID_SelectProperDrive);
+    ProcessCommandEvent(this,ID_SelectProperDrive);
     long i = GetFirstSelected();
     while(i != -1){
         wxString selitem = GetItemText(i);
@@ -319,13 +319,13 @@ void FilesList::RClickDefragMoveSingle(wxCommandEvent& event)
     // 1. Every single file defrag still does a full analyze-pass.(udefrag-internals fault)
     switch(event.GetId()){
     case ID_RPOPMENU_DEFRAG_SINGLE_1006:
-        ProcessCommandEvent(ID_Defrag);
+        ProcessCommandEvent(this,ID_Defrag);
         break;
     case ID_RPOPMENU_DEFRAG_MOVE2FRONT_1007:
-        ProcessCommandEvent(ID_MoveToFront);
+        ProcessCommandEvent(this,ID_MoveToFront);
         break;
     case ID_RPOPMENU_DEFRAG_MOVE2END_1008:
-        ProcessCommandEvent(ID_MoveToEnd);
+        ProcessCommandEvent(this, ID_MoveToEnd);
         break;    
     default:
         break;
@@ -511,7 +511,7 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
     if (currentitem > 0){
         dtrace("Successfully finished with the Populate List Loop");
         m_filesList->SetItemCount(m_filesList->allitems.size());   //set new virtual-list size.        
-        PostCommandEvent(this,ID_AdjustFilesListColumns);
+        ProcessCommandEvent(this,ID_AdjustFilesListColumns);
     }
     else if (!something_removed)
         dtrace("Populate List Loop Did not run, no files were added.");

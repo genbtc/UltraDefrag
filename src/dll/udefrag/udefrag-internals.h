@@ -20,12 +20,12 @@
 #ifndef _UDEFRAG_INTERNALS_H_
 #define _UDEFRAG_INTERNALS_H_
 
-#include "ntndk.h"
-#include "zenwinx.h"
+#include "../zenwinx/ntndk.h"
+#include "../zenwinx/zenwinx.h"
 
 #include "udefrag.h"
 
-#include "../include/version.h"
+#include "../../include/version.h"
 
 #define DEFAULT_COLOR DEFAULT_GRAY
 

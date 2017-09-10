@@ -35,7 +35,8 @@
 // =======================================================================
 #include "wx/wxprec.h"
 #include "main.h"
-
+#include <urlmon.h>
+#pragma comment(lib, "urlmon.lib")
 // =======================================================================
 //                         Auxiliary utilities
 // =======================================================================
@@ -109,19 +110,19 @@ void Utils::GaRequest(const wxString& path, const wxString& id)
     int random = (rand() << 16) + rand();
     __int64 today = (__int64)time(nullptr);
 
-    wxString url;
-    url << wxT("http://www.google-analytics.com/__utm.gif?utmwv=4.6.5");
-    url << wxString::Format(wxT("&utmn=%u"),utmn);
-    url << wxT("&utmhn=ultradefrag.sourceforge.net");
-    url << wxString::Format(wxT("&utmhid=%u&utmr=-"),utmhid);
-    url << wxT("&utmp=") << path;
-    url << wxT("&utmac=") << id;
-    url << wxString::Format(wxT("&utmcc=__utma%%3D%u.%u.%I64u.%I64u.%I64u.") \
-        "50%%3B%%2B__utmz%%3D%u.%I64u.27.2.utmcsr%%3Dgoogle.com%%7Cutmccn%%3D" \
-        "(referral)%%7Cutmcmd%%3Dreferral%%7Cutmcct%%3D%%2F%%3B",
-        cookie,random,today,today,today,cookie,today);
+	wxString url;
+	url << wxT("http://www.google-analytics.com/__utm.gif?utmwv=4.6.5");
+	url << wxString::Format(wxT("&utmn=%u"), utmn);
+	url << wxT("&utmhn=ultradefrag.sourceforge.net");
+	url << wxString::Format(wxT("&utmhid=%u&utmr=-"), utmhid);
+	url << wxT("&utmp=") << path;
+	url << wxT("&utmac=") << id;
+	url << wxString::Format(wxT("&utmcc=__utma%%3D%u.%u.%I64u.%I64u.%I64u.") \
+		wxT("50%%3B%%2B__utmz%%3D%u.%I64u.27.2.utmcsr%%3Dgoogle.com%%7Cutmccn%%3D") \
+		wxT("(referral)%%7Cutmcmd%%3Dreferral%%7Cutmcct%%3D%%2F%%3B"),
+		cookie, random, today, today, today, cookie, today);
 
-    itrace("downloading %ls",ws(url));
+	itrace("downloading %ls", ws(url));
 
     wchar_t file[MAX_PATH + 1]; file[MAX_PATH] = 0;
     HRESULT result = ::URLDownloadToCacheFileW(
@@ -133,9 +134,6 @@ void Utils::GaRequest(const wxString& path, const wxString& id)
     }
 
     (void)::DeleteFile(file);
-    wxString file(dir);
-    file << "\\__utm.gif";
-    if(DownloadFile(url,file))
 }
 
 /**
