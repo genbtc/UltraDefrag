@@ -53,14 +53,17 @@ void MainFrame::InitVolList()
     // set mono-space font for the list unless Burmese translation is selected
     if(g_locale->GetCanonicalName().Left(2) != "my"){
         wxFont font = m_vList->GetFont();
-        if(font.SetFaceName("Lucida Console")){
+        if(font.SetFaceName(wxT("Lucida Console"))){
             font.SetPointSize(DPI(9));
             m_vList->SetFont(font);
         }
     }
 
+    //account for the borders
+    //int border = wxSystemSettings::GetMetric(wxSYS_BORDER_X);//genBTC
+
     // adjust widths so all the columns will fit to the window
-    int borderx = wxSystemSettings::GetMetric(wxSYS_BORDER_X);
+    int width = m_vList->GetClientSize().GetWidth();// - border*4;//genBTC
     int width = this->GetClientSize().GetWidth() - borderx * 8;
     int lastColumnWidth = width;
     dtrace("INIT - client width ......... %d", width);
@@ -75,7 +78,7 @@ void MainFrame::InitVolList()
     for(int i = 0; i < LIST_COLUMNS - 1; i++) {
         int w = m_w[i] = (int)floor(m_r[i] * width);
         m_vList->InsertColumn(i, wxEmptyString, format[i], w);
-        dtrace("column %d width ....... %d", i, w);
+        // dtrace("column %d width ....... %d", i, w);
         lastColumnWidth -= w;
     }
 
@@ -85,7 +88,7 @@ void MainFrame::InitVolList()
     m_vList->InsertColumn(LIST_COLUMNS - 1,
         wxEmptyString, format[LIST_COLUMNS - 1], w
     );
-    dtrace("column %d width ....... %d", LIST_COLUMNS - 1, w);
+    // dtrace("column %d width ....... %d", LIST_COLUMNS - 1, w);
 
     // attach drive icons
     int size = g_iconSize;
@@ -99,10 +102,10 @@ void MainFrame::InitVolList()
     // ensure that the list will cover integral number of items
     m_vListHeight = 0xFFFFFFFF; // prevent expansion of the list
     m_vList->InsertItem(0,"hi",0);
-    ProcessCommandEvent(ID_AdjustListHeight);
+    ProcessCommandEvent(this,ID_AdjustListHeight);
 
-    Connect(wxEVT_SIZE,wxSizeEventHandler(MainFrame::OnListSize), nullptr,this);
-    m_splitter->Connect(wxEVT_COMMAND_SPLITTER_SASH_POS_CHANGED,
+    GetEventHandler()->Connect(wxEVT_SIZE,wxSizeEventHandler(MainFrame::OnListSize),NULL,this);
+    m_splitter->GetEventHandler()->Connect(wxEVT_COMMAND_SPLITTER_SASH_POS_CHANGED,
         wxSplitterEventHandler(MainFrame::OnSplitChanged), nullptr,this);
 }
 
@@ -126,18 +129,18 @@ void DrivesList::OnKeyDown(wxKeyEvent& event)
 void DrivesList::OnKeyUp(wxKeyEvent& event)
 {
     if(!g_mainFrame->m_busy){
-/*         dtrace("Modifier: %d ... KeyCode: %d", \
+        // dtrace("Modifier: %d ... KeyCode: %d",
  *             event.GetModifiers(), event.GetKeyCode());
  */
         switch(event.GetKeyCode()){
         case WXK_RETURN:
         case WXK_NUMPAD_ENTER:
             if(event.GetModifiers() == wxMOD_NONE)
-                PostCommandEvent(g_mainFrame,ID_DefaultAction);
+                QueueCommandEvent(g_mainFrame,ID_DefaultAction);
             break;
         case 'A':
             if(event.GetModifiers() == wxMOD_CONTROL)
-                PostCommandEvent(g_mainFrame,ID_SelectAll);
+                QueueCommandEvent(g_mainFrame,ID_SelectAll);
             break;
         default:
             break;
@@ -149,7 +152,7 @@ void DrivesList::OnKeyUp(wxKeyEvent& event)
 void DrivesList::OnMouse(wxMouseEvent& event)
 {
     if(!g_mainFrame->m_busy){
-            PostCommandEvent(g_mainFrame,ID_DefaultAction);
+            QueueCommandEvent(g_mainFrame,ID_DefaultAction);
         event.Skip();
     }
 }
@@ -164,8 +167,8 @@ void DrivesList::OnSelectionChange(wxListEvent& event)
         JobsCacheEntry *currentJob = g_mainFrame->m_jobsCache[(int)letter];
         if(g_mainFrame->m_currentJob != currentJob){
             g_mainFrame->m_currentJob = currentJob;
-            PostCommandEvent(g_mainFrame,ID_RedrawMap);
-            PostCommandEvent(g_mainFrame,ID_UpdateStatusBar);
+            QueueCommandEvent(g_mainFrame,ID_RedrawMap);
+            QueueCommandEvent(g_mainFrame,ID_UpdateStatusBar);
         }
     }
     event.Skip();
@@ -193,22 +196,25 @@ void MainFrame::AdjustListColumns(wxCommandEvent& event)
     }
 
     if(changed){
-        dtrace("DETECTED COLUMNS CHANGED!");
         for(int i = 0; i < LIST_COLUMNS; i++)
             m_r[i] = (double)m_vList->GetColumnWidth(i) / (double)cwidth;
-    }else if (cwidth == width)
-        return;
+    }
+//genBTC - this stops dynamic column adjusting when you resize the windowframe
+//     else{
+//        return;
+//     }
 
     int lastColumnWidth = width;
 
+    // int border = wxSystemSettings::GetMetric(wxSYS_BORDER_X);
     // dtrace("border width ......... %d", border);
-    dtrace("client width ......... %d", width);
-    dtrace("total column width ... %d", cwidth);
+    // dtrace("client width ......... %d", width);
+    // dtrace("total column width ... %d", cwidth);
 
     for(int i = 0; i < LIST_COLUMNS - 1; i++) {
         int w = m_w[i] = (int)floor(m_r[i] * width);
         m_vList->SetColumnWidth(i, w);
-        dtrace("column %d width ....... %d", i, w);
+        // dtrace("column %d width ....... %d", i, w);
         lastColumnWidth -= w;
     }
 
@@ -217,7 +223,7 @@ void MainFrame::AdjustListColumns(wxCommandEvent& event)
     m_w[LIST_COLUMNS - 1] = w;
 
     m_vList->SetColumnWidth(LIST_COLUMNS - 1, w);
-    dtrace("column %d width ....... %d", LIST_COLUMNS - 1, w);
+    // dtrace("column %d width ....... %d", LIST_COLUMNS - 1, w);
 }
 
 void MainFrame::AdjustListHeight(wxCommandEvent& WXUNUSED(event))
@@ -263,9 +269,9 @@ void MainFrame::AdjustListHeight(wxCommandEvent& WXUNUSED(event))
 
 void MainFrame::OnSplitChanged(wxSplitterEvent& event)
 {
-    PostCommandEvent(this,ID_AdjustListHeight);
-    PostCommandEvent(this,ID_AdjustListColumns);
-    PostCommandEvent(this,ID_RedrawMap);
+    QueueCommandEvent(this,ID_AdjustListHeight);
+    QueueCommandEvent(this,ID_AdjustListColumns);
+    QueueCommandEvent(this,ID_RedrawMap);
 
     event.Skip();
 }
@@ -282,13 +288,9 @@ void MainFrame::OnListSize(wxSizeEvent& event)
     wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED,ID_AdjustListColumns);
     evt.SetInt(new_width);
     if(new_width < old_width){
-        ProcessEvent(evt);
-        //dtrace("Vols. new_width %d was < %d", new_width,old_width);
-    }
-    else if(new_width > old_width){
-        wxPostEvent(this,evt);
-        //dtrace("Vols. new_width %d was > %d", new_width,old_width);
-    }
+        GetEventHandler()->ProcessEvent(evt);
+    else
+        GetEventHandler()->AddPendingEvent(evt);
 
     event.Skip();
 }
@@ -301,8 +303,7 @@ void *ListThread::Entry()
 {
     while(!g_mainFrame->CheckForTermination(200)){
         if(m_rescan){
-            dtrace("About to populate drive list from ListThread Scanner in vollist.cpp");
-            PostCommandEvent(g_mainFrame,ID_PopulateList);
+            QueueCommandEvent(g_mainFrame,ID_PopulateList);
             m_rescan = false;
         }
     }
@@ -433,22 +434,24 @@ void MainFrame::PopulateList(wxCommandEvent& event)
     m_DriveSubMenu = new wxMenu();  //make the submenu of fileslist popupmenu.
 
     for(int i = 0; v[i].letter; i++){
+        wxString s = wxString::Format(
+            wxT("%c: [%hs]"),v[i].letter,
+            v[i].fsname
+        );
         wxString label;
         label.Printf("%-10ls %ls",
-            wxString::Format("%c: [%hs]",
-            v[i].letter,v[i].fsname).wc_str(),
-            v[i].label);
+            ws(s),v[i].label);
         m_vList->InsertItem(i,label);
 
         wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED,ID_UpdateVolumeInformation);
         volume_info *v_copy = new volume_info;
         memcpy(v_copy,&v[i],sizeof(volume_info));
         e.SetInt(i); e.SetClientData((void *)v_copy);
-        ProcessEvent(e);
+        GetEventHandler()->ProcessEvent(e);
 
         e.SetId(ID_UpdateVolumeStatus);
         e.SetInt((int)v[i].letter);
-        ProcessEvent(e);
+        GetEventHandler()->ProcessEvent(e);
 
         m_DriveSubMenu->Append(2000+(int)v[i].letter,label,L""); //Adding each drive to submenu
         // encode the drive-letter char as an int + 2000 in the EventID, and listen on a range of ID's from 2065-2090 (A-Z)
@@ -456,14 +459,14 @@ void MainFrame::PopulateList(wxCommandEvent& event)
     }
     m_RClickPopupMenu1->AppendSubMenu(m_DriveSubMenu,"Move file to Drive:");    //add the submenu to the menu.
 
-    ProcessCommandEvent(ID_AdjustListColumns);
+    ProcessCommandEvent(this,ID_AdjustListColumns);
 
     m_vList->Select(0);
     m_vList->Focus(0);
 
     m_currentJob = m_jobsCache[(int)v[0].letter];
-    ProcessCommandEvent(ID_RedrawMap);
-    ProcessCommandEvent(ID_UpdateStatusBar);
+    ProcessCommandEvent(this,ID_RedrawMap);
+    ProcessCommandEvent(this,ID_UpdateStatusBar);
 
     ::udefrag_release_vollist(v);
 }

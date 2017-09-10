@@ -40,27 +40,23 @@
 //                                Logging
 // =======================================================================
 
-void Log::DoLogRecord(wxLogLevel level,const wxChar *msg,time_t timestamp)
+void Log::DoLogTextAtLevel(wxLogLevel level, const wxString& msg)
 {
-    #define INFO_FMT  (I wxCharStringFmtSpec)
-    #define DEBUG_FMT (D wxCharStringFmtSpec)
-    #define ERROR_FMT (E wxCharStringFmtSpec)
-
     switch(level){
     case wxLOG_FatalError:
         // XXX: fatal errors pass by actually
-        ::winx_dbg_print(0,ERROR_FMT,msg);
-        ::winx_flush_dbg_log(0);
+        trace(E"%ls",ws(msg));
+        winx_flush_dbg_log(0);
         break;
     case wxLOG_Error:
-        ::winx_dbg_print(0,ERROR_FMT,msg);
+        trace(E"%ls",ws(msg));
         break;
     case wxLOG_Warning:
     case wxLOG_Info:
-        ::winx_dbg_print(0,DEBUG_FMT,msg);
+        trace(D"%ls",ws(msg));
         break;
     default:
-        ::winx_dbg_print(0,INFO_FMT,msg);
+        trace(I"%ls",ws(msg));
         break;
     }
 }
@@ -81,13 +77,13 @@ void MainFrame::OnDebugLog(wxCommandEvent& WXUNUSED(event))
         ::winx_flush_dbg_log(0);
         logpath = file.GetFullPath();
         if(!wxLaunchDefaultBrowser(logpath))
-            Utils::ShowError(Utils::ConvertChartoWxString("Cannot open %ls!"),logpath.wc_str());
+            Utils::ShowError(wxT("Cannot open %ls!"),ws(logpath));
     }
 }
 
 void MainFrame::OnDebugSend(wxCommandEvent& WXUNUSED(event))
 {
-    Utils::OpenHandbook("Troubleshooting.html");
+    Utils::OpenHandbook(wxT("Troubleshooting.html"));
 }
 
 /** @} */

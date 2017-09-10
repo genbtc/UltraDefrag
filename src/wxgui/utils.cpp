@@ -35,15 +35,6 @@
 // =======================================================================
 #include "wx/wxprec.h"
 #include "main.h"
-#include <stdexcept>
-
-typedef HRESULT (__stdcall *URLMON_PROCEDURE)(
-    /* LPUNKNOWN */ void *lpUnkcaller,
-    LPCWSTR szURL,
-    LPCWSTR szFileName,
-    DWORD dwReserved,
-    /*IBindStatusCallback*/ void *pBSC
-);
 
 // =======================================================================
 //                         Auxiliary utilities
@@ -84,22 +75,15 @@ bool Utils::CheckAdminRights(void)
  */
 bool Utils::DownloadFile(const wxString& url, const wxString& path)
 {
-    itrace("downloading %ls",url.wc_str());
+    itrace("downloading %ls",ws(url));
 
     /*
     * URLDownloadToCacheFileW cannot be used
     * here because it may immediately delete
     * the file after its creation.
     */
-    wxDynamicLibrary lib(("urlmon"));
-    wxDYNLIB_FUNCTION(URLMON_PROCEDURE,
-        URLDownloadToFileW, lib);
-
-    if(!pfnURLDownloadToFileW)
-        return false;
-
-    HRESULT result = pfnURLDownloadToFileW(
-        nullptr,url.wc_str(),path.wc_str(),0, nullptr);
+    HRESULT result = ::URLDownloadToFileW(
+        NULL,ws(url),ws(path),0,NULL);
     if(result != S_OK){
         etrace("URLDownloadToFile failed "
             "with code 0x%x",(UINT)result);
@@ -116,7 +100,7 @@ bool Utils::DownloadFile(const wxString& url, const wxString& path)
  * @details Based on http://code.google.com/apis/analytics/docs/
  * and http://www.vdgraaf.info/google-analytics-without-javascript.html
  */
-void Utils::GaRequest(const wxString& path)
+void Utils::GaRequest(const wxString& path, const wxString& id)
 {
     srand((unsigned int)time(nullptr));
     int utmn = (rand() << 16) + rand();
@@ -126,42 +110,39 @@ void Utils::GaRequest(const wxString& path)
     __int64 today = (__int64)time(nullptr);
 
     wxString url;
-
-    url << "http://www.google-analytics.com/__utm.gif?utmwv=4.6.5";
-    url << wxString::Format("&utmn=%u",utmn);
-    url << "&utmhn=ultradefrag.sourceforge.net";
-    url << wxString::Format("&utmhid=%u&utmr=-",utmhid);
-    url << "&utmp=" << path;
-    url << "&utmac=";
-    url << "UA-15890458-1";
-    url << wxString::Format("&utmcc=__utma%%3D%u.%u.%I64u.%I64u.%I64u." \
+    url << wxT("http://www.google-analytics.com/__utm.gif?utmwv=4.6.5");
+    url << wxString::Format(wxT("&utmn=%u"),utmn);
+    url << wxT("&utmhn=ultradefrag.sourceforge.net");
+    url << wxString::Format(wxT("&utmhid=%u&utmr=-"),utmhid);
+    url << wxT("&utmp=") << path;
+    url << wxT("&utmac=") << id;
+    url << wxString::Format(wxT("&utmcc=__utma%%3D%u.%u.%I64u.%I64u.%I64u.") \
         "50%%3B%%2B__utmz%%3D%u.%I64u.27.2.utmcsr%%3Dgoogle.com%%7Cutmccn%%3D" \
         "(referral)%%7Cutmcmd%%3Dreferral%%7Cutmcct%%3D%%2F%%3B",
         cookie,random,today,today,today,cookie,today);
 
-    wxFileName target((".\\tmp"));
-    target.Normalize();
-    wxString dir(target.GetFullPath());
-    if(!wxDirExists(dir)) wxMkdir(dir);
+    itrace("downloading %ls",ws(url));
 
-    /*
-    * Use a subfolder to prevent configuration files
-    * reload (see ConfigThread::Entry() for details).
-    */
-    dir << "\\data";
-    if(!wxDirExists(dir)) wxMkdir(dir);
+    wchar_t file[MAX_PATH + 1]; file[MAX_PATH] = 0;
+    HRESULT result = ::URLDownloadToCacheFileW(
+        NULL,ws(url),file,MAX_PATH,0,NULL);
+    if(result != S_OK){
+        etrace("URLDownloadToCacheFile failed "
+               "with code 0x%x",(UINT)result);
+        return;
+    }
 
+    (void)::DeleteFile(file);
     wxString file(dir);
     file << "\\__utm.gif";
     if(DownloadFile(url,file))
-        wxRemoveFile(file);
 }
 
 /**
  * @brief Creates a bitmap
  * from a png resource.
  */
-wxBitmap * Utils::LoadPngResource(const wchar_t *name)
+wxBitmap Utils::LoadPngResource(const wchar_t *name)
 {
     HRSRC resource = ::FindResource(nullptr,name,RT_RCDATA);
     if(!resource){
@@ -188,7 +169,7 @@ wxBitmap * Utils::LoadPngResource(const wchar_t *name)
     }
 
     wxMemoryInputStream is(data,size);
-    return new wxBitmap(wxImage(is,wxBITMAP_TYPE_PNG,-1),-1);
+    return wxBitmap(wxImage(is,wxBITMAP_TYPE_PNG,-1),-1);
 }
 
 /**
@@ -237,10 +218,10 @@ void Utils::OpenHandbook(const wxString& page, const wxString& anchor)
             path << "#" << anchor;
     }
 
-    itrace("%ls",path.wc_str());
+    itrace("%ls",ws(path));
     if(path.Left(4) == "http") {
         if(!wxLaunchDefaultBrowser(path))
-            ShowError(ConvertChartoWxString("Cannot open %ls!"),path.wc_str());
+            ShowError(wxT("Cannot open %ls!"),ws(path));
     } else {
         ShellExec(path,"open");
     }
@@ -284,23 +265,30 @@ void Utils::ShellExec(
     if(flags & SHELLEX_NOASYNC)
         se.fMask |= SEE_MASK_FLAG_DDEWAIT;
 
-    se.lpVerb = action.wc_str();
-    se.lpFile = file.wc_str();
-    if(!parameters.IsEmpty())
-        se.lpParameters = parameters.wc_str();
+    wchar_t *action_string = winx_wcsdup(ws(action));
+    wchar_t *file_string = winx_wcsdup(ws(file));
+    wchar_t *param_string = parameters.IsEmpty() ? NULL :
+        winx_wcsdup(ws(parameters));
 
+    se.lpVerb = action_string;
+    se.lpFile = file_string;
+    se.lpParameters = param_string;
     se.nShow = show;
 
     if(!ShellExecuteEx(&se)){
         letrace("cannot %ls %ls %ls",
-            action.wc_str(), file.wc_str(),
-            parameters.wc_str());
+            ws(action), ws(file),
+            ws(parameters));
         if(!(flags & SHELLEX_SILENT)){
             ShowError(ConvertChartoWxString("Cannot %ls %ls %ls"),
-                action.wc_str(), file.wc_str(),
-                parameters.wc_str());
+                ws(action), ws(file),
+                ws(parameters));
         }
     }
+
+    winx_free(action_string);
+    winx_free(file_string);
+    winx_free(param_string);
 }
 
 /**
@@ -319,7 +307,7 @@ void Utils::ShellExec(
 int Utils::MessageDialog(wxFrame *parent,
     const wxString& caption, const wxArtID& icon,
     const wxString& text1, const wxString& text2,
-    const wxChar* format, ...)
+    const wxString& format, ...)
 {
     wxString message;
     va_list args;
@@ -342,13 +330,13 @@ int Utils::MessageDialog(wxFrame *parent,
     HICON hIcon = nullptr;
     if(id){
         hIcon = ::LoadIcon(nullptr,id);
-        if(!hIcon) letrace("cannot load icon for \"%ls\"",icon.wc_str());
+        if(!hIcon) letrace("cannot load icon for \"%ls\"",ws(icon));
     }
 
     wxIcon messageIcon;
     if(hIcon){
-        wxSize size = wxGetHiconSize(hIcon);
-        messageIcon.SetSize(size.x, size.y);
+        int size = ::GetSystemMetrics(SM_CXICON);
+        messageIcon.SetSize(size, size);
         messageIcon.SetHICON((WXHICON)hIcon);
     } else {
         messageIcon = wxArtProvider::GetIcon(icon,wxART_MESSAGE_BOX);
@@ -414,7 +402,7 @@ int Utils::MessageDialog(wxFrame *parent,
  * @brief Shows an error and
  * invites to open log file.
  */
-void Utils::ShowError(const wxChar* format, ...)
+void Utils::ShowError(const wxString& format, ...)
 {
     wxString message;
     va_list args;
@@ -428,7 +416,7 @@ void Utils::ShowError(const wxChar* format, ...)
     if(MessageDialog(g_mainFrame,_("Error!"),
       wxART_ERROR,log,_("&Cancel"),message) == wxID_OK)
     {
-        PostCommandEvent(g_mainFrame,ID_DebugLog);
+        QueueCommandEvent(g_mainFrame,ID_DebugLog);
     }
 }
 

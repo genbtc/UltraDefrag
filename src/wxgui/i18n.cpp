@@ -57,7 +57,7 @@ wxLocale *g_locale = nullptr;
     g_locale->AddLanguage(info);                          \
 }
 
-void MainFrame::UD_UpdateMenuItemLabel(int id,wxString label,wxString accel) const
+#define UD_UpdateMenuItemLabel(id,label,accel) { \
 {
 	if (::strlen(accel)) {
 		wxString ItemLabel = _(label);
@@ -76,21 +76,61 @@ void MainFrame::UD_UpdateMenuItemLabel(int id,wxString label,wxString accel) con
 	}
 }
 
-void App::InitAndSetLocale(int id)
+void App::ResetLocale()
 {
+    // release previously set locale
+    delete g_locale;
+
+    // create a new one
 	g_locale = new wxLocale();
 
 	// add translations missing from wxWidgets
-	UD_LNG(wxUD_LANGUAGE_BOSNIAN, "bs", LANG_BOSNIAN, SUBLANG_BOSNIAN_BOSNIA_HERZEGOVINA_LATIN, wxLayout_LeftToRight, "Bosnian");
-	UD_LNG(wxUD_LANGUAGE_ILOKO, "ilo", 0, 0, wxLayout_LeftToRight, "Iloko");
-	UD_LNG(wxUD_LANGUAGE_KAPAMPANGAN, "pam", 0, 0, wxLayout_LeftToRight, "Kapampangan");
-	UD_LNG(wxUD_LANGUAGE_NORWEGIAN, "no", LANG_NORWEGIAN, SUBLANG_DEFAULT, wxLayout_LeftToRight, "Norwegian");
-	UD_LNG(wxUD_LANGUAGE_WARAY_WARAY, "war", 0, 0, wxLayout_LeftToRight, "Waray-Waray");
-	UD_LNG(wxUD_LANGUAGE_ACOLI, "ach", 0, 0, wxLayout_LeftToRight, "Acoli");
-	UD_LNG(wxUD_LANGUAGE_SINHALA_SRI_LANKA, "si_LK", 0, 0, wxLayout_LeftToRight, "Sinhala (Sri Lanka)");
+    UD_LNG(wxUD_LANGUAGE_ILOKO,             "ilo"  , 0             , 0              , wxLayout_LeftToRight, "Iloko");
+    UD_LNG(wxUD_LANGUAGE_KAPAMPANGAN,       "pam"  , 0             , 0              , wxLayout_LeftToRight, "Kapampangan");
+    UD_LNG(wxUD_LANGUAGE_NORWEGIAN,         "no"   , LANG_NORWEGIAN, SUBLANG_DEFAULT, wxLayout_LeftToRight, "Norwegian");
+    UD_LNG(wxUD_LANGUAGE_WARAY_WARAY,       "war"  , 0             , 0              , wxLayout_LeftToRight, "Waray-Waray");
+    UD_LNG(wxUD_LANGUAGE_ACOLI,             "ach"  , 0             , 0              , wxLayout_LeftToRight, "Acoli");
+    UD_LNG(wxUD_LANGUAGE_SINHALA_SRI_LANKA, "si_LK", 0             , 0              , wxLayout_LeftToRight, "Sinhala (Sri Lanka)");
+    UD_LNG(wxUD_LANGUAGE_SILESIAN,          "szl"  , 0             , 0              , wxLayout_LeftToRight, "Silesian");
+}
+void App::SetLocale(int id)
+{
+    ResetLocale();
 
-	// apply language selection
-	g_locale->Init(id);
+    // find the most suitable translation
+    if(id == wxLANGUAGE_UNKNOWN){
+        wxConfigBase *cfg = wxConfigBase::Get();
+        if(cfg->HasGroup(wxT("Language"))){
+            wxString ver = cfg->Read(
+                wxT("/Language/Version"),
+                wxT("2.8.12")
+            );
+            // don't accept it if version is older than 3.0.2
+            // as language identifiers got changed since then
+            // TODO: adjust on subsequent wxWidgets upgrades
+            if(ver != wxT("2.8.12")){
+                id = (int)cfg->Read(
+                    wxT("/Language/Selected"),
+                    (long)wxLANGUAGE_UNKNOWN
+                );
+            }
+        }
+    }
+
+    // if still not found, use system language
+    if(id == wxLANGUAGE_UNKNOWN)
+        id = g_locale->GetSystemLanguage();
+
+    // use English (US) as the last resort
+    if(id == wxLANGUAGE_UNKNOWN \
+      || id == wxLANGUAGE_ENGLISH)
+        id = wxLANGUAGE_ENGLISH_US;
+    // apply language selection
+    if(!g_locale->Init(id)){
+        ResetLocale();
+        (void)g_locale->Init(wxLANGUAGE_ENGLISH_US);
+    }
+
 
 	//default location path:
 	g_locale->AddCatalogLookupPathPrefix("locale");
@@ -108,12 +148,18 @@ void MainFrame::OnLocaleChange(wxCommandEvent& event)
 {
     App::InitAndSetLocale(event.GetId() - ID_LocaleChange);
 
+    // reset the language menu check mark, just in case
+    // SetLocale failed to set the requested language
+    int id = g_locale->GetLanguage();
+    wxMenuItem *menuItem = m_menuBar->FindItem(ID_LocaleChange + id);
+    if(menuItem) menuItem->Check(true);
+
     // update menu labels and tool bar tool-tips
 
     // main menu
     m_menuBar->SetMenuLabel(0, _("&Action"));
-    m_menuBar->SetMenuLabel(2, _("&Settings"));
-    m_menuBar->SetMenuLabel(3, _("&Help"));
+    m_menuBar->SetMenuLabel(1, _("&Settings"));
+    m_menuBar->SetMenuLabel(2, _("&Help"));
 
     // action menu
     UD_UpdateMenuItemLabel(ID_Analyze    , "&Analyze"              , "F5");
@@ -222,14 +268,14 @@ void MainFrame::OnLocaleChange(wxCommandEvent& event)
     for(int i = 0; i < m_vList->GetItemCount(); i++){
 	    const int letter = int(m_vList->GetItemText(i)[0]);
         wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,ID_UpdateVolumeStatus);
-        event.SetInt(letter); ProcessEvent(event);
+        event.SetInt(letter); GetEventHandler()->ProcessEvent(event);
     }
 
     // update task-bar icon overlay
-    ProcessCommandEvent(ID_AdjustTaskbarIconOverlay);
+    ProcessCommandEvent(this,ID_AdjustTaskbarIconOverlay);
 
     // update progress counters
-    ProcessCommandEvent(ID_UpdateStatusBar);
+    ProcessCommandEvent(this,ID_UpdateStatusBar);
 
     // update report translation
     App::SaveReportTranslation();
@@ -242,7 +288,7 @@ void MainFrame::OnLocaleChange(wxCommandEvent& event)
 #define UD_AddTranslationString(key, value) { \
     wxString v = value; \
     file.AddLine(wxString::Format( \
-        ("%hs%ls"), key, v.wc_str()) \
+        wxT("%hs%ls"), key, ws(v)) \
     ); \
 }
 
@@ -266,37 +312,32 @@ void App::SaveReportTranslation()
     file.Close();
 }
 
-#undef UD_AddTranslationString
-
 // =======================================================================
 //                            Event handlers
 // =======================================================================
 
 void MainFrame::OnLangTranslateOnline(wxCommandEvent& WXUNUSED(event))
 {
-    wxString url(("https://www.transifex.com/projects/p/ultradefrag/resource/main/"));
+    wxString url(wxT("https://www.transifex.com/projects/p/ultradefrag/resource/main/"));
     if(!wxLaunchDefaultBrowser(url))
-        Utils::ShowError(Utils::ConvertChartoWxString("Cannot open %ls!"),url.wc_str());
+        Utils::ShowError(wxT("Cannot open %ls!"),ws(url));
 }
 
 void MainFrame::OnLangTranslateOffline(wxCommandEvent& WXUNUSED(event))
 {
-    Utils::OpenHandbook("Translation.html");
+    Utils::OpenHandbook(wxT("Translation.html"));
 }
 
 void MainFrame::OnLangOpenFolder(wxCommandEvent& WXUNUSED(event))
 {
-    wxString AppPoDir(wxGetCwd() + "/po");
+    wxString AppPoDir(wxGetCwd() + wxT("/po"));
 
     if(!wxDirExists(AppPoDir)){
-        etrace("po dir not found: %ls",AppPoDir.wc_str());
+        etrace("po dir not found: %ls",ws(AppPoDir));
     } else {
         if(!wxLaunchDefaultBrowser(AppPoDir))
-            Utils::ShowError(Utils::ConvertChartoWxString("Cannot open %ls!"),AppPoDir.wc_str());
+            Utils::ShowError(wxT("Cannot open %ls!"),ws(AppPoDir));
     }
 }
-
-#undef UD_UpdateMenuItemLabel
-#undef UD_LNG
 
 /** @} */

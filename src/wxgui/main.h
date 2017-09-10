@@ -48,15 +48,15 @@
 #include <wx/intl.h>
 #include <wx/listctrl.h>
 #include <wx/mstream.h>
+#include <wx/settings.h>
 #include <wx/splitter.h>
-#include <wx/stdpaths.h>
 #include <wx/sysopt.h>
 #include <wx/taskbar.h>
 #include <wx/textfile.h>
 #include <wx/thread.h>
 #include <wx/toolbar.h>
 #include <wx/uri.h>
-
+#include <wx/notebook.h>//genbtc
 #include <wx/clipbrd.h>//genBTC (right-click menu) copy to clipboard
 #include <wx/encconv.h> //genbtc for encodings
 #include <wx/filepicker.h>//genBTC query tab 3
@@ -69,11 +69,6 @@
 #include <wx/sizer.h>//genbtc
 #include <wx/stattext.h>//genBTC query tab 3
 
-#if wxUSE_UNICODE
-#define wxCharStringFmtSpec "%ls"
-#else
-#define wxCharStringFmtSpec "%hs"
-#endif
 
 /*
 * Next definition is very important for mingw:
@@ -95,6 +90,28 @@ typedef enum {
 
 #ifndef _UDEFRAG_VERSION_H
 #define _UDEFRAG_VERSION_H
+#if defined(__GNUC__)
+extern "C" {
+HRESULT WINAPI URLDownloadToFileW(
+    /* LPUNKNOWN */ void *lpUnkcaller,
+    LPCWSTR szURL,
+    LPCWSTR szFileName,
+    DWORD dwReserved,
+    /*IBindStatusCallback*/ void *pBSC
+);
+
+HRESULT WINAPI URLDownloadToCacheFileW(
+    /* LPUNKNOWN */ void *lpUnkcaller,
+    LPCWSTR szURL,
+    LPWSTR szFileName,
+    DWORD cchFileName,
+    DWORD dwReserved,
+    /*IBindStatusCallback*/ void *pBSC
+);
+}
+#endif
+
+#include "../include/dbg.h"
 #include "../include/version.h"
 #endif
 #ifndef _UDEFRAG_INCLUDED_ZENWINX_H
@@ -112,6 +129,28 @@ typedef enum {
 
 #define MAX_UTF8_PATH_LENGTH (256 * 1024)
 #define LIST_COLUMNS 6 // number of columns in the list of volumes
+
+#define USAGE_TRACKING_ACCOUNT_ID wxT("UA-15890458-1")
+#define TEST_TRACKING_ACCOUNT_ID  wxT("UA-70148850-1")
+
+#ifndef _WIN64
+  #define TRACKING_ID wxT("gui-x86")
+#else
+ #if defined(_IA64_)
+  #define TRACKING_ID wxT("gui-ia64")
+ #else
+  #define TRACKING_ID wxT("gui-x64")
+ #endif
+#endif
+
+// append html extension to the tracking id, for historical reasons
+#define USAGE_TRACKING_PATH wxT("/appstat/") TRACKING_ID wxT(".html")
+
+#define TEST_TRACKING_PATH \
+    wxT("/") wxT(wxUD_ABOUT_VERSION) \
+    wxT("/") TRACKING_ID wxT("/")
+
+#define GA_REQUEST(type) ::Utils::GaRequest(type##_PATH, type##_ACCOUNT_ID)
 
 enum {
     // file menu identifiers
@@ -158,7 +197,6 @@ enum {
     ID_BootScript,
 
     ID_ChooseFont,
-
     ID_SortByPath,
     ID_SortBySize,
     ID_SortByCreationDate,
@@ -257,13 +295,13 @@ enum {
    Important: never change their order when adding new translations
    or the selection of the user will be broken */
 enum {
-    wxUD_LANGUAGE_BOSNIAN = wxLANGUAGE_USER_DEFINED+1,
-    wxUD_LANGUAGE_ILOKO,
+    wxUD_LANGUAGE_ILOKO = wxLANGUAGE_USER_DEFINED+1,
     wxUD_LANGUAGE_KAPAMPANGAN,
     wxUD_LANGUAGE_NORWEGIAN,
     wxUD_LANGUAGE_WARAY_WARAY,
     wxUD_LANGUAGE_ACOLI,
     wxUD_LANGUAGE_SINHALA_SRI_LANKA,
+    wxUD_LANGUAGE_SILESIAN,
     wxUD_LANGUAGE_LAST          // must always be last in the list
 };
 
@@ -271,17 +309,33 @@ enum {
 //                          Macro definitions
 // =======================================================================
 
+/*
+* Convert wxString to formats acceptable by vararg functions.
+* NOTE: Use it to pass strings to functions only as returned
+* objects may be temporary!
+*/
+#define ansi(s) ((const char *)s.mb_str())
+#define ws(s) ((const wchar_t *)s.wc_str())
+
 /* converts pixels from 96 DPI to the current one */
 #define DPI(x) ((int)((double)x * g_scaleFactor))
 
-#define PostCommandEvent(window,id) { \
+/*
+* Immediately processes a command event.
+* NOTE: Call it from the main thread only!
+*/
+#define ProcessCommandEvent(window,id) { \
     wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,id); \
-    wxPostEvent(window,event); \
+    window->GetEventHandler()->ProcessEvent(event); \
 }
 
-#define ProcessCommandEvent(id) { \
-    wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,id); \
-    ProcessEvent(event); \
+/*
+* Safely delivers a command event to the event queue.
+*/
+#define QueueCommandEvent(window,id) { \
+    window->GetEventHandler()->QueueEvent( \
+        new wxCommandEvent(wxEVT_COMMAND_MENU_SELECTED,id) \
+    ); \
 }
 
 // =======================================================================
@@ -301,8 +355,7 @@ public:
     Log()  { delete SetActiveTarget(this); };
     ~Log() { SetActiveTarget(nullptr); };
 
-    virtual void DoLogRecord(wxLogLevel level,
-        const wxChar *msg,time_t timestamp);
+    virtual void DoLogTextAtLevel(wxLogLevel level, const wxString& msg);
 };
 
 class App: public wxApp {
@@ -316,8 +369,13 @@ public:
 		parser.AddSwitch("s","setup","setup");
     }
 
-	static void InitAndSetLocale(int id);
+    /* wxLANGUAGE_UNKNOWN forces to use the most suitable locale */
+    static void InitLocale() { SetLocale(wxLANGUAGE_UNKNOWN); }
+    static void SetLocale(int id);
+    static void ResetLocale();
     static void SaveReportTranslation();
+
+    static void AttachDebugger();
 
 private:
     void Cleanup();
@@ -338,14 +396,6 @@ class ConfigThread: public wxThread {
 public:
     ConfigThread() : wxThread(wxTHREAD_JOINABLE) { Create(); Run(); }
     ~ConfigThread() { Wait(); }
-
-	void *Entry() override;
-};
-
-class CrashInfoThread: public wxThread {
-public:
-    CrashInfoThread() : wxThread(wxTHREAD_JOINABLE) { Create(); Run(); }
-    ~CrashInfoThread() { Wait(); }
 
 	void *Entry() override;
 };
@@ -596,6 +646,7 @@ public:
 
     void OnShowReport(wxCommandEvent& event);
 
+
     void OnRepeat(wxCommandEvent& event);
     
     void OnRepair(wxCommandEvent& event);
@@ -613,7 +664,6 @@ public:
     void OnBootScript(wxCommandEvent& event);
 
     void ChooseFont(wxCommandEvent& event);//genBTC fontpicker.
-
     // help menu handlers
     void OnHelpContents(wxCommandEvent& event);
     void OnHelpBestPractice(wxCommandEvent& event);
@@ -671,7 +721,6 @@ public:
 
     // common routines
     int  CheckOption(const wxString& name);
-    void SetSystemTrayIcon(const wxString& icon, const wxString& tooltip);
     void SetTaskbarProgressState(TBPFLAG flag);
     void SetTaskbarProgressValue(ULONGLONG completed, ULONGLONG total);
 
@@ -767,11 +816,12 @@ private:
     FilesList        *m_filesList;  //genBTC FilesList.cpp
     volume_info      m_volinfocache; //genBTC
 
+    wxBitmap m_repeatButtonBitmap;
+
     bool m_btdEnabled;
     BtdThread *m_btdThread;
 
     ConfigThread    *m_configThread;
-    CrashInfoThread *m_crashInfoThread;
     ListThread      *m_listThread;
     UpgradeThread   *m_upgradeThread;
 
@@ -794,12 +844,12 @@ class Utils {
 public:
     static bool CheckAdminRights(void);
     static bool DownloadFile(const wxString& url, const wxString& path);
-    static void GaRequest(const wxString& path);
-    static wxBitmap *LoadPngResource(const wchar_t *name);
+    static void GaRequest(const wxString& path, const wxString& id);
+    static wxBitmap LoadPngResource(const wchar_t *name);
     static int MessageDialog(wxFrame *parent,
         const wxString& caption, const wxArtID& icon,
         const wxString& text1, const wxString& text2,
-        const wxChar* format, ...);
+        const wxString& format, ...);
     static void OpenHandbook(const wxString& page,
         const wxString& anchor = wxEmptyString);
     static bool SetProcessPriority(int priority);
@@ -807,7 +857,7 @@ public:
         const wxString& action = "open",
         const wxString& parameters = wxEmptyString,
         int show = SW_SHOW, int flags = 0);
-    static void ShowError(const wxChar* format, ...);
+    static void ShowError(const wxString& format, ...);
     static wxString ConvertChartoWxString(char* input);
     static char* wxStringToChar(wxString input);
     static void DrawSingleRectangleBorder(HDC m_cacheDC,int xblock,int yblock,int line_width,int cell_size,HBRUSH border,HBRUSH infill);

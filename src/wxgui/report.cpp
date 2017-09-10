@@ -56,7 +56,7 @@ void MainFrame::OnShowReport(wxCommandEvent& WXUNUSED(event))
         if(report.FileExists()){
             wxString args = wxString::Format(
                 ".\\scripts\\udreportcnv.lua \"%ls\" . -v",
-                report.GetFullPath().wc_str());
+                ws(report.GetFullPath()));
             Utils::ShellExec(lua.GetFullPath(),"open",args);
         }
         i = m_vList->GetNextSelected(i);

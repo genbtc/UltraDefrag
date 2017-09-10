@@ -37,21 +37,6 @@
 #include "main.h"
 
 // =======================================================================
-//                           System tray icon
-// =======================================================================
-
-void MainFrame::SetSystemTrayIcon(const wxString& icon, const wxString& tooltip)
-{
-    if(CheckOption("UD_MINIMIZE_TO_SYSTEM_TRAY")){
-        wxIcon i = wxIcon(icon,wxBITMAP_TYPE_ICO_RESOURCE,g_iconSize,g_iconSize);
-        if(!m_systemTrayIcon->SetIcon(i,tooltip)){
-            etrace("system tray icon setup failed");
-            wxSetEnv("UD_MINIMIZE_TO_SYSTEM_TRAY","0");
-        }
-    }
-}
-
-// =======================================================================
 //                              Popup menu
 // =======================================================================
 
@@ -65,21 +50,20 @@ END_EVENT_TABLE()
 wxMenu *SystemTrayIcon::CreatePopupMenu()
 {
     wxMenu *menu = new wxMenu;
-    wxMenuItem *item;
-    if(g_mainFrame->IsIconized()){
-        item = menu->Append(ID_ShowHideMenu,_("Show"));
-    } else {
-        item = menu->Append(ID_ShowHideMenu,_("Hide"));
-    }
-    wxFont font = item->GetFont();
-    font.SetWeight(wxFONTWEIGHT_BOLD);
-    item->SetFont(font);
 
+    wxMenuItem *item = new wxMenuItem(NULL,ID_ShowHideMenu,
+        g_mainFrame->IsIconized() ? _("Show") : _("Hide"));
+
+    // somehow in wxWidgets 3.0 item->GetFont() fails
+    wxFont font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
+    font.MakeBold(); dtrace("%ls",ws(font.GetNativeFontInfoDesc()));
+
+    item->SetFont(font);
+    menu->Append(item);
     menu->AppendSeparator();
 
-    item = menu->Append(ID_PauseMenu,_("Pa&use"));
+    item = menu->AppendCheckItem(ID_PauseMenu,_("Pa&use"));
     if(g_mainFrame->m_paused) item->Check(true);
-
     menu->AppendSeparator();
 
     menu->Append(ID_ExitMenu,_("E&xit"));
@@ -104,36 +88,44 @@ void SystemTrayIcon::OnMenuShowHide(wxCommandEvent& WXUNUSED(event))
 
 void SystemTrayIcon::OnMenuPause(wxCommandEvent& WXUNUSED(event))
 {
-    PostCommandEvent(g_mainFrame,ID_Pause);
+    QueueCommandEvent(g_mainFrame,ID_Pause);
 }
 
 void SystemTrayIcon::OnMenuExit(wxCommandEvent& WXUNUSED(event))
 {
-    PostCommandEvent(g_mainFrame,ID_Exit);
+    QueueCommandEvent(g_mainFrame,ID_Exit);
 }
 
 void SystemTrayIcon::OnLeftButtonUp(wxTaskBarIconEvent& WXUNUSED(event))
 {
-    ProcessCommandEvent(ID_ShowHideMenu);
+    wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,ID_ShowHideMenu);
+    ProcessEvent(event);
 }
 
 // =======================================================================
 //                            Event handlers
 // =======================================================================
 
-void MainFrame::AdjustSystemTrayIcon(wxCommandEvent& WXUNUSED(event))
+void MainFrame::AdjustSystemTrayIcon(wxCommandEvent& event)
 {
     if(CheckOption("UD_MINIMIZE_TO_SYSTEM_TRAY")){
-        if(!m_systemTrayIcon->IsIconInstalled()){
-            wxString icon(("tray"));
-            if(m_busy){
-                if(m_paused) icon = "tray_paused";
-                else icon = "tray_running";
-            }
-            SetSystemTrayIcon(icon,"UltraDefrag");
-            if(m_systemTrayIcon->IsIconInstalled()){
-                if(IsIconized()) Hide();
-            }
+        wxString icon(wxT("tray"));
+        if(m_busy){
+            if(m_paused) icon << wxT("_paused");
+            else icon << wxT("_running");
+        }
+
+        wxString tooltip = event.GetString().IsEmpty() ? \
+            wxT("UltraDefrag") : event.GetString();
+
+        wxIcon i = wxIcon(icon,wxBITMAP_TYPE_ICO_RESOURCE,g_iconSize,g_iconSize);
+        if(!m_systemTrayIcon->SetIcon(i,tooltip)){
+            etrace("system tray icon setup failed");
+            wxSetEnv(wxT("UD_MINIMIZE_TO_SYSTEM_TRAY"),wxT("0"));
+        }
+
+        if(m_systemTrayIcon->IsIconInstalled()){
+            if(IsIconized()) Hide();
         }
     } else {
         if(m_systemTrayIcon->IsIconInstalled()){

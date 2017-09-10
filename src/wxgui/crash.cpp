@@ -2,7 +2,6 @@
 //
 //  UltraDefrag - a powerful defragmentation tool for Windows NT.
 //  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
-//  Copyright (c) 2010-2013 Stefan Pendl (stefanpe@users.sourceforge.net).
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -22,138 +21,181 @@
 
 /**
  * @file crash.cpp
- * @brief Crash information handling.
- * @addtogroup CrashInfo
+ * @brief Crash handling.
+ * @addtogroup CrashHandling
  * @{
  */
-
-// Ideas by Stefan Pendl <stefanpe@users.sourceforge.net>
-// and Dmitri Arkhangelski <dmitriar@gmail.com>.
 
 // =======================================================================
 //                            Declarations
 // =======================================================================
-#include "wx/wxprec.h"
+
+#include <signal.h>
 #include "main.h"
 
-#define EVENT_BUFFER_SIZE (64 * 1024) /* 64 KB */
+#define STATUS_FATAL_APP_EXIT        0x40000015
+#define STATUS_HEAP_CORRUPTION       0xC0000374
+#ifndef STATUS_STACK_BUFFER_OVERRUN
+#define STATUS_STACK_BUFFER_OVERRUN  0xC0000409
+#endif
+
+LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS* ExceptionInfo);
+void __cdecl AbortHandler(int signal);
 
 // =======================================================================
-//                     Crash information handling
+//                          Global variables
+// =======================================================================
+
+udefrag_shared_data *sd = NULL;
+
+#define MAX_CMD_LENGTH 32768
+wchar_t cmd[MAX_CMD_LENGTH];
+
+// =======================================================================
+//                           Crash handling
 // =======================================================================
 
 /**
- * @brief Collects information on application
- * crashes and displays it on the screen.
+ * @brief Attaches UltraDefrag debugger.
  */
-void *CrashInfoThread::Entry()
+void App::AttachDebugger(void)
 {
-    char *buffer = new char[EVENT_BUFFER_SIZE];
-    DWORD bytes_to_read = EVENT_BUFFER_SIZE;
-    DWORD bytes_read, bytes_needed;
-    wxArrayString info;
+    HANDLE hEvent = NULL;
 
-    // get time stamp of the last processed event
-    wxFileConfig *cfg = new wxFileConfig("","",
-        "crash-info.ini","",wxCONFIG_USE_RELATIVE_PATH);
-    DWORD last_time_stamp = (DWORD)cfg->Read("/LastProcessedEvent/TimeStamp",0l);
-    DWORD new_time_stamp = last_time_stamp;
+    // launch UltraDefrag debugger
+    STARTUPINFO si; PROCESS_INFORMATION pi;
+    memset(&si,0,sizeof(si)); si.cb = sizeof(si);
+    si.dwFlags = STARTF_FORCEOFFFEEDBACK;
+    memset(&pi,0,sizeof(pi));
+    wcscpy(cmd,wxT("udefrag-dbg.exe"));
+    if(CreateProcess(NULL,cmd,NULL,NULL,
+      FALSE,0,NULL,NULL,&si,&pi) == FALSE){
+        letrace("cannot launch UltraDefrag debugger");
+        return;
+    }
 
-    // collect information on application crashes
-    HANDLE hLog = ::OpenEventLogA(nullptr,"Application");
-    if(!hLog){
-        letrace("cannot open the Application event log");
+    // set up shared memory to transfer debugging information
+    wchar_t path[64]; int id = pi.dwProcessId;
+    _snwprintf(path,64,wxT("udefrag-shared-mem-%u"),id);
+    HANDLE hSharedMemory = CreateFileMapping(INVALID_HANDLE_VALUE,
+        NULL,PAGE_READWRITE,0,sizeof(udefrag_shared_data),path);
+    if(hSharedMemory == NULL){
+        letrace("cannot set up shared memory");
+        goto done;
+    }
+    sd = (udefrag_shared_data *)MapViewOfFile(hSharedMemory,
+        FILE_MAP_ALL_ACCESS,0,0,sizeof(udefrag_shared_data));
+    if(sd == NULL){
+        letrace("cannot map shared memory");
+        CloseHandle(hSharedMemory);
         goto done;
     }
 
-    while(!g_mainFrame->CheckForTermination(1)){
-        BOOL result = ::ReadEventLog(hLog,
-            EVENTLOG_SEQUENTIAL_READ | EVENTLOG_BACKWARDS_READ,
-            0,buffer,bytes_to_read,&bytes_read,&bytes_needed);
-        if(!result){
-            // handle errors
-            switch(::GetLastError()){
-            case ERROR_INSUFFICIENT_BUFFER:
-                itrace("%u bytes of memory is needed "
-                    "for the event log reading",bytes_needed);
-                bytes_to_read = bytes_needed;
-                delete [] buffer; buffer = new char[bytes_to_read];
-                break;
-            case ERROR_HANDLE_EOF:
-                goto save_info;
-            default:
-                letrace("cannot read the Application event log");
-                goto save_info;
-            }
-        } else {
-            // handle events
-            PEVENTLOGRECORD rec = (PEVENTLOGRECORD)buffer;
-            while((char *)rec < buffer + bytes_read){
-                if(rec->TimeGenerated <= last_time_stamp) break;
-                // handle Application Error events only
-                if(rec->EventType == EVENTLOG_ERROR_TYPE \
-                  && (rec->EventID & 0xFFFF) == 1000 \
-                  && rec->DataLength > 0)
-                {
-                    char *data = new char[rec->DataLength + 1];
-                    memcpy(data,(char *)rec + rec->DataOffset,rec->DataLength);
-                    data[rec->DataLength] = 0;
-                    // handle UltraDefrag GUI and command line tool crashes only
-                    if(strstr(data,"ultradefrag.exe") || strstr(data,"udefrag.exe")){
-                        dtrace("crashed in the past: %hs",data);
-                        wxString s; s.Printf("%hs",data); s.Trim(); info.Add(s);
-                        if(rec->TimeGenerated > new_time_stamp)
-                            new_time_stamp = rec->TimeGenerated;
-                    }
-                    delete [] data;
-                }
-                rec = (PEVENTLOGRECORD)((char *)rec + rec->Length);
-            }
-        }
+    // initialize shared data
+    sd->ready = false;
+
+    // create synchronization event
+    _snwprintf(path,64,wxT("udefrag-synch-event-%u"),id);
+    hEvent = CreateEvent(NULL,FALSE,FALSE,path);
+    if(hEvent == NULL){
+        letrace("cannot create synchronization event");
+        UnmapViewOfFile(sd); sd = NULL;
+        CloseHandle(hSharedMemory);
+        goto done;
     }
 
-    // save information to a file
-save_info:
-    if(!g_mainFrame->CheckForTermination(1) && !info.IsEmpty()){
-        wxTextFile log;
-        log.Create("crash-info.log");
-        log.AddLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        log.AddLine("                                                                                ");
-        log.AddLine("         If this file contains the UltraDefrag crash information                ");
-        log.AddLine("           you can help to fix the bug which caused the crash                   ");
-        log.AddLine("           by submitting this information to the bug tracker:                   ");
-        log.AddLine("        http://sourceforge.net/tracker/?group_id=199532&atid=969870             ");
-        log.AddLine("                                                                                ");
-        log.AddLine("         However, ensure that your computer is virus free: malware              ");
-        log.AddLine("        might easily break something inside of your operating system            ");
-        log.AddLine("        and cause application crashes thereafter. Send us your report           ");
-        log.AddLine("        if you suspect the crash is caused by UltraDefrag itself and            ");
-        log.AddLine("                   not by a broken operating system.                            ");
-        log.AddLine("                                                                                ");
-        log.AddLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        log.AddLine("                                                                                ");
-        for(int i = 0; i < (int)info.Count(); i++) log.AddLine(info[i]);
-        log.Write();
-        log.Close();
+    // force debugger to acquire shared objects right now
+    if(DuplicateHandle(GetCurrentProcess(),hSharedMemory,
+      pi.hProcess,NULL,FILE_MAP_ALL_ACCESS,FALSE,0) == FALSE){
+        letrace("cannot duplicate shared memory handle");
+    }
+    if(DuplicateHandle(GetCurrentProcess(),hEvent,
+      pi.hProcess,NULL,EVENT_ALL_ACCESS,FALSE,0) == FALSE){
+        letrace("cannot duplicate synchronization event handle");
     }
 
-    // open the file in default browser
-    if(!g_mainFrame->CheckForTermination(1) && !info.IsEmpty()){
-        wxFileName file(("./crash-info.log"));
-        file.Normalize();
-        wxString logpath = file.GetFullPath();
-        if(!wxLaunchDefaultBrowser(logpath))
-            etrace("cannot open %ls",logpath.wc_str());
-    }
+    // memory corruption will either raise a structured
+    // exception which we'll catch directly via our custom
+    // exception handler or CRT will detect it and call
+    // abort() routine instead
 
-    // save time stamp of the last processed event
-    if(!g_mainFrame->CheckForTermination(1))
-        cfg->Write("/LastProcessedEvent/TimeStamp",(long)new_time_stamp);
+#if !defined(__GNUC__)
+    // force abort() to pass control to our exception handler
+    _set_abort_behavior(_CALL_REPORTFAULT,_CALL_REPORTFAULT);
+    _set_abort_behavior(0,_WRITE_ABORT_MSG);
+#endif
+
+    // catch SIGABRT, just for safety
+    (void)signal(SIGABRT,AbortHandler);
+
+    // still, on MinGW sometimes abnormal termination will
+    // not be caught, especially in console applications
+    // which tend to hang instead (tested on x86 Windows 7)
+
+    // set our custom exception handler
+    AddVectoredExceptionHandler(1, \
+        (PVECTORED_EXCEPTION_HANDLER) \
+        ExceptionHandler
+    );
 
 done:
-    if(hLog) ::CloseEventLog(hLog);
-    delete [] buffer; delete cfg;
-    return nullptr;
+    // cleanup
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+}
+
+/**
+ * @brief Handles SIGABRT signal.
+ */
+void __cdecl AbortHandler(int signal)
+{
+    RaiseException(STATUS_FATAL_APP_EXIT,0,0,NULL);
+}
+
+/**
+ * @brief Handles all exceptions.
+ * @note Synchronization API shouldn't
+ * be used here as Windows may suspend
+ * execution of other processes/threads
+ * meanwhile.
+ */
+LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS* ExceptionInfo)
+{
+    DWORD exception_code = ExceptionInfo-> \
+        ExceptionRecord->ExceptionCode;
+
+    switch(exception_code){
+    case EXCEPTION_ACCESS_VIOLATION:
+    case STATUS_HEAP_CORRUPTION:
+    case STATUS_FATAL_APP_EXIT:
+    case EXCEPTION_IN_PAGE_ERROR:
+    case EXCEPTION_GUARD_PAGE:
+    case EXCEPTION_STACK_OVERFLOW:
+    case STATUS_STACK_BUFFER_OVERRUN:
+    case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
+        // handle the most interesting cases
+        if(sd){
+            // send crash report
+            sd->version = SHARED_DATA_VERSION;
+            sd->exception_code = exception_code;
+            wcscpy(sd->tracking_id,TRACKING_ID);
+            sd->ready = true;
+
+            // terminate process safely
+            TerminateProcess(GetCurrentProcess(),3);
+        }
+        break;
+    default:
+        // everything else need no special
+        // treatment as either frame based
+        // handlers will take care about it
+        // or Windows will give up enough
+        // information on crash to easily
+        // identify the problem
+        break;
+    }
+
+    return EXCEPTION_CONTINUE_SEARCH;
 }
 
 /** @} */

@@ -135,6 +135,7 @@ void MainFrame::SaveAppConfiguration()
     }
 
     cfg->Write("/Language/Selected",(long)g_locale->GetLanguage());
+    cfg->Write(wxT("/Language/Version"),wxVERSION_NUM_DOT_STRING);
 
     cfg->Write("/Algorithm/RepeatAction",m_repeat);
     cfg->Write("/Algorithm/SkipRemovableMedia",m_skipRem);
@@ -175,7 +176,7 @@ void MainFrame::ReadUserPreferences(wxCommandEvent& WXUNUSED(event))
 {
     /*
     * The program should be configurable
-    * through the options.lua file only.
+    * through guiopts.lua file only.
     */
     wxUnsetEnv("UD_DBGPRINT_LEVEL");
     wxUnsetEnv("UD_DISABLE_REPORTS");
@@ -206,13 +207,13 @@ void MainFrame::ReadUserPreferences(wxCommandEvent& WXUNUSED(event))
     wxUnsetEnv("UD_SORTING_ORDER");
     wxUnsetEnv("UD_TIME_LIMIT");
 
-    /* interpret options.lua file */
-    lua_State *L; int status; wxString error = "";
+    /* interpret guiopts.lua file */
+    lua_State *L; int status; wxString error = wxT("");
     wxFileName path(OPTIONSFILE);
     path.Normalize();
     if(!path.FileExists()){
         etrace("%ls file not found",
-            path.GetFullPath().wc_str());
+            ws(path.GetFullPath()));
         goto done;
     }
 
@@ -227,10 +228,10 @@ void MainFrame::ReadUserPreferences(wxCommandEvent& WXUNUSED(event))
     luaL_openlibs(L);
     lua_gc(L,LUA_GCRESTART,0);
 
-    status = luaL_dofile(L,path.GetFullPath().char_str());
+    status = luaL_dofile(L,ansi(path.GetShortPath()));
     if(status != 0){
         error += "cannot interpret " + path.GetFullPath();
-        etrace("%ls",error.wc_str());
+        etrace("%ls",ws(error));
         if(!lua_isnil(L,-1)){
             const char *msg = lua_tostring(L,-1);
             if(!msg) msg = "(error object is not a string)";
@@ -285,8 +286,6 @@ int MainFrame::CheckOption(const wxString& name)
     return 0;
 }
 
-#undef UD_AdjustOption
-
 // =======================================================================
 //                      User preferences tracking
 // =======================================================================
@@ -331,11 +330,11 @@ void *ConfigThread::Entry()
                 */
             } else {
                 itrace("configuration has been changed");
-                PostCommandEvent(g_mainFrame,ID_ReadUserPreferences);
-                PostCommandEvent(g_mainFrame,ID_SetWindowTitle);
-                PostCommandEvent(g_mainFrame,ID_AdjustSystemTrayIcon);
-                PostCommandEvent(g_mainFrame,ID_AdjustTaskbarIconOverlay);
-                PostCommandEvent(g_mainFrame,ID_RedrawMap);
+                QueueCommandEvent(g_mainFrame,ID_ReadUserPreferences);
+                QueueCommandEvent(g_mainFrame,ID_SetWindowTitle);
+                QueueCommandEvent(g_mainFrame,ID_AdjustSystemTrayIcon);
+                QueueCommandEvent(g_mainFrame,ID_AdjustTaskbarIconOverlay);
+                QueueCommandEvent(g_mainFrame,ID_RedrawMap);
             }
             counter ++;
             /* wait for the next notification */
@@ -372,7 +371,6 @@ void MainFrame::OnBootScript(wxCommandEvent& WXUNUSED(event))
 }
 
 void MainFrame::ChooseFont(wxCommandEvent& WXUNUSED(event))
-{
     wxFontDialog* dialog = new wxFontDialog(this);
     if (dialog->ShowModal() == wxID_OK){
         wxFontData fontDataOUT = dialog->GetFontData();  //Get "font data" from dialog.
@@ -386,6 +384,4 @@ void MainFrame::ChooseFont(wxCommandEvent& WXUNUSED(event))
         dtrace("Chose new Font = %ws,%d", font.GetFaceName().wc_str(),font.GetPointSize());
     }
     dialog->Destroy();
-}
-
 /** @} */

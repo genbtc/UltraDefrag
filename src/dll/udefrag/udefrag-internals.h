@@ -20,12 +20,12 @@
 #ifndef _UDEFRAG_INTERNALS_H_
 #define _UDEFRAG_INTERNALS_H_
 
-#include "../zenwinx/ntndk.h"
-#include "../zenwinx/zenwinx.h"
+#include "ntndk.h"
+#include "zenwinx.h"
 
 #include "udefrag.h"
 
-#include "../../include/version.h"
+#include "../include/version.h"
 
 #define DEFAULT_COLOR DEFAULT_GRAY
 
@@ -86,7 +86,7 @@
 #define UD_FILE_NOT_LOCKED              0x80
 
 /*
-* This flag is used to avoid 
+* This flag is used to avoid
 * repeated moves in volume optimization.
 */
 #define UD_FILE_MOVED_TO_FRONT         0x100

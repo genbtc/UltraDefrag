@@ -53,7 +53,7 @@ void *UpgradeThread::Entry()
 {
     while(!g_mainFrame->CheckForTermination(200)){
         if(m_check && m_level){
-            wxFileName target((".\\tmp"));
+            wxFileName target(wxT(".\\tmp"));
             target.Normalize();
             wxString dir(target.GetFullPath());
             if(!wxDirExists(dir)) wxMkdir(dir);
@@ -62,36 +62,38 @@ void *UpgradeThread::Entry()
             * Use a subfolder to prevent configuration files
             * reload (see ConfigThread::Entry() for details).
             */
-            dir << "\\data";
+            dir << wxT("\\data");
             if(!wxDirExists(dir)) wxMkdir(dir);
 
-            wxString url((""));
+            wxString url(wxT(""));
             wxString path(dir);
 
             if(m_level == UPGRADE_ALL){
-                url << VERSION_URL;
-                path << "\\version.ini";
+                url << wxT(VERSION_URL);
+                path << wxT("\\version.ini");
             } else {
-                url << STABLE_VERSION_URL;
-                path << "\\stable-version.ini";
+                url << wxT(STABLE_VERSION_URL);
+                path << wxT("\\stable-version.ini");
             }
 
             if(Utils::DownloadFile(url,path)){
                 wxTextFile file; file.Open(path);
                 wxString lv = file.GetFirstLine();
                 lv.Trim(true); lv.Trim(false);
-                int last = ParseVersionString(lv.char_str());
+                int last = ParseVersionString(ansi(lv));
 
                 const char *cv = VERSIONINTITLE;
                 int current = ParseVersionString(&cv[12]);
 
-                itrace("latest version : %ls",lv.wc_str());
+                itrace("latest version : %hs",ansi(lv));
                 itrace("current version: %hs",&cv[12]);
 
                 if(last && current && last > current){
-                    wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,ID_ShowUpgradeDialog);
-                    event.SetString(lv);
-                    wxPostEvent(g_mainFrame,event);
+                    wxCommandEvent *event = new wxCommandEvent(
+                        wxEVT_COMMAND_MENU_SELECTED,ID_ShowUpgradeDialog
+                    );
+                    event->SetString(lv.c_str()); // make a deep copy
+                    g_mainFrame->GetEventHandler()->QueueEvent(event);
                 }
 
                 file.Close(); wxRemoveFile(path);
@@ -175,14 +177,14 @@ void MainFrame::ShowUpgradeDialog(wxCommandEvent& event)
     wxString message = wxString();
     //: This expands to "Release 7.0.0 is available for download!"
     //: Make sure that "%ls" is included in the translated string at the correct position
-    message.Printf(_("Release %ls is available for download!"),event.GetString().wc_str());
+    message.Printf(_("Release %ls is available for download!"),ws(event.GetString()));
 
     if(Utils::MessageDialog(this,_("You can upgrade me ^-^"),
       wxART_INFORMATION,_("&Upgrade"),_("&Cancel"),message) == wxID_OK)
     {
         wxString url(("http://ultradefrag.sourceforge.net"));
         if(!wxLaunchDefaultBrowser(url))
-            Utils::ShowError(Utils::ConvertChartoWxString("Cannot open %ls!"),url.wc_str());
+            Utils::ShowError(wxT("Cannot open %ls!"),ws(url));
     }
 }
 
