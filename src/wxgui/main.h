@@ -19,22 +19,21 @@
 //  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 //////////////////////////////////////////////////////////////////////////
-#include <wx/wxprec.h>
-
 #ifndef _UDEFRAG_GUI_MAIN_H_
 #define _UDEFRAG_GUI_MAIN_H_
-
+#pragma comment(lib, "kernel32")
 // =======================================================================
 //                               Headers
 // =======================================================================
-#include <string>
-
+#include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 	#include <wx/wx.h>
 	#include <wx/frame.h>
 #endif
 #include <wx/thread.h>  //Not included by wx/wxprec.h
 #include <wx/xml/xml.h> //Not included by wx/wxprec.h
+
+#include <string>
 #include <wx/artprov.h>
 #include <wx/cmdline.h>
 #include <wx/confbase.h>
@@ -76,8 +75,8 @@
 */
 #ifndef _WIN32_IE
 #define _WIN32_IE 0x0400
-#endif
 #include <commctrl.h>
+#endif
 
 typedef enum {
     TBPF_NOPROGRESS	= 0,
@@ -110,7 +109,7 @@ HRESULT WINAPI URLDownloadToCacheFileW(
 
 #include "../include/dbg.h"
 #include "../include/version.h"
-#endif
+
 #ifndef _UDEFRAG_INCLUDED_ZENWINX_H
 #define _UDEFRAG_INCLUDED_ZENWINX_H
 #include "../dll/zenwinx/zenwinx.h"
@@ -816,7 +815,7 @@ private:
 
     wxBitmap m_repeatButtonBitmap;
 
-    wxBitmap m_repeatButtonBitmap;
+    //wxBitmap m_repeatButtonBitmap;
 
     bool m_btdEnabled;
     BtdThread *m_btdThread;

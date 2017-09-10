@@ -135,7 +135,7 @@ void App::SetLocale(int id)
 
     // use English (US) as the last resort
     if(id == wxLANGUAGE_UNKNOWN \
-      || id == wxLANGUAGE_ENGLISH)
+      || id == wxLANGUAGE_ENGLISH) {
         id = wxLANGUAGE_ENGLISH_US;
         ResetLocale();
         (void)g_locale->Init(wxLANGUAGE_ENGLISH_US);

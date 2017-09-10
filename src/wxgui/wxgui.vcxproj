@@ -46,7 +46,7 @@
     <GenerateManifest>false</GenerateManifest>
     <IncludePath>C:\Software\Boost165;$(IncludePath)</IncludePath>
     <ReferencePath>C:\Software\Boost165\lib32-msvc-14.1;$(ReferencePath)</ReferencePath>
-    <LibraryPath>C:\Software\Boost165\lib32-msvc-14.1;$(LibraryPath);$(SolutionDir)lua-lib;$(SolutionDir)$(Configuration)</LibraryPath>
+    <LibraryPath>C:\Software\Boost165\lib32-msvc-14.1;$(SolutionDir)..\lib;$(OutDir);$(LibraryPath)</LibraryPath>
     <LinkIncremental>
     </LinkIncremental>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
@@ -62,14 +62,15 @@
       <TypeLibraryResourceID />
       <RandomizedBaseAddress />
       <DataExecutionPrevention />
-      <ShowProgress>LinkVerbose</ShowProgress>
+      <ShowProgress>NotSet</ShowProgress>
       <TargetMachine>MachineX86</TargetMachine>
       <EnableUAC />
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
-      <LinkStatus>false</LinkStatus>
       <AdditionalDependencies>
       </AdditionalDependencies>
       <OptimizeReferences>false</OptimizeReferences>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
     <ClCompile />
     <ClCompile>
@@ -95,7 +96,6 @@
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
       <AdditionalOptions>/GA %(AdditionalOptions)</AdditionalOptions>
       <CallingConvention />
-      <OmitFramePointers>false</OmitFramePointers>
       <ProgramDataBaseFileName />
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile />
@@ -119,15 +119,11 @@
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>
-      </OptimizeReferences>
-      <ShowProgress>LinkVerbose</ShowProgress>
-      <LinkStatus>
-      </LinkStatus>
+      <OptimizeReferences>true</OptimizeReferences>
+      <ShowProgress>NotSet</ShowProgress>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
-      <EnableCOMDATFolding>
-      </EnableCOMDATFolding>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <ProfileGuidedDatabase />
       <RandomizedBaseAddress />
@@ -139,6 +135,8 @@
       <ImageHasSafeExceptionHandlers />
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
     <ClCompile />
     <ClCompile>
@@ -168,7 +166,6 @@
       <AdditionalOptions>/GA %(AdditionalOptions)</AdditionalOptions>
       <UseFullPaths>true</UseFullPaths>
       <Optimization>Full</Optimization>
-      <OmitFramePointers />
       <ProgramDataBaseFileName />
       <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
