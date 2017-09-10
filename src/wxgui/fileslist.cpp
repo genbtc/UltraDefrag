@@ -417,11 +417,11 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
     winx_file_info *file;
     int currentitem = 0;
     bool something_removed = false;
-
+	/*
     if(!&m_jobsCache){
       etrace("FAILED to obtain currentJob CacheEntry!!");
       return;
-    }
+    }*/
     //JobsCacheEntry *newEntry = (JobsCacheEntry *)event.GetClientData();
     char letter = (char)event.GetInt();
     JobsCacheEntry cacheEntry = *m_jobsCache[(int)letter];
@@ -430,85 +430,82 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
         etrace("For some odd reason, Completion status was NOT complete.");
         return;
     }
-    else {
-
-        prb_t_init(&trav,cacheEntry.pi.fragmented_files_prb);
-        file = (winx_file_info *)prb_t_first(&trav,cacheEntry.pi.fragmented_files_prb);
-        if (!file){
-            //code here testsfor/finds/removes any files that were just defragmented.
-            if (m_jobThread->singlefile == TRUE){
-                int c = m_filesList->GetItemCount();
-                int d = m_filesList->currently_being_workedon_filenames->Count();
-                for (int i=0; i<c; i++){
-                    for (int j=0; j<d; j++){
-                        if((*m_filesList->currently_being_workedon_filenames)[j] == m_filesList->GetItemText(i)){
-                            m_filesList->allitems.erase(m_filesList->allitems.begin()+i);
-                            m_filesList->Select(i,false);   //de-select removed item.
-                            c--;
-                            m_filesList->currently_being_workedon_filenames->RemoveAt(j);
-                            d--; j--;
-                            something_removed = true;
-                        }
-                    }
-                }
-            }
-            else
-                etrace("Fragmented Files List Not Found.");
-        }
-        else{
-            m_filesList->allitems.clear();  //clear entire list.
-        }
-        while (file){
-            FilesListItem item;
+	prb_t_init(&trav,cacheEntry.pi.fragmented_files_prb);
+	file = (winx_file_info *)prb_t_first(&trav,cacheEntry.pi.fragmented_files_prb);
+	if (!file){
+		//code here testsfor/finds/removes any files that were just defragmented.
+		if (m_jobThread->singlefile == TRUE){
+			int c = m_filesList->GetItemCount();
+			int d = m_filesList->currently_being_workedon_filenames->Count();
+			for (int i=0; i<c; i++){
+				for (int j=0; j<d; j++){
+					if((*m_filesList->currently_being_workedon_filenames)[j] == m_filesList->GetItemText(i)){
+						m_filesList->allitems.erase(m_filesList->allitems.begin()+i);
+						m_filesList->Select(i,false);   //de-select removed item.
+						c--;
+						m_filesList->currently_being_workedon_filenames->RemoveAt(j);
+						d--; j--;
+						something_removed = true;
+					}
+				}
+			}
+		}
+		else
+			etrace("Fragmented Files List Not Found.");
+	}
+	else{
+		m_filesList->allitems.clear();  //clear entire list.
+	}
+	while (file){
+		FilesListItem item;
             
-            item.col0 = (const wchar_t *)(file->path + 4); /* skip the 4 chars: \??\  */
+		item.col0 = (const wchar_t *)(file->path + 4); /* skip the 4 chars: \??\  */
 
-            item.col1 = wxString::Format("%d",file->disp.fragments);
+		item.col1 << file->disp.fragments;
 
-            int bpc = m_volinfocache.bytes_per_cluster;
-            item.col2bytes = file->disp.clusters * bpc;
-            char filesize_hr[32];
-            winx_bytes_to_hr(item.col2bytes,2,filesize_hr,sizeof filesize_hr);
-            item.col2 = wxString::FromUTF8(filesize_hr);
+		const int bpc = m_volinfocache.bytes_per_cluster;
+		item.col2bytes = file->disp.clusters * bpc;
+		char filesize_hr[32];
+		winx_bytes_to_hr(item.col2bytes,2,filesize_hr,sizeof filesize_hr);
+		item.col2 = wxString::FromUTF8(filesize_hr);
 
-            if(is_directory(file))
-                item.col3 = "[DIR]";
-            else if(is_compressed(file))
-                item.col3 = "Compressed";
-            else if(is_essential_boot_file(file)) //needed a flag from udefrag-internals.h (should manually #define it and only it)
-                item.col3 = "[BOOT]";
-            else if(is_mft_file(file))
-                item.col3 = "[MFT]";
-            else
-                item.col3 = "";
-            if(is_locked(file))
-                item.col4 = "Locked";
-            else
-                item.col4 = "";
+		if(is_directory(file))
+			item.col3 = "[DIR]";
+		else if(is_compressed(file))
+			item.col3 = "Compressed";
+		else if(is_essential_boot_file(file)) //needed a flag from udefrag-internals.h (should manually #define it and only it)
+			item.col3 = "[BOOT]";
+		else if(is_mft_file(file))
+			item.col3 = "[MFT]";
+		else
+			item.col3 = "";
+		if(is_locked(file))
+			item.col4 = "Locked";
+		else
+			item.col4 = "";
 
-            // ULONGLONG time is stored in how many of 100 nanoseconds (0.1 microseconds) or (0.0001 milliseconds) or 0.0000001 seconds.
-            //WindowsTickToUnixSeconds() (alternate way. unused.)
-            winx_time lmt;             //Last Modified time:
-            winx_filetime2winxtime(file->last_modification_time,&lmt);
+		// ULONGLONG time is stored in how many of 100 nanoseconds (0.1 microseconds) or (0.0001 milliseconds) or 0.0000001 seconds.
+		//WindowsTickToUnixSeconds() (alternate way. unused.)
+		winx_time lmt;             //Last Modified time:
+		winx_filetime2winxtime(file->last_modification_time,&lmt);
 
-            char lmtbuffer[30];
-            (void)_snprintf(lmtbuffer,sizeof lmtbuffer,
-                "%02i/%02i/%04i"
-                " "
-                "%02i:%02i:%02i",
-                (int)lmt.month,(int)lmt.day,(int)lmt.year,
-                (int)lmt.hour,(int)lmt.minute,(int)lmt.second
-            );
-            lmtbuffer[sizeof lmtbuffer - 1] = 0; //terminate with a 0.
-            item.col5 = wxString::Format("%hs",lmtbuffer);
+		char lmtbuffer[30];
+		(void)_snprintf(lmtbuffer,sizeof lmtbuffer,
+		                "%02i/%02i/%04i"
+		                " "
+		                "%02i:%02i:%02i",
+		                (int)lmt.month,(int)lmt.day,(int)lmt.year,
+		                (int)lmt.hour,(int)lmt.minute,(int)lmt.second
+		);
+		lmtbuffer[sizeof lmtbuffer - 1] = 0; //terminate with a 0.
+		item.col5 = wxString::Format("%hs",lmtbuffer);
 
-            m_filesList->allitems.push_back(item);  //store item in virtual list's container.
-            currentitem++;
+		m_filesList->allitems.push_back(item);  //store item in virtual list's container.
+		currentitem++;
 
-            file = (winx_file_info *)prb_t_next(&trav);
-        }
-    }
-    if (currentitem > 0){
+		file = (winx_file_info *)prb_t_next(&trav);
+	}
+	if (currentitem > 0){
         dtrace("Successfully finished with the Populate List Loop");
         m_filesList->SetItemCount(m_filesList->allitems.size());   //set new virtual-list size.        
         ProcessCommandEvent(this,ID_AdjustFilesListColumns);
