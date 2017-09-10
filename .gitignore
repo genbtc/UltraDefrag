@@ -125,3 +125,6 @@ src/wxgui/scripts/udsorting.js
 src/wxgui/scripts/upgrade-guiopts.lua
 src/wxgui/scripts/upgrade-rptopts.lua
 src/wxgui/gui.ini
+src/Release/*.exp
+*.lastbuildstate
+src/wxgui/Release/wxgui.res

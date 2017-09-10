@@ -505,10 +505,10 @@ void MainFrame::OnRepair(wxCommandEvent& WXUNUSED(event))
 
 void MainFrame::OnDefaultAction(wxCommandEvent& WXUNUSED(event))
 {
-    long i = m_vList->GetFirstSelected();
+    const auto i = m_vList->GetFirstSelected();
     if(i != -1){
         volume_info v;
-        char letter = (char)m_vList->GetItemText(i)[0];
+	    const char letter = m_vList->GetItemText(i)[0];
         if(udefrag_get_volume_information(letter,&v) >= 0){
             if(v.is_dirty){
                 ProcessCommandEvent(this,ID_Repair);
@@ -547,7 +547,7 @@ void MainFrame::OnDiskProcessingFailure(wxCommandEvent& event)
         break;
     }
 
-    int error = event.GetInt();
+	const int error = event.GetInt();
     wxString msg = caption + "\n" \
         + wxString::Format("%hs",
         udefrag_get_error_description(error));
