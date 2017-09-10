@@ -332,13 +332,13 @@ MainFrame::MainFrame()
     ProcessCommandEvent(this,ID_ReadUserPreferences);
 
 	// set main window title
-	wxString instdir;
-	if (wxGetEnv(wxT("UD_INSTALL_DIR"), &instdir)) {
-		wxFileName path(wxGetCwd()); path.Normalize();
-		wxString cd = path.GetFullPath();
-		itrace("current directory: %ls", ws(cd));
-		itrace("installation directory: %ls", ws(instdir));
-		if (cd.CmpNoCase(instdir) == 0) {
+    wxString instdir;
+    if(wxGetEnv(wxT("UD_INSTALL_DIR"),&instdir)){
+        wxFileName path(wxGetCwd()); path.Normalize();
+        wxString cd = path.GetFullPath();
+        itrace("current directory: %ls",ws(cd));
+        itrace("installation directory: %ls",ws(instdir));
+        if(cd.CmpNoCase(instdir) == 0){
 			itrace("current directory matches "
 				"installation location, so it isn't portable");
 			m_title = new wxString(wxT(VERSIONINTITLE));

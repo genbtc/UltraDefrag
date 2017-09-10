@@ -91,6 +91,7 @@ void App::ResetLocale()
     UD_LNG(wxUD_LANGUAGE_SINHALA_SRI_LANKA, "si_LK", 0             , 0              , wxLayout_LeftToRight, "Sinhala (Sri Lanka)");
     UD_LNG(wxUD_LANGUAGE_SILESIAN,          "szl"  , 0             , 0              , wxLayout_LeftToRight, "Silesian");
 }
+
 void App::SetLocale(int id)
 {
     ResetLocale();
@@ -125,6 +126,16 @@ void App::SetLocale(int id)
         id = wxLANGUAGE_ENGLISH_US;
     // apply language selection
     if(!g_locale->Init(id)){
+        ResetLocale();
+        (void)g_locale->Init(wxLANGUAGE_ENGLISH_US);
+    }
+
+        id = g_locale->GetSystemLanguage();
+
+    // use English (US) as the last resort
+    if(id == wxLANGUAGE_UNKNOWN \
+      || id == wxLANGUAGE_ENGLISH)
+        id = wxLANGUAGE_ENGLISH_US;
         ResetLocale();
         (void)g_locale->Init(wxLANGUAGE_ENGLISH_US);
     }

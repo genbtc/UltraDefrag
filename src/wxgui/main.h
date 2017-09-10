@@ -69,7 +69,6 @@
 #include <wx/sizer.h>//genbtc
 #include <wx/stattext.h>//genBTC query tab 3
 
-
 /*
 * Next definition is very important for mingw:
 * _WIN32_IE must be no less than 0x0400
@@ -88,8 +87,6 @@ typedef enum {
     TBPF_PAUSED	= 0x8
 } TBPFLAG;
 
-#ifndef _UDEFRAG_VERSION_H
-#define _UDEFRAG_VERSION_H
 #if defined(__GNUC__)
 extern "C" {
 HRESULT WINAPI URLDownloadToFileW(
@@ -360,13 +357,12 @@ public:
 
 class App: public wxApp {
 public:
-	bool OnInit() override;
-	int  OnExit() override;
-
-	void OnInitCmdLine(wxCmdLineParser& parser) override
-    {
-		parser.AddSwitch("v", "verbose", "verbose");
-		parser.AddSwitch("s","setup","setup");
+    virtual bool OnInit();
+    virtual int  OnExit();
+    virtual void OnInitCmdLine(wxCmdLineParser& parser) {
+        /* wxWidgets raises an "assert failure" message without them */
+        parser.AddSwitch(wxT("s"),wxT("setup"),wxT("setup"));
+        parser.AddSwitch(wxT("v"),wxT("verbose"),wxT("verbose"));
     }
 
     /* wxLANGUAGE_UNKNOWN forces to use the most suitable locale */
@@ -647,6 +643,7 @@ public:
     void OnShowReport(wxCommandEvent& event);
 
 
+
     void OnRepeat(wxCommandEvent& event);
     
     void OnRepair(wxCommandEvent& event);
@@ -815,6 +812,8 @@ private:
     ClusterMap       *m_cMap;
     FilesList        *m_filesList;  //genBTC FilesList.cpp
     volume_info      m_volinfocache; //genBTC
+
+    wxBitmap m_repeatButtonBitmap;
 
     wxBitmap m_repeatButtonBitmap;
 

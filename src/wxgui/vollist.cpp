@@ -152,6 +152,8 @@ void DrivesList::OnKeyUp(wxKeyEvent& event)
 void DrivesList::OnMouse(wxMouseEvent& event)
 {
     if(!g_mainFrame->m_busy){
+        // left double click starts default action
+        if(event.GetEventType() == wxEVT_LEFT_DCLICK)
             QueueCommandEvent(g_mainFrame,ID_DefaultAction);
         event.Skip();
     }
