@@ -363,15 +363,15 @@ void MainFrame::UpdateVolumeStatus(wxCommandEvent& event)
     char letter = (char)event.GetInt();
     JobsCacheEntry *cacheEntry = m_jobsCache[(int)letter];
     if(!cacheEntry) return;
-
+	//search for which drive we are updating by iterating through the vol list
     int index;
     for(index = 0; index < m_vList->GetItemCount(); index++){
         if(letter == (char)m_vList->GetItemText(index)[0]) break;
     }
-    if(index >= m_vList->GetItemCount()) return;
+    if(index >= m_vList->GetItemCount()) return; //exit if we cant find any
 
     wxString status;
-    if(cacheEntry->pi.completion_status == 0 || cacheEntry->stopped){
+    if(cacheEntry->pi.completion_status == 0){
         if(cacheEntry->pi.current_operation == VOLUME_ANALYSIS){
             //: Status of the running disk analysis,
             //: expands to "10 % analyzed".
@@ -395,10 +395,13 @@ void MainFrame::UpdateVolumeStatus(wxCommandEvent& event)
                 cacheEntry->pi.percentage,cacheEntry->pi.pass_number,cacheEntry->pi.total_moves
             );
         }
-    } else {
+    } 
+    if (cacheEntry->stopped)
+        status << " - " << _("STOPPED") << ".";
+    if (cacheEntry->pi.completion_status != 0) {
         if(cacheEntry->jobType == ANALYSIS_JOB){
             //: Status of the completed disk analysis.
-            status = _("Analyzed");
+            status << _("Analyzed");
         } else if(cacheEntry->jobType == DEFRAGMENTATION_JOB){
             //: Status of the completed disk defragmentation,
             //: expands to "Defragmented, in 5 passes".

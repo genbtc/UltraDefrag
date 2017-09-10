@@ -200,8 +200,9 @@ void MainFrame::InitFilesList()
     Connect(wxEVT_SIZE,wxSizeEventHandler(MainFrame::FilesOnListSize), nullptr,this);
 
     InitPopupMenus();
-    ListSortInfo *m_sortinfo = new ListSortInfo();
-    m_filesList->m_sortinfo = *m_sortinfo;
+    ListSortInfo *p_sortinfo = new ListSortInfo();
+    m_filesList->m_sortinfo = *p_sortinfo;
+    delete p_sortinfo;
 }
 
 /**
@@ -456,19 +457,21 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
 	else{
 		m_filesList->allitems.clear();  //clear entire list.
 	}
+	//Begin Iterating The Files.
 	while (file){
 		FilesListItem item;
-            
-		item.col0 = (const wchar_t *)(file->path + 4); /* skip the 4 chars: \??\  */
-
+        //Name/Path:
+		item.col0 << file->path + 4; /* skip the 4 chars: \??\  */
+		//Fragments:
 		item.col1 << file->disp.fragments;
-
+		//Size:
 		const int bpc = m_volinfocache.bytes_per_cluster;
 		item.col2bytes = file->disp.clusters * bpc;
 		char filesize_hr[32];
 		winx_bytes_to_hr(item.col2bytes,2,filesize_hr,sizeof filesize_hr);
 		item.col2 = wxString::FromUTF8(filesize_hr);
 
+		//Info:
 		if(is_directory(file))
 			item.col3 = "[DIR]";
 		else if(is_compressed(file))
@@ -479,14 +482,15 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
 			item.col3 = "[MFT]";
 		else
 			item.col3 = "";
+		//Locked:
 		if(is_locked(file))
 			item.col4 = "Locked";
 		else
 			item.col4 = "";
-
+		//Last Modified time:
 		// ULONGLONG time is stored in how many of 100 nanoseconds (0.1 microseconds) or (0.0001 milliseconds) or 0.0000001 seconds.
-		//WindowsTickToUnixSeconds() (alternate way. unused.)
-		winx_time lmt;             //Last Modified time:
+		//WindowsTickToUnixSeconds() (alternate function unused.)
+		winx_time lmt;             
 		winx_filetime2winxtime(file->last_modification_time,&lmt);
 
 		char lmtbuffer[30];
@@ -502,9 +506,10 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
 
 		m_filesList->allitems.push_back(item);  //store item in virtual list's container.
 		currentitem++;
-
+		//iterate next & repeat
 		file = (winx_file_info *)prb_t_next(&trav);
 	}
+	//Finished:
 	if (currentitem > 0){
         dtrace("Successfully finished with the Populate List Loop");
         m_filesList->SetItemCount(m_filesList->allitems.size());   //set new virtual-list size.        

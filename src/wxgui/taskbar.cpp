@@ -38,7 +38,8 @@
 // =======================================================================
 #include "wx/wxprec.h"
 #include "main.h"
-
+//#include <objbase.h>
+#pragma comment(lib, "ole32")
 #define LPTHUMBBUTTON LPVOID
 
 class ITaskbarList: public IUnknown {

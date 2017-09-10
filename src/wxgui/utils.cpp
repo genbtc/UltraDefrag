@@ -246,8 +246,9 @@ bool Utils::SetProcessPriority(int priority)
     return result != 0 ? true : false;
 }
 
+#pragma comment(lib, "shell32")
 /**
- * @brief Windows ShellExecute analog.
+ * @brief Windows ShellExecute analog. reqs Shell32
  */
 void Utils::ShellExec(
     const wxString& file,
@@ -493,7 +494,6 @@ void Utils::createDirectoryRecursively(const std::wstring &directory) {
         "Could not create directory because a file with the same name exists"
       );
     }
-
   }
 }
 
@@ -514,6 +514,6 @@ wxString Utils::makefiltertext(wxString itemtext)
  */
 void Utils::extendfiltertext(wxString itemtext,wxString *extfiltertext)
 {
-    *extfiltertext << Utils::makefiltertext(itemtext);
+    *extfiltertext << makefiltertext(itemtext);
 }
 /** @} */

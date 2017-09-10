@@ -43,6 +43,7 @@
 // =======================================================================
 #include "wx/wxprec.h"
 #include "main.h"
+#pragma comment(lib, "gdi32")
 //colors are listed in udefrag.h line 98
 COLORREF g_colors[SPACE_STATES] =
 {

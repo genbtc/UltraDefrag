@@ -35,7 +35,8 @@
 // =======================================================================
 #include "wx/wxprec.h"
 #include "main.h"
-#include <powrprof.h>
+#include <powrprof.h>	//required for SetSuspendState line 238,246
+#pragma comment(lib, "powrprof")
 
 #ifndef SHTDN_REASON_MAJOR_OTHER
 #define SHTDN_REASON_MAJOR_OTHER   0x00000000

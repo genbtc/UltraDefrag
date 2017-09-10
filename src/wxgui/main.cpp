@@ -35,7 +35,7 @@
 // =======================================================================
 #include "wx/wxprec.h"
 #include "main.h"
-
+#pragma comment(lib, "user32")
 #if !defined(__GNUC__)
 #include <new.h> // for _set_new_handler
 #endif

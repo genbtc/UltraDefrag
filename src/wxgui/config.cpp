@@ -35,7 +35,7 @@
 // =======================================================================
 #include "wx/wxprec.h"
 #include "main.h"
-
+#pragma comment(lib, "lua5.1a.lib")
 extern "C" {
 #define lua_c
 #include "../lua5.1/lua.h"
@@ -48,7 +48,7 @@ extern "C" {
 // =======================================================================
 //reference these variables instead of magic-strings all over the source-files.
 wxString OPTIONSDIR = ".\\options\\";
-wxString OPTIONSFILE = OPTIONSDIR + "options.lua";
+wxString OPTIONSFILE = OPTIONSDIR + "guiopts.lua";
 //options file should be in its own directory because of the change-tracker
 //change-tracker should not care about anything else being modified.
 
@@ -358,10 +358,17 @@ done:
 
 void MainFrame::OnGuiOptions(wxCommandEvent& WXUNUSED(event))
 {
+    wxFileName path(OPTIONSFILE);
+    path.Normalize();
+    wxString fullpath = path.GetFullPath().wc_str();
+    if (!path.FileExists()) {
+        etrace("%ls Options file not found", fullpath);
+        return;
+    }
     if(m_title->Find("Portable") != wxNOT_FOUND)
-        Utils::ShellExec("notepad","open",OPTIONSFILE);
+        Utils::ShellExec("notepad.exe","open", fullpath);
     else
-        Utils::ShellExec(OPTIONSFILE,"open");
+        Utils::ShellExec(fullpath,"open");
 }
 
 void MainFrame::OnBootScript(wxCommandEvent& WXUNUSED(event))
@@ -385,5 +392,6 @@ void MainFrame::ChooseFontPickerDialog(wxCommandEvent& WXUNUSED(event))
 		dtrace("Chose new Font = %ws,%d", font.GetFaceName().wc_str(), font.GetPointSize());
 	}
 	dialog->Destroy();
+	delete dialog;
 }
 /** @} */

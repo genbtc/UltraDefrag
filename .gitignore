@@ -117,3 +117,11 @@ src/Release/wx*.pdb
 src/wxgui/*.asm
 src/wxgui/vc100.idb
 src/wxgui/vc100.pdb
+src/wxgui/options/guiopts.lua
+src/wxgui/options/udreportopts.lua
+src/wxgui/scripts/udreport.css
+src/wxgui/scripts/udreportcnv.lua
+src/wxgui/scripts/udsorting.js
+src/wxgui/scripts/upgrade-guiopts.lua
+src/wxgui/scripts/upgrade-rptopts.lua
+src/wxgui/gui.ini

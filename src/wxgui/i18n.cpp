@@ -60,11 +60,11 @@ wxLocale *g_locale = nullptr;
 #define UD_UpdateMenuItemLabel(id,label,accel) { \
     if(::strlen(accel)){ \
         wxString ItemLabel = _(label); \
-        ItemLabel << wxT("\t") << wxT(accel); \
+        ItemLabel << "\t" << wxT(accel); \
         m_menuBar->FindItem(id)->SetItemLabel(ItemLabel); \
         if(m_toolBar->FindById(id)){ \
             ItemLabel = _(label); \
-            ItemLabel << wxT(" (") << wxT(accel) << wxT(")"); \
+            ItemLabel << " (" << wxT(accel) << ")"; \
             m_toolBar->SetToolShortHelp(id,ItemLabel); \
         } \
     } else { \
