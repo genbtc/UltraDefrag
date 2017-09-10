@@ -188,7 +188,7 @@ void MainFrame::OnLocaleChange(wxCommandEvent& event)
     UD_UpdateMenuItemLabel(ID_GuiOptions , "&Options" , "F10");
     m_subMenuSortingConfig->SetItemLabel(_("&Sorting"));
     m_subMenuBootConfig->SetItemLabel(_("&Boot time scan"));
-    UD_UpdateMenuItemLabel(ID_ChooseFont , "&Change Font..." , "");
+    //UD_UpdateMenuItemLabel(ID_ChooseFont , "&Change Font..." , "");
 
     // language sub-menu
     UD_UpdateMenuItemLabel(ID_LangTranslateOnline  , "Translate &online"    , "");

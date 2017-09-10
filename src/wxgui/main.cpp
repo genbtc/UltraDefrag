@@ -565,7 +565,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_BootEnable, MainFrame::OnBootEnable)
     EVT_MENU(ID_BootScript, MainFrame::OnBootScript)
 
-    EVT_MENU(ID_ChooseFont, MainFrame::ChooseFont)          //genBTC
+    EVT_MENU(ID_ChooseFont, MainFrame::ChooseFontPickerDialog)          //genBTC
     // help menu
     EVT_MENU(ID_HelpContents,     MainFrame::OnHelpContents)
     EVT_MENU(ID_HelpBestPractice, MainFrame::OnHelpBestPractice)

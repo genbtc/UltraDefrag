@@ -663,7 +663,7 @@ public:
     void OnBootEnable(wxCommandEvent& event);
     void OnBootScript(wxCommandEvent& event);
 
-    void ChooseFont(wxCommandEvent& event);//genBTC fontpicker.
+    void ChooseFontPickerDialog(wxCommandEvent& event);//genBTC fontpicker.
     // help menu handlers
     void OnHelpContents(wxCommandEvent& event);
     void OnHelpBestPractice(wxCommandEvent& event);

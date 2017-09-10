@@ -370,7 +370,7 @@ void MainFrame::OnBootScript(wxCommandEvent& WXUNUSED(event))
     script.Normalize(); Utils::ShellExec(script.GetFullPath(),"edit");
 }
 
-void MainFrame::ChooseFont(wxCommandEvent& WXUNUSED(event))
+void MainFrame::ChooseFontPickerDialog(wxCommandEvent& WXUNUSED(event))
 {
 	wxFontDialog* dialog = new wxFontDialog(this);
 	if (dialog->ShowModal() == wxID_OK) {
