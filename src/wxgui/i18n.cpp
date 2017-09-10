@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 //  UltraDefrag - a powerful defragmentation tool for Windows NT.
-//  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+//  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
 //  Copyright (c) 2010-2013 Stefan Pendl (stefanpe@users.sourceforge.net).
 //
 //  This program is free software; you can redistribute it and/or modify
@@ -33,14 +33,15 @@
 // =======================================================================
 //                            Declarations
 // =======================================================================
-#include "wx/wxprec.h"
+
+#include "prec.h"
 #include "main.h"
 
 // =======================================================================
 //                            Global variables
 // =======================================================================
 
-wxLocale *g_locale = nullptr;
+wxLocale *g_locale = NULL;
 
 // =======================================================================
 //                         Internationalization
@@ -50,9 +51,9 @@ wxLocale *g_locale = nullptr;
 #define UD_LNG(wxlang, canonical, winlang, winsublang, layout, desc) { \
     wxLanguageInfo info;                                  \
     info.Language = wxlang;                               \
-    info.CanonicalName = (canonical);                  \
+    info.CanonicalName = wxT(canonical);                  \
     info.LayoutDirection = layout;                        \
-    info.Description = (desc);                         \
+    info.Description = wxT(desc);                         \
     info.WinLang = winlang, info.WinSublang = winsublang; \
     g_locale->AddLanguage(info);                          \
 }
@@ -60,15 +61,15 @@ wxLocale *g_locale = nullptr;
 #define UD_UpdateMenuItemLabel(id,label,accel) { \
     if(::strlen(accel)){ \
         wxString ItemLabel = _(label); \
-        ItemLabel << "\t" << wxT(accel); \
-        m_menuBar->FindItem(id)->SetItemLabel(ItemLabel); \
+        ItemLabel << wxT("\t") << wxT(accel); \
+        m_menuBar->SetLabel(id,ItemLabel); \
         if(m_toolBar->FindById(id)){ \
             ItemLabel = _(label); \
-            ItemLabel << " (" << wxT(accel) << ")"; \
+            ItemLabel << wxT(" (") << wxT(accel) << wxT(")"); \
             m_toolBar->SetToolShortHelp(id,ItemLabel); \
         } \
     } else { \
-        m_menuBar->FindItem(id)->SetItemLabel(_(label)); \
+        m_menuBar->SetLabel(id,_(label)); \
         if(m_toolBar->FindById(id)) \
             m_toolBar->SetToolShortHelp(id,_(label)); \
     } \
@@ -80,9 +81,9 @@ void App::ResetLocale()
     delete g_locale;
 
     // create a new one
-	g_locale = new wxLocale();
+    g_locale = new wxLocale();
 
-	// add translations missing from wxWidgets
+    // add translations missing from wxWidgets
     UD_LNG(wxUD_LANGUAGE_ILOKO,             "ilo"  , 0             , 0              , wxLayout_LeftToRight, "Iloko");
     UD_LNG(wxUD_LANGUAGE_KAPAMPANGAN,       "pam"  , 0             , 0              , wxLayout_LeftToRight, "Kapampangan");
     UD_LNG(wxUD_LANGUAGE_NORWEGIAN,         "no"   , LANG_NORWEGIAN, SUBLANG_DEFAULT, wxLayout_LeftToRight, "Norwegian");
@@ -125,31 +126,22 @@ void App::SetLocale(int id)
     if(id == wxLANGUAGE_UNKNOWN \
       || id == wxLANGUAGE_ENGLISH)
         id = wxLANGUAGE_ENGLISH_US;
+
     // apply language selection
     if(!g_locale->Init(id)){
         ResetLocale();
         (void)g_locale->Init(wxLANGUAGE_ENGLISH_US);
     }
 
-        id = g_locale->GetSystemLanguage();
+    g_locale->AddCatalogLookupPathPrefix(wxT("locale"));
 
-    // use English (US) as the last resort
-    if(id == wxLANGUAGE_UNKNOWN \
-      || id == wxLANGUAGE_ENGLISH) {
-        id = wxLANGUAGE_ENGLISH_US;
-        ResetLocale();
-        (void)g_locale->Init(wxLANGUAGE_ENGLISH_US);
-    }
+    // locations for development
+    g_locale->AddCatalogLookupPathPrefix(wxT("../wxgui/locale"));
+    g_locale->AddCatalogLookupPathPrefix(wxT("../../wxgui/locale"));
 
-	//default location path:
-	g_locale->AddCatalogLookupPathPrefix("locale");
-
-	// location paths for development
-	g_locale->AddCatalogLookupPathPrefix("../wxgui/locale");
-	g_locale->AddCatalogLookupPathPrefix("../../wxgui/locale");
-
-	g_locale->AddCatalog("UltraDefrag");
+    g_locale->AddCatalog(wxT("UltraDefrag"));
 }
+
 /**
  * @brief Manages translation changes.
  */
@@ -240,11 +232,11 @@ void MainFrame::OnLocaleChange(wxCommandEvent& event)
     UD_UpdateMenuItemLabel(ID_DebugSend , "Send bug &report" , "");
 
     // update tool-tips that differ from menu labels
-    wxString label = _("&Boot time scan"); label << " (F11)";
+    wxString label = _("&Boot time scan"); label << wxT(" (F11)");
     m_toolBar->SetToolShortHelp(ID_BootEnable,label);
-    label = _("Boot time script"); label << " (F12)";
+    label = _("Boot time script"); label << wxT(" (F12)");
     m_toolBar->SetToolShortHelp(ID_BootScript,label);
-    label = _("&Help"); label << " (F1)";
+    label = _("&Help"); label << wxT(" (F1)");
     m_toolBar->SetToolShortHelp(ID_HelpContents,label);
 
     // update list column labels
@@ -265,7 +257,7 @@ void MainFrame::OnLocaleChange(wxCommandEvent& event)
     item.SetText(_("Last Modified")); m_filesList->SetColumn(5,item);
 
     // set mono-space font for the list unless Burmese translation is selected
-    if(g_locale->GetCanonicalName().Left(2) != "my"){
+    if(g_locale->GetCanonicalName().Left(2) != wxT("my")){
         wxFont font = m_vList->GetFont();
         if(font.SetFaceName("Lucida Console"))
             m_vList->SetFont(font);
@@ -275,7 +267,7 @@ void MainFrame::OnLocaleChange(wxCommandEvent& event)
 
     // update list status fields
     for(int i = 0; i < m_vList->GetItemCount(); i++){
-	    const int letter = int(m_vList->GetItemText(i)[0]);
+        int letter = (int)m_vList->GetItemText(i)[0];
         wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED,ID_UpdateVolumeStatus);
         event.SetInt(letter); GetEventHandler()->ProcessEvent(event);
     }
@@ -304,7 +296,7 @@ void MainFrame::OnLocaleChange(wxCommandEvent& event)
 void App::SaveReportTranslation()
 {
     wxTextFile file;
-    file.Create("reports.lng");
+    file.Create(wxT("reports.lng"));
     UD_AddTranslationString("FRAGMENTED_FILES_ON = ", _("Fragmented files on"));
     UD_AddTranslationString("VISIT_HOMEPAGE      = ", _("Visit our Homepage") );
     UD_AddTranslationString("VIEW_REPORT_OPTIONS = ", _("View report options"));

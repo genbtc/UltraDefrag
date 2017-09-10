@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 //  UltraDefrag - a powerful defragmentation tool for Windows NT.
-//  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+//  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
 //  Copyright (c) 2010-2013 Stefan Pendl (stefanpe@users.sourceforge.net).
 //
 //  This program is free software; you can redistribute it and/or modify
@@ -33,10 +33,12 @@
 // =======================================================================
 //                            Declarations
 // =======================================================================
-#include "wx/wxprec.h"
+
+#include "prec.h"
 #include "main.h"
 #include <urlmon.h>
 #pragma comment(lib, "urlmon.lib")
+
 // =======================================================================
 //                         Auxiliary utilities
 // =======================================================================
@@ -47,7 +49,7 @@
  */
 bool Utils::CheckAdminRights(void)
 {
-    PSID psid = nullptr;
+    PSID psid = NULL;
     SID_IDENTIFIER_AUTHORITY SystemSidAuthority = {SECURITY_NT_AUTHORITY};
     if(!::AllocateAndInitializeSid(&SystemSidAuthority,2,
       SECURITY_BUILTIN_DOMAIN_RID,DOMAIN_ALIAS_RID_ADMINS,
@@ -57,7 +59,7 @@ bool Utils::CheckAdminRights(void)
     }
 
     BOOL is_member = false;
-    if(!::CheckTokenMembership(nullptr,psid,&is_member)){
+    if(!::CheckTokenMembership(NULL,psid,&is_member)){
         letrace("cannot check token membership");
         if(psid) ::FreeSid(psid);
         return false;
@@ -65,7 +67,7 @@ bool Utils::CheckAdminRights(void)
 
     if(!is_member) itrace("the user is not a member of administrators group");
     if(psid) ::FreeSid(psid);
-    return is_member == 0 ? false : true;
+    return (is_member == 0 ? false : true);
 }
 
 /**
@@ -103,12 +105,12 @@ bool Utils::DownloadFile(const wxString& url, const wxString& path)
  */
 void Utils::GaRequest(const wxString& path, const wxString& id)
 {
-    srand((unsigned int)time(nullptr));
+    srand((unsigned int)time(NULL));
     int utmn = (rand() << 16) + rand();
     int utmhid = (rand() << 16) + rand();
     int cookie = (rand() << 16) + rand();
     int random = (rand() << 16) + rand();
-    __int64 today = (__int64)time(nullptr);
+    __int64 today = (__int64)time(NULL);
 
     wxString url;
     url << wxT("http://www.google-analytics.com/__utm.gif?utmwv=4.6.5");
@@ -118,9 +120,9 @@ void Utils::GaRequest(const wxString& path, const wxString& id)
     url << wxT("&utmp=") << path;
     url << wxT("&utmac=") << id;
     url << wxString::Format(wxT("&utmcc=__utma%%3D%u.%u.%I64u.%I64u.%I64u.") \
-		wxT("50%%3B%%2B__utmz%%3D%u.%I64u.27.2.utmcsr%%3Dgoogle.com%%7Cutmccn%%3D") \
-		wxT("(referral)%%7Cutmcmd%%3Dreferral%%7Cutmcct%%3D%%2F%%3B"),
-		cookie, random, today, today, today, cookie, today);
+        wxT("50%%3B%%2B__utmz%%3D%u.%I64u.27.2.utmcsr%%3Dgoogle.com%%7Cutmccn%%3D") \
+        wxT("(referral)%%7Cutmcmd%%3Dreferral%%7Cutmcct%%3D%%2F%%3B"),
+        cookie,random,today,today,today,cookie,today);
 
     itrace("downloading %ls",ws(url));
 
@@ -142,28 +144,28 @@ void Utils::GaRequest(const wxString& path, const wxString& id)
  */
 wxBitmap Utils::LoadPngResource(const wchar_t *name)
 {
-    HRSRC resource = ::FindResource(nullptr,name,RT_RCDATA);
+    HRSRC resource = ::FindResource(NULL,name,RT_RCDATA);
     if(!resource){
         letrace("cannot find %ls resource",name);
-        return nullptr;
+        return NULL;
     }
 
-    HGLOBAL handle = ::LoadResource(nullptr,resource);
+    HGLOBAL handle = ::LoadResource(NULL,resource);
     if(!handle){
         letrace("cannot load %ls resource",name);
-        return nullptr;
+        return NULL;
     }
 
-	auto data = ::LockResource(handle);
+    char *data = (char *)::LockResource(handle);
     if(!data){
         letrace("cannot lock %ls resource",name);
-        return nullptr;
+        return NULL;
     }
 
-    DWORD size = ::SizeofResource(nullptr,resource);
+    DWORD size = ::SizeofResource(NULL,resource);
     if(!size){
         letrace("cannot get size of %ls resource",name);
-        return nullptr;
+        return NULL;
     }
 
     wxMemoryInputStream is(data,size);
@@ -177,11 +179,11 @@ wxBitmap Utils::LoadPngResource(const wchar_t *name)
 void Utils::OpenHandbook(const wxString& page, const wxString& anchor)
 {
     wxString path;
-    path = "./handbook/" + page;
+    path = wxT("./handbook/") + page;
 
     if(wxFileExists(path)){
         path = wxGetCwd();
-        path.Replace("\\","/");
+        path.Replace(wxT("\\"),wxT("/"));
         if(!anchor.IsEmpty()){
             /*
             * wxLaunchDefaultBrowser
@@ -190,38 +192,38 @@ void Utils::OpenHandbook(const wxString& page, const wxString& anchor)
             * So, we're making a redirector
             * and opening it instead.
             */
-            wxString redirector(("./handbook/"));
-            redirector << page << "." << anchor << ".html";
+            wxString redirector(wxT("./handbook/"));
+            redirector << page << wxT(".") << anchor << wxT(".html");
             if(!wxFileExists(redirector)){
                 wxTextFile file;
                 file.Create(redirector);
-                file.AddLine("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-                file.AddLine("<html><head><meta http-equiv=\"Refresh\" content=\"0; URL=" \
-                    + page + "#" + anchor + "\">");
-                file.AddLine("</head><body>");
-                file.AddLine("Redirecting... if the page has not been redirected automatically click ");
-                file.AddLine("<a href=\"" + page + "#" + anchor + "\">here</a>.");
-                file.AddLine("</body></html>");
+                file.AddLine(wxT("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">"));
+                file.AddLine(wxT("<html><head><meta http-equiv=\"Refresh\" content=\"0; URL=") \
+                    + page + wxT("#") + anchor + wxT("\">"));
+                file.AddLine(wxT("</head><body>"));
+                file.AddLine(wxT("Redirecting... if the page has not been redirected automatically click "));
+                file.AddLine(wxT("<a href=\"") + page + wxT("#") + anchor + wxT("\">here</a>."));
+                file.AddLine(wxT("</body></html>"));
                 file.Write();
                 file.Close();
             }
-            path << "/" << redirector;
+            path << wxT("/") << redirector;
         } else {
-            path << "/handbook/" << page;
+            path << wxT("/handbook/") << page;
         }
     } else {
-        path = "http://ultradefrag.sourceforge.net";
-        path << "/handbook/" << page;
+        path = wxT("http://ultradefrag.sourceforge.net");
+        path << wxT("/handbook/") << page;
         if(!anchor.IsEmpty())
-            path << "#" << anchor;
+            path << wxT("#") << anchor;
     }
 
     itrace("%ls",ws(path));
-    if(path.Left(4) == "http") {
+    if(path.Left(4) == wxT("http")) {
         if(!wxLaunchDefaultBrowser(path))
             ShowError(wxT("Cannot open %ls!"),ws(path));
     } else {
-        ShellExec(path,"open");
+        ShellExec(path,wxT("open"));
     }
 }
 
@@ -243,7 +245,7 @@ bool Utils::SetProcessPriority(int priority)
     if(!result) letrace("cannot set process priority");
 
     ::CloseHandle(hProcess);
-    return result != 0 ? true : false;
+    return (result != 0 ? true : false);
 }
 
 #pragma comment(lib, "shell32")
@@ -257,8 +259,8 @@ void Utils::ShellExec(
     int show, int flags)
 {
     SHELLEXECUTEINFO se;
-    memset(&se,0,sizeof se);
-    se.cbSize = sizeof se;
+    memset(&se,0,sizeof(se));
+    se.cbSize = sizeof(se);
 
     se.fMask = SEE_MASK_FLAG_NO_UI;
     if(flags & SHELLEX_NOASYNC)
@@ -279,7 +281,7 @@ void Utils::ShellExec(
             ws(action), ws(file),
             ws(parameters));
         if(!(flags & SHELLEX_SILENT)){
-            ShowError(ConvertChartoWxString("Cannot %ls %ls %ls"),
+            ShowError(wxT("Cannot %ls %ls %ls"),
                 ws(action), ws(file),
                 ws(parameters));
         }
@@ -320,15 +322,15 @@ int Utils::MessageDialog(wxFrame *parent,
     // once from icon to bitmap and then back to icon;
     // since it causes the icon to look untidy we're using
     // direct icon loading here
-    LPCWSTR id = nullptr;
+    LPCWSTR id = NULL;
     if(icon == wxART_QUESTION) id = IDI_QUESTION;
     else if(icon == wxART_WARNING) id = IDI_EXCLAMATION;
     else if(icon == wxART_ERROR) id = IDI_HAND;
     else if(icon == wxART_INFORMATION) id = IDI_ASTERISK;
 
-    HICON hIcon = nullptr;
+    HICON hIcon = NULL;
     if(id){
-        hIcon = ::LoadIcon(nullptr,id);
+        hIcon = ::LoadIcon(NULL,id);
         if(!hIcon) letrace("cannot load icon for \"%ls\"",ws(icon));
     }
 
@@ -351,16 +353,16 @@ int Utils::MessageDialog(wxFrame *parent,
         wxBOTTOM | wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL,
         LARGE_SPACING);
     contents->Add(msg, wxGBPosition(0, 1), wxDefaultSpan,
-        wxALL & ~wxTOP | wxALIGN_CENTER_HORIZONTAL | \
+        (wxALL & ~wxTOP) | wxALIGN_CENTER_HORIZONTAL | \
         wxALIGN_CENTER_VERTICAL,LARGE_SPACING);
 
     wxButton *ok = new wxButton(&dlg,wxID_OK,text1);
     wxButton *cancel = new wxButton(&dlg,wxID_CANCEL,text2);
 
     // Burmese needs Padauk font for display
-    if(g_locale->GetCanonicalName().Left(2) == "my"){
+    if(g_locale->GetCanonicalName().Left(2) == wxT("my")){
         wxFont textFont = msg->GetFont();
-        if(!textFont.SetFaceName("Padauk")){
+        if(!textFont.SetFaceName(wxT("Padauk"))){
             etrace("Padauk font needed for correct Burmese text display not found");
         } else {
             textFont.SetPointSize(textFont.GetPointSize() + 2);
@@ -410,7 +412,7 @@ void Utils::ShowError(const wxString& format, ...)
     va_end(args);
 
     wxString log = _("Open &log");
-    log.Replace("&","");
+    log.Replace(wxT("&"),wxT(""));
 
     if(MessageDialog(g_mainFrame,_("Error!"),
       wxART_ERROR,log,_("&Cancel"),message) == wxID_OK)
@@ -419,50 +421,6 @@ void Utils::ShowError(const wxString& format, ...)
     }
 }
 
-wxString Utils::ConvertChartoWxString(char* input)
-{
-    #if wxUSE_UNICODE
-        int size = sizeof input + 1;
-        wchar_t *buffer = new wchar_t[size*4];  // 32bit chars?
-        wxEncodingConverter wxec;
-        wxec.Init(wxFONTENCODING_ISO8859_1, wxFONTENCODING_UNICODE, wxCONVERT_SUBSTITUTE);
-        wxec.Convert(input, buffer);
-        winx_free(input);
-        wxString temp(buffer);
-        return temp;
-    #else
-        return wxString(input.c_str());
-    #endif
-}
-char* Utils::wxStringToChar(wxString input)
-{
-#if (wxUSE_UNICODE)
-   size_t size = input.size() + 1;
-   char *buffer = new char[size];//No need to multiply by 4, converting to 1 byte char only.
-   memset(buffer, 0, size); //Good Practice, Can use buffer[0] = '\0' also.
-   wxEncodingConverter wxec;
-   wxec.Init(wxFONTENCODING_ISO8859_1, wxFONTENCODING_ISO8859_1, wxCONVERT_SUBSTITUTE);
-   wxec.Convert(input.mb_str(), buffer);
-   return buffer; //To free this buffer memory is user responsibility.
-#else
-   return (char *)(input.c_str());
-#endif
-//Other way:
-// convert wxString to const char *
-//wxString eh = huh->GetValue();
-//const wxCharBuffer eheheh = eh.ToAscii();
-}
-void Utils::DrawSingleRectangleBorder(HDC m_cacheDC,int xblock,int yblock,int line_width,int cell_size,HBRUSH brush,HBRUSH infill){
-    int x = xblock*cell_size;
-    int y = yblock*cell_size;
-    int w,r;
-    w = r = line_width;
-    for (int q=0;q <=1; q++,r--){
-        RECT rc={x+q*w,y+q*w,x+cell_size+w*r,y+cell_size+w*r};
-        ::FillRect(m_cacheDC,&rc,brush);
-        brush = infill;
-    }
-}
 
 void Utils::createDirectoryRecursively(const std::wstring &directory) {
 
@@ -471,7 +429,7 @@ void Utils::createDirectoryRecursively(const std::wstring &directory) {
   if(fileAttributes == INVALID_FILE_ATTRIBUTES) {
 
     // Recursively do it all again for the parent directory, if any
-    std::size_t slashIndex = directory.find_last_of(ConvertChartoWxString("\\/"));
+    std::size_t slashIndex = directory.find_last_of(wxT("\\/"));
     if(slashIndex != std::wstring::npos) {
       createDirectoryRecursively(directory.substr(0, slashIndex));
     }

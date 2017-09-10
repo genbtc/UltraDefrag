@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 //  UltraDefrag - a powerful defragmentation tool for Windows NT.
-//  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+//  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
 //  Copyright (c) 2010-2013 Stefan Pendl (stefanpe@users.sourceforge.net).
 //
 //  This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,8 @@
 // =======================================================================
 //                            Declarations
 // =======================================================================
-#include "wx/wxprec.h"
+
+#include "prec.h"
 #include "main.h"
 
 // =======================================================================
@@ -68,9 +69,9 @@ void Log::DoLogTextAtLevel(wxLogLevel level, const wxString& msg)
 void MainFrame::OnDebugLog(wxCommandEvent& WXUNUSED(event))
 {
     wxString logpath;
-    if(!wxGetEnv("UD_LOG_FILE_PATH",&logpath)){
-        wxMessageBox("Logging to a file is turned off.",
-            "Cannot open log file!",wxOK | wxICON_HAND,this);
+    if(!wxGetEnv(wxT("UD_LOG_FILE_PATH"),&logpath)){
+        wxMessageBox(wxT("Logging to a file is turned off."),
+            wxT("Cannot open log file!"),wxOK | wxICON_HAND,this);
     } else {
         wxFileName file(logpath);
         file.Normalize();

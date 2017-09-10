@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 //  UltraDefrag - a powerful defragmentation tool for Windows NT.
-//  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+//  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
 //  Copyright (c) 2010-2013 Stefan Pendl (stefanpe@users.sourceforge.net).
 //
 //  This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,8 @@
 // =======================================================================
 //                            Declarations
 // =======================================================================
-#include "wx/wxprec.h"
+
+#include "prec.h"
 #include "main.h"
 
 // =======================================================================
@@ -68,10 +69,10 @@ void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
     if(pi->current_operation == VOLUME_ANALYSIS) op = 'A';
     if(pi->current_operation == VOLUME_DEFRAGMENTATION) op = 'D';
 
-    wxString title = wxString::Format("%c:  %c %6.2lf %%",
+    wxString title = wxString::Format(wxT("%c:  %c %6.2lf %%"),
         winx_toupper(g_mainFrame->m_jobThread->m_letter),op,pi->percentage
     );
-    if(g_mainFrame->CheckOption("UD_DRY_RUN")) title += " (Dry Run)";
+    if(g_mainFrame->CheckOption(wxT("UD_DRY_RUN"))) title += wxT(" (dry run)");
 
     wxCommandEvent *event = new wxCommandEvent(
         wxEVT_COMMAND_MENU_SELECTED,ID_SetWindowTitle
@@ -89,11 +90,11 @@ void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
     if(g_mainFrame->m_jobThread->m_jobType == ANALYSIS_JOB \
       || pi->current_operation != VOLUME_ANALYSIS)
     {
-        if(g_mainFrame->CheckOption("UD_SHOW_PROGRESS_IN_TASKBAR")){
+        if(g_mainFrame->CheckOption(wxT("UD_SHOW_PROGRESS_IN_TASKBAR"))){
             g_mainFrame->SetTaskbarProgressState(TBPF_NORMAL);
             if(pi->clusters_to_process){
                 g_mainFrame->SetTaskbarProgressValue(
-                    pi->clusters_to_process / g_mainFrame->m_selected * \
+                    (pi->clusters_to_process / g_mainFrame->m_selected) * \
                     g_mainFrame->m_processed + \
                     pi->processed_clusters / g_mainFrame->m_selected,
                     pi->clusters_to_process
@@ -107,7 +108,7 @@ void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
     }
 
     // save progress information to the jobs cache
-    int letter = (int)g_mainFrame->m_jobThread->m_letter;
+    int letter = (int)(g_mainFrame->m_jobThread->m_letter);
     JobsCacheEntry *cacheEntry = new JobsCacheEntry;
     cacheEntry->jobType = g_mainFrame->m_jobThread->m_jobType;
     memcpy(&cacheEntry->pi,pi,sizeof(udefrag_progress_info));
@@ -172,7 +173,7 @@ void JobThread::ProcessVolume(int index)
         m_flags |= g_mainFrame->m_repeat ? UD_JOB_REPEAT : 0;
         result = udefrag_start_job(m_letter,m_jobType,m_flags,m_mapSize,
             reinterpret_cast<udefrag_progress_callback>(ProgressCallback),
-            reinterpret_cast<udefrag_terminator>(Terminator), nullptr
+            reinterpret_cast<udefrag_terminator>(Terminator),NULL
         );
     }
 
@@ -190,7 +191,7 @@ void JobThread::ProcessVolume(int index)
     event->SetInt((int)m_letter); g_mainFrame->GetEventHandler()->QueueEvent(event);
 }
 
-void* JobThread::Entry()
+void *JobThread::Entry()
 {
     while(!g_mainFrame->CheckForTermination(200)){
         if(m_launch){
@@ -199,17 +200,14 @@ void* JobThread::Entry()
             g_mainFrame->m_processed = 0;
 
             for(int i = 0; i < g_mainFrame->m_selected; i++){
-                if(g_mainFrame->m_stopped){
-                    dtrace("JobThread stopping!!!!!!, because m_stopped.");
-                    break;
-                }
-                m_letter = (char)(*m_volumes)[i][0];
-                //dtrace("About to process volume: %c",m_letter);
+                if(g_mainFrame->m_stopped) break;
+
+                m_letter = (char)((*m_volumes)[i][0]);
                 ProcessVolume(i);
 
                 /* advance overall progress to processed/selected */
                 g_mainFrame->m_processed ++;
-                if(g_mainFrame->CheckOption("UD_SHOW_PROGRESS_IN_TASKBAR")){
+                if(g_mainFrame->CheckOption(wxT("UD_SHOW_PROGRESS_IN_TASKBAR"))){
                     g_mainFrame->SetTaskbarProgressState(TBPF_NORMAL);
                     g_mainFrame->SetTaskbarProgressValue(
                         g_mainFrame->m_processed, g_mainFrame->m_selected
@@ -218,14 +216,14 @@ void* JobThread::Entry()
                     g_mainFrame->SetTaskbarProgressState(TBPF_NOPROGRESS);
                 }
             }
-            // complete the job,very important.
+
+            // complete the job
             QueueCommandEvent(g_mainFrame,ID_JobCompletion);
-            delete m_volumes;
-            m_launch = false;
+            delete m_volumes; m_launch = false;
         }
     }
 
-    return nullptr;
+    return NULL;
 }
 
 // =======================================================================
@@ -280,42 +278,30 @@ void MainFrame::OnStartJob(wxCommandEvent& event)
     UD_DisableTool(ID_ShowReport);
     m_subMenuSortingConfig->Enable(false);
 
-    // XXX: force the repeat button to be
-    // grayed out even when it's checked
-    wxToolBarToolBase *btn = m_toolBar->FindById(ID_Repeat);
-    if(btn){
-        if(!m_repeatButtonBitmap.IsOk()){
-            // save normal bitmap to restore it further
-            m_repeatButtonBitmap = btn->GetNormalBitmap();
-        }
-        m_toolBar->SetToolNormalBitmap(
-           ID_Repeat,btn->GetDisabledBitmap());
-    }
-
     ReleasePause();
 
     ProcessCommandEvent(this,ID_AdjustSystemTrayIcon);
     ProcessCommandEvent(this,ID_AdjustTaskbarIconOverlay);
     /* set overall progress: normal 0% */
-    if(CheckOption("UD_SHOW_PROGRESS_IN_TASKBAR")){
+    if(CheckOption(wxT("UD_SHOW_PROGRESS_IN_TASKBAR"))){
         SetTaskbarProgressValue(0,1);
         SetTaskbarProgressState(TBPF_NORMAL);
     }
 
     // set sorting parameters
-    if(m_menuBar->FindItem(ID_SortByPath)->IsChecked()){
-        wxSetEnv("UD_SORTING","path");
-    } else if(m_menuBar->FindItem(ID_SortBySize)->IsChecked()){
-        wxSetEnv("UD_SORTING","size");
-    } else if(m_menuBar->FindItem(ID_SortByCreationDate)->IsChecked()){
-        wxSetEnv("UD_SORTING","c_time");
-    } else if(m_menuBar->FindItem(ID_SortByModificationDate)->IsChecked()){
-        wxSetEnv("UD_SORTING","m_time");
-    } else if(m_menuBar->FindItem(ID_SortByLastAccessDate)->IsChecked()){
-        wxSetEnv("UD_SORTING","a_time");
+    if(m_menuBar->IsChecked(ID_SortByPath)){
+        wxSetEnv(wxT("UD_SORTING"),wxT("path"));
+    } else if(m_menuBar->IsChecked(ID_SortBySize)){
+        wxSetEnv(wxT("UD_SORTING"),wxT("size"));
+    } else if(m_menuBar->IsChecked(ID_SortByCreationDate)){
+        wxSetEnv(wxT("UD_SORTING"),wxT("c_time"));
+    } else if(m_menuBar->IsChecked(ID_SortByModificationDate)){
+        wxSetEnv(wxT("UD_SORTING"),wxT("m_time"));
+    } else if(m_menuBar->IsChecked(ID_SortByLastAccessDate)){
+        wxSetEnv(wxT("UD_SORTING"),wxT("a_time"));
     }
-    if(m_menuBar->FindItem(ID_SortAscending)->IsChecked()){
-        wxSetEnv("UD_SORTING_ORDER","asc");
+    if(m_menuBar->IsChecked(ID_SortAscending)){
+        wxSetEnv(wxT("UD_SORTING_ORDER"),wxT("asc"));
     } else {
         wxSetEnv("UD_SORTING_ORDER","desc");
     }
@@ -361,7 +347,6 @@ void MainFrame::OnStartJob(wxCommandEvent& event)
 void MainFrame::OnJobCompletion(wxCommandEvent& WXUNUSED(event))
 {
     // unlock everything after the job completion
-    UD_DisableTool(ID_Stop);
     UD_EnableTool(ID_Analyze);
     UD_EnableTool(ID_Defrag);
     UD_EnableTool(ID_QuickOpt);
@@ -375,11 +360,10 @@ void MainFrame::OnJobCompletion(wxCommandEvent& WXUNUSED(event))
     m_subMenuSortingConfig->Enable(true);
     m_busy = false;
 
-    // XXX: restore the repeat button bitmap
-    if(m_repeatButtonBitmap.IsOk()){
-        m_toolBar->SetToolNormalBitmap(
-           ID_Repeat,m_repeatButtonBitmap);
-    }
+    // XXX: sometimes reenabled buttons remain gray
+    // on Windows 7, at least on a virtual machine,
+    // so we have to refresh the toolbar ourselves
+    m_toolBar->Refresh(); m_toolBar->Update();
 
     ReleasePause();
 
@@ -405,7 +389,7 @@ void MainFrame::OnJobCompletion(wxCommandEvent& WXUNUSED(event))
  */
 void MainFrame::SetPause()
 {
-    m_menuBar->FindItem(ID_Pause)->Check(true);
+    m_menuBar->Check(ID_Pause,true);
     m_toolBar->ToggleTool(ID_Pause,true);
 
     Utils::SetProcessPriority(IDLE_PRIORITY_CLASS);
@@ -420,7 +404,7 @@ void MainFrame::SetPause()
  */
 void MainFrame::ReleasePause()
 {
-    m_menuBar->FindItem(ID_Pause)->Check(false);
+    m_menuBar->Check(ID_Pause,false);
     m_toolBar->ToggleTool(ID_Pause,false);
 
     Utils::SetProcessPriority(NORMAL_PRIORITY_CLASS);
@@ -456,7 +440,7 @@ void MainFrame::OnRepeat(wxCommandEvent& WXUNUSED(event))
 {
     if(!m_busy){
         m_repeat = m_repeat ? false : true;
-        m_menuBar->FindItem(ID_Repeat)->Check(m_repeat);
+        m_menuBar->Check(ID_Repeat,m_repeat);
         m_toolBar->ToggleTool(ID_Repeat,m_repeat);
     }
 }
@@ -472,7 +456,7 @@ void MainFrame::OnRepair(wxCommandEvent& WXUNUSED(event))
     long i = m_vList->GetFirstSelected();
     while(i != -1){
         char letter = (char)m_vList->GetItemText(i)[0];
-        args << wxString::Format(" %c:",letter);
+        args << wxString::Format(wxT(" %c:"),letter);
         i = m_vList->GetNextSelected(i);
     }
 
@@ -483,7 +467,7 @@ void MainFrame::OnRepair(wxCommandEvent& WXUNUSED(event))
     CHKDSK {drive} /F ................. check the drive and correct problems
     PING -n {seconds + 1} localhost ... trick to pause for n seconds afterwards
     */
-    wxFileName path(("%windir%\\system32\\cmd.exe"));
+    wxFileName path(wxT("%windir%\\system32\\cmd.exe"));
     path.Normalize(); wxString cmd(path.GetFullPath());
     cmd << " /C ( ";
     cmd << "for %D in ( " << args << " ) do ";
@@ -500,15 +484,15 @@ void MainFrame::OnRepair(wxCommandEvent& WXUNUSED(event))
     cmd << "& pause";
 
     itrace("Command Line: %ls", ws(cmd));
-    if(!wxExecute(cmd)) Utils::ShowError(wxString::Format("Cannot execute cmd.exe program!"));
+    if(!wxExecute(cmd)) Utils::ShowError(wxT("Cannot execute cmd.exe program!"));
 }
 
 void MainFrame::OnDefaultAction(wxCommandEvent& WXUNUSED(event))
 {
-    const auto i = m_vList->GetFirstSelected();
+    long i = m_vList->GetFirstSelected();
     if(i != -1){
         volume_info v;
-	    const char letter = m_vList->GetItemText(i)[0];
+        char letter = (char)m_vList->GetItemText(i)[0];
         if(udefrag_get_volume_information(letter,&v) >= 0){
             if(v.is_dirty){
                 ProcessCommandEvent(this,ID_Repair);
@@ -529,27 +513,27 @@ void MainFrame::OnDiskProcessingFailure(wxCommandEvent& event)
     switch(m_jobThread->m_jobType){
     case ANALYSIS_JOB:
         caption = wxString::Format(
-            "Analysis of %ls failed.",
+            wxT("Analysis of %ls failed."),
             ws(event.GetString())
         );
         break;
     case DEFRAGMENTATION_JOB:
         caption = wxString::Format(
-            "Defragmentation of %ls failed.",
+            wxT("Defragmentation of %ls failed."),
             ws(event.GetString())
         );
         break;
     default:
         caption = wxString::Format(
-            "Optimization of %ls failed.",
+            wxT("Optimization of %ls failed."),
             ws(event.GetString())
         );
         break;
     }
 
-	const int error = event.GetInt();
-    wxString msg = caption + "\n" \
-        + wxString::Format("%hs",
+    int error = event.GetInt();
+    wxString msg = caption + wxT("\n") \
+        + wxString::Format(wxT("%hs"),
         udefrag_get_error_description(error));
 
     Utils::ShowError(wxT("%ls"),ws(msg));

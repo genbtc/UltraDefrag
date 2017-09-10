@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 //  UltraDefrag - a powerful defragmentation tool for Windows NT.
-//  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+//  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
 //  Copyright (c) 2010-2013 Stefan Pendl (stefanpe@users.sourceforge.net).
 //
 //  This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,8 @@
 // =======================================================================
 //                            Declarations
 // =======================================================================
-#include "wx/wxprec.h"
+
+#include "prec.h"
 #include "main.h"
 
 enum {
@@ -102,7 +103,7 @@ void *UpgradeThread::Entry()
         }
     }
 
-    return nullptr;
+    return NULL;
 }
 
 /**
@@ -182,7 +183,7 @@ void MainFrame::ShowUpgradeDialog(wxCommandEvent& event)
     if(Utils::MessageDialog(this,_("You can upgrade me ^-^"),
       wxART_INFORMATION,_("&Upgrade"),_("&Cancel"),message) == wxID_OK)
     {
-        wxString url(("http://ultradefrag.sourceforge.net"));
+        wxString url(wxT("http://ultradefrag.sourceforge.net"));
         if(!wxLaunchDefaultBrowser(url))
             Utils::ShowError(wxT("Cannot open %ls!"),ws(url));
     }

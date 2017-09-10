@@ -32,7 +32,7 @@
 /**=========================================================================**
 ***                        Declarations                                     **
 ***=========================================================================**/
-#include "wx/wxprec.h"
+#include "prec.h"
 #include "main.h"
 #include "udefrag-internals_flags.h"
 //#include "../dll/udefrag/query.h" //definitions are defined in udefrag.dll's .h's

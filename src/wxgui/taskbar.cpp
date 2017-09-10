@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 //  UltraDefrag - a powerful defragmentation tool for Windows NT.
-//  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+//  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
 //  Copyright (c) 2010-2013 Stefan Pendl (stefanpe@users.sourceforge.net).
 //
 //  This program is free software; you can redistribute it and/or modify
@@ -36,7 +36,8 @@
 // =======================================================================
 //                            Declarations
 // =======================================================================
-#include "wx/wxprec.h"
+
+#include "prec.h"
 #include "main.h"
 //#include <objbase.h>
 #pragma comment(lib, "ole32")
@@ -82,21 +83,21 @@ public:
 static ITaskbarList3 *GetTaskbarInstance()
 {
     if(winx_get_os_version() < WINDOWS_7)
-        return nullptr; // interface introduced in Win7
+        return NULL; // interface introduced in Win7
 
-    ::CoInitialize(nullptr);
+    ::CoInitialize(NULL);
 
     const GUID clsid = CLSID_TaskbarList;
     const GUID iid = IID_ITaskbarList3;
-    ITaskbarList3 *taskBar = nullptr;
+    ITaskbarList3 *taskBar = NULL;
 
     HRESULT result = ::CoCreateInstance(
-        clsid, nullptr,CLSCTX_INPROC_SERVER,
+        clsid,NULL,CLSCTX_INPROC_SERVER,
         iid,reinterpret_cast<void **>(&taskBar)
     );
     if(!SUCCEEDED(result) || !taskBar){
         etrace("failed with code 0x%x",(UINT)result);
-        return nullptr;
+        return NULL;
     }
 
     return taskBar;
@@ -116,7 +117,7 @@ static void ReleaseTaskbarInstance(ITaskbarList3 *taskBar)
 
 void MainFrame::SetTaskbarIconOverlay(const wxString& icon, const wxString& text)
 {
-    if(!CheckOption("UD_SHOW_TASKBAR_ICON_OVERLAY")) return;
+    if(!CheckOption(wxT("UD_SHOW_TASKBAR_ICON_OVERLAY"))) return;
 
     ITaskbarList3 *taskBar = GetTaskbarInstance();
 
@@ -139,7 +140,7 @@ void MainFrame::RemoveTaskbarIconOverlay()
 
     if(taskBar){
         HRESULT result = taskBar->SetOverlayIcon(
-            (HWND)g_mainFrame->GetHandle(), nullptr, nullptr
+            (HWND)g_mainFrame->GetHandle(),NULL,NULL
         );
         if(!SUCCEEDED(result))
             etrace("failed with code 0x%x",(UINT)result);
@@ -188,19 +189,19 @@ void MainFrame::SetTaskbarProgressValue(ULONGLONG completed, ULONGLONG total)
 
 void MainFrame::AdjustTaskbarIconOverlay(wxCommandEvent& WXUNUSED(event))
 {
-    if(!CheckOption("UD_SHOW_TASKBAR_ICON_OVERLAY")){
+    if(!CheckOption(wxT("UD_SHOW_TASKBAR_ICON_OVERLAY"))){
         RemoveTaskbarIconOverlay(); return;
     }
 
     if(m_busy){
         if(m_paused){
             SetTaskbarIconOverlay(
-                "overlay_paused",
+                wxT("overlay_paused"),
                 _("The job is paused")
             );
         } else {
             SetTaskbarIconOverlay(
-                "overlay_running",
+                wxT("overlay_running"),
                 _("The job is running")
             );
         }

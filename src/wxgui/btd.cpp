@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 //  UltraDefrag - a powerful defragmentation tool for Windows NT.
-//  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+//  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
 //  Copyright (c) 2010-2013 Stefan Pendl (stefanpe@users.sourceforge.net).
 //
 //  This program is free software; you can redistribute it and/or modify
@@ -33,9 +33,11 @@
 // =======================================================================
 //                            Declarations
 // =======================================================================
-#include "wx/wxprec.h"
+
+#include "prec.h"
 #include "main.h"
 #pragma comment(lib, "advapi32")
+
 // =======================================================================
 //              Boot time defragmenter registration tracking
 // =======================================================================
@@ -44,7 +46,7 @@ void *BtdThread::Entry()
 {
     itrace("boot registration tracking started");
 
-    HKEY hKey = nullptr; HANDLE hEvent = nullptr;
+    HKEY hKey = NULL; HANDLE hEvent = NULL;
     if(::RegOpenKeyExW(HKEY_LOCAL_MACHINE,
       L"SYSTEM\\CurrentControlSet\\Control\\Session Manager",
       0,KEY_NOTIFY,&hKey) != ERROR_SUCCESS){
@@ -52,8 +54,8 @@ void *BtdThread::Entry()
         goto done;
     }
 
-    hEvent = ::CreateEvent(nullptr,FALSE,FALSE, nullptr);
-    if(hEvent == nullptr){
+    hEvent = ::CreateEvent(NULL,FALSE,FALSE,NULL);
+    if(hEvent == NULL){
         letrace("cannot create event for SMSS key tracking");
         goto done;
     }
@@ -68,7 +70,7 @@ void *BtdThread::Entry()
         }
         while(!g_mainFrame->CheckForTermination(1)){
             if(::WaitForSingleObject(hEvent,100) == WAIT_OBJECT_0){
-                int result = ::winx_bootex_check(Utils::ConvertChartoWxString("defrag_native"));
+                int result = ::winx_bootex_check(L"defrag_native");
                 if(result >= 0){
                     itrace("boot time defragmenter %hs",
                         result > 0 ? "enabled" : "disabled");
@@ -87,7 +89,7 @@ done:
     if(hEvent) ::CloseHandle(hEvent);
     if(hKey) ::RegCloseKey(hKey);
     itrace("boot registration tracking stopped");
-    return nullptr;
+    return NULL;
 }
 
 // =======================================================================
@@ -104,18 +106,18 @@ void MainFrame::OnBootEnable(wxCommandEvent& WXUNUSED(event))
     if(result == 0){
         // registration succeeded
         m_btdEnabled = m_btdEnabled ? false : true;
-        m_menuBar->FindItem(ID_BootEnable)->Check(m_btdEnabled);
+        m_menuBar->Check(ID_BootEnable,m_btdEnabled);
         m_toolBar->ToggleTool(ID_BootEnable,m_btdEnabled);
     } else {
-        if(m_btdEnabled) Utils::ShowError(Utils::ConvertChartoWxString("Cannot disable the boot time defragmenter!"));
-        else  Utils::ShowError(Utils::ConvertChartoWxString("Cannot enable the boot time defragmenter!"));
+        if(m_btdEnabled) Utils::ShowError(wxT("Cannot disable the boot time defragmenter!"));
+        else  Utils::ShowError(wxT("Cannot enable the boot time defragmenter!"));
     }
 }
 
 void MainFrame::OnBootChange(wxCommandEvent& event)
 {
-    m_btdEnabled = event.GetInt() > 0;
-    m_menuBar->FindItem(ID_BootEnable)->Check(m_btdEnabled);
+    m_btdEnabled = (event.GetInt() > 0);
+    m_menuBar->Check(ID_BootEnable,m_btdEnabled);
     m_toolBar->ToggleTool(ID_BootEnable,m_btdEnabled);
 }
 

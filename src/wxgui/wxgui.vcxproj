@@ -97,9 +97,8 @@
       <AdditionalOptions>/GA %(AdditionalOptions)</AdditionalOptions>
       <CallingConvention />
       <ProgramDataBaseFileName />
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile />
       <CompileAsManaged>false</CompileAsManaged>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ResourceCompile>
       <AdditionalIncludeDirectories>$(WXWIDGETSDIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -168,6 +167,7 @@
       <Optimization>Full</Optimization>
       <ProgramDataBaseFileName />
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ResourceCompile>
       <AdditionalIncludeDirectories>$(WXWIDGETSDIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -196,6 +196,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="map.cpp" />
     <ClCompile Include="menu.cpp" />
+    <ClCompile Include="prec.cpp" />
     <ClCompile Include="query.cpp" />
     <ClCompile Include="report.cpp" />
     <ClCompile Include="shutdown.cpp" />
@@ -212,6 +213,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
+    <ClInclude Include="prec.h" />
     <ClInclude Include="udefrag-internals_flags.h" />
   </ItemGroup>
   <ItemGroup>

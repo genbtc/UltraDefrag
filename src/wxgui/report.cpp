@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 //  UltraDefrag - a powerful defragmentation tool for Windows NT.
-//  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+//  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
 //  Copyright (c) 2010-2013 Stefan Pendl (stefanpe@users.sourceforge.net).
 //
 //  This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,8 @@
 // =======================================================================
 //                            Declarations
 // =======================================================================
-#include "wx/wxprec.h"
+
+#include "prec.h"
 #include "main.h"
 
 // =======================================================================
@@ -44,20 +45,20 @@ void MainFrame::OnShowReport(wxCommandEvent& WXUNUSED(event))
 {
     if(m_busy) return;
 
-    wxFileName lua((".\\lua5.1a_gui.exe")); lua.Normalize();
+    wxFileName lua(wxT(".\\lua5.1a_gui.exe")); lua.Normalize();
 
     long i = m_vList->GetFirstSelected();
     while(i != -1){
         char letter = (char)m_vList->GetItemText(i)[0];
         wxString path = wxString::Format(
-            ".\\reports\\fraglist_%c.luar",
+            wxT(".\\reports\\fraglist_%c.luar"),
             winx_tolower(letter));
         wxFileName report(path); report.Normalize();
         if(report.FileExists()){
             wxString args = wxString::Format(
-                ".\\scripts\\udreportcnv.lua \"%ls\" . -v",
+                wxT(".\\scripts\\udreportcnv.lua \"%ls\" . -v"),
                 ws(report.GetFullPath()));
-            Utils::ShellExec(lua.GetFullPath(),"open",args);
+            Utils::ShellExec(lua.GetFullPath(),wxT("open"),args);
         }
         i = m_vList->GetNextSelected(i);
     }

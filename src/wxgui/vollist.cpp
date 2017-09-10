@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 //  UltraDefrag - a powerful defragmentation tool for Windows NT.
-//  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+//  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
 //  Copyright (c) 2010-2013 Stefan Pendl (stefanpe@users.sourceforge.net).
 //
 //  This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,8 @@
 // =======================================================================
 //                            Declarations
 // =======================================================================
-#include "wx/wxprec.h"
+
+#include "prec.h"
 #include "main.h"
 
 int g_fixedIcon;
@@ -51,7 +52,7 @@ void MainFrame::InitVolList()
     m_vListFont = new wxFont(m_vList->GetFont());
 
     // set mono-space font for the list unless Burmese translation is selected
-    if(g_locale->GetCanonicalName().Left(2) != "my"){
+    if(g_locale->GetCanonicalName().Left(2) != wxT("my")){
         wxFont font = m_vList->GetFont();
         if(font.SetFaceName(wxT("Lucida Console"))){
             font.SetPointSize(DPI(9));
@@ -93,20 +94,20 @@ void MainFrame::InitVolList()
     // attach drive icons
     int size = g_iconSize;
     wxImageList *list = new wxImageList(size,size);
-    g_fixedIcon          = list->Add(wxIcon("fixed"           , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
-    g_fixedDirtyIcon     = list->Add(wxIcon("fixed_dirty"     , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
-    g_removableIcon      = list->Add(wxIcon("removable"       , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
-    g_removableDirtyIcon = list->Add(wxIcon("removable_dirty" , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
+    g_fixedIcon          = list->Add(wxIcon(wxT("fixed")           , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
+    g_fixedDirtyIcon     = list->Add(wxIcon(wxT("fixed_dirty")     , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
+    g_removableIcon      = list->Add(wxIcon(wxT("removable")       , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
+    g_removableDirtyIcon = list->Add(wxIcon(wxT("removable_dirty") , wxBITMAP_TYPE_ICO_RESOURCE, size, size));
     m_vList->SetImageList(list,wxIMAGE_LIST_SMALL);
 
     // ensure that the list will cover integral number of items
     m_vListHeight = 0xFFFFFFFF; // prevent expansion of the list
-    m_vList->InsertItem(0,"hi",0);
+    m_vList->InsertItem(0,wxT("hi"),0);
     ProcessCommandEvent(this,ID_AdjustListHeight);
 
     GetEventHandler()->Connect(wxEVT_SIZE,wxSizeEventHandler(MainFrame::OnListSize),NULL,this);
     m_splitter->GetEventHandler()->Connect(wxEVT_COMMAND_SPLITTER_SASH_POS_CHANGED,
-        wxSplitterEventHandler(MainFrame::OnSplitChanged), nullptr,this);
+        wxSplitterEventHandler(MainFrame::OnSplitChanged),NULL,this);
 }
 
 // =======================================================================
@@ -116,7 +117,7 @@ void MainFrame::InitVolList()
 BEGIN_EVENT_TABLE(DrivesList, wxListView)
     EVT_KEY_DOWN(DrivesList::OnKeyDown)
     EVT_KEY_UP(DrivesList::OnKeyUp)
-    EVT_LEFT_DCLICK(DrivesList::OnMouse)
+    EVT_MOUSE_EVENTS(DrivesList::OnMouse)
     EVT_LIST_ITEM_SELECTED(wxID_ANY,DrivesList::OnSelectionChange)
     EVT_LIST_ITEM_DESELECTED(wxID_ANY,DrivesList::OnSelectionChange)
 END_EVENT_TABLE()
@@ -129,9 +130,8 @@ void DrivesList::OnKeyDown(wxKeyEvent& event)
 void DrivesList::OnKeyUp(wxKeyEvent& event)
 {
     if(!g_mainFrame->m_busy){
-/*         dtrace("Modifier: %d ... KeyCode: %d", \
- *             event.GetModifiers(), event.GetKeyCode());
- */
+        // dtrace("Modifier: %d ... KeyCode: %d",
+        //    event.GetModifiers(), event.GetKeyCode());
         switch(event.GetKeyCode()){
         case WXK_RETURN:
         case WXK_NUMPAD_ENTER:
@@ -185,8 +185,7 @@ void MainFrame::SelectAll(wxCommandEvent& WXUNUSED(event))
 void MainFrame::AdjustListColumns(wxCommandEvent& event)
 {
     int width = event.GetInt();
-    if(width == 0)
-        width = m_vList->GetClientSize().GetWidth();
+    if(width == 0) width = m_vList->GetClientSize().GetWidth();
 
     // get current column widths, since user could have changed them
     int cwidth = 0; bool changed = false;
@@ -209,11 +208,12 @@ void MainFrame::AdjustListColumns(wxCommandEvent& event)
     int lastColumnWidth = width;
 
     // int border = wxSystemSettings::GetMetric(wxSYS_BORDER_X);
+
     // dtrace("border width ......... %d", border);
     // dtrace("client width ......... %d", width);
     // dtrace("total column width ... %d", cwidth);
 
-    for(int i = 0; i < LIST_COLUMNS - 1; i++) {
+    for(int i = 0; i < (LIST_COLUMNS - 1); i++) {
         int w = m_w[i] = (int)floor(m_r[i] * width);
         m_vList->SetColumnWidth(i, w);
         // dtrace("column %d width ....... %d", i, w);
@@ -236,7 +236,7 @@ void MainFrame::AdjustListHeight(wxCommandEvent& WXUNUSED(event))
 
     // avoid recursion
     if(height == m_vListHeight) return;
-    bool expand = height > m_vListHeight ? true : false;
+    bool expand = (height > m_vListHeight) ? true : false;
     m_vListHeight = height;
 
     if(!m_vList->GetColumnCount()) return;
@@ -310,7 +310,7 @@ void *ListThread::Entry()
         }
     }
 
-    return nullptr;
+    return NULL;
 }
 
 void MainFrame::UpdateVolumeInformation(wxCommandEvent& event)
@@ -344,18 +344,19 @@ void MainFrame::UpdateVolumeInformation(wxCommandEvent& event)
         else m_vList->SetItemImage(index,g_fixedIcon);
     }
     dtrace("Updated Volume Information for Drive: %c", v->letter);
-    char s[32]; wxString string;
-    ::winx_bytes_to_hr((ULONGLONG)v->total_space.QuadPart,2,s,sizeof s);
-    string.Printf("%hs",s); m_vList->SetItem(index,3,string);
 
-    ::winx_bytes_to_hr((ULONGLONG)v->free_space.QuadPart,2,s,sizeof s);
-    string.Printf("%hs",s); m_vList->SetItem(index,4,string);
+    char s[32]; wxString string;
+    ::winx_bytes_to_hr((ULONGLONG)(v->total_space.QuadPart),2,s,sizeof(s));
+    string.Printf(wxT("%hs"),s); m_vList->SetItem(index,3,string);
+
+    ::winx_bytes_to_hr((ULONGLONG)(v->free_space.QuadPart),2,s,sizeof(s));
+    string.Printf(wxT("%hs"),s); m_vList->SetItem(index,4,string);
 
     double total = (double)v->total_space.QuadPart;
     double free = (double)v->free_space.QuadPart;
-    double d = total > 0 ? free / total : 0;
+    double d = (total > 0) ? free / total : 0;
     int p = (int)(100 * d);
-    string.Printf("%u %%",p); m_vList->SetItem(index,5,string);
+    string.Printf(wxT("%u %%"),p); m_vList->SetItem(index,5,string);
 
     delete v;
 }
@@ -366,6 +367,7 @@ void MainFrame::UpdateVolumeStatus(wxCommandEvent& event)
     JobsCacheEntry *cacheEntry = m_jobsCache[(int)letter];
     if(!cacheEntry) return;
 	//search for which drive we are updating by iterating through the vol list
+
     int index;
     for(index = 0; index < m_vList->GetItemCount(); index++){
         if(letter == (char)m_vList->GetItemText(index)[0]) break;
@@ -424,7 +426,7 @@ void MainFrame::UpdateVolumeStatus(wxCommandEvent& event)
     }
     m_vList->SetItem(index,1,status);
 
-    wxString fragmentation = wxString::Format("%5.2lf %%",
+    wxString fragmentation = wxString::Format(wxT("%5.2lf %%"),
         cacheEntry->pi.fragmentation);
     m_vList->SetItem(index,2,fragmentation);
 }
@@ -444,7 +446,7 @@ void MainFrame::PopulateList(wxCommandEvent& event)
             v[i].fsname
         );
         wxString label;
-        label.Printf("%-10ls %ls",
+        label.Printf(wxT("%-10ls %ls"),
             ws(s),v[i].label);
         m_vList->InsertItem(i,label);
 
@@ -479,7 +481,7 @@ void MainFrame::PopulateList(wxCommandEvent& event)
 void MainFrame::OnSkipRem(wxCommandEvent& WXUNUSED(event))
 {
     if(!m_busy){
-        m_skipRem = m_menuBar->FindItem(ID_SkipRem)->IsChecked();
+        m_skipRem = m_menuBar->IsChecked(ID_SkipRem);
         m_listThread->m_rescan = true;
     }
 }

@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 //  UltraDefrag - a powerful defragmentation tool for Windows NT.
-//  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+//  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
 //  Copyright (c) 2010-2013 Stefan Pendl (stefanpe@users.sourceforge.net).
 //
 //  This program is free software; you can redistribute it and/or modify
@@ -19,94 +19,15 @@
 //  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 //////////////////////////////////////////////////////////////////////////
+
 #ifndef _UDEFRAG_GUI_MAIN_H_
 #define _UDEFRAG_GUI_MAIN_H_
 #pragma comment(lib, "kernel32")
+
 // =======================================================================
 //                               Headers
 // =======================================================================
-#include <wx/wxprec.h>
-#ifndef WX_PRECOMP
-	#include <wx/wx.h>
-	#include <wx/frame.h>
-#endif
-#include <wx/thread.h>  //Not included by wx/wxprec.h
-#include <wx/xml/xml.h> //Not included by wx/wxprec.h
-
-#include <string>
-#include <wx/artprov.h>
-#include <wx/cmdline.h>
-#include <wx/confbase.h>
-#include <wx/dir.h>
-#include <wx/display.h>
-#include <wx/dynlib.h>
-#include <wx/fileconf.h>
-#include <wx/filename.h>
-#include <wx/gbsizer.h>
-#include <wx/hyperlink.h>
-#include <wx/intl.h>
-#include <wx/listctrl.h>
-#include <wx/mstream.h>
-#include <wx/settings.h>
-#include <wx/splitter.h>
-#include <wx/sysopt.h>
-#include <wx/taskbar.h>
-#include <wx/textfile.h>
-#include <wx/thread.h>
-#include <wx/toolbar.h>
-#include <wx/uri.h>
-#include <wx/notebook.h>//genbtc
-#include <wx/clipbrd.h>//genBTC (right-click menu) copy to clipboard
-#include <wx/encconv.h> //genbtc for encodings
-#include <wx/filepicker.h>//genBTC query tab 3
-#include <wx/fontdlg.h>//genBTC (font-chooser)
-#include <wx/grid.h>//genbtc
-#include <wx/menu.h>//genbtc (right-click menu)
-#include <wx/notebook.h>//genbtc
-#include <wx/panel.h>//genbtc
-
-#include <wx/sizer.h>//genbtc
-#include <wx/stattext.h>//genBTC query tab 3
-
-/*
-* Next definition is very important for mingw:
-* _WIN32_IE must be no less than 0x0400
-* to include some important constant definitions.
-*/
-#ifndef _WIN32_IE
-#define _WIN32_IE 0x0400
-#include <commctrl.h>
-#endif
-
-typedef enum {
-    TBPF_NOPROGRESS	= 0,
-    TBPF_INDETERMINATE	= 0x1,
-    TBPF_NORMAL	= 0x2,
-    TBPF_ERROR	= 0x4,
-    TBPF_PAUSED	= 0x8
-} TBPFLAG;
-
-#if defined(__GNUC__)
-extern "C" {
-HRESULT WINAPI URLDownloadToFileW(
-    /* LPUNKNOWN */ void *lpUnkcaller,
-    LPCWSTR szURL,
-    LPCWSTR szFileName,
-    DWORD dwReserved,
-    /*IBindStatusCallback*/ void *pBSC
-);
-
-HRESULT WINAPI URLDownloadToCacheFileW(
-    /* LPUNKNOWN */ void *lpUnkcaller,
-    LPCWSTR szURL,
-    LPWSTR szFileName,
-    DWORD cchFileName,
-    DWORD dwReserved,
-    /*IBindStatusCallback*/ void *pBSC
-);
-}
-#endif
-
+#include "prec.h"
 #include "../include/dbg.h"
 #include "../include/version.h"
 
@@ -344,13 +265,13 @@ public:
     StatThread() : wxThread(wxTHREAD_JOINABLE) { Create(); Run(); }
     ~StatThread() { Wait(); }
 
-	void *Entry() override;
+    virtual void *Entry();
 };
 
 class Log: public wxLog {
 public:
     Log()  { delete SetActiveTarget(this); };
-    ~Log() { SetActiveTarget(nullptr); };
+    ~Log() { SetActiveTarget(NULL); };
 
     virtual void DoLogTextAtLevel(wxLogLevel level, const wxString& msg);
 };
@@ -385,7 +306,7 @@ public:
     BtdThread() : wxThread(wxTHREAD_JOINABLE) { Create(); Run(); }
     ~BtdThread() { Wait(); }
 
-	void *Entry() override;
+    virtual void *Entry();
 };
 
 class ConfigThread: public wxThread {
@@ -393,7 +314,7 @@ public:
     ConfigThread() : wxThread(wxTHREAD_JOINABLE) { Create(); Run(); }
     ~ConfigThread() { Wait(); }
 
-	void *Entry() override;
+    virtual void *Entry();
 };
 
 class JobThread: public wxThread {
@@ -403,7 +324,7 @@ public:
     }
     ~JobThread() { Wait(); }
 
-	void *Entry() override;
+    virtual void *Entry();
 
     bool m_launch;
     wxArrayString *m_volumes;
@@ -427,7 +348,7 @@ public:
     }
     ~ListThread() { Wait(); }
 
-	void *Entry() override;
+    virtual void *Entry();
 
     bool m_rescan;
 };
@@ -465,7 +386,7 @@ public:
     }
     ~UpgradeThread() { Wait(); }
 
-	void *Entry() override;
+    virtual void *Entry();
 
     bool m_check;
     int m_level;
@@ -476,7 +397,7 @@ private:
 
 class SystemTrayIcon: public wxTaskBarIcon {
 public:
-	wxMenu *CreatePopupMenu() override;
+    virtual wxMenu *CreatePopupMenu();
 
     void OnMenuShowHide(wxCommandEvent& event);
     void OnMenuPause(wxCommandEvent& event);
@@ -631,9 +552,9 @@ public:
     MainFrame();
     ~MainFrame();
 
-    WXLRESULT MSWWindowProc(WXUINT msg,WXWPARAM wParam,WXLPARAM lParam) override;
+    WXLRESULT MSWWindowProc(WXUINT msg,WXWPARAM wParam,WXLPARAM lParam);
 
-	static bool CheckForTermination(int time);
+    bool CheckForTermination(int time);
 
     // action menu handlers
     void OnStartJob(wxCommandEvent& event);
@@ -752,7 +673,7 @@ private:
     void InitVolList();
     void InitFilesList();    //genBTC FilesList.cpp
     void ReadAppConfiguration();
-    //void ReadUserPreferences();
+    void ReadUserPreferences();
     void ReleasePause();
     void RemoveTaskbarIconOverlay();
     void SaveAppConfiguration();
@@ -853,13 +774,10 @@ public:
         const wxString& anchor = wxEmptyString);
     static bool SetProcessPriority(int priority);
     static void ShellExec(const wxString& file,
-        const wxString& action = "open",
+        const wxString& action = wxT("open"),
         const wxString& parameters = wxEmptyString,
         int show = SW_SHOW, int flags = 0);
     static void ShowError(const wxString& format, ...);
-    static wxString ConvertChartoWxString(char* input);
-    static char* wxStringToChar(wxString input);
-    static void DrawSingleRectangleBorder(HDC m_cacheDC,int xblock,int yblock,int line_width,int cell_size,HBRUSH border,HBRUSH infill);
     static void createDirectoryRecursively(const std::wstring &directory);
     static void extendfiltertext(wxString itemtext,wxString *extfiltertext);
     static wxString makefiltertext(wxString itemtext);
@@ -874,27 +792,14 @@ public:
 // =======================================================================
 //from job.cpp
 #define UD_EnableTool(id) { \
-    wxMenuItem *item = m_menuBar->FindItem(id); \
-    if(item) item->Enable(true); \
-    if(m_toolBar->FindById(id)) \
-        m_toolBar->EnableTool(id,true); \
+    m_menuBar->Enable(id,true); \
+    m_toolBar->EnableTool(id,true); \
 }
 
 #define UD_DisableTool(id) { \
-    wxMenuItem *item = m_menuBar->FindItem(id); \
-    if(item) item->Enable(false); \
-    if(m_toolBar->FindById(id)) \
-        m_toolBar->EnableTool(id,false); \
+    m_menuBar->Enable(id,false); \
+    m_toolBar->EnableTool(id,false); \
 }
-
-#define UD_SetMenuIcon(id, icon) { \
-    wxBitmap *pic; wxString string; \
-    string.Printf(("%hs%u"),#icon,g_iconSize); \
-    pic = Utils::LoadPngResource(string.wc_str()); \
-    if(pic) m_menuBar->FindItem(id)->SetBitmap(*pic); \
-    delete pic; \
-}
-
 // =======================================================================
 //                           Global variables
 // =======================================================================

@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 //  UltraDefrag - a powerful defragmentation tool for Windows NT.
-//  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+//  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
 //  Copyright (c) 2010-2013 Stefan Pendl (stefanpe@users.sourceforge.net).
 //
 //  This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,8 @@
 // =======================================================================
 //                            Declarations
 // =======================================================================
-#include "wx/wxprec.h"
+
+#include "prec.h"
 #include "main.h"
 
 // =======================================================================
@@ -108,7 +109,7 @@ void SystemTrayIcon::OnLeftButtonUp(wxTaskBarIconEvent& WXUNUSED(event))
 
 void MainFrame::AdjustSystemTrayIcon(wxCommandEvent& event)
 {
-    if(CheckOption("UD_MINIMIZE_TO_SYSTEM_TRAY")){
+    if(CheckOption(wxT("UD_MINIMIZE_TO_SYSTEM_TRAY"))){
         wxString icon(wxT("tray"));
         if(m_busy){
             if(m_paused) icon << wxT("_paused");
