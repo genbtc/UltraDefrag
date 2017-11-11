@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 //  UltraDefrag - a powerful defragmentation tool for Windows NT.
-//  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+//  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
 //  Copyright (c) 2010-2013 Stefan Pendl (stefanpe@users.sourceforge.net).
 //
 //  This program is free software; you can redistribute it and/or modify
@@ -27,32 +27,51 @@
 //                               Headers
 // =======================================================================
 
-#include <wx/wxprec.h>
-
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif
-
-#include <wx/cmdline.h>
-#include <wx/dynlib.h>
-#include <wx/filename.h>
-#include <wx/thread.h>
-
-#include <conio.h>
-
-#if wxUSE_UNICODE
-#define wxCharStringFmtSpec "%ls"
-#else
-#define wxCharStringFmtSpec "%hs"
-#endif
-
+#include "../include/dbg.h"
 #include "../include/version.h"
 #include "../dll/zenwinx/zenwinx.h"
 #include "../dll/udefrag/udefrag.h"
 
 // =======================================================================
+//                              Constants
+// =======================================================================
+
+#define USAGE_TRACKING_ACCOUNT_ID wxT("UA-15890458-1")
+#define TEST_TRACKING_ACCOUNT_ID  wxT("UA-70148850-1")
+
+#ifndef _WIN64
+  #define USAGE_TRACKING_ID wxT("console-x86")
+  #define TEST_TRACKING_ID  wxT("cmd-x86")
+#else
+ #if defined(_IA64_)
+  #define USAGE_TRACKING_ID wxT("console-ia64")
+  #define TEST_TRACKING_ID  wxT("cmd-ia64")
+ #else
+  #define USAGE_TRACKING_ID wxT("console-x64")
+  #define TEST_TRACKING_ID  wxT("cmd-x64")
+ #endif
+#endif
+
+// append html extension to the tracking id, for historical reasons
+#define USAGE_TRACKING_PATH wxT("/appstat/") USAGE_TRACKING_ID wxT(".html")
+
+#define TEST_TRACKING_PATH \
+    wxT("/") wxT(wxUD_ABOUT_VERSION) \
+    wxT("/") TEST_TRACKING_ID wxT("/")
+
+#define GA_REQUEST(type) ga_request(type##_PATH, type##_ACCOUNT_ID)
+
+// =======================================================================
 //                          Macro definitions
 // =======================================================================
+
+/*
+* Convert wxString to formats acceptable by vararg functions.
+* NOTE: Use it to pass strings to functions only as returned
+* objects may be temporary!
+*/
+#define ansi(s) ((const char *)s.mb_str())
+#define ws(s) ((const wchar_t *)s.wc_str())
 
 /* sets text color only if -b option is not set */
 #define color(c) { if(!g_use_default_colors) (void)SetConsoleTextAttribute(g_out,c); }
@@ -72,8 +91,7 @@ public:
     Log()  { delete SetActiveTarget(this); };
     ~Log() { SetActiveTarget(NULL); };
 
-    virtual void DoLog(wxLogLevel level,
-        const wxChar *msg,time_t timestamp);
+    virtual void DoLogTextAtLevel(wxLogLevel level, const wxString& msg);
 };
 
 bool check_admin_rights(void);
@@ -83,8 +101,10 @@ void init_map(char letter);
 void redraw_map(udefrag_progress_info *pi);
 void destroy_map(void);
 void clear_line(void);
-void print_unicode(wchar_t *string);
-void ga_request(const wxString& path);
+void print_unicode(const wchar_t *string);
+void ga_request(const wxString& path, const wxString& id);
+
+void attach_debugger(void);
 
 // =======================================================================
 //                           Global variables
@@ -98,7 +118,6 @@ extern bool g_all;
 extern bool g_all_fixed;
 extern bool g_list_volumes;
 extern bool g_list_all;
-extern bool g_repeat;
 extern bool g_no_progress;
 extern bool g_show_vol_info;
 extern bool g_show_map;

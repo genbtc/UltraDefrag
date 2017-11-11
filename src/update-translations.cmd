@@ -28,6 +28,7 @@ if exist "setvars_%COMPUTERNAME%_%USERNAME%.cmd" call "setvars_%COMPUTERNAME%_%U
 echo.
 
 if not exist "%GNUWIN32_DIR%" goto gnuwin32_missing
+if not exist "%MSGFMT_CMD%" goto msgfmt_missing
 
 :: download all translations from transifex
 pushd "%~dp0\tools\transifex"
@@ -56,6 +57,10 @@ exit /B 0
 echo !!! GNUwin32 path not set correctly !!!
 set ERRORLEVEL=99
 
+:msgfmt_missing
+echo !!! msgfmt.exe path not set correctly. please set the MSGFMT_CMD variable to the fully qualified path of msgfmt.exe  !!!
+set ERRORLEVEL=99
+
 :fail
 if "%OLD_PATH%" neq "" set path=%OLD_PATH%
 set OLD_PATH=
@@ -75,7 +80,7 @@ exit /B 1
 
     rem compile the .PO file into a .MO file
     echo ... compiling
-    msgfmt --verbose -o "locale\%~n1\UltraDefrag.mo" "%~1" || goto check_fail
+    %MSGFMT_CMD% --verbose -o "locale\%~n1\UltraDefrag.mo" "%~1" || goto check_fail
 
     :check_success
     echo ... suceeded

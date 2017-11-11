@@ -32,10 +32,13 @@
 
 #include "prec.h"
 #include "main.h"
-#include <signal.h>
 
+#ifndef STATUS_FATAL_APP_EXIT
 #define STATUS_FATAL_APP_EXIT        0x40000015
+#endif
+#ifndef STATUS_HEAP_CORRUPTION
 #define STATUS_HEAP_CORRUPTION       0xC0000374
+#endif
 #ifndef STATUS_STACK_BUFFER_OVERRUN
 #define STATUS_STACK_BUFFER_OVERRUN  0xC0000409
 #endif
@@ -77,7 +80,7 @@ void App::AttachDebugger(void)
 
     // set up shared memory to transfer debugging information
     wchar_t path[64]; int id = pi.dwProcessId;
-    _snwprintf(path,64,wxT("udefrag-shared-mem-%u"),id);
+    _snwprintf_s(path,64,wxT("udefrag-shared-mem-%u"),id);
     HANDLE hSharedMemory = CreateFileMapping(INVALID_HANDLE_VALUE,
         NULL,PAGE_READWRITE,0,sizeof(udefrag_shared_data),path);
     if(hSharedMemory == NULL){
@@ -162,12 +165,12 @@ void __cdecl AbortHandler(int signal)
  */
 LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS* ExceptionInfo)
 {
-    DWORD exception_code = ExceptionInfo-> \
+    DWORD local_exception_code = ExceptionInfo-> \
         ExceptionRecord->ExceptionCode;
     void *exception_address = ExceptionInfo-> \
         ExceptionRecord->ExceptionAddress;
 
-    switch(exception_code){
+    switch(local_exception_code){
     case EXCEPTION_ACCESS_VIOLATION:
     case STATUS_HEAP_CORRUPTION:
     case STATUS_FATAL_APP_EXIT:
@@ -182,7 +185,7 @@ LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS* ExceptionInfo)
         if(sd){
             // send crash report
             sd->version = SHARED_DATA_VERSION;
-            sd->exception_code = exception_code;
+            sd->ud_exception_code = local_exception_code;
             sd->exception_address = exception_address;
             wcscpy(sd->tracking_id,TRACKING_ID);
             sd->ready = true;

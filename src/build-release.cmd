@@ -1,7 +1,7 @@
 @echo off
 ::
 :: This script builds UltraDefrag releases.
-:: Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+:: Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
 :: Copyright (c) 2011-2013 Stefan Pendl (stefanpe@users.sourceforge.net).
 ::
 :: This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,9 @@
 :: Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ::
 
+:: crash reporting must be turned on in official releases only
+set OFFICIAL_RELEASE=1
+
 call build.cmd --clean
 
 rd /s /q release
@@ -27,39 +30,46 @@ mkdir release
 :: build source code package
 call build-src-package.cmd || goto build_failed
 
-:: build all binaries
-call build.cmd --all --use-winsdk || goto build_failed
+:: build 32-bit binaries using MinGW for full compatibility 
+:: with Windows XP SP1, just to keep system requirements simple
+call build.cmd --all --use-mingw --dev --pdf --trans || goto build_failed
 copy .\bin\ultradefrag-%UDVERSION_SUFFIX%.bin.i386.exe .\release\
-copy .\bin\amd64\ultradefrag-%UDVERSION_SUFFIX%.bin.amd64.exe .\release\
-copy .\bin\ia64\ultradefrag-%UDVERSION_SUFFIX%.bin.ia64.exe .\release\
 copy .\bin\ultradefrag-portable-%UDVERSION_SUFFIX%.bin.i386.zip .\release\
+
+:: build 64-bit binaries using Windows SDK (Skip IA64)
+call build.cmd --all --use-winsdk --no-x86 --no-ia64 || goto build_failed
+copy .\bin\amd64\ultradefrag-%UDVERSION_SUFFIX%.bin.amd64.exe .\release\
 copy .\bin\amd64\ultradefrag-portable-%UDVERSION_SUFFIX%.bin.amd64.zip .\release\
-copy .\bin\ia64\ultradefrag-portable-%UDVERSION_SUFFIX%.bin.ia64.zip .\release\
+::Skip IA-64 bit binaries.
+::copy .\bin\ia64\ultradefrag-%UDVERSION_SUFFIX%.bin.ia64.exe .\release\
+::copy .\bin\ia64\ultradefrag-portable-%UDVERSION_SUFFIX%.bin.ia64.zip .\release\
 
 :: update history file
-copy /Y .\HISTORY.TXT ..\..\web\
+::copy /Y .\HISTORY.TXT ..\..\web\
 
 :: update version notification
 set version_string=%ULTRADFGVER%
 if "%RELEASE_STAGE%" neq "" set version_string=%ULTRADFGVER% %RELEASE_STAGE%
 
-echo %version_string%> ..\..\web\version.ini
-echo %version_string%> ..\..\web\version_xp.ini
+::echo %version_string%> ..\..\web\version.ini
+::echo %version_string%> ..\..\web\version_xp.ini
 
-if "%RELEASE_STAGE%" equ "" echo %version_string%> ..\..\web\stable-version.ini
+::if "%RELEASE_STAGE%" equ "" echo %version_string%> ..\..\web\stable-version.ini
 
 :: update documentation
-copy /Y ..\doc\handbook\doxy-doc\html\*.* ..\..\web\handbook        || goto build_failed
-copy /Y .\dll\udefrag\doxy-doc\html\*.*   ..\..\web\doc\lib\udefrag || goto build_failed
-copy /Y .\dll\zenwinx\doxy-doc\html\*.*   ..\..\web\doc\lib\zenwinx || goto build_failed
+::copy /Y ..\doc\handbook\doxy-doc\html\*.* ..\..\web\handbook        || goto build_failed
+::copy /Y .\dll\udefrag\doxy-doc\html\*.*   ..\..\web\doc\lib\udefrag || goto build_failed
+::copy /Y .\dll\zenwinx\doxy-doc\html\*.*   ..\..\web\doc\lib\zenwinx || goto build_failed
 
 echo.
 echo Release made successfully!
 title Release made successfully!
+set OFFICIAL_RELEASE=
 exit /B 0
 
 :build_failed
 echo.
 echo Release building error!
 title Release building error!
+set OFFICIAL_RELEASE=
 exit /B 1

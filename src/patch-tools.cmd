@@ -1,7 +1,7 @@
 @echo off
 ::
 :: This script patches all UltraDefrag development tools.
-:: Copyright (c) 2007-2013 Dmitri Arkhangelski (dmitriar@gmail.com).
+:: Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
 ::
 :: This program is free software; you can redistribute it and/or modify
 :: it under the terms of the GNU General Public License as published by
@@ -24,15 +24,6 @@ if exist "setvars_%COMPUTERNAME%_%ORIG_USERNAME%.cmd"^
 if exist "setvars_%COMPUTERNAME%_%USERNAME%.cmd"^
     call "setvars_%COMPUTERNAME%_%USERNAME%.cmd"
 
-if "%WXWIDGETSDIR%" neq "" (
-    echo.
-    echo Patching wxWidgets
-    echo ------------------
-    echo.
-    copy /Y tools\patch\wx\intl.cpp "%WXWIDGETSDIR%\src\common\" || goto fail
-    copy /Y tools\patch\wx\menuitem.cpp "%WXWIDGETSDIR%\src\msw\" || goto fail
-)
-
 if "%WINSDKBASE%" neq "" (
     echo.
     echo Patching Windows SDK
@@ -50,10 +41,15 @@ if "%MINGWBASE%" neq "" (
     echo.
     pushd "%MINGWBASE%\lib"
     if not exist libntdll.a.orig move libntdll.a libntdll.a.orig
+    if not exist liburlmon.a.orig (
+        if exist liburlmon.a move liburlmon.a liburlmon.a.orig
+    )
     popd
     pushd tools\patch\mingw
     "%MINGWBASE%\bin\dlltool" -k --output-lib libntdll.a --def ntdll.def || goto fail
+    "%MINGWBASE%\bin\dlltool" -k --output-lib liburlmon.a --def urlmon.def || goto fail
     move /Y libntdll.a "%MINGWBASE%\lib\libntdll.a" || goto fail
+    move /Y liburlmon.a "%MINGWBASE%\lib\liburlmon.a" || goto fail
     popd
 )
 

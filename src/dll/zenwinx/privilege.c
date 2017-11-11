@@ -1,6 +1,6 @@
 /*
  *  ZenWINX - WIndows Native eXtended library.
- *  Copyright (c) 2007-2013 Dmitri Arkhangelski (dmitriar@gmail.com).
+ *  Copyright (c) 2007-2016 Dmitri Arkhangelski (dmitriar@gmail.com).
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
  * @{
  */
 
-#include "ntndk.h"
+#include "prec.h"
 #include "zenwinx.h"
 
 /**
@@ -45,7 +45,7 @@ int winx_enable_privilege(unsigned long luid)
     status = RtlAdjustPrivilege((SIZE_T)luid, TRUE, FALSE, &WasEnabled);
     if(!NT_SUCCESS(status)){
         strace(status,"cannot enable privilege %x",(UINT)luid);
-        return -1;
+        return (-1);
     }
     return 0;
 }

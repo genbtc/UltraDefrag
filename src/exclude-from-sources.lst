@@ -10,3 +10,7 @@
 *.exe
 *.7z
 *.bk
+*.gch
+*.pch
+Makefile.*
+.vs/

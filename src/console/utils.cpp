@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 //  UltraDefrag - a powerful defragmentation tool for Windows NT.
-//  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+//  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
 //  Copyright (c) 2010-2013 Stefan Pendl (stefanpe@users.sourceforge.net).
 //
 //  This program is free software; you can redistribute it and/or modify
@@ -12,7 +12,7 @@
 //  This program is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.	
+//  GNU General Public License for more details.
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, write to the Free Software
@@ -34,6 +34,7 @@
 //                            Declarations
 // =======================================================================
 
+#include "prec.h"
 #include "main.h"
 
 #define WIN_TMPF_TRUETYPE 0x04
@@ -48,15 +49,6 @@ typedef struct WIN_CONSOLE_FONT_INFO_EX {
 typedef BOOL (WINAPI *GET_CURRENT_CONSOLE_FONT_EX_PROC)(
     HANDLE hConsoleOutput,BOOL bMaximumWindow,
     PWIN_CONSOLE_FONT_INFO_EX lpConsoleCurrentFontEx
-);
-
-typedef HRESULT (__stdcall *URLMON_PROCEDURE)(
-    /* LPUNKNOWN */ void *lpUnkcaller,
-    LPCWSTR szURL,
-    LPWSTR szFileName,
-    DWORD cchFileName,
-    DWORD dwReserved,
-    /*IBindStatusCallback*/ void *pBSC
 );
 
 // =======================================================================
@@ -131,7 +123,7 @@ void clear_line(void)
  * cannot be converted become replaced by question
  * marks.
  */
-void print_unicode(wchar_t *string)
+void print_unicode(const wchar_t *string)
 {
     int old_cp = GetConsoleOutputCP();
 
@@ -146,7 +138,7 @@ void print_unicode(wchar_t *string)
             if(!GetConsoleMode(g_out,&mode)){
                 if(GetLastError() == ERROR_INVALID_HANDLE){
                     wxString s(string);
-                    printf("%s",s.utf8_str().data());
+                    printf("%s",(const char *)s.utf8_str().data());
                     return;
                 } else {
                     letrace("GetConsoleMode failed");
@@ -154,7 +146,7 @@ void print_unicode(wchar_t *string)
             }
         } else {
             wxString s(string);
-            printf("%s",s.utf8_str().data());
+            printf("%s",(const char *)s.utf8_str().data());
             return;
         }
     }
@@ -177,7 +169,7 @@ void print_unicode(wchar_t *string)
                         letrace("SetConsoleOutputCP failed");
                     } else {
                         wxString s(string);
-                        printf("%s",s.utf8_str().data());
+                        printf("%s",(const char *)s.utf8_str().data());
                         SetConsoleOutputCP(old_cp);
                         return;
                     }
@@ -193,42 +185,13 @@ void print_unicode(wchar_t *string)
 }
 
 /**
- * @brief Downloads a file from the web.
- * @return Path to the downloaded file.
- * @note If the program terminates before
- * the file download completion it crashes.
- */
-wxString download(const wxString& url)
-{
-    itrace("downloading %ls",url.wc_str());
-
-    wxDynamicLibrary lib(wxT("urlmon"));
-    wxDYNLIB_FUNCTION(URLMON_PROCEDURE,
-        URLDownloadToCacheFileW, lib);
-
-    if(!pfnURLDownloadToCacheFileW)
-        return wxEmptyString;
-
-    wchar_t buffer[MAX_PATH + 1];
-    HRESULT result = pfnURLDownloadToCacheFileW(NULL,url.wc_str(),buffer,MAX_PATH,0,NULL);
-    if(result != S_OK){
-        etrace("URLDownloadToCacheFile failed with code 0x%x",(UINT)result);
-        return wxEmptyString;
-    }
-
-    buffer[MAX_PATH] = 0;
-    wxString path(buffer);
-    return path;
-}
-
-/**
  * @brief Sends a request to Google Analytics
  * service gathering statistics of the use
  * of the program.
  * @details Based on http://code.google.com/apis/analytics/docs/
  * and http://www.vdgraaf.info/google-analytics-without-javascript.html
  */
-void ga_request(const wxString& path)
+void ga_request(const wxString& path, const wxString& id)
 {
     srand((unsigned int)time(NULL));
     int utmn = (rand() << 16) + rand();
@@ -237,24 +200,30 @@ void ga_request(const wxString& path)
     int random = (rand() << 16) + rand();
     __int64 today = (__int64)time(NULL);
 
-    wxString request;
-
-    request << wxT("http://www.google-analytics.com/__utm.gif?utmwv=4.6.5");
-    request << wxString::Format(wxT("&utmn=%u"),utmn);
-    request << wxT("&utmhn=ultradefrag.sourceforge.net");
-    request << wxString::Format(wxT("&utmhid=%u&utmr=-"),utmhid);
-    request << wxT("&utmp=") << path;
-    request << wxT("&utmac=");
-    request << wxT("UA-15890458-1");
-    request << wxString::Format(wxT("&utmcc=__utma%%3D%u.%u.%I64u.%I64u.%I64u.") \
+    wxString url;
+    url << wxT("http://www.google-analytics.com/__utm.gif?utmwv=4.6.5");
+    url << wxString::Format(wxT("&utmn=%u"),utmn);
+    url << wxT("&utmhn=ultradefrag.sourceforge.net");
+    url << wxString::Format(wxT("&utmhid=%u&utmr=-"),utmhid);
+    url << wxT("&utmp=") << path;
+    url << wxT("&utmac=") << id;
+    url << wxString::Format(wxT("&utmcc=__utma%%3D%u.%u.%I64u.%I64u.%I64u.") \
         wxT("50%%3B%%2B__utmz%%3D%u.%I64u.27.2.utmcsr%%3Dgoogle.com%%7Cutmccn%%3D") \
         wxT("(referral)%%7Cutmcmd%%3Dreferral%%7Cutmcct%%3D%%2F%%3B"),
         cookie,random,today,today,today,cookie,today);
 
-    wxString url(request);
-    wxString file = download(url);
-    if(!file.IsEmpty())
-        wxRemoveFile(file);
+    itrace("downloading %ls",ws(url));
+
+    wchar_t file[MAX_PATH + 1]; file[MAX_PATH] = 0;
+    HRESULT result = ::URLDownloadToCacheFileW(
+        NULL,ws(url),file,MAX_PATH,0,NULL);
+    if(result != S_OK){
+        etrace("URLDownloadToCacheFile failed "
+               "with code 0x%x",(UINT)result);
+        return;
+    }
+
+    (void)::DeleteFile(file);
 }
 
 /** @} */

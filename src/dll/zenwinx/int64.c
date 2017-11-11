@@ -1,6 +1,6 @@
 /*
  *  ZenWINX - WIndows Native eXtended library.
- *  Copyright (c) 2007-2013 Dmitri Arkhangelski (dmitriar@gmail.com).
+ *  Copyright (c) 2007-2016 Dmitri Arkhangelski (dmitriar@gmail.com).
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,10 +19,11 @@
 
 /**
  * @file int64.c
- * @brief 64-bit integers arithmetic support.
+ * @brief 64-bit integer arithmetic support.
  * @{
  */
 
+#include "prec.h"
 #if defined(__GNUC__)
 #ifndef _WIN64
 ULONGLONG __udivdi3(ULONGLONG n, ULONGLONG d)

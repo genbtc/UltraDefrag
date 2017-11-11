@@ -1,6 +1,6 @@
 /*
  *  UltraDefrag - a powerful defragmentation tool for Windows NT.
- *  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+ *  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 /**
  * @file udefrag.c
  * @brief Entry point.
- * @details Each disk processing algorithm
+ * @details Each of the disk processing algorithms
  * should comply with the following rules:
  * -# never try to move directories on FAT entirely
  * -# never try to move MFT on NTFS entirely
@@ -28,17 +28,18 @@
  * -# sort primarily small files, because big files sorting is useless
  * -# save more time than needed to complete the disk processing itself
  * -# terminate quickly on already processed disks
- * -# don't sort out all the files when just a few files were changed
- *    since the last optimization
- * -# show progress percentage advancing from 0 to 100%
+ * -# don't sort out all the files when just a few files
+ *    have been changed since the last optimization
+ * -# advance progress indication from 0 to 100%
  * -# cleanup as much space as possible before use of the cleaned up space;
  *    otherwise NTFS processing will be slow
  * -# don't optimize any file twice
- * -# never go into infinite loop
+ * -# never go into infinite loops
  * -# handle correctly either normal or compressed/sparse files
  * -# handle correctly locked files
  * -# distinguish between file blocks and file fragments
- * -# handle a case when region assumed to be free becomes "already in use"
+ * -# handle the case when a region assumed to
+ *    be free turns out to be already in use
  * -# filter files properly
  * -# produce reports properly
  *
@@ -70,14 +71,14 @@ BOOL wait_delete_thread_finished = FALSE; //related to wait_delete_lists_thread(
 /**
  * @brief Initializes udefrag library.
  * @details This routine needs to be called
- * before any use of other routines.
+ * once before any use of other routines.
  * @return Zero for success, negative value otherwise.
  * @note This routine initializes zenwinx library as well.
  */
 int udefrag_init_library(void)
 {
     if(winx_init_library() < 0)
-        return -1;
+        return (-1);
 
     /* deny installation/upgrade */
     if(winx_get_os_version() >= WINDOWS_VISTA){
@@ -107,14 +108,17 @@ void udefrag_unload_library(void)
 }
 
 /**
+ * @internal
  * @brief Delivers progress information to the caller.
  * @note 
- * - completion_status parameter becomes delivered to the caller
- * instead of the appropriate field of jp->pi structure.
- * - If cluster map cell is occupied entirely by MFT zone
- * it will be drawn in light magenta if no files exist there.
- * Otherwise, such a cell will be drawn in different color
- * indicating that something still exists inside the zone.
+ * - This routine delivers the completion_status parameter
+ * to the caller instead of the appropriate field of the
+ * jp->pi structure.
+ * - If a cell of the cluster map is occupied entirely by the
+ * MFT zone it will be drawn in light magenta only when it's
+ * completely free. Otherwise, it will be drawn using another
+ * color (according to its contents) to show explicitly that
+ * some files are is still there.
  */
 void deliver_progress_info(udefrag_job_parameters *jp,int completion_status)
 {
@@ -174,7 +178,7 @@ void deliver_progress_info(udefrag_job_parameters *jp,int completion_status)
                 for(k = 1; k < jp->cluster_map.n_colors; k++){
                     n = jp->cluster_map.array[i][k];
                     if(n >= maximum){ /* support of colors precedence  */
-                        if(k != MFT_ZONE_SPACE && k != FREE_SPACE || !mft_zone_detected){
+                        if((k != MFT_ZONE_SPACE && k != FREE_SPACE) || !mft_zone_detected){
                             maximum = n;
                             index = k;
                         }
@@ -203,7 +207,7 @@ void deliver_progress_info(udefrag_job_parameters *jp,int completion_status)
         if(p1 >= jp->progress_trigger){
             winx_dbg_print_header('>',0,D"progress %3u.%02u%% completed, "
                 "trigger %3u", p1, p2, jp->progress_trigger);
-            jp->progress_trigger = p1 / 10 * 10 + 10;
+            jp->progress_trigger = (p1 / 10) * 10 + 10;
         }
     }
 }
@@ -262,7 +266,7 @@ static DWORD WINAPI start_job(LPVOID p)
     else if(jp->job_type == SINGLE_FILE_MOVE_FRONT_JOB) action = "Single File Move to Front";
     else if(jp->job_type == SINGLE_FILE_MOVE_END_JOB) action = "Single File Move to End";
     else action = "Analysis";
-    
+
     winx_dbg_print_header(0,0,I"%s of disk %c: started",action,jp->volume_letter);
     remove_fragmentation_report(jp);
     (void)winx_vflush(jp->volume_letter); /* flush all file buffers */
@@ -300,41 +304,42 @@ static DWORD WINAPI start_job(LPVOID p)
     if(jp->job_type != ANALYSIS_JOB)
         release_temp_space_regions(jp);
     (void)save_fragmentation_report(jp);
-    
+
     /* now it is safe to adjust the completion status */
     jp->pi.completion_status = result;
     if(jp->pi.completion_status == 0)
         jp->pi.completion_status ++; /* success */
     
-    winx_exit_thread(0); /* 8k/12k memory leak here?   ???whocares... */
+    winx_exit_thread(0); // 8k/12k memory leak here?
     return 0;
     //Goes back to udefrag_start_job@line475
 }
 
 /**
- * @brief Destroys list of free regions, 
- * list of files and list of fragmented files.
+ * @internal
+ * @brief Destroys the list of free regions, the
+ * list of files and the list of fragmented files.
  */
 
 void destroy_lists(udefrag_job_parameters *jp)
 {
-    ULONGLONG start,end;
-    start = winx_xtime();
+    //ULONGLONG start,end;
+    //start = winx_xtime();
     if (jp->fragmented_files) {
-        dtrace("Destroying PRB jp->fragmented_files for Drive: %c...",jp->volume_letter);
+        //dtrace("Destroying PRB jp->fragmented_files for Drive: %c...",jp->volume_letter);
         prb_destroy(jp->fragmented_files, NULL);
         jp->fragmented_files = NULL;
     }
     if (jp->filelist) {
-        dtrace("Releasing jp->filelist...");
+        //dtrace("Releasing jp->filelist...");
         winx_ftw_release(jp->filelist);
     }
     if (jp->free_regions) {
-        dtrace("Releasing jp->free_regions...");
+        //dtrace("Releasing jp->free_regions...");
         winx_release_free_volume_regions(jp->free_regions);
     }
-    end = winx_xtime();
-    dtrace("Cleanup Finished. The list-deletion took: %d msec.",end-start);
+    //end = winx_xtime();
+    //dtrace("Cleanup Finished. The list-deletion took: %d msec.",end-start);
     listsCleaned = TRUE;
 }
 
@@ -352,7 +357,7 @@ static DWORD WINAPI wait_delete_lists_thread(LPVOID p)
     while(!gui_finished)
     {
         delwaitcount++;
-        dtrace("Sleeping 250ms waiting for GUI to come back. Wait Count = %d", delwaitcount);
+        //dtrace("Sleeping 250ms waiting for GUI to come back. Wait Count = %d", delwaitcount);
         winx_sleep(250);
     }
     if (jp == NULL)
@@ -386,14 +391,14 @@ void gui_fileslist_finished(void){
  * @param[in] cluster_map_size size of the cluster map, in cells.
  * Zero value forces to avoid cluster map use.
  * @param[in] cb address of procedure to be called each time when
- * progress information updates, but no more frequently than
+ * the progress information updates, but no more frequently than
  * specified in UD_REFRESH_INTERVAL environment variable.
  * @param[in] t address of procedure to be called each time
- * when requested job would like to know whether it must be terminated or not.
- * Nonzero value, returned by terminator, forces the job to be terminated.
- * @param[in] p pointer to user defined data to be passed to both callbacks.
+ * when the requested job would like to know whether it must be terminated or not.
+ * Nonzero value, returned by the terminator, forces the job to be terminated.
+ * @param[in] p pointer to a user defined data to be passed to both callbacks.
  * @return Zero for success, negative value otherwise.
- * @note Callback procedures should complete as quickly
+ * @note The callback procedures should complete as quickly
  * as possible to avoid slowdown of the volume processing.
  */
 int udefrag_start_job(char volume_letter,udefrag_job_type job_type,int flags,
@@ -444,14 +449,12 @@ int udefrag_start_job(char volume_letter,udefrag_job_type job_type,int flags,
     }
     
     /* set additional privileges for Vista and above */
-    if(jp.win_version >= WINDOWS_VISTA){
+    if(jp.win_version >= WINDOWS_VISTA)
         (void)winx_enable_privilege(SE_BACKUP_PRIVILEGE);
-        
-        if(jp.win_version >= WINDOWS_7)
-            (void)winx_enable_privilege(SE_MANAGE_VOLUME_PRIVILEGE);
-    }
+    if(jp.win_version >= WINDOWS_7)
+        (void)winx_enable_privilege(SE_MANAGE_VOLUME_PRIVILEGE);
     
-    /* run the job in separate thread */
+    /* run the job in a separate thread */
     //if <0 this must mean that the job creation failed, so gracefully go to done.
     if(winx_create_thread(start_job,(LPVOID)&jp) < 0){
         free_map(&jp);
@@ -460,7 +463,7 @@ int udefrag_start_job(char volume_letter,udefrag_job_type job_type,int flags,
     }
 
     /*
-    * Call specified callback every refresh_interval milliseconds.
+    * Call the specified callback every refresh_interval milliseconds.
     * http://sourceforge.net/tracker/index.php?func=
     * detail&aid=2886353&group_id=199532&atid=969873
     */
@@ -515,10 +518,10 @@ done:
     // without clearing the memory, deletion of lists will fail/break/segfault.
     // This has to be kept in mind in the terminator also, to reset variables.
     if (result > 0){
-        dtrace("Job Complete. Creating deletion Thread with 333ms timeout ->");
+        //dtrace("Job Complete. Creating deletion Thread with 333ms timeout ->");
         winx_create_thread(wait_delete_lists_thread,(LPVOID)&jp);
         while(!gui_finished || !wait_delete_thread_finished){
-            dtrace("Sleeping 333ms waiting for deletion to complete. Wait Count = %d", delwaitcount);            
+            //dtrace("Sleeping 333ms waiting for deletion to complete. Wait Count = %d", delwaitcount);            
             delwaitcount++;
             winx_sleep(333);
         }
@@ -529,17 +532,20 @@ done:
         destroy_lists(&jp);
 
     if(result < 0) return result;
-    return result > 0 ? 0 : -1;
+    return (result > 0) ? 0 : (-1);
 }
 
 /**
- * @brief Retrieves default formatted results 
- * of the completed disk defragmentation job.
- * @param[in] pi pointer to udefrag_progress_info structure.
- * @return A string containing default formatted results
- * of the disk defragmentation job. NULL indicates failure.
- * @note This function is used in console and native applications.
- * NOT the gui. (Console only)
+ * @brief Retrieves default formatted
+ * results of a disk defragmentation job.
+ * @param[in] pi pointer to structure containing
+ * the progress information of the job.
+ * @return The default formatted results
+ * of the job. NULL indicates failure.
+ * @note This function is intended for use
+ * in console and native applications.
+ * @note MUST call udefrag_release_results() on the 
+ * malloc'ed pointer that is returned to free it, after.
  */
 char* udefrag_get_results(udefrag_progress_info *pi)
 {
@@ -553,11 +559,11 @@ char* udefrag_get_results(udefrag_progress_info *pi)
     /* allocate memory */
     msg = (char *)winx_malloc(MSG_LENGTH + 1);
 
-    (void)winx_bytes_to_hr(pi->total_space,2,total_space,sizeof total_space);
-    (void)winx_bytes_to_hr(pi->free_space,2,free_space,sizeof free_space);
+    (void)winx_bytes_to_hr(pi->total_space,2,total_space,sizeof(total_space));
+    (void)winx_bytes_to_hr(pi->free_space,2,free_space,sizeof(free_space));
 
     p = calc_percentage(pi->fragments,pi->files);
-    ip = (unsigned int)p;
+    ip = (unsigned int)(p);
     if(ip < 100) ip = 100; /* fix round off error */
     ifr = (unsigned int)(pi->fragmentation * 100.00);
 
@@ -591,7 +597,7 @@ void udefrag_release_results(char *results)
 
 /**
  * @brief Retrieves a human readable error
- * description for ultradefrag error codes.
+ * description for an ultradefrag error code.
  * @param[in] error_code the error code.
  * @return A human readable description.
  */
@@ -618,6 +624,7 @@ char* udefrag_get_error_description(int error_code)
                "because the file system driver does not support FSCTL_MOVE_FILE.";
     case UDEFRAG_DIRTY_VOLUME:
         return "Disk is dirty, run CHKDSK to repair it.";
+    default: break;
     }
     return "";
 }
@@ -683,7 +690,7 @@ static int create_target_directory(wchar_t *path)
     path_copy = winx_wcsdup(path);
     if(path_copy == NULL){
         etrace("not enough memory");
-        return -1;
+        return (-1);
     }
     
     winx_path_remove_filename(path_copy);
@@ -705,21 +712,20 @@ int convert_path_to_native(wchar_t *path, wchar_t **native_path)
         etrace("Abnormal Error. Cannot build native path!");
         return 0;
     }
-    //dtrace("Path was: %ws",native_path);
+    //dtrace("Inside native conversion function: Path was: %ws",native_path);
     return 1;
 }
 
 /**
- * @brief Enables debug logging to the file
- * if <b>\%UD_LOG_FILE_PATH\%</b> is set, otherwise
- * disables the logging.
- * @details If log path does not exist and
- * cannot be created, logs are placed in
- * <b>\%tmp\%\\UltraDefrag_Logs</b> folder.
- * @return Zero for success, negative value
- * otherwise.
- * @note The environment variable mentioned
- * above must contain the full path of the log file.
+ * @brief Turns logging to file on/off,
+ * according to <b>\%UD_LOG_FILE_PATH\%</b>
+ * environment variable.
+ * @details If the library cannot create the
+ * specified path, it uses the following path
+ * instead: <b>\%SystemDrive\%\\UltraDefrag_Logs</b>.
+ * @return Zero for success, negative value otherwise.
+ * @note The environment variable mentioned above
+ * must contain the full path of the log file.
  */
 int udefrag_set_log_file_path(void)
 {
@@ -727,7 +733,7 @@ int udefrag_set_log_file_path(void)
     
     path = winx_getenv(L"UD_LOG_FILE_PATH");
     if(path == NULL){
-        /* empty variable forces to disable log */
+        /* empty variable forces to disable logging */
         winx_disable_dbg_log();
         return 0;
     }
@@ -737,7 +743,7 @@ int udefrag_set_log_file_path(void)
     winx_free(path);
     if(native_path == NULL){
         etrace("cannot build native path");
-        return -1;
+        return (-1);
     }
     
     /* delete old logfile */
@@ -754,16 +760,16 @@ int udefrag_set_log_file_path(void)
         filename = winx_wcsdup(native_path);
         if(filename == NULL){
             etrace("cannot allocate memory for filename");
-            winx_free(path);
-            goto fail;
+                winx_free(path);
+                goto fail;
         }
         winx_path_extract_filename(filename);
         winx_free(native_path);
         native_path = winx_swprintf(L"\\??\\%ws\\UltraDefrag_Logs\\%ws",path,filename);
         if(native_path == NULL){
-            etrace("cannot build %%SystemDrive%%\\UltraDefrag_Logs\\{filename}");
-            winx_free(filename); winx_free(path);
-            goto fail;
+                    etrace("cannot build %%SystemDrive%%\\UltraDefrag_Logs\\{filename}");
+                    winx_free(filename); winx_free(path);
+                    goto fail;
         }
         /* delete old logfile from the temporary folder */
         winx_delete_file(native_path);
@@ -779,9 +785,10 @@ int udefrag_set_log_file_path(void)
     winx_enable_dbg_log(native_path);
     winx_free(native_path);
     return 0;
+    
 fail:
     winx_free(native_path);
-    return -1;
+    return (-1);
 }
 
 
@@ -790,7 +797,7 @@ fail:
 /** 
  * @brief Moves files to either the first free region or the last free region
  * @note Obtains list of files to act on from UD_CUT_FILTER
- * @param int start_or_end = 1 for start, and 0 for end
+ * @param start_or_end int = 1 for start, and 0 for end
 **/
 int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
 {
@@ -852,7 +859,7 @@ int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end)
             dtrace("Before: The File has %I64u fragments & resides @ LCN: %I64u",file->disp.fragments,file->disp.blockmap->lcn);
         }
         /* check whether we can move it or not */
-        if(!can_move(file,jp)){
+        if(!can_move(file,jp->is_fat)){
             etrace("File cannot be moved because reasons."); //should have a better error message.
             result = -1; goto cleanup;
         }

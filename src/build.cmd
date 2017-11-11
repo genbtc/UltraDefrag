@@ -1,7 +1,7 @@
 @echo off
 ::
 :: Build script for the UltraDefrag project.
-:: Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+:: Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
 :: Copyright (c) 2010-2013 Stefan Pendl (stefanpe@users.sourceforge.net).
 ::
 :: This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,9 @@ if %UD_BLD_FLG_DIPLAY_HELP% equ 1 (
 )
 
 if %UD_BLD_FLG_ONLY_CLEANUP% equ 1 (
-    call :cleanup
+    echo Delete all intermediate files...
+    call :cleanup > nul 2>&1
+    echo Cleanup success!
     exit /B 0
 )
 
@@ -44,7 +46,9 @@ call build-targets.cmd %* || goto fail
 call build-docs.cmd %* || goto fail
 
 :: update translations
-call update-translations.cmd || goto fail
+if "%UD_BLD_FLG_UPDATE_TRANSLATIONS%" == "1" (
+    call update-translations.cmd || goto fail
+)
 
 :: build installers and portable packages
 echo Build installers and/or portable packages...
@@ -69,12 +73,12 @@ if %UD_BLD_FLG_DO_INSTALL% neq 0 (
     call :install || exit /B 1
 )
 
-:: all operations successfully completed!
+:: all operations completed successfully!
 exit /B 0
 
 :fail
-echo Build error (code %ERRORLEVEL%)!
-title Build error (code %ERRORLEVEL%)!
+echo Build failed with code %ERRORLEVEL%!
+title Build failed with code %ERRORLEVEL%!
 exit /B 1
 
 :: --------------------------------------------------------
@@ -86,6 +90,7 @@ rem Sets environment for the build process.
     call setvars.cmd
     if exist "setvars_%COMPUTERNAME%_%ORIG_USERNAME%.cmd" call "setvars_%COMPUTERNAME%_%ORIG_USERNAME%.cmd"
     if exist "setvars_%COMPUTERNAME%_%USERNAME%.cmd" call "setvars_%COMPUTERNAME%_%USERNAME%.cmd"
+    echo.
 
     if %UD_BLD_FLG_IS_PORTABLE% equ 1 (
         set UDEFRAG_PORTABLE=1
@@ -111,32 +116,30 @@ rem Sets environment for the build process.
         echo #define wxUD_ABOUT_VERSION "%ULTRADFGVER%" >> .\include\version.new
     )
     
-    rem remove preview menu for release candidates
+    rem remove the preview menu for stable releases
     if /I "%RELEASE_STAGE:~0,2%" equ "RC" echo #define _UD_HIDE_PREVIEW_ >> .\include\version.new
-    rem remove preview menu for final release
     if "%RELEASE_STAGE%" equ "" echo #define _UD_HIDE_PREVIEW_ >> .\include\version.new
     
-    rem update version.h only when something
-    rem changed to speed incremental compilation up
+    rem update version.h file only when something got
+    rem changed to speed up incremental compilation
     fc .\include\version.new .\include\version.h >nul
     if errorlevel 1 move /Y .\include\version.new .\include\version.h
     del /q .\include\version.new
 goto :EOF
 
-rem Synopsis: call :build_readme_file {path to the file}
-rem Example:  call :build_readme_file .
+rem Synopsis: call :build_readme_file
+rem Example: call :build_readme_file > README.TXT
 :build_readme_file
-    echo ------------------------------------------------------------------------------- > %1
-    echo UltraDefrag %ULTRADFGVER% - an open source disk defragmenter for Windows. >> %1
-    echo ------------------------------------------------------------------------------- >> %1
-    echo. >> %1
-    echo The complete information about the program can be found in UltraDefrag >> %1
-    echo Handbook. You should have received it along with this program; if not, >> %1
-    echo go to: >> %1
-    echo. >> %1
-    echo   http://ultradefrag.sourceforge.net/handbook/ >> %1
-    echo. >> %1
-    echo ------------------------------------------------------------------------------- >> %1
+    echo -------------------------------------------------------------------------------
+    echo       UltraDefrag %ULTRADFGVER% - an open source disk defragmenter for Windows
+    echo -------------------------------------------------------------------------------
+    echo.
+    echo Complete information about the program can be found in UltraDefrag Handbook.
+    echo You should have received it along with this program; if not, go to:
+    echo.
+    echo   http://ultradefrag.sourceforge.net/handbook/
+    echo.
+    echo -------------------------------------------------------------------------------
 exit /B 0
 
 rem Synopsis: call :build_installer {path to binaries} {arch}
@@ -146,24 +149,19 @@ rem Example:  call :build_installer .\bin\ia64 ia64
 
     pushd %1
     copy /Y "%~dp0\installer\UltraDefrag.nsi" .\
-    copy /Y "%~dp0\installer\lang.ini" .\
 
-    call :build_readme_file .\README.TXT
+    call :build_readme_file > README.TXT
 
-    if "%RELEASE_STAGE%" neq "" (
-        set NSIS_COMPILER_FLAGS=/DULTRADFGVER=%ULTRADFGVER% /DULTRADFGARCH=%2 /DRELEASE_STAGE=%RELEASE_STAGE% /DUDVERSION_SUFFIX=%UDVERSION_SUFFIX%
-    ) else (
-        set NSIS_COMPILER_FLAGS=/DULTRADFGVER=%ULTRADFGVER% /DULTRADFGARCH=%2 /DUDVERSION_SUFFIX=%UDVERSION_SUFFIX%
-    )
-    "%NSISDIR%\makensis.exe" %NSIS_COMPILER_FLAGS% UltraDefrag.nsi
-    if %errorlevel% neq 0 (
-        set NSIS_COMPILER_FLAGS=
-        popd
-        exit /B 1
-    )
-    set NSIS_COMPILER_FLAGS=
+    set ULTRADFGARCH=%2
+    "%NSISDIR%\makensis.exe" UltraDefrag.nsi || goto fail
+    
+    :success
     popd
-exit /B 0
+    exit /B 0
+    
+    :fail
+    popd
+exit /B 1
 
 rem Synopsis: call :build_portable_package {path to binaries} {arch}
 rem Example:  call :build_portable_package .\bin\ia64 ia64
@@ -181,10 +179,11 @@ rem Example:  call :build_portable_package .\bin\ia64 ia64
     copy /Y udefrag.dll         %PORTABLE_DIR%\
     copy /Y udefrag.exe         %PORTABLE_DIR%\
     copy /Y zenwinx.dll         %PORTABLE_DIR%\
-    copy /Y ultradefrag.exe     %PORTABLE_DIR%
+    copy /Y ultradefrag.exe     %PORTABLE_DIR%\
     copy /Y lua5.1a.dll         %PORTABLE_DIR%\
     copy /Y lua5.1a.exe         %PORTABLE_DIR%\
     copy /Y lua5.1a_gui.exe     %PORTABLE_DIR%\
+    copy /Y udefrag-dbg.exe     %PORTABLE_DIR%\
     mkdir %PORTABLE_DIR%\handbook
     copy /Y "%~dp0\..\doc\handbook\doxy-doc\html\*.*" %PORTABLE_DIR%\handbook\
     mkdir %PORTABLE_DIR%\scripts
@@ -192,6 +191,7 @@ rem Example:  call :build_portable_package .\bin\ia64 ia64
     copy /Y "%~dp0\scripts\udsorting.js"         %PORTABLE_DIR%\scripts\
     copy /Y "%~dp0\scripts\udreport.css"         %PORTABLE_DIR%\scripts\
     copy /Y "%~dp0\scripts\upgrade-options.lua"  %PORTABLE_DIR%\scripts\
+    mkdir %PORTABLE_DIR%\conf
     lua "%~dp0\scripts\upgrade-options.lua"      %PORTABLE_DIR%
     xcopy "%~dp0\wxgui\locale" %PORTABLE_DIR%\locale /I /Y /Q /S
     del /Q %PORTABLE_DIR%\locale\*.header
@@ -234,21 +234,23 @@ rem Installs the program.
     echo Start installer...
     %INSTALLER_PATH%\%INSTALLER_NAME%-%UDVERSION_SUFFIX%.bin.%INSTALLER_ARCH%.exe /S
     if %errorlevel% neq 0 (
-        echo Install error!
+        echo Installation failed!
         endlocal
         exit /B 1
     )
-    echo Install success!
+    echo Installation success!
     endlocal
 exit /B 0
 
-rem Cleans up sources directory
-rem by removing all intermediate files.
+rem Cleans up sources directory by
+rem removal of all intermediate files.
 :cleanup
-    echo Delete all intermediate files...
     rd /s /q bin
     rd /s /q lib
     rd /s /q obj
+    del /s /q Makefile.*
+    del /s /q *.gch
+    del /s /q *.pch
     rd /s /q dll\udefrag\doxy-doc
     rd /s /q dll\zenwinx\doxy-doc
     rd /s /q ..\doc\handbook\doxy-doc
@@ -260,11 +262,10 @@ rem by removing all intermediate files.
     rd /s /q ..\doc\handbook\doxy-defaults_letter
     if %UD_BLD_FLG_ONLY_CLEANUP% equ 1 rd /s /q release
 
-    del /f /q ..\..\web\doxy-doc\udefrag.dll\html\*.*
+    ::del /f /q ..\..\web\doc\lib\udefrag\*.*
+    ::del /f /q ..\..\web\doc\lib\zenwinx\*.*
 
-    for %%F in ( "..\..\web\handbook\*.*" ) do if not "%%~nxF" == ".htaccess" del /f /q "%%~F"
-
-    echo Done.
+    ::for %%F in ( "..\..\web\handbook\*.*" ) do if not "%%~nxF" == ".htaccess" del /f /q "%%~F"
 goto :EOF
 
 rem Displays usage information.
@@ -276,8 +277,6 @@ rem Displays usage information.
     echo --all           build all packages: regular and portable
     echo --install       perform silent installation after the build
     echo --clean         perform full cleanup instead of the build
-    echo --no-pdf        skip building of PDF documentation
-    echo --no-dev        skip building of development documentation
     echo.
     echo Compiler:
     echo --use-mingw     (default)
@@ -285,12 +284,17 @@ rem Displays usage information.
     echo --use-mingw-x64 (experimental, produces wrong x64 code)
     echo.
     echo Target architecture (must always be after compiler):
-    echo --no-x86        skip build of 32-bit binaries
-    echo --no-amd64      skip build of x64 binaries
-    echo --no-ia64       skip build of IA-64 binaries
+    echo --no-x86        don't build 32-bit binaries
+    echo --no-amd64      don't build x64 binaries
+    echo --no-ia64       don't build IA-64 binaries
     echo.
-    echo Without parameters the build command uses MinGW to build
-    echo a 32-bit regular installer.
+    echo Additional stuff:
+    echo --pdf           build PDF documentation
+    echo --dev           build developer documentation
+    echo --trans         update translations
     echo.
-    echo * Run patch-tools.cmd before starting development!
+    echo Without parameters the build command uses MinGW
+    echo to build 32-bit installer.
+    echo.
+    echo * Run patch-tools.cmd once before compilation!
 goto :EOF

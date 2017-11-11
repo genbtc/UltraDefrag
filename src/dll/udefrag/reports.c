@@ -1,6 +1,6 @@
 /*
  *  UltraDefrag - a powerful defragmentation tool for Windows NT.
- *  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+ *  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,10 +32,15 @@
 #include "udefrag-internals.h"
 
 /**
- * @brief The size of the report saving buffer, in bytes.
+ * @internal
+ * @brief Size of the report saving buffer, in bytes.
  */
 #define RSB_SIZE (512 * 1024)
 
+
+/**
+ * \brief Calls winx_to_utf8 then Replaces the \\\ path chars with \\ 
+ */
 static void convert_to_utf8_path(char *dst,int size,wchar_t *src)
 {
     char *p = dst;
@@ -52,6 +57,9 @@ static void convert_to_utf8_path(char *dst,int size,wchar_t *src)
     }
 }
 
+/**
+ * @internal
+ */
 static wchar_t *get_report_path(udefrag_job_parameters *jp)
 {
     wchar_t *instdir, *fpath;
@@ -98,9 +106,12 @@ static wchar_t *get_report_path(udefrag_job_parameters *jp)
     return path;
 }
 
+/**
+ * @internal
+ */
 static int save_lua_report(udefrag_job_parameters *jp)
 {
-    wchar_t *path = NULL;
+    wchar_t *path;
     WINX_FILE *f;
     wchar_t *cn;
     wchar_t compname[MAX_COMPUTERNAME_LENGTH + 1];
@@ -112,15 +123,13 @@ static int save_lua_report(udefrag_job_parameters *jp)
     char *status;
     int length;
     winx_time tm;
-    
-    /* should be enough for any path in UTF-8 encoding */
-    #define MAX_UTF8_PATH_LENGTH (256 * 1024)
+
     char *utf8_path;
     
     utf8_path = (char *)winx_tmalloc(MAX_UTF8_PATH_LENGTH);
     if(utf8_path == NULL){
         mtrace();
-        return -1;
+        return (-1);
     }
     
     path = get_report_path(jp);
@@ -133,7 +142,7 @@ static int save_lua_report(udefrag_job_parameters *jp)
         if(f == NULL){
             winx_free(path);
             winx_free(utf8_path);
-            return -1;
+            return (-1);
         }
     }
 
@@ -146,10 +155,10 @@ static int save_lua_report(udefrag_job_parameters *jp)
     } else {
         wcscpy(compname,L"nil");
     }
-    winx_to_utf8(utf8_compname,sizeof utf8_compname,compname);
+    winx_to_utf8(utf8_compname,sizeof(utf8_compname),compname);
     memset(&tm,0,sizeof(winx_time));
     (void)winx_get_local_time(&tm);
-    (void)_snprintf(buffer,sizeof buffer,
+    (void)_snprintf(buffer,sizeof(buffer),
         "-- UltraDefrag report for disk %c:\r\n\r\n"
         "format_version = 7\r\n\r\n"
         "volume_letter = \"%c\"\r\n"
@@ -160,15 +169,14 @@ static int save_lua_report(udefrag_job_parameters *jp)
         "\tday = %02i,\r\n"
         "\thour = %02i,\r\n"
         "\tmin = %02i,\r\n"
-        "\tsec = %02i,\r\n"
-        "\tisdst = false\r\n"
+        "\tsec = %02i\r\n"
         "}\r\n\r\n"
         "files = {\r\n",
         jp->volume_letter, jp->volume_letter,utf8_compname,
         (int)tm.year,(int)tm.month,(int)tm.day,
         (int)tm.hour,(int)tm.minute,(int)tm.second
         );
-    buffer[sizeof buffer - 1] = 0;
+    buffer[sizeof(buffer) - 1] = 0;
     (void)winx_fwrite(buffer,1,strlen(buffer),f);
     
     /* print body */
@@ -196,7 +204,7 @@ static int save_lua_report(udefrag_job_parameters *jp)
         else
             status = " - ";
         
-        (void)_snprintf(buffer, sizeof buffer,
+        (void)_snprintf(buffer, sizeof(buffer),
             "\t{fragments = %u,"
             "size = %I64u,"
             "comment = \"%s\","
@@ -207,7 +215,7 @@ static int save_lua_report(udefrag_job_parameters *jp)
             comment,
             status
             );
-        buffer[sizeof buffer - 1] = 0;
+        buffer[sizeof(buffer) - 1] = 0;
         (void)winx_fwrite(buffer,1,strlen(buffer),f);
 
         if(file->path != NULL){
@@ -239,12 +247,14 @@ static int save_lua_report(udefrag_job_parameters *jp)
 }
 
 /**
- * @brief Saves fragmentation report on the volume.
- * @return Zero for success, negative value otherwise.
+ * @internal
+ * @brief Saves fragmentation report.
+ * @return Zero for success,
+ * negative value otherwise.
  */
 int save_fragmentation_report(udefrag_job_parameters *jp)
 {
-    int result = 0;
+    int result;
     ULONGLONG time;
 
     winx_dbg_print_header(0,0,I"*");
@@ -265,7 +275,8 @@ int save_fragmentation_report(udefrag_job_parameters *jp)
 }
 
 /**
- * @brief Removes all fragmentation reports from the volume.
+ * @internal
+ * @brief Removes all fragmentation reports from the disk.
  */
 void remove_fragmentation_report(udefrag_job_parameters *jp)
 {

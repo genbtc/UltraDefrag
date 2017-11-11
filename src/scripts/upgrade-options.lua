@@ -1,7 +1,7 @@
 #!/usr/local/bin/lua
 --[[
   upgrade-options.lua - upgrades UltraDefrag configuration file.
-  Copyright (c) 2011-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+  Copyright (c) 2011-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -200,9 +200,12 @@ log_file_path = "$log_file_path"
 -------------------------------------------------------------------------------
 
 if shellex_flag then
-    -- the context menu handler takes into account
-    -- everything defined above as well as options
-    -- defined here exclusively for it $shellex_options
+    -- the context menu handler takes into account everything defined above
+    -- as well as options defined here exclusively for it; to pass sorting
+    -- options to the context menu handler use the following code:
+    --   os.setenv("UD_SORTING","PATH")
+    --   os.setenv("UD_SORTING_ORDER","ASC")
+    -- refer to the Console chapter of UltraDefrag Handbook for details $shellex_options
 end
 
 -------------------------------------------------------------------------------
@@ -405,7 +408,7 @@ function save_preferences(f)
 end
 
 function extract_preferences(file)
-    local path = instdir .. "\\options\\" .. file
+    local path = instdir .. "\\" .. file
     local f = io.open(path, "r")
     if f then
         f:close()
@@ -414,7 +417,7 @@ function extract_preferences(file)
 end
 
 function get_preferences()
-    -- version of the old configuration file
+    -- the version of the old configuration file
     version = 0
     
     -- set defaults
@@ -466,16 +469,17 @@ function get_preferences()
     max_chars_per_line = 50
     
     -- get user preferences
-    path = instdir .. "\\options\\options.lua"
+    path = instdir .. "\\conf\\options.lua"
     f = io.open(path, "r")
     if f then
         f:close()
         dofile(path)
     else
         -- try to gain something from obsolete configuration files
-        extract_preferences("guiopts.lua")
-        extract_preferences("udreportopts.lua")
-        extract_preferences("udreportopts-custom.lua")
+        extract_preferences("options\\guiopts.lua")
+        extract_preferences("options\\udreportopts.lua")
+        extract_preferences("options\\udreportopts-custom.lua")
+        extract_preferences("options.lua")
     end
 
     -- upgrade preferences
@@ -492,7 +496,7 @@ function get_preferences()
     if version < 8 then path_upgrade_needed = 1 end
     if version > 99 and version < 107 then path_upgrade_needed = 1 end
     if path_upgrade_needed ~= 0 and log_file_path == "" then
-        -- default log is needed for easier bug reporting
+        -- enable logging to file, to simplify troubleshooting
         log_file_path = ".\\logs\\ultradefrag.log"
     end
     if orig_in_filter then in_filter = orig_in_filter end
@@ -500,9 +504,9 @@ function get_preferences()
 end
 
 -- THE MAIN CODE STARTS HERE
--- current version of configuration file
--- 0 - 99 for v5; 100 - 199 for v6; 200+ for v7
-current_version = 202
+-- the current version of the configuration file
+-- 0 - 99 for v5; 100 - 199 for v6; 200+ for v7+
+current_version = 205
 shellex_options = ""
 _G_copy = {}
 
@@ -545,7 +549,7 @@ end
 
 -- upgrade configuration file when needed
 if version < current_version then
-    path = instdir .. "\\options\\options.lua"
+    path = instdir .. "\\conf\\options.lua"
     -- make a backup copy
     f = io.open(path, "r")
     if f then

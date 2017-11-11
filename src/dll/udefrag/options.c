@@ -1,6 +1,6 @@
 /*
  *  UltraDefrag - a powerful defragmentation tool for Windows NT.
- *  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+ *  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 #include <math.h> /* for pow function */
 
 /**
+ * @internal
  * @brief Retrieves all ultradefrag
  * related options from the environment.
  * @return Zero for success, negative
@@ -72,8 +73,8 @@ int get_options(udefrag_job_parameters *jp)
     /* set fragment size threshold */
     buffer = winx_getenv(L"UD_FRAGMENT_SIZE_THRESHOLD");
     if(buffer){
-        (void)_snprintf(buf,sizeof buf - 1,"%ws",buffer);
-        buf[sizeof buf - 1] = 0;
+        (void)_snprintf(buf,sizeof(buf) - 1,"%ws",buffer);
+        buf[sizeof(buf) - 1] = 0;
         jp->udo.fragment_size_threshold = winx_hr_to_bytes(buf);
         winx_free(buffer);
     }
@@ -84,8 +85,8 @@ int get_options(udefrag_job_parameters *jp)
     /* set file size threshold */
     buffer = winx_getenv(L"UD_FILE_SIZE_THRESHOLD");
     if(buffer){
-        (void)_snprintf(buf,sizeof buf - 1,"%ws",buffer);
-        buf[sizeof buf - 1] = 0;
+        (void)_snprintf(buf,sizeof(buf) - 1,"%ws",buffer);
+        buf[sizeof(buf) - 1] = 0;
         jp->udo.size_limit = winx_hr_to_bytes(buf);
         winx_free(buffer);
     }
@@ -93,8 +94,8 @@ int get_options(udefrag_job_parameters *jp)
         jp->udo.size_limit = MAX_FILE_SIZE;
     buffer = winx_getenv(L"UD_OPTIMIZER_FILE_SIZE_THRESHOLD");
     if(buffer){
-        (void)_snprintf(buf,sizeof buf - 1,"%ws",buffer);
-        buf[sizeof buf - 1] = 0;
+        (void)_snprintf(buf,sizeof(buf) - 1,"%ws",buffer);
+        buf[sizeof(buf) - 1] = 0;
         jp->udo.optimizer_size_limit = winx_hr_to_bytes(buf);
         winx_free(buffer);
     }
@@ -136,8 +137,8 @@ int get_options(udefrag_job_parameters *jp)
     /* set time limit */
     buffer = winx_getenv(L"UD_TIME_LIMIT");
     if(buffer){
-        (void)_snprintf(buf,sizeof buf - 1,"%ws",buffer);
-        buf[sizeof buf - 1] = 0;
+        (void)_snprintf(buf,sizeof(buf) - 1,"%ws",buffer);
+        buf[sizeof(buf) - 1] = 0;
         jp->udo.time_limit = winx_str2time(buf);
         winx_free(buffer);
     }
@@ -212,11 +213,11 @@ int get_options(udefrag_job_parameters *jp)
     }
     it = (unsigned int)(jp->udo.fragmentation_threshold * 100.00);
     itrace("fragmentation threshold                   = %u.%02u %%",it / 100,it % 100);
-    (void)winx_bytes_to_hr(jp->udo.size_limit,1,buf,sizeof buf);
+    (void)winx_bytes_to_hr(jp->udo.size_limit,1,buf,sizeof(buf));
     itrace("file size threshold (for defragmentation) = %s",buf);
-    (void)winx_bytes_to_hr(jp->udo.optimizer_size_limit,1,buf,sizeof buf);
+    (void)winx_bytes_to_hr(jp->udo.optimizer_size_limit,1,buf,sizeof(buf));
     itrace("file size threshold (for optimization)    = %s",buf);
-    (void)winx_bytes_to_hr(jp->udo.fragment_size_threshold,1,buf,sizeof buf);
+    (void)winx_bytes_to_hr(jp->udo.fragment_size_threshold,1,buf,sizeof(buf));
     itrace("fragment size threshold                   = %s",buf);
     itrace("file fragments threshold                  = %I64u",jp->udo.fragments_limit);
     itrace("files will be sorted by %s in %s order",methods[index],
@@ -239,6 +240,7 @@ int get_options(udefrag_job_parameters *jp)
 }
 
 /**
+ * @internal
  * @brief Frees all resources
  * allocated by get_options.
  */

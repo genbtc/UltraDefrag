@@ -37,6 +37,16 @@
 #include "prec.h"
 #include "main.h"
 
+#define UD_EnableTool(id) { \
+    m_menuBar->Enable(id,true); \
+    m_toolBar->EnableTool(id,true); \
+}
+
+#define UD_DisableTool(id) { \
+    m_menuBar->Enable(id,false); \
+    m_toolBar->EnableTool(id,false); \
+}
+
 // =======================================================================
 //                              Jobs cache
 // =======================================================================
@@ -72,7 +82,7 @@ void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
     wxString title = wxString::Format(wxT("%c:  %c %6.2lf %%"),
         winx_toupper(g_mainFrame->m_jobThread->m_letter),op,pi->percentage
     );
-    if(g_mainFrame->CheckOption(wxT("UD_DRY_RUN"))) title += wxT(" (dry run)");
+    if(g_mainFrame->CheckOption(wxT("UD_DRY_RUN"))) title += wxT(" (Dry Run)");
 
     wxCommandEvent *event = new wxCommandEvent(
         wxEVT_COMMAND_MENU_SELECTED,ID_SetWindowTitle
@@ -108,7 +118,7 @@ void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
     }
 
     // save progress information to the jobs cache
-    int letter = (int)(g_mainFrame->m_jobThread->m_letter);
+    const int letter = (int)(g_mainFrame->m_jobThread->m_letter);
     JobsCacheEntry *cacheEntry = new JobsCacheEntry;
     cacheEntry->jobType = g_mainFrame->m_jobThread->m_jobType;
     memcpy(&cacheEntry->pi,pi,sizeof(udefrag_progress_info));
@@ -126,7 +136,6 @@ void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
 
 	if (pi->completion_status > 0) {
 		pi->isfragfileslist = TRUE;
-		//g_jpPtr = pi->jp;   //set Global Pointer back to &jp->
 		cacheEntry->pi.fragmented_files_prb = pi->fragmented_files_prb;
 
 		//populate the fragmented-files-list tab's listview.
@@ -135,7 +144,8 @@ void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
 		g_mainFrame->GetEventHandler()->QueueEvent(event);
         dtrace("Successfully sent Fragmented Files list over to MainFrame::FilesPopulateList()");
 		//updates status column with "Analyzed.", etc (on finished)
-		event = new wxCommandEvent(wxEVT_COMMAND_MENU_SELECTED, ID_UpdateVolumeStatus);
+        event = new wxCommandEvent(wxEVT_COMMAND_MENU_SELECTED,ID_UpdateVolumeStatus);
+        //event->SetInt(NULL);
 		g_mainFrame->GetEventHandler()->QueueEvent(event);
         return; //shortcut past a redundant redrawmap and updatestatusbar
     }
@@ -145,8 +155,8 @@ void JobThread::ProgressCallback(udefrag_progress_info *pi, void *p)
 	event->SetInt(letter);
 	g_mainFrame->GetEventHandler()->QueueEvent(event);
 	// Update Clustermap and Statusbar.
-	QueueCommandEvent(g_mainFrame, ID_RedrawMap);
-	QueueCommandEvent(g_mainFrame, ID_UpdateStatusBar);
+    QueueCommandEvent(g_mainFrame,ID_RedrawMap);
+    QueueCommandEvent(g_mainFrame,ID_UpdateStatusBar);
     //after this, it finishes udefrag_start_job @ udefrag.c line 421.
     //after that, it goes back to line 182 of this file, and line 197 calls ID_UpdateVolumeInformation.
 }
@@ -170,14 +180,15 @@ void JobThread::ProcessVolume(int index)
     int result = udefrag_validate_volume(m_letter,FALSE);
     if(result == 0){
         //created a flags variable to hold custom flags on-the-fly such as ContextMenuHandler
-        m_flags |= g_mainFrame->m_repeat ? UD_JOB_REPEAT : 0;
+        m_flags = 0;
         result = udefrag_start_job(m_letter,m_jobType,m_flags,m_mapSize,
             reinterpret_cast<udefrag_progress_callback>(ProgressCallback),
-            reinterpret_cast<udefrag_terminator>(Terminator),NULL
+            reinterpret_cast<udefrag_terminator>(Terminator), nullptr
         );
     }
 
     if(result < 0 && !g_mainFrame->m_stopped){
+        etrace("Disk Processing Failure.");
         wxCommandEvent *event = new wxCommandEvent(
             wxEVT_COMMAND_MENU_SELECTED,ID_DiskProcessingFailure
         );
@@ -191,7 +202,7 @@ void JobThread::ProcessVolume(int index)
     event->SetInt((int)m_letter); g_mainFrame->GetEventHandler()->QueueEvent(event);
 }
 
-void *JobThread::Entry()
+void* JobThread::Entry()
 {
     while(!g_mainFrame->CheckForTermination(200)){
         if(m_launch){
@@ -200,9 +211,12 @@ void *JobThread::Entry()
             g_mainFrame->m_processed = 0;
 
             for(int i = 0; i < g_mainFrame->m_selected; i++){
-                if(g_mainFrame->m_stopped) break;
-
+                if(g_mainFrame->m_stopped){
+                    dtrace("JobThread stopping!!!!!!, because m_stopped.");
+                    break;
+                }
                 m_letter = (char)((*m_volumes)[i][0]);
+                //dtrace("About to process volume: %c",m_letter);
                 ProcessVolume(i);
 
                 /* advance overall progress to processed/selected */
@@ -216,33 +230,19 @@ void *JobThread::Entry()
                     g_mainFrame->SetTaskbarProgressState(TBPF_NOPROGRESS);
                 }
             }
-
-            // complete the job
+            // complete the job,very important.
             QueueCommandEvent(g_mainFrame,ID_JobCompletion);
-            delete m_volumes; m_launch = false;
+            delete m_volumes;
+            m_launch = false;
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 // =======================================================================
 //                            Event handlers
-// =======================================================================
 
-/**
- * \brief Determine how large the Cluster Map should be (window size)
- * \return A total number of cells/blocks. 
- */
-int MainFrame::GetMapSize(){
-    int width, height; g_mainFrame->m_cMap->GetClientSize(&width,&height);
-    int block_size = CheckOption("UD_MAP_BLOCK_SIZE");
-    int line_width = CheckOption("UD_GRID_LINE_WIDTH");
-    int cell_size = block_size + line_width;
-    int blocks_per_line = (width - line_width) / cell_size;
-    int lines = (height - line_width) / cell_size;
-    return blocks_per_line * lines;
-}
 
 /**
  * \brief Event function. User starts the job, telling us what job it is.
@@ -271,7 +271,6 @@ void MainFrame::OnStartJob(wxCommandEvent& event)
     UD_DisableTool(ID_QuickOpt);
     UD_DisableTool(ID_FullOpt);
     UD_DisableTool(ID_MftOpt);
-    UD_DisableTool(ID_Repeat);
     UD_DisableTool(ID_SkipRem);
     UD_DisableTool(ID_Rescan);
     UD_DisableTool(ID_Repair);
@@ -347,12 +346,12 @@ void MainFrame::OnStartJob(wxCommandEvent& event)
 void MainFrame::OnJobCompletion(wxCommandEvent& WXUNUSED(event))
 {
     // unlock everything after the job completion
+    UD_DisableTool(ID_Stop);
     UD_EnableTool(ID_Analyze);
     UD_EnableTool(ID_Defrag);
     UD_EnableTool(ID_QuickOpt);
     UD_EnableTool(ID_FullOpt);
     UD_EnableTool(ID_MftOpt);
-    UD_EnableTool(ID_Repeat);
     UD_EnableTool(ID_SkipRem);
     UD_EnableTool(ID_Rescan);
     UD_EnableTool(ID_Repair);
@@ -433,21 +432,11 @@ void MainFrame::OnStop(wxCommandEvent& WXUNUSED(event))
     m_stopped = true;
 }
 
-/**
- * \brief Repeat Button Handler. Event Function. 
- */
-void MainFrame::OnRepeat(wxCommandEvent& WXUNUSED(event))
+void RecoveryConsole::OnTerminate(int pid, int status)
 {
-    if(!m_busy){
-        m_repeat = m_repeat ? false : true;
-        m_menuBar->Check(ID_Repeat,m_repeat);
-        m_toolBar->ToggleTool(ID_Repeat,m_repeat);
-    }
+    g_refreshDrivesInfo = true;
 }
 
-/**
- * \brief Repair Button Handler. Event Function. 
- */
 void MainFrame::OnRepair(wxCommandEvent& WXUNUSED(event))
 {
     if(m_busy) return;
@@ -455,7 +444,7 @@ void MainFrame::OnRepair(wxCommandEvent& WXUNUSED(event))
     wxString args;
     long i = m_vList->GetFirstSelected();
     while(i != -1){
-        char letter = (char)m_vList->GetItemText(i)[0];
+        char letter = m_vList->GetLetter(i);
         args << wxString::Format(wxT(" %c:"),letter);
         i = m_vList->GetNextSelected(i);
     }
@@ -465,7 +454,7 @@ void MainFrame::OnRepair(wxCommandEvent& WXUNUSED(event))
     /*
     create command line to check disk for corruption:
     CHKDSK {drive} /F ................. check the drive and correct problems
-    PING -n {seconds + 1} localhost ... trick to pause for n seconds afterwards
+    PING -n {seconds + 1} localhost ... pause for the specified number of seconds
     */
     wxFileName path(wxT("%windir%\\system32\\cmd.exe"));
     path.Normalize(); wxString cmd(path.GetFullPath());
@@ -483,16 +472,22 @@ void MainFrame::OnRepair(wxCommandEvent& WXUNUSED(event))
     cmd << "& echo. ";
     cmd << "& pause";
 
-    itrace("Command Line: %ls", ws(cmd));
-    if(!wxExecute(cmd)) Utils::ShowError(wxT("Cannot execute cmd.exe program!"));
+    itrace("command line: %ls", ws(cmd));
+
+    RecoveryConsole *rc = new RecoveryConsole();
+    if(!wxExecute(cmd,wxEXEC_ASYNC,rc)){
+        Utils::ShowError(wxT("Cannot execute cmd.exe program!"));
+        delete rc;
+    }
 }
 
 void MainFrame::OnDefaultAction(wxCommandEvent& WXUNUSED(event))
 {
-    long i = m_vList->GetFirstSelected();
-    if(i != -1){
+    const long i = m_vList->GetFirstSelected();
+    if (i == -1) return;
+    {
         volume_info v;
-        char letter = (char)m_vList->GetItemText(i)[0];
+        const char letter = (char)m_vList->GetLetter(i);
         if(udefrag_get_volume_information(letter,&v) >= 0){
             if(v.is_dirty){
                 ProcessCommandEvent(this,ID_Repair);
@@ -531,7 +526,7 @@ void MainFrame::OnDiskProcessingFailure(wxCommandEvent& event)
         break;
     }
 
-    int error = event.GetInt();
+    const int error = event.GetInt();
     wxString msg = caption + wxT("\n") \
         + wxString::Format(wxT("%hs"),
         udefrag_get_error_description(error));

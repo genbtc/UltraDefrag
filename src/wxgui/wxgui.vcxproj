@@ -1,20 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.props" Condition="Exists('..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C73D366C-824B-483C-94E9-1CD584C2396F}</ProjectGuid>
-    <Keyword>MakeFileProj</Keyword>
     <ProjectName>wxgui</ProjectName>
+    <RootNamespace>wxgui</RootNamespace>
     <WindowsTargetPlatformVersion>7.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -23,7 +30,12 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>Windows7.1SDK</PlatformToolset>
-    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -32,153 +44,155 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
+    <Import Project="..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsBuildProperties.props" Condition="Exists('..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsBuildProperties.props')" />
+    <Import Project="..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.props" Condition="Exists('..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.props')" />
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <PropertyGroup Label="UserMacros" />
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <TargetName>UltraDefrag</TargetName>
+    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>C:\Software\Boost165;$(IncludePath)</IncludePath>
-    <ReferencePath>C:\Software\Boost165\lib32-msvc-14.1;$(ReferencePath)</ReferencePath>
-    <LibraryPath>C:\Software\Boost165\lib32-msvc-14.1;$(SolutionDir)..\lib;$(OutDir);$(LibraryPath)</LibraryPath>
-    <LinkIncremental>
-    </LinkIncremental>
-    <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    <SourcePath>$(VC_SourcePath);$(WindowsSdk_71A_IncludePath);$(WXWIDGETS)\include;$(SourcePath)</SourcePath>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetName>UltraDefrag</TargetName>
+    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
+    <GenerateManifest>false</GenerateManifest>
+    <SourcePath>$(VC_SourcePath);$(WindowsSdk_71A_IncludePath);$(WXWIDGETS)\include;$(SourcePath)</SourcePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <TargetName>UltraDefrag</TargetName>
+    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <TargetName>UltraDefrag</TargetName>
+    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
+    <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Link>
-      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <IgnoreAllDefaultLibraries>
-      </IgnoreAllDefaultLibraries>
-      <SubSystem>Windows</SubSystem>
-      <ProfileGuidedDatabase />
-      <TypeLibraryResourceID />
-      <RandomizedBaseAddress />
-      <DataExecutionPrevention />
-      <ShowProgress>NotSet</ShowProgress>
-      <TargetMachine>MachineX86</TargetMachine>
-      <EnableUAC />
-      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
-      <AdditionalDependencies>
-      </AdditionalDependencies>
-      <OptimizeReferences>false</OptimizeReferences>
-      <EntryPointSymbol>
-      </EntryPointSymbol>
-    </Link>
-    <ClCompile />
     <ClCompile>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <MinimalRebuild>false</MinimalRebuild>
-      <TreatWChar_tAsBuiltInType>
-      </TreatWChar_tAsBuiltInType>
-      <RuntimeTypeInfo>
-      </RuntimeTypeInfo>
-      <PreprocessorDefinitions>wxMSVC_VERSION=100;_NO_CRT_STDIO_INLINE;DEBUG;_DEBUG;_WIN32;WIN32;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ShowIncludes>false</ShowIncludes>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <ForceConformanceInForLoopScope />
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <FloatingPointModel />
-      <SDLCheck>false</SDLCheck>
       <UseFullPaths>true</UseFullPaths>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
-      <AdditionalOptions>/GA %(AdditionalOptions)</AdditionalOptions>
-      <CallingConvention />
-      <ProgramDataBaseFileName />
-      <CompileAsManaged>false</CompileAsManaged>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
+      <DiagnosticsFormat>Column</DiagnosticsFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <StringPooling>true</StringPooling>
     </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
+      <ShowProgress>LinkVerboseLib</ShowProgress>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>ucrtd.lib</IgnoreSpecificDefaultLibraries>
+    </Link>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>$(WXWIDGETSDIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions />
+      <PreprocessorDefinitions>;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
-    <ProjectReference>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-    </ProjectReference>
     <Manifest>
-      <VerboseOutput>false</VerboseOutput>
+      <VerboseOutput>true</VerboseOutput>
+      <EnableDPIAwareness>true</EnableDPIAwareness>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <ShowIncludes>false</ShowIncludes>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <UseFullPaths>true</UseFullPaths>
+      <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
+      <DiagnosticsFormat>Column</DiagnosticsFormat>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <StringPooling>true</StringPooling>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
+      <ShowProgress>LinkVerboseLib</ShowProgress>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>ucrtd.lib</IgnoreSpecificDefaultLibraries>
+    </Link>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_WIN64;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Manifest>
+      <VerboseOutput>true</VerboseOutput>
+      <EnableDPIAwareness>true</EnableDPIAwareness>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Link>
-      <AdditionalDependencies>zenwinx.lib;udefrag.lib;lua5.1a.lib;wxmsw30u_adv.lib;wxmsw30u_core.lib;wxpng.lib;wxzlib.lib;wxbase30u.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;ole32.lib;oleaut32.lib;uuid.lib;powrprof.lib;comctl32.lib;wsock32.lib;odbc32.lib;shell32.lib;</AdditionalDependencies>
-      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>true</OptimizeReferences>
-      <ShowProgress>NotSet</ShowProgress>
-      <IgnoreAllDefaultLibraries>
-      </IgnoreAllDefaultLibraries>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <ProfileGuidedDatabase />
-      <RandomizedBaseAddress />
-      <DataExecutionPrevention />
-      <ProgramDatabaseFile />
-      <TypeLibraryResourceID />
-      <TargetMachine>MachineX86</TargetMachine>
-      <EnableUAC />
-      <ImageHasSafeExceptionHandlers />
-      <IgnoreSpecificDefaultLibraries>
-      </IgnoreSpecificDefaultLibraries>
-      <EntryPointSymbol>
-      </EntryPointSymbol>
-    </Link>
-    <ClCompile />
     <ClCompile>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <UseUnicodeForAssemblerListing>
-      </UseUnicodeForAssemblerListing>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
       <CompileAs>Default</CompileAs>
-      <TreatWChar_tAsBuiltInType />
-      <ForceConformanceInForLoopScope />
-      <CallingConvention>
-      </CallingConvention>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <WarningLevel>Level3</WarningLevel>
-      <FloatingPointModel>
-      </FloatingPointModel>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
-      <AssemblerOutput>NoListing</AssemblerOutput>
-      <SDLCheck>false</SDLCheck>
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
-      <AdditionalOptions>/GA %(AdditionalOptions)</AdditionalOptions>
       <UseFullPaths>true</UseFullPaths>
-      <Optimization>Full</Optimization>
-      <ProgramDataBaseFileName />
-      <WholeProgramOptimization>false</WholeProgramOptimization>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
+      <PreprocessorDefinitions>OFFICIAL_RELEASE;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <DiagnosticsFormat>Caret</DiagnosticsFormat>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WarningLevel>Level3</WarningLevel>
     </ClCompile>
-    <ResourceCompile>
-      <AdditionalIncludeDirectories>$(WXWIDGETSDIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions />
-    </ResourceCompile>
-    <ProjectReference />
-    <ProjectReference>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-    </ProjectReference>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
+      <ShowProgress>LinkVerboseLib</ShowProgress>
+      <IgnoreSpecificDefaultLibraries>ucrtd.lib</IgnoreSpecificDefaultLibraries>
+    </Link>
     <Manifest>
-      <VerboseOutput>false</VerboseOutput>
+      <VerboseOutput>true</VerboseOutput>
+      <EnableDPIAwareness>true</EnableDPIAwareness>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <CompileAs>Default</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
+      <UseFullPaths>true</UseFullPaths>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
+      <PreprocessorDefinitions>OFFICIAL_RELEASE;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <DiagnosticsFormat>Caret</DiagnosticsFormat>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
+      <ShowProgress>LinkVerboseLib</ShowProgress>
+      <IgnoreSpecificDefaultLibraries>ucrtd.lib</IgnoreSpecificDefaultLibraries>
+    </Link>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_WIN64</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Manifest>
+      <VerboseOutput>true</VerboseOutput>
+      <EnableDPIAwareness>true</EnableDPIAwareness>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -192,29 +206,29 @@
     <ClCompile Include="fileslist.cpp" />
     <ClCompile Include="i18n.cpp" />
     <ClCompile Include="job.cpp" />
+    <ClCompile Include="LCN.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="map.cpp" />
     <ClCompile Include="menu.cpp" />
-    <ClCompile Include="prec.cpp" />
+    <ClCompile Include="prec.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="query.cpp" />
     <ClCompile Include="report.cpp" />
     <ClCompile Include="shutdown.cpp" />
+    <ClCompile Include="LegendTransientPopup.cpp" />
     <ClCompile Include="statbar.cpp" />
     <ClCompile Include="taskbar.cpp" />
     <ClCompile Include="toolbar.cpp" />
     <ClCompile Include="tray.cpp" />
-    <ClCompile Include="upgrade.cpp">
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyCode</AssemblerOutput>
-    </ClCompile>
+    <ClCompile Include="upgrade.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="vollist.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
     <ClInclude Include="prec.h" />
-    <ClInclude Include="udefrag-internals_flags.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\dll\udefrag\udefrag.vcxproj">
@@ -225,19 +239,15 @@
       <Project>{601c4f2c-3f3b-4b28-ae2c-920908b65e3a}</Project>
       <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\lua5.1\lua5.1.vcxproj">
+      <Project>{acbd919a-5791-4ac1-afd5-bf7e45bb705b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\stopgap\stopgap.vcxproj">
+      <Project>{f8b3905f-aa13-48e4-8dfc-854f0f21013b}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.targets" Condition="Exists('..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.targets')" />
   </ImportGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.props'))" />
-    <Error Condition="!Exists('..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.targets'))" />
-  </Target>
 </Project>

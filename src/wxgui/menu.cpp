@@ -23,6 +23,9 @@
 /**
  * @file menu.cpp
  * @brief Menu.
+ * @note On Windows 7 menu icons and check marks ain't centered,
+ * but it looks like it's by design as they ain't centered in
+ * Windows Explorer as well.
  * @addtogroup Menu
  * @{
  */
@@ -58,7 +61,6 @@
 #define UD_AppendRadioItem(menu,id) menu->AppendRadioItem(id,EmptyLabel)
 #define UD_AppendSeparator(menu)    menu->AppendSeparator();
 
-// FIXME: on Windows 7 check marks ain't centered at 150% DPI
 #define UD_SetMarginWidth(menu) { \
     wxMenuItemList list = menu->GetMenuItems(); \
     size_t count = list.GetCount(); \
@@ -96,9 +98,6 @@ void MainFrame::InitMenu()
     UD_AppendItem(m_menuAction,      ID_Stop,       wxT("stop")  );
     UD_AppendSeparator(m_menuAction);
 
-    UD_AppendCheckItem(m_menuAction, ID_Repeat                   );
-    UD_AppendSeparator(m_menuAction);
-
     UD_AppendItem(m_menuAction,      ID_ShowReport, wxT("report"));
     UD_AppendSeparator(m_menuAction);
 
@@ -114,6 +113,17 @@ void MainFrame::InitMenu()
 
     UD_AppendItem(m_menuAction,      ID_Exit,       wxEmptyString);
 
+    // create Query menu (by genBTC) - runs code in Query.cpp
+    //title is set @ i18n.cpp Line 192, and added to the menubar @ 252 below.
+    wxMenu *menuQuery = new wxMenu;
+    UD_AppendItem(menuQuery, ID_QueryClusters, wxEmptyString);    //query the internals and ask what clusters a file uses.
+    UD_AppendSeparator(menuQuery);
+    UD_AppendItem(menuQuery, ID_QueryFreeGaps, wxEmptyString);    //query the internals ask where the free gap regions are
+    UD_AppendItem(menuQuery, ID_QueryOperation2, wxEmptyString);    // Operation 2
+    UD_AppendItem(menuQuery, ID_QueryOperation3, wxEmptyString);    // Operation 3
+    UD_AppendItem(menuQuery, ID_QueryOperation4, wxEmptyString);    // Operation 4
+    //append more items to query tab here:
+    
     // create language menu
     m_menuLanguage = new wxMenu;
     UD_AppendItem(m_menuLanguage, ID_LangTranslateOnline,  wxEmptyString);
@@ -183,10 +193,11 @@ void MainFrame::InitMenu()
         }
     }
 
-    // create boot configuration menu
-    wxMenu *menuBootConfig = new wxMenu;
-    UD_AppendCheckItem(menuBootConfig, ID_BootEnable);
-    UD_AppendItem(menuBootConfig, ID_BootScript, wxT("script"));
+    // create settings menu
+    wxMenu *menuSettings = new wxMenu;
+    m_subMenuLanguage = menuSettings-> \
+        AppendSubMenu(m_menuLanguage, EmptyLabel);
+    UD_AppendItem(menuSettings, ID_GuiOptions, wxT("gear"));
 
     // create sorting configuration menu
     wxMenu *menuSortingConfig = new wxMenu;
@@ -196,24 +207,35 @@ void MainFrame::InitMenu()
     UD_AppendRadioItem(menuSortingConfig, ID_SortByModificationDate);
     UD_AppendRadioItem(menuSortingConfig, ID_SortByLastAccessDate);
     UD_AppendSeparator(menuSortingConfig);
-
     UD_AppendRadioItem(menuSortingConfig, ID_SortAscending);
     UD_AppendRadioItem(menuSortingConfig, ID_SortDescending);
-
-    // create settings menu
-    wxMenu *menuSettings = new wxMenu;
-    m_subMenuLanguage = menuSettings-> \
-        AppendSubMenu(m_menuLanguage, EmptyLabel);
-    UD_AppendItem(menuSettings, ID_GuiOptions, wxT("gear"));
     m_subMenuSortingConfig = menuSettings-> \
-        AppendSubMenu(menuSortingConfig, EmptyLabel);
+        AppendSubMenu(menuSortingConfig, EmptyLabel);    
+
+    // create boot configuration menu
+    wxMenu *menuBootConfig = new wxMenu;
+    UD_AppendCheckItem(menuBootConfig, ID_BootEnable);
+    UD_AppendItem(menuBootConfig, ID_BootScript, wxT("script"));
     m_subMenuBootConfig = menuSettings-> \
         AppendSubMenu(menuBootConfig, EmptyLabel);
+    //create font dropdown menu
+    UD_AppendItem(menuSettings, ID_ChooseFont, wxEmptyString); //genBTC font dialog.
+    // create help menu
+    wxMenu *menuHelp = new wxMenu;
+    UD_AppendItem(menuHelp, ID_HelpContents, wxT("help"));
+    UD_AppendSeparator(menuHelp);
+
+    UD_AppendItem(menuHelp, ID_HelpBestPractice, wxT("light"));
+    UD_AppendItem(menuHelp, ID_HelpFaq, wxEmptyString);
+    UD_AppendItem(menuHelp, ID_HelpLegend, wxEmptyString);
+    UD_AppendSeparator(menuHelp);
 
     // create debug menu
     wxMenu *menuDebug = new wxMenu;
     UD_AppendItem(menuDebug, ID_DebugLog,  wxEmptyString);
     UD_AppendItem(menuDebug, ID_DebugSend, wxEmptyString);
+    m_subMenuDebug = menuHelp->AppendSubMenu(menuDebug, EmptyLabel);
+    UD_AppendSeparator(menuHelp);
 
     // create upgrade menu
     wxMenu *menuUpgrade = new wxMenu;
@@ -221,33 +243,17 @@ void MainFrame::InitMenu()
     UD_AppendRadioItem(menuUpgrade, ID_HelpUpgradeStable);
     UD_AppendRadioItem(menuUpgrade, ID_HelpUpgradeAll);
     UD_AppendSeparator(menuUpgrade);
-
     UD_AppendItem(menuUpgrade, ID_HelpUpgradeCheck, wxEmptyString);
-
-    // create help menu
-    wxMenu *menuHelp = new wxMenu;
-    UD_AppendItem(menuHelp, ID_HelpContents, wxT("help"));
-    UD_AppendSeparator(menuHelp);
-
-    UD_AppendItem(menuHelp, ID_HelpBestPractice, wxT("light"));
-    UD_AppendItem(menuHelp, ID_HelpFaq,          wxEmptyString);
-    UD_AppendItem(menuHelp, ID_HelpLegend,       wxEmptyString);
-    UD_AppendSeparator(menuHelp);
-
-    m_subMenuDebug = menuHelp->AppendSubMenu(menuDebug, EmptyLabel);
-    UD_AppendSeparator(menuHelp);
-
     m_subMenuUpgrade = menuHelp->AppendSubMenu(menuUpgrade, EmptyLabel);
     UD_AppendSeparator(menuHelp);
-
     UD_AppendItem(menuHelp, ID_HelpAbout, wxT("star"));
 
     // create main menu
     m_menuBar = new wxMenuBar;
     m_menuBar->Append(m_menuAction, EmptyLabel);
+    m_menuBar->Append(menuQuery   , EmptyLabel);    //genBTC query menu
     m_menuBar->Append(menuSettings, EmptyLabel);
     m_menuBar->Append(menuHelp    , EmptyLabel);
-
     SetMenuBar(m_menuBar);
 
     // set margin width
@@ -255,11 +261,11 @@ void MainFrame::InitMenu()
         UD_SetMarginWidth(m_menuBar->GetMenu(0));
         UD_SetMarginWidth(m_menuBar->GetMenu(1));
         UD_SetMarginWidth(m_menuBar->GetMenu(2));
+        UD_SetMarginWidth(m_menuBar->GetMenu(3));
         UD_SetMarginWidth(menuBootConfig);
     }
 
     // initial settings
-    m_menuBar->Check(ID_Repeat,m_repeat);
     m_menuBar->Check(ID_SkipRem,m_skipRem);
 
     int id = g_locale->GetLanguage();

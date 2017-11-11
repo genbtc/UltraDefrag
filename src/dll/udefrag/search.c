@@ -1,6 +1,6 @@
 /*
  *  UltraDefrag - a powerful defragmentation tool for Windows NT.
- *  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+ *  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,10 +20,6 @@
 /**
  * @file search.c
  * @brief File blocks and free space regions searching.
- * @details We use binary search trees whenever possible
- * to speed things up. If memory allocation fails for
- * some operation on a binary tree, we destroy it and
- * use alternative searching in double linked lists.
  * @addtogroup Search
  * @{
  */
@@ -36,14 +32,15 @@
 #include "udefrag-internals.h"
 
 /************************************************************/
-/*          Free space region searching routines            */
+/*               Free space regions searching               */
 /************************************************************/
 
 /**
- * @brief Searches for free space region starting at the beginning of the volume.
- * @param[in] jp job parameters structure.
- * @param[in] min_lcn minimum LCN of region.
- * @param[in] min_length minimum length of region, in clusters.
+ * @internal
+ * @brief Searches for the first suitable free space region.
+ * @param[in] jp the job parameters.
+ * @param[in] min_lcn minimum LCN of the region.
+ * @param[in] min_length minimum length of the region, in clusters.
  * @param[out] max_length length of the biggest region found.
  * @note In case of termination request returns NULL immediately.
  */
@@ -51,7 +48,7 @@ winx_volume_region *find_first_free_region(udefrag_job_parameters *jp,
         ULONGLONG min_lcn,ULONGLONG min_length,ULONGLONG *max_length)
 {
     winx_volume_region *rgn;
-    ULONGLONG time = winx_xtime();
+    const ULONGLONG time = winx_xtime();
 
     if(max_length) *max_length = 0;
     for(rgn = jp->free_regions; rgn; rgn = rgn->next){
@@ -73,10 +70,11 @@ winx_volume_region *find_first_free_region(udefrag_job_parameters *jp,
 }
 
 /**
- * @brief Searches for free space region starting at the end of the volume.
- * @param[in] jp job parameters structure.
- * @param[in] min_lcn minimum LCN of region.
- * @param[in] min_length minimum length of region, in clusters.
+ * @internal
+ * @brief Searches for the last suitable free space region.
+ * @param[in] jp the job parameters.
+ * @param[in] min_lcn minimum LCN of the region.
+ * @param[in] min_length minimum length of the region, in clusters.
  * @param[out] max_length length of the biggest region found.
  * @note In case of termination request returns NULL immediately.
  */
@@ -84,7 +82,7 @@ winx_volume_region *find_last_free_region(udefrag_job_parameters *jp,
         ULONGLONG min_lcn,ULONGLONG min_length,ULONGLONG *max_length)
 {
     winx_volume_region *rgn;
-    ULONGLONG time = winx_xtime();
+    const ULONGLONG time = winx_xtime();
 
     if(max_length) *max_length = 0;
     if(jp->free_regions){
@@ -161,7 +159,7 @@ winx_volume_region *find_largest_free_region(udefrag_job_parameters *jp)
 {
     winx_volume_region *rgn, *rgn_largest;
     ULONGLONG length;
-    ULONGLONG time = winx_xtime();
+    const ULONGLONG time = winx_xtime();
     
     rgn_largest = NULL, length = 0;
     for(rgn = jp->free_regions; rgn; rgn = rgn->next){
@@ -184,7 +182,8 @@ winx_volume_region *find_largest_free_region(udefrag_job_parameters *jp)
 /************************************************************/
 
 /**
- * @brief Auxiliary structure used to save file blocks in binary tree.
+ * @internal
+ * @brief An auxiliary structure used to save file blocks in a binary tree.
  */
 struct file_block {
     winx_file_info *file;
@@ -192,7 +191,8 @@ struct file_block {
 };
 
 /**
- * @brief Auxiliary routine used to sort file blocks in binary tree.
+ * @internal
+ * @brief An auxiliary routine used to sort file blocks in the binary tree.
  */
 static int blocks_compare(const void *prb_a, const void *prb_b, void *prb_param)
 {
@@ -202,14 +202,15 @@ static int blocks_compare(const void *prb_a, const void *prb_b, void *prb_param)
     b = (struct file_block *)prb_b;
     
     if(a->block->lcn < b->block->lcn)
-        return -1;
+        return (-1);
     if(a->block->lcn == b->block->lcn)
         return 0;
     return 1;
 }
 
 /**
- * @brief Auxiliary routine used to free memory allocated for tree items.
+ * @internal
+ * @brief An auxiliary routine used to free memory allocated for the tree items.
  */
 static void free_item (void *prb_item, void *prb_param)
 {
@@ -218,14 +219,12 @@ static void free_item (void *prb_item, void *prb_param)
 }
 
 /**
- * @brief Creates and initializes
- * the binary tree of all file blocks.
- * @return Zero for success, 
- * negative value otherwise.
- * @note jp->file_blocks must be
- * initialized by NULL or contain
- * pointer to a valid tree before 
- * this call.
+ * @internal
+ * @brief Creates and initializes a binary
+ * tree to store all the file blocks into.
+ * @return Zero for success, negative value otherwise.
+ * @note jp->file_blocks must be initialized by NULL
+ * or point to a valid tree before this call.
  */
 int create_file_blocks_tree(udefrag_job_parameters *jp)
 {
@@ -236,10 +235,9 @@ int create_file_blocks_tree(udefrag_job_parameters *jp)
 }
 
 /**
- * @brief Adds a file block to
- * the binary tree of all file blocks.
- * @return Zero for success, 
- * negative value otherwise.
+ * @internal
+ * @brief Adds a file block to the binary tree.
+ * @return Zero for success, negative value otherwise.
  * @note Destroys the tree in case of errors.
  */
 int add_block_to_file_blocks_tree(udefrag_job_parameters *jp, winx_file_info *file, winx_blockmap *block)
@@ -248,17 +246,17 @@ int add_block_to_file_blocks_tree(udefrag_job_parameters *jp, winx_file_info *fi
 	void **p;
 
 	if(file == NULL || block == NULL)
-        return -1;
+        return (-1);
     
     if(jp->file_blocks == NULL)
-        return -1;
+        return (-1);
 
     fb = (struct file_block *)winx_malloc(sizeof *fb);
     fb->file = file;
     fb->block = block;
     p = prb_probe(jp->file_blocks,(void *)fb);
     /* if a duplicate item exists... */
-    if(*p != fb){
+    if(p && *p != fb){
         etrace("a duplicate found");
         winx_free(fb);
     }
@@ -266,10 +264,9 @@ int add_block_to_file_blocks_tree(udefrag_job_parameters *jp, winx_file_info *fi
 }
 
 /**
- * @brief Removes a file block from
- * the binary tree of all file blocks.
- * @return Zero for success, 
- * negative value otherwise.
+ * @internal
+ * @brief Removes a file block from the binary tree.
+ * @return Zero for success, negative value otherwise.
  */
 int remove_block_from_file_blocks_tree(udefrag_job_parameters *jp, winx_blockmap *block)
 {
@@ -277,10 +274,10 @@ int remove_block_from_file_blocks_tree(udefrag_job_parameters *jp, winx_blockmap
     struct file_block b;
     
     if(block == NULL)
-        return -1;
+        return (-1);
     
     if(jp->file_blocks == NULL)
-        return -1;
+        return (-1);
 
     b.file = NULL;
     b.block = block;
@@ -290,7 +287,7 @@ int remove_block_from_file_blocks_tree(udefrag_job_parameters *jp, winx_blockmap
            a bug, or file system inconsistency */
         etrace("failed for %p: VCN = %I64u, LCN = %I64u, LEN = %I64u",
             block, block->vcn, block->lcn, block->length);
-        /* if block does not exist in tree, we have nothing to cleanup */
+        /* if block does not exist in the tree, we have nothing to cleanup */
         return 0;
     }
     winx_free(fb);
@@ -298,8 +295,8 @@ int remove_block_from_file_blocks_tree(udefrag_job_parameters *jp, winx_blockmap
 }
 
 /**
- * @brief Destroys the binary
- * tree of all file blocks.
+ * @internal
+ * @brief Destroys the binary tree containing all the file blocks.
  */
 void destroy_file_blocks_tree(udefrag_job_parameters *jp)
 {
@@ -311,19 +308,22 @@ void destroy_file_blocks_tree(udefrag_job_parameters *jp)
 }
 
 /************************************************************/
-/*              File block searching routine                */
+/*                  File blocks searching                   */
 /************************************************************/
 
 /**
- * @brief Searches for the first movable file block
- * after the specified cluster on the volume.
- * @param[in] jp job parameters.
- * @param[in,out] min_lcn pointer to variable containing
- * minimum LCN - file blocks below it will be ignored.
- * @param[in] flags one of SKIP_xxx flags defined in udefrag.h
- * @param[out] first_file pointer to variable receiving information
- * about the file the first block belongs to.
- * @return Pointer to the first block. NULL indicates failure.
+ * @internal
+ * @brief Searches for the first movable file block.
+ * @param[in] jp the job parameters.
+ * @param[in,out] min_lcn pointer to variable
+ * containing the minimum LCN accepted.
+ * @param[in] flags one of the SKIP_xxx
+ * flags defined in udefrag.h
+ * @param[out] first_file pointer to
+ * variable receiving information about
+ * the file the found block belongs to.
+ * @note In case of termination request
+ * returns NULL immediately.
  */
 winx_blockmap *find_first_block(udefrag_job_parameters *jp,
     ULONGLONG *min_lcn, int flags, winx_file_info **first_file)
@@ -334,7 +334,7 @@ winx_blockmap *find_first_block(udefrag_job_parameters *jp,
     struct file_block fb, *item;
     struct prb_traverser t;
     int movable_file;
-    ULONGLONG tm = winx_xtime();
+    const ULONGLONG tm = winx_xtime();
     
     if(min_lcn == NULL || first_file == NULL)
         return NULL;
@@ -348,7 +348,7 @@ winx_blockmap *find_first_block(udefrag_job_parameters *jp,
         item = (struct file_block *)prb_t_next(&t);
         if(prb_delete(jp->file_blocks,&fb) == NULL){
             etrace("cannot remove block from the tree");
-            winx_flush_dbg_log(0); /* 'cause error is critical */
+            winx_flush_dbg_log(0); /* 'cause the error is critical */
         }
     }
     if(item){
@@ -358,9 +358,9 @@ winx_blockmap *find_first_block(udefrag_job_parameters *jp,
     while(!jp->termination_router((void *)jp)){
         if(found_file == NULL) break;
         if(flags & SKIP_PARTIALLY_MOVABLE_FILES){
-            movable_file = can_move_entirely(found_file,jp);
+            movable_file = can_move_entirely(found_file, jp->fs_type);
         } else {
-            movable_file = can_move(found_file,jp);
+            movable_file = can_move(found_file, jp->fs_type);
         }
         if(is_file_locked(found_file,jp)) movable_file = 0;
         if(movable_file){
@@ -375,7 +375,7 @@ winx_blockmap *find_first_block(udefrag_job_parameters *jp,
             }
         }
         
-        /* skip current block */
+        /* skip the current block */
         *min_lcn = *min_lcn + 1;
         /* and go to the next one */
         item = (struct file_block *)prb_t_next(&t);

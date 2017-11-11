@@ -163,6 +163,7 @@
 		<Unit filename="btd.cpp" />
 		<Unit filename="config.cpp" />
 		<Unit filename="crash.cpp" />
+		<Unit filename="fileslist.cpp" />
 		<Unit filename="i18n.cpp" />
 		<Unit filename="job.cpp" />
 		<Unit filename="log.cpp" />
@@ -171,6 +172,7 @@
 		<Unit filename="map.cpp" />
 		<Unit filename="menu.cpp" />
 		<Unit filename="prec.cpp">
+		<Unit filename="query.cpp" />
 			<Option target="Release (MSVC)" />
 			<Option compiler="msvc10" use="1" buildCommand="$compiler /nologo $options $includes /Ycprec.h /c $file /Fo$object" />
 			<Option weight="10" />
@@ -186,6 +188,7 @@
 		<Unit filename="taskbar.cpp" />
 		<Unit filename="toolbar.cpp" />
 		<Unit filename="tray.cpp" />
+		<Unit filename="udefrag-internals_flags.h" />
 		<Unit filename="upgrade.cpp" />
 		<Unit filename="utils.cpp" />
 		<Unit filename="vollist.cpp" />

@@ -1,6 +1,6 @@
 ﻿/*
  *  UltraDefrag - a powerful defragmentation tool for Windows NT.
- *  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+ *  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
  *  Copyright (c) 2010-2013 Stefan Pendl (stefanpe@users.sourceforge.net).
  *
  *  Permission is granted to copy, distribute and/or modify this document
@@ -17,7 +17,7 @@
  * - Dmitri Arkhangelski <span class="simple">\<dmitriar@users.sourceforge.net\></span>
  * - Justin Dearing      <span class="simple">\<zippy1981@users.sourceforge.net\></span>
  *
- * <b>Program and Documentation Copyright &copy; 2009, 2015</b>
+ * <b>Program and Documentation Copyright &copy; 2009, 2015-2017</b>
  * 
  * - Dmitri Arkhangelski <span class="simple">\<dmitriar@users.sourceforge.net\></span>
  *
@@ -30,7 +30,7 @@
  *
  * - Sayem Chaklader     <span class="simple">\<gearspec@gmail.com\></span>
  *
- * <b>Translations Copyright &copy; 2008-2014</b>
+ * <b>Translations Copyright &copy; 2008-2017</b>
  *
  * @htmlonly
  * <table style="border:none; margin-left:25px;">
@@ -47,7 +47,7 @@
  * <tr><td>• Burmese (Padauk)             </td><td>-</td><td> Muhammed Widuya</td></tr>
  * <tr><td>                               </td><td>-</td><td> Pyae Sone</td></tr>
  * <tr><td>• Catalan                      </td><td>-</td><td> Illes Balears</td></tr>
- * <tr><td>                               </td><td>-</td><td> Joseph S. B. Maza</td></tr>
+ * <tr><td>                               </td><td>-</td><td> Joseph S. Maza</td></tr>
  * <tr><td>                               </td><td>-</td><td> jmontane</td></tr>
  * <tr><td>• Chinese (Simplified)         </td><td>-</td><td> muzuiget</td></tr>
  * <tr><td>                               </td><td>-</td><td> HPJ</td></tr>
@@ -55,7 +55,7 @@
  * <tr><td>                               </td><td>-</td><td> Elita Alutee</td></tr>
  * <tr><td>                               </td><td>-</td><td> All UltraDefrag Fans</td></tr>
  * <tr><td>                               </td><td>-</td><td> wwj402</td></tr>
- * <tr><td>                               </td><td>-</td><td> YF</td></tr>
+ * <tr><td>                               </td><td>-</td><td> Y.F. Yang</td></tr>
  * <tr><td>• Chinese (Traditional)        </td><td>-</td><td> muzuiget</td></tr>
  * <tr><td>                               </td><td>-</td><td> Ryan Ping Chih Ko</td></tr>
  * <tr><td>                               </td><td>-</td><td> rexx</td></tr>
@@ -78,11 +78,12 @@
  * <tr><td>• English (GB)                 </td><td>-</td><td> Andrew Smith</td></tr>
  * <tr><td>• English (US)                 </td><td>-</td><td> Dmitri Arkhangelski</td></tr>
  * <tr><td>• Estonian                     </td><td>-</td><td> Olav Mägi</td></tr>
+ * <tr><td>                               </td><td>-</td><td> Tiit Pääsukene</td></tr>
+ * <tr><td>                               </td><td>-</td><td> Joosep-Georg Järvemaa</td></tr>
  * <tr><td>• Farsi                        </td><td>-</td><td> Ali Jafari</td></tr>
  * <tr><td>                               </td><td>-</td><td> SBL</td></tr>
- * <tr><td>• Filipino (Tagalog)           </td><td>-</td><td> Joseph S. B. Maza</td></tr>
+ * <tr><td>• Filipino (Tagalog)           </td><td>-</td><td> Joseph S. Maza</td></tr>
  * <tr><td>                               </td><td>-</td><td> Ezekiel JB Vegiga</td></tr>
- * <tr><td>                               </td><td>-</td><td> Stefan Pendl</td></tr>
  * <tr><td>• Finnish                      </td><td>-</td><td> jtl</td></tr>
  * <tr><td>                               </td><td>-</td><td> Jukka Laari</td></tr>
  * <tr><td>• French                       </td><td>-</td><td> Pascal Crozet</td></tr>
@@ -109,12 +110,13 @@
  * <tr><td>                               </td><td>-</td><td> Brechler Zsolt</td></tr>
  * <tr><td>                               </td><td>-</td><td> Attila Kalmár</td></tr>
  * <tr><td>• Icelandic                    </td><td>-</td><td> Stefan Pendl</td></tr>
- * <tr><td>• Iloko                        </td><td>-</td><td> Joseph S. B. Maza</td></tr>
+ * <tr><td>• Iloko                        </td><td>-</td><td> Joseph S. Maza</td></tr>
  * <tr><td>• Indonesian (Bahasa Indonesia)</td><td>-</td><td> Taufan Nur Hidayat</td></tr>
  * <tr><td>                               </td><td>-</td><td> Djati Satria</td></tr>
  * <tr><td>• Indonesian                   </td><td>-</td><td> Imanuel Novian</td></tr>
  * <tr><td>                               </td><td>-</td><td> Djati Satria</td></tr>
  * <tr><td>                               </td><td>-</td><td> Rizki Aulia Rachman</td></tr>
+ * <tr><td>                               </td><td>-</td><td> Joshua Randiny</td></tr>
  * <tr><td>• Italian                      </td><td>-</td><td> Paolo Loggia</td></tr>
  * <tr><td>                               </td><td>-</td><td> Sherpya</td></tr>
  * <tr><td>                               </td><td>-</td><td> Edoardo Brunetti</td></tr>
@@ -124,7 +126,8 @@
  * <tr><td>• Japanese                     </td><td>-</td><td> ao3</td></tr>
  * <tr><td>                               </td><td>-</td><td> Masao Kajiwara</td></tr>
  * <tr><td>                               </td><td>-</td><td> kako</td></tr>
- * <tr><td>                               </td><td>-</td><td> necrose99</td></tr>
+ * <tr><td>                               </td><td>-</td><td> Michael Robert Lawrence</td></tr>
+ * <tr><td>                               </td><td>-</td><td> Tatsuya Mizushima (MCtek)</td></tr>
  * <tr><td>• Javanese                     </td><td>-</td><td> Taufan Nur Hidayat</td></tr>
  * <tr><td>• Kapampangan                  </td><td>-</td><td> Edwin N. Camaya</td></tr>
  * <tr><td>• Korean                       </td><td>-</td><td> Alex Han</td></tr>
@@ -155,6 +158,7 @@
  * <tr><td>• Serbian                      </td><td>-</td><td> Damjan Daljevic</td></tr>
  * <tr><td>                               </td><td>-</td><td> Dmitri Arkhangelski</td></tr>
  * <tr><td>• Slovak                       </td><td>-</td><td> Milan Cerovský</td></tr>
+ * <tr><td>                               </td><td>-</td><td> Jajo Pajo</td></tr>
  * <tr><td>• Slovenian                    </td><td>-</td><td> Miha Mlakar</td></tr>
  * <tr><td>                               </td><td>-</td><td> Dmitri Arkhangelski</td></tr>
  * <tr><td>• Spanish (AR)                 </td><td>-</td><td> Daniel Testa</td></tr>
@@ -162,6 +166,7 @@
  * <tr><td>                               </td><td>-</td><td> Juan C. Mendez Valledor</td></tr>
  * <tr><td>                               </td><td>-</td><td> Javier Contreras</td></tr>
  * <tr><td>                               </td><td>-</td><td> NetVicious</td></tr>
+ * <tr><td>                               </td><td>-</td><td> Joseph S. Maza</td></tr>
  * <tr><td>• Spanish (MEX)                </td><td>-</td><td> Conrad Flyckt</td></tr>
  * <tr><td>                               </td><td>-</td><td> Felipe Ángel González Báñez</td></tr>
  * <tr><td>                               </td><td>-</td><td> Joseph S. Maza</td></tr>
@@ -181,6 +186,8 @@
  * <tr><td>• Ukrainian                    </td><td>-</td><td> Dmitri Arkhangelski</td></tr>
  * <tr><td>                               </td><td>-</td><td> lembergman</td></tr>
  * <tr><td>                               </td><td>-</td><td> alex hap</td></tr>
+ * <tr><td>                               </td><td>-</td><td> zubr139</td></tr>
+ * <tr><td>• Uzbek (Latin)                </td><td>-</td><td> Sherzod Mamatkulov</td></tr>
  * <tr><td>• Vietnamese                   </td><td>-</td><td> Vietnamize Team</td></tr>
  * <tr><td>                               </td><td>-</td><td> DT</td></tr>
  * <tr><td>                               </td><td>-</td><td> Anh Phan</td></tr>
@@ -206,7 +213,7 @@
  * • Burmese (Padauk)              & - & Muhammed Widuya \\
  *                                 & - & Pyae Sone \\
  * • Catalan                       & - & Illes Balears \\
- *                                 & - & Joseph S. B. Maza \\
+ *                                 & - & Joseph S. Maza \\
  *                                 & - & jmontane \\
  * • Chinese (Simplified)          & - & muzuiget \\
  *                                 & - & HPJ \\
@@ -214,7 +221,7 @@
  *                                 & - & Elita Alutee \\
  *                                 & - & All UltraDefrag Fans \\
  *                                 & - & wwj402 \\
- *                                 & - & YF \\
+ *                                 & - & Y.F. Yang \\
  * • Chinese (Traditional)         & - & muzuiget \\
  *                                 & - & Ryan Ping Chih Ko \\
  *                                 & - & rexx \\
@@ -237,11 +244,12 @@
  * • English (GB)                  & - & Andrew Smith \\
  * • English (US)                  & - & Dmitri Arkhangelski \\
  * • Estonian                      & - & Olav Mägi \\
+ *                                 & - & Tiit Pääsukene \\
+ *                                 & - & Joosep-Georg Järvemaa \\
  * • Farsi                         & - & Ali Jafari \\
  *                                 & - & SBL \\
- * • Filipino (Tagalog)            & - & Joseph S. B. Maza \\
+ * • Filipino (Tagalog)            & - & Joseph S. Maza \\
  *                                 & - & Ezekiel JB Vegiga \\
- *                                 & - & Stefan Pendl \\
  * • Finnish                       & - & jtl \\
  *                                 & - & Jukka Laari \\
  * • French                        & - & Pascal Crozet \\
@@ -268,12 +276,13 @@
  *                                 & - & Brechler Zsolt \\
  *                                 & - & Attila Kalmár \\
  * • Icelandic                     & - & Stefan Pendl \\
- * • Iloko                         & - & Joseph S. B. Maza \\
+ * • Iloko                         & - & Joseph S. Maza \\
  * • Indonesian (Bahasa Indonesia) & - & Taufan Nur Hidayat \\
  *                                 & - & Djati Satria \\
  * • Indonesian                    & - & Imanuel Novian \\
  *                                 & - & Djati Satria \\
  *                                 & - & Rizki Aulia Rachman \\
+ *                                 & - & Joshua Randiny \\
  * • Italian                       & - & Paolo Loggia \\
  *                                 & - & Sherpya \\
  *                                 & - & Edoardo Brunetti \\
@@ -283,7 +292,8 @@
  * • Japanese                      & - & ao3 \\
  *                                 & - & Masao Kajiwara \\
  *                                 & - & kako \\
- *                                 & - & necrose99 \\
+ *                                 & - & Michael Robert Lawrence \\
+ *                                 & - & Tatsuya Mizushima (MCtek) \\
  * • Javanese                      & - & Taufan Nur Hidayat \\
  * • Kapampangan                   & - & Edwin N. Camaya \\
  * • Korean                        & - & Alex Han \\
@@ -314,6 +324,7 @@
  * • Serbian                       & - & Damjan Daljevic \\
  *                                 & - & Dmitri Arkhangelski \\
  * • Slovak                        & - & Milan Cerovský \\
+ *                                 & - & Jajo Pajo \\
  * • Slovenian                     & - & Miha Mlakar \\
  *                                 & - & Dmitri Arkhangelski \\
  * • Spanish (AR)                  & - & Daniel Testa \\
@@ -321,6 +332,7 @@
  *                                 & - & Juan C. Mendez Valledor \\
  *                                 & - & Javier Contreras \\
  *                                 & - & NetVicious \\
+ *                                 & - & Joseph S. Maza \\
  * • Spanish (MEX)                 & - & Conrad Flyckt \\
  *                                 & - & Felipe Ángel González Báñez \\
  *                                 & - & Joseph S. Maza \\
@@ -340,6 +352,8 @@
  * • Ukrainian                     & - & Dmitri Arkhangelski \\
  *                                 & - & lembergman \\
  *                                 & - & alex hap \\
+ *                                 & - & zubr139 \\
+ * • Uzbek (Latin)                 & - & Sherzod Mamatkulov \\
  * • Vietnamese                    & - & Vietnamize Team \\
  *                                 & - & DT \\
  *                                 & - & Anh Phan \\
@@ -359,20 +373,7 @@
  *
  * Portions Copyright &copy; 1998-2005 Julian Smart, Robert Roebling et al
  *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Library General Public Licence as published
- * by the Free Software Foundation; either version 2 of the Licence,
- * or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
- * General Public Licence for more details.
- *
- * You should have received a copy of the @subpage LGPL_2_0
- * along with this software, usually in a file named COPYING.LIB.  If not,
- * write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307 USA.</li>
+ * This library is licensed under the terms of the @subpage WXWINDOWS_LIBRARY_LICENCE.</li>
  *
  * <li><a href="http://www.lua.org/">Lua</a>
  *
@@ -397,25 +398,6 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</li>
  * 
- * <li><a href="http://www.gnu.org/software/libc/">GNU C Library</a>
- *
- * Portions Copyright &copy; 1989,90,91,92,93,94,96,97 Free Software Foundation, Inc.
- *
- * The GNU C Library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- * 
- * The GNU C Library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Library General Public License for more details.
- * 
- * You should have received a copy of the @ref LGPL_2_0
- * along with this program. If not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.</li>
- *
  * <li><a href="http://www.stanford.edu/~blp/avl/">GNU libavl</a>
  *
  * Portions Copyright &copy; 1998, 1999, 2000, 2001, 2002, 2004 Free Software Foundation, Inc.
@@ -434,24 +416,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.</li>
- *
- * <li><a href="http://www.reactos.org/">ReactOS</a>
- *
- * Portions Copyright &copy; 2002 ReactOS Team
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
- * by the Free Software Foundation; either version 2 of the License,
- * or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the @ref GPL along with this
- * program; if not, write to the Free Software Foundation, Inc.,
- * 675 Mass Ave, Cambridge, MA 02139, USA.</li>
  * </ul>
  *
  * UltraDefrag GUI includes icons made by third-party developers.
@@ -498,15 +462,6 @@
  * of the icons contained within.</li>
  * </ul>
  * 
- * The repeat icon has been copied from the <a href="http://www.interactivemania.com/content/default-icon">Default Icon</a> set.
- *
- * <ul>
- * <li> Portions Copyright &copy; 2011 interactivemania
- *
- * Default Icon by interactivemania is licensed under the
- * <a href="http://creativecommons.org/licenses/by-nd/3.0/">Creative Commons Attribution-No Derivative Works 3.0</a>.</li>
- * </ul>
- *
  * The Lua and Lua Report icons are based on the <a href="http://lua-users.org/wiki/LuaLogo">artwork by Alexandre Nakonechnyj</a>.
  *
  * <ul>
@@ -537,15 +492,14 @@
  * <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0 License</a>.</li>
  * </ul>
  *
+ * The UltraDefrag debugger's icon is based on Mozilla Crash Reporter's icon
+ * licensed under <a href="http://www.mozilla.org/en-US/MPL/">Mozilla Public License 2.0</a>.
+ *
  * <center>***</center>
  *
- * <b>Maintainer</b>
+ * Special thanks for porting UltraDefrag to Linux are going to:
  *
- * - Stefan Pendl <span class="simple">\<stefanpe@users.sourceforge.net\></span>
- *
- * <b>Chief Architect</b>
- *
- * - Dmitri Arkhangelski <span class="simple">\<dmitriar@users.sourceforge.net\></span>
+ * - Jean-Pierre André <span class="simple">\<jean-pierre.andre@wanadoo.fr\></span>
  *
  * Special thanks for contributions (in alphabetical order):
  *
@@ -642,15 +596,15 @@
  * \setlength\LTleft{1.25em}\setlength\LTright{\fill}\begin{longtable}{p{1\linewidth-2em}}
  * @endlatexonly
  * Aivier, Antonio Vivace, Benny Stütz, Bernard Ladenthin, Carlo Bruschi, Catur Susetyo,
- * Connection, Dandy Cheung, Daniel Rodríguez, Davide, Dmitry Zemskov, Erwin Dokter, El Fiera,
+ * Connection, credofashion, Dandy Cheung, Daniel Rodríguez, Davide, Dmitry Zemskov, Erwin Dokter, El Fiera,
  * Fabrizio Marana, FS, Garoiu Victor, Giulio Fornasar, Gustavo Rezende, Haein Jung, Harald Arnesen,
- * Jan Iemhoff, JIFF, Julien Chartier, Luigi C., Javier Valdivieso, Jiri Sedlak,
- * José Carlos Taveira de Souza, José Luis Farías, Joshua Christo Randiny, Karam Al-Shorbassi,
+ * Jan Iemhoff, Jani Kinnunen, JIFF, Julien Chartier, Luigi C., Javier Valdivieso, Jiri Sedlak,
+ * José Carlos Taveira de Souza, José Luis Farías, Karam Al-Shorbassi,
  * Ken Choy, Krzysztof Świderski, Latino, Leo Smulders, luigif, MAFA1005, Massa,
  * Matej Marton, Mateusz Krawczyk, Nikolay Parukhin, Patrick Palm, Piotr Halama,
  * Reynald Didier, Robert Jr, Robert Readman, Rodrigo Lopes Paitach, Seph, SMHA,
  * strel, Suranappar.se, Timo VJ Lähde, Tjeerd van Sas, Trans-fr, translucens, TurboHz,
- * udef-jardic, Zirikkanen, zubr139
+ * udef-jardic, Zirikkanen
  * @htmlonly
  * </dd></dl>
  * @endhtmlonly

@@ -1,9 +1,7 @@
 @echo off
-
 ::
-:: This script builds all binaries for UltraDefrag project
-:: for all of the supported target platforms.
-:: Copyright (c) 2007-2013 Dmitri Arkhangelski (dmitriar@gmail.com).
+:: This script builds UltraDefrag binaries for all the supported target platforms.
+:: Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
 :: Copyright (c) 2010-2013 Stefan Pendl (stefanpe@users.sourceforge.net).
 ::
 :: This program is free software; you can redistribute it and/or modify
@@ -22,95 +20,41 @@
 ::
 
 rem Usage:
-rem     build-targets [<compiler>]
+rem     build-targets [<compiler>] [options]
 rem
 rem Available <compiler> values:
 rem     --use-mingw     (default)
 rem     --use-winsdk    (we use it for official releases)
 rem     --use-mingw-x64 (experimental, produces wrong x64 code)
 rem
-rem Skip any processor architecture to reduce compile time
-rem     --no-x86
-rem     --no-amd64
-rem     --no-ia64
+rem Options:
+rem     --no-x86        don't build 32-bit binaries
+rem     --no-amd64      don't build x64 binaries
+rem     --no-ia64       don't build IA-64 binaries
 
-rem NOTE: IA-64 targeting binaries were never tested by the authors 
-rem due to missing appropriate hardware and appropriate 64-bit version 
-rem of Windows.
+rem NOTE: IA-64 binaries have never been tested by
+rem the authors because of lack of Itanium hardware.
+
+echo Build UltraDefrag binaries...
 
 call ParseCommandLine.cmd %*
 
-:: create all directories required to store target binaries
-mkdir lib
-mkdir lib\amd64
-mkdir lib\ia64
-mkdir bin
-mkdir bin\amd64
-mkdir bin\ia64
+:: set environment variables
+if "%ULTRADFGVER%" equ "" (
+    call setvars.cmd
+    if exist "setvars_%COMPUTERNAME%_%ORIG_USERNAME%.cmd"^
+        call "setvars_%COMPUTERNAME%_%ORIG_USERNAME%.cmd"
+    if exist "setvars_%COMPUTERNAME%_%USERNAME%.cmd"^
+        call "setvars_%COMPUTERNAME%_%USERNAME%.cmd"
+    echo.
+)
 
-:: copy source files to obj directory
-(
-    echo doxyfile
-    echo .dox
-    echo .html
-    echo .mdsp
-    echo .cbp
-    echo .depend
-    echo .layout
-) >"%~n0_exclude.txt"
+set UD_ROOT=%cd%
 
-xcopy .\bootexctrl  .\obj\bootexctrl  /I /Y /Q /EXCLUDE:%~n0_exclude.txt
-xcopy .\console     .\obj\console     /I /Y /Q /EXCLUDE:%~n0_exclude.txt
-xcopy .\console\res .\obj\console\res /I /Y /Q /EXCLUDE:%~n0_exclude.txt
-xcopy .\dll\udefrag .\obj\udefrag     /I /Y /Q /EXCLUDE:%~n0_exclude.txt
-xcopy .\dll\zenwinx .\obj\zenwinx     /I /Y /Q /EXCLUDE:%~n0_exclude.txt
-xcopy .\wxgui       .\obj\wxgui       /I /Y /Q /EXCLUDE:%~n0_exclude.txt
-xcopy .\wxgui\res   .\obj\wxgui\res   /I /Y /Q /S /EXCLUDE:%~n0_exclude.txt
-xcopy .\hibernate   .\obj\hibernate   /I /Y /Q /EXCLUDE:%~n0_exclude.txt
-xcopy .\include     .\obj\include     /I /Y /Q /EXCLUDE:%~n0_exclude.txt
-xcopy .\lua5.1      .\obj\lua5.1      /I /Y /Q /EXCLUDE:%~n0_exclude.txt
-xcopy .\lua         .\obj\lua         /I /Y /Q /EXCLUDE:%~n0_exclude.txt
-xcopy .\lua-gui     .\obj\lua-gui     /I /Y /Q /EXCLUDE:%~n0_exclude.txt
-xcopy .\native      .\obj\native      /I /Y /Q /EXCLUDE:%~n0_exclude.txt
-
-del /f /q "%~n0_exclude.txt"
-
-:: copy external files on which monolithic native interface depends
-copy /Y .\obj\native\udefrag.c .\obj\native\udefrag-native.c
-copy /Y .\obj\udefrag\*.* .\obj\native\
-del /Q .\obj\native\udefrag.rc
-copy /Y .\obj\native\volume.c .\obj\native\udefrag-volume.c
-copy /Y .\obj\zenwinx\*.* .\obj\native\
-del /Q .\obj\native\zenwinx.rc
-
-:: copy header files to different locations
-:: to make relative paths of them the same
-:: as in /src directory
-mkdir obj\dll
-mkdir obj\dll\udefrag
-copy /Y obj\udefrag\*.h obj\dll\udefrag
-mkdir obj\dll\zenwinx
-copy /Y obj\zenwinx\*.h obj\dll\zenwinx\
-
-:: build list of headers to produce dependencies
-:: for MinGW/SDK makefiles from
-cd obj
-dir /S /B *.h >headers || exit /B 1
-copy /Y .\headers .\bootexctrl || exit /B 1
-copy /Y .\headers .\console    || exit /B 1
-copy /Y .\headers .\udefrag    || exit /B 1
-copy /Y .\headers .\zenwinx    || exit /B 1
-copy /Y .\headers .\wxgui      || exit /B 1
-copy /Y .\headers .\hibernate  || exit /B 1
-copy /Y .\headers .\lua5.1     || exit /B 1
-copy /Y .\headers .\lua        || exit /B 1
-copy /Y .\headers .\lua-gui    || exit /B 1
-copy /Y .\headers .\native     || exit /B 1
-cd ..
-
-:: let's build all modules by selected compiler
+:: build all modules by the selected compiler
 if %UD_BLD_FLG_USE_COMPILER% equ 0 (
     echo No parameters specified, using defaults.
+    echo.
     goto mingw_build
 )
 
@@ -130,21 +74,19 @@ if %UD_BLD_FLG_USE_COMPILER% equ %UD_BLD_FLG_USE_WINSDK%  goto winsdk_build
         pushd ..
         call "%WINSDKBASE%\bin\SetEnv.Cmd" /Release /x86 /xp
         popd
-        set UDEFRAG_LIB_PATH=..\..\lib
-        call :build_modules X86 || exit /B 1
+        call :build_modules X86 || goto fail
     )
     
     set path=%OLD_PATH%
 
     if %UD_BLD_FLG_BUILD_AMD64% neq 0 (
         echo --------- Target is x64 ---------
-        set IA64=
         set AMD64=1
+        set IA64=
         pushd ..
         call "%WINSDKBASE%\bin\SetEnv.Cmd" /Release /x64 /xp
         popd
-        set UDEFRAG_LIB_PATH=..\..\lib\amd64
-        call :build_modules amd64 || exit /B 1
+        call :build_modules amd64 || goto fail
     )
     
     set path=%OLD_PATH%
@@ -157,20 +99,25 @@ if %UD_BLD_FLG_USE_COMPILER% equ %UD_BLD_FLG_USE_WINSDK%  goto winsdk_build
         call "%WINSDKBASE%\bin\SetEnv.Cmd" /Release /ia64 /xp
         popd
         set BUILD_DEFAULT=-nmake -i -g -P
-        set UDEFRAG_LIB_PATH=..\..\lib\ia64
-        call :build_modules ia64 || exit /B 1
+        call :build_modules ia64 || goto fail
     )
     
     :: remove perplexing manifests
     del /S /Q .\bin\*.manifest
-    
+
+    :success
     :: get rid of annoying dark green color
     color
+    set path=%OLD_PATH%
+    set OLD_PATH=
+    exit /B 0
     
+    :fail
+    color
     set path=%OLD_PATH%
     set OLD_PATH=
     
-exit /B 0
+exit /B 1
 
 
 :mingw_x64_build
@@ -178,31 +125,47 @@ exit /B 0
     set OLD_PATH=%path%
 
     echo --------- Target is x64 ---------
+    echo.
     set AMD64=1
+    set IA64=
     set path=%MINGWx64BASE%\bin;%path%
     set BUILD_ENV=mingw_x64
-    set UDEFRAG_LIB_PATH=..\..\lib\amd64
-    call :build_modules amd64 || exit /B 1
+    call :build_modules amd64 || goto fail
 
+    :success
+    set path=%OLD_PATH%
+    set OLD_PATH=
+    exit /B 0
+    
+    :fail
     set path=%OLD_PATH%
     set OLD_PATH=
 
-exit /B 0
+exit /B 1
 
 
 :mingw_build
 
     set OLD_PATH=%path%
 
+    echo --------- Target is x86 ---------
+    echo.
+    set AMD64=
+    set IA64=
     set path=%MINGWBASE%\bin;%path%
     set BUILD_ENV=mingw
-    set UDEFRAG_LIB_PATH=..\..\lib
-    call :build_modules X86 || exit /B 1
+    call :build_modules X86 || goto fail
 
+    :success
+    set path=%OLD_PATH%
+    set OLD_PATH=
+    exit /B 0
+    
+    :fail
     set path=%OLD_PATH%
     set OLD_PATH=
 
-exit /B 0
+exit /B 1
 
 
 :: Builds all UltraDefrag modules
@@ -211,20 +174,19 @@ exit /B 0
     rem update manifests
     call make-manifests.cmd %1 || exit /B 1
 
+    rem set environment
     if %WindowsSDKVersionOverride%x neq v7.1x goto NoWin7SDK
     if x%CommandPromptType% neq xCross goto NoWin7SDK
     set path=%PATH%;%VS100COMNTOOLS%\..\..\VC\Bin
 
     :NoWin7SDK
-    rem rebuild modules
-    set UD_BUILD_TOOL=lua ..\..\tools\mkmod.lua
     set WXWIDGETS_INC_PATH=%WXWIDGETSDIR%\include
     set WX_CONFIG=%BUILD_ENV%-%1
     if %BUILD_ENV% equ winsdk if %1 equ X86 (
         set WXWIDGETS_LIB_PATH=%WXWIDGETSDIR%\lib\vc_lib%WX_CONFIG%
     )
     if %BUILD_ENV% equ winsdk if %1 equ amd64 (
-        set WXWIDGETS_LIB_PATH=%WXWIDGETSDIR%\lib\vc_amd64_lib%WX_CONFIG%
+        set WXWIDGETS_LIB_PATH=%WXWIDGETSDIR%\lib\vc_x64_lib%WX_CONFIG%
     )
     if %BUILD_ENV% equ winsdk if %1 equ ia64 (
         set WXWIDGETS_LIB_PATH=%WXWIDGETSDIR%\lib\vc_ia64_lib%WX_CONFIG%
@@ -237,44 +199,64 @@ exit /B 0
     )
     set WXWIDGETS_INC2_PATH=%WXWIDGETS_LIB_PATH%\mswu
     
-    pushd obj\zenwinx
-    %UD_BUILD_TOOL% zenwinx.build || goto fail
-    cd ..\udefrag
-    %UD_BUILD_TOOL% udefrag.build || goto fail
-    echo Compile monolithic native interface...
-    cd ..\native
-    %UD_BUILD_TOOL% defrag_native.build || goto fail
-    cd ..\lua5.1
-    %UD_BUILD_TOOL% lua.build || goto fail
-    cd ..\lua
-    %UD_BUILD_TOOL% lua.build || goto fail
-    cd ..\lua-gui
-    %UD_BUILD_TOOL% lua-gui.build || goto fail
-    cd ..\bootexctrl
-    %UD_BUILD_TOOL% bootexctrl.build || goto fail
-    cd ..\hibernate
-    %UD_BUILD_TOOL% hibernate.build || goto fail
-    cd ..\console
-    %UD_BUILD_TOOL% console.build || goto fail
-    cd ..\wxgui
-    %UD_BUILD_TOOL% wxgui.build || goto fail
+    rem build modules
+    call :build_mod dll\zenwinx  zenwinx.build        || goto fail
+    call :build_mod dll\udefrag  udefrag.build        || goto fail
+    call :build_mod native       defrag_native.build  || goto fail
+    call :build_mod lua5.1       lua.build            || goto fail
+    call :build_mod lua          lua.build            || goto fail
+    call :build_mod lua-gui      lua-gui.build        || goto fail
+    call :build_mod bootexctrl   bootexctrl.build     || goto fail
+    call :build_mod hibernate    hibernate.build      || goto fail
+    call :build_mod console      console.build        || goto fail
+    call :build_mod wxgui        wxgui.build          || goto fail
+    call :build_mod dbg          dbg.build            || goto fail
 
+    :: compress gui and command line tools for
+    :: a bit faster startup on older machines
+    if "%OFFICIAL_RELEASE%" equ "1" if %1 equ X86 (
+        upx -q -9 .\bin\udefrag.exe
+        upx -q -9 .\bin\ultradefrag.exe
+    )
+    
     :success
-    set UD_BUILD_TOOL=
+    :: revert manifests to their default state
+    if %1 neq X86 call make-manifests.cmd X86
+
     set WX_CONFIG=
     set WXWIDGETS_INC_PATH=
     set WXWIDGETS_INC2_PATH=
     set WXWIDGETS_LIB_PATH=
+    exit /B 0
+
+    :fail
+    :: revert manifests to their default state
+    if %1 neq X86 call make-manifests.cmd X86
+
+    set WX_CONFIG=
+    set WXWIDGETS_INC_PATH=
+    set WXWIDGETS_INC2_PATH=
+    set WXWIDGETS_LIB_PATH=
+    exit /B 1
+    
+exit /B 0
+
+:: Builds a single module.
+:: Synopsis: call :build_mod {path} {build_file}
+:: Example:  call :build_mod dll\udefrag udefrag.build
+:build_mod
+    pushd %1
+    for %%* in (.) do set UD_MOD_FOLDER_NAME=%%~nx*
+    lua "%UD_ROOT%\tools\mkmod.lua" %2 || goto fail
+
+    :success
+    set UD_MOD_FOLDER_NAME=
     popd
     exit /B 0
 
     :fail
-    set UD_BUILD_TOOL=
-    set WX_CONFIG=
-    set WXWIDGETS_INC_PATH=
-    set WXWIDGETS_INC2_PATH=
-    set WXWIDGETS_LIB_PATH=
+    set UD_MOD_FOLDER_NAME=
     popd
     exit /B 1
-    
+
 exit /B 0

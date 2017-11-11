@@ -1,0 +1,16 @@
+LIBRARY stopgap.dll
+
+EXPORTS
+    move_file    
+    defrag
+    move_set
+    progress
+    widen_behind
+    close_gaps
+	stopgap_init_run
+	stopgap_move_file
+	stopgap_move_set
+	stopgap_widen_behind
+	stopgap_close_gaps
+	stopgap_enumerate_gaps
+	stopgap_count_gaps

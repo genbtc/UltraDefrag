@@ -1,6 +1,6 @@
 /*
  *  ZenWINX - WIndows Native eXtended library.
- *  Copyright (c) 2007-2013 Dmitri Arkhangelski (dmitriar@gmail.com).
+ *  Copyright (c) 2007-2016 Dmitri Arkhangelski (dmitriar@gmail.com).
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,15 +24,14 @@
  * @{
  */
 
-#include "ntndk.h"
+#include "prec.h"
 #include "zenwinx.h"
 
 /**
- * @brief Creates a thread and starts them.
+ * @brief Creates a thread and starts its execution.
  * @param[in] start_addr the starting address of the thread.
- * @param[in] parameter pointer to the data passed to the thread routine.
+ * @param[in] parameter the parameter to be passed to the thread routine.
  * @return Zero for success, negative value otherwise.
- * @note Look at the following example for the thread function prototype.
  * @par Example:
  * @code
  * DWORD WINAPI thread_proc(LPVOID parameter)
@@ -55,7 +54,7 @@ int winx_create_thread(PTHREAD_START_ROUTINE start_addr,PVOID parameter)
                     0,0,0,0,start_addr,parameter,&hThread,NULL);
     if(!NT_SUCCESS(status)){
         strace(status,"cannot create thread");
-        return -1;
+        return (-1);
     }
     NtCloseSafe(hThread);
     return 0;

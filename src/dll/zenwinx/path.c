@@ -1,6 +1,6 @@
 /*
  *  ZenWINX - WIndows Native eXtended library.
- *  Copyright (c) 2007-2013 Dmitri Arkhangelski (dmitriar@gmail.com).
+ *  Copyright (c) 2007-2016 Dmitri Arkhangelski (dmitriar@gmail.com).
  *  Copyright (c) 2010-2013 Stefan Pendl (stefanpe@users.sourceforge.net).
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -25,17 +25,14 @@
  * @{
  */
 
-#include "ntndk.h"
+#include "prec.h"
 #include "zenwinx.h"
 
 /**
- * @brief Removes the extension from a path.
- * @details If path contains as input <b>\\??\\C:\\Windows\\Test.txt</b>,
- * then path contains as output <b>\\??\\C:\\Windows\\Test</b>.
- * If the file name contains no dot or is starting with a dot,
- * then path keeps unchanged.
- * @param[in,out] path the native ANSI path to be processed.
- * @note Optimized for speed.
+ * @brief Removes file extension from a path.
+ * @param[in,out] path the path to be processed.
+ * @note Filenames starting with a dot remain
+ * untouched.
  */
 void winx_path_remove_extension(wchar_t *path)
 {
@@ -55,11 +52,13 @@ void winx_path_remove_extension(wchar_t *path)
 }
 
 /**
- * @brief Removes the file name from a path.
- * @details If path contains as input <b>\\??\\C:\\Windows\\Test.txt</b>,
- * then path contains as output <b>\\??\\C:\\Windows</b>.
- * If the path has a trailing backslash, then only that is removed.
- * @param[in,out] path the native ANSI path to be processed.
+ * @brief Removes filename from a path.
+ * @param[in,out] path the path to be processed.
+ * @par Examples:
+@verbatim
+\??\C:\Windows\Test.txt -> \??\C:\Windows
+\??\C:\Program Files\   -> \??\C:\Program Files
+@endverbatim
  */
 void winx_path_remove_filename(wchar_t *path)
 {
@@ -72,12 +71,13 @@ void winx_path_remove_filename(wchar_t *path)
 }
 
 /**
- * @brief Extracts the file name from a path.
- * @details If path contains as input <b>\\??\\C:\\Windows\\Test.txt</b>,
- * path contains as output <b>Test.txt</b>.
- * If path contains as input <b>\\??\\C:\\Windows\\</b>,
- * path contains as output <b>Windows\\</b>.
- * @param[in,out] path the native ANSI path to be processed.
+ * @brief Extracts filename from a path.
+ * @param[in,out] path the path to be processed.
+ * @par Examples:
+@verbatim
+\??\C:\Windows\Test.txt -> Test.txt
+\??\C:\Program Files\   -> Program Files
+@endverbatim
  */
 void winx_path_extract_filename(wchar_t *path)
 {
@@ -88,8 +88,14 @@ void winx_path_extract_filename(wchar_t *path)
     n = (int)wcslen(path);
     if(!n) return;
     
+    /* remove trailing backslash */
+    if(path[n - 1] == '\\'){
+        path[n - 1] = 0; n--;
+        if(!n) return;
+    }
+    
     for(i = n - 1; i >= 0; i--){
-        if(path[i] == '\\' && i != n - 1){
+        if(path[i] == '\\'){
             /* path[i+1] points to filename */
             i++;
             for(j = 0; path[i]; i++, j++)
@@ -102,7 +108,7 @@ void winx_path_extract_filename(wchar_t *path)
 
 /**
  * @brief Gets the fully quallified path of the current module.
- * @details This routine is the native equivalent of GetModuleFileName.
+ * @details This routine is the native equivalent of the GetModuleFileName routine.
  * @note The returned string should be freed by the winx_free call after its use.
  */
 wchar_t *winx_get_module_filename(void)
@@ -113,10 +119,10 @@ wchar_t *winx_get_module_filename(void)
     wchar_t *path;
     int size;
     
-    RtlZeroMemory(&pi,sizeof pi);
+    RtlZeroMemory(&pi,sizeof(pi));
     status = NtQueryInformationProcess(NtCurrentProcess(),
                     ProcessBasicInformation,&pi,
-                    sizeof pi,NULL);
+                    sizeof(pi),NULL);
     if(!NT_SUCCESS(status)){
         strace(status,"cannot query basic process information");
         return NULL;
@@ -137,34 +143,27 @@ wchar_t *winx_get_module_filename(void)
 
 /**
  * @brief Creates a directory tree.
- * @param[in] path the native path.
- * @return Zero for success,
- * negative value otherwise.
+ * @param[in] path the native path to be created.
+ * @return Zero for success, negative value otherwise.
  */
 int winx_create_path(wchar_t *path)
 {
-    /*wchar_t rootdir[] = L"\\??\\X:\\";*/
     winx_volume_information v;
     wchar_t *p;
     size_t n;
     
     if(path == NULL)
-        return -1;
+        return (-1);
 
-    /* path must contain at least \??\X: */
-    if(wcsstr(path,L"\\??\\") != path || wcschr(path,':') != path + 5){
+    /* the path must contain at least \??\X: */
+    if(wcsstr(path,L"\\??\\") != path || wcschr(path,':') != (path + 5)){
         etrace("native path must be specified");
-        return -1;
+        return (-1);
     }
 
     n = wcslen(L"\\??\\X:\\");
     if(wcslen(path) <= n){
-        /* check for volume existence */
-        /*
-        rootdir[4] = path[4];
-        // may fail with access denied status
-        return winx_create_directory(rootdir);
-        */
+        /* check for the volume existence */
         return winx_get_volume_information((char)path[4],&v);
     }
     
@@ -177,7 +176,7 @@ int winx_create_path(wchar_t *path)
         if(winx_create_directory(path) < 0){
             *p = '\\';
             etrace("cannot create %ws",path);
-            return -1;
+            return (-1);
         }
         *p = '\\';
         p ++;
@@ -186,7 +185,7 @@ int winx_create_path(wchar_t *path)
     /* create target directory */
     if(winx_create_directory(path) < 0){
         etrace("cannot create %ws",path);
-        return -1;
+        return (-1);
     }
     
     return 0;

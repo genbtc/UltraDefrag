@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 //  UltraDefrag - a powerful defragmentation tool for Windows NT.
-//  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+//  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
 //  Copyright (c) 2010-2013 Stefan Pendl (stefanpe@users.sourceforge.net).
 //
 //  This program is free software; you can redistribute it and/or modify
@@ -34,6 +34,7 @@
 //                            Declarations
 // =======================================================================
 
+#include "prec.h"
 #include "main.h"
 
 #if !defined(__GNUC__)
@@ -41,6 +42,13 @@
 #endif
 
 #define MAX_ENV_VAR_LENGTH 32767 // as MSDN states
+
+// Uncomment to test crash reporting facilities.
+// NOTE: on Windows 7 you should reset Fault Tolerant
+// Heap protection from time to time via the following
+// command: rundll32 fthsvc.dll,FthSysprepSpecialize
+// Otherwise some of crash tests will fail.
+// #define CRASH_TESTS
 
 void cleanup(void);
 
@@ -58,7 +66,6 @@ bool g_all = false;
 bool g_all_fixed = false;
 bool g_list_volumes = false;
 bool g_list_all = false;
-bool g_repeat = false;
 bool g_no_progress = false;
 bool g_show_vol_info = false;
 bool g_show_map = false;
@@ -83,27 +90,23 @@ bool g_stop = false;
 //                                Logging
 // =======================================================================
 
-void Log::DoLog(wxLogLevel level,const wxChar *msg,time_t timestamp)
+void Log::DoLogTextAtLevel(wxLogLevel level, const wxString& msg)
 {
-    #define INFO_FMT  (I wxCharStringFmtSpec)
-    #define DEBUG_FMT (D wxCharStringFmtSpec)
-    #define ERROR_FMT (E wxCharStringFmtSpec)
-
     switch(level){
     case wxLOG_FatalError:
         // XXX: fatal errors pass by actually
-        winx_dbg_print(0,ERROR_FMT,msg);
+        trace(E"%ls",ws(msg));
         winx_flush_dbg_log(0);
         break;
     case wxLOG_Error:
-        winx_dbg_print(0,ERROR_FMT,msg);
+        trace(E"%ls",ws(msg));
         break;
     case wxLOG_Warning:
     case wxLOG_Info:
-        winx_dbg_print(0,DEBUG_FMT,msg);
+        trace(D"%ls",ws(msg));
         break;
     default:
-        winx_dbg_print(0,INFO_FMT,msg);
+        trace(I"%ls",ws(msg));
         break;
     }
 }
@@ -115,10 +118,10 @@ void Log::DoLog(wxLogLevel level,const wxChar *msg,time_t timestamp)
 /**
  * @brief Prints the string in red, than restores green color.
  */
-void display_error(const char *msg)
+void display_error(const wchar_t *msg)
 {
     color(FOREGROUND_RED | FOREGROUND_INTENSITY);
-    fprintf(stderr,"%s",msg);
+    fprintf(stderr,"%ls",msg);
     color(FOREGROUND_GREEN | FOREGROUND_INTENSITY);
 }
 
@@ -182,7 +185,7 @@ static void begin_synchronization(void)
         g_synch_event = CreateEvent(NULL,FALSE,TRUE,wxT("udefrag-exe-synch-event"));
         if(!g_synch_event){
             letrace("cannot create udefrag-exe-synch-event event");
-            display_error("Synchronization failed!\n");
+            display_error(wxT("Synchronization failed!\n"));
             break;
         }
         if(GetLastError() == ERROR_ALREADY_EXISTS && g_wait){
@@ -232,38 +235,53 @@ void update_progress(udefrag_progress_info *pi, void *p)
                 (void)SetConsoleCursorPosition(g_out,pos);
             }
         }
-
-        const char *op_name = "optimize: ";
-        if(pi->current_operation == VOLUME_ANALYSIS) op_name = "analyze:  ";
-        else if(pi->current_operation == VOLUME_DEFRAGMENTATION) op_name = "defrag:   ";
+        
+        clear_line();
 
         char letter = (char)(DWORD_PTR)p;
+        const char *op_name = "defragmentation";
+        
+        if(pi->completion_status == 0 || g_stop){
+            /*
+            * if the job is still running or aborted
+            * display progress of the current operation
+            */
+            if(pi->current_operation == VOLUME_ANALYSIS)
+                op_name = "analysis";
+            if(pi->current_operation == VOLUME_OPTIMIZATION)
+                op_name = "optimization";
 
-        clear_line();
-        if(pi->current_operation == VOLUME_OPTIMIZATION && !g_stop && pi->completion_status == 0){
-            if(pi->pass_number > 1)
-                printf("\r%c: %s%6.2lf%% complete, pass %lu, moves total = %I64u",
-                    letter,op_name,pi->percentage,pi->pass_number,pi->total_moves);
-            else
-                printf("\r%c: %s%6.2lf%% complete, moves total = %I64u",
-                    letter,op_name,pi->percentage,pi->total_moves);
+            if(pi->current_operation == VOLUME_OPTIMIZATION && pi->completion_status == 0 && !g_stop){
+                if(pi->pass_number > 1)
+                    printf("\r%c: %s: %.2lf%%, pass %lu, moves total = %I64u",
+                        letter,op_name,pi->percentage,pi->pass_number,pi->total_moves);
+                else
+                    printf("\r%c: %s: %.2lf%%, moves total = %I64u",
+                        letter,op_name,pi->percentage,pi->total_moves);
+            } else {
+                if(pi->pass_number > 1)
+                    printf("\r%c: %s: %.2lf%%, pass %lu, fragmented/total = %lu/%lu",
+                        letter,op_name,pi->percentage,pi->pass_number,pi->fragmented,pi->files);
+                else
+                    printf("\r%c: %s: %.2lf%%, fragmented/total = %lu/%lu",
+                        letter,op_name,pi->percentage,pi->fragmented,pi->files);
+            }
         } else {
+            /*
+            * if the job is completed display
+            * progress of the entire job
+            */
+            if(g_analyze) op_name = "analysis";
+            if(g_optimize || g_quick_optimization || \
+                g_optimize_mft) op_name = "optimization";
+
             if(pi->pass_number > 1)
-                printf("\r%c: %s%6.2lf%% complete, pass %lu, fragmented/total = %lu/%lu",
-                    letter,op_name,pi->percentage,pi->pass_number,pi->fragmented,pi->files);
-            else
-                printf("\r%c: %s%6.2lf%% complete, fragmented/total = %lu/%lu",
-                    letter,op_name,pi->percentage,pi->fragmented,pi->files);
-        }
-        if(pi->completion_status != 0 && !g_stop){
-            /* set progress indicator to 100% state */
-            clear_line();
-            if(pi->pass_number > 1)
-                printf("\r%c: %s100.00%% complete, %lu passes needed, fragmented/total = %lu/%lu",
+                printf("\r%c: %s: 100.00%%, %lu passes, fragmented/total = %lu/%lu",
                     letter,op_name,pi->pass_number,pi->fragmented,pi->files);
             else
-                printf("\r%c: %s100.00%% complete, fragmented/total = %lu/%lu",
+                printf("\r%c: %s: 100.00%%, fragmented/total = %lu/%lu",
                     letter,op_name,pi->fragmented,pi->files);
+
             if(!g_show_map) printf("\n");
         }
 
@@ -304,8 +322,7 @@ static bool process_single_volume(char letter)
     else if(g_quick_optimization) job_type = QUICK_OPTIMIZATION_JOB;
     else if(g_optimize_mft) job_type = MFT_OPTIMIZATION_JOB;
 
-    int flags = g_repeat ? UD_JOB_REPEAT : 0;
-    if(g_shellex) flags |= UD_JOB_CONTEXT_MENU_HANDLER;
+    int flags = g_shellex ? UD_JOB_CONTEXT_MENU_HANDLER : 0;
 
     g_stop = false; g_first_progress_update = true;
 
@@ -323,7 +340,7 @@ static int process_volumes(void)
 
     if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandlerRoutine,TRUE)){
         letrace("cannot set Ctrl + C handler");
-        display_error("Cannot set Ctrl + C handler!\n");
+        display_error(wxT("Cannot set Ctrl + C handler!\n"));
     }
 
     begin_synchronization();
@@ -353,10 +370,8 @@ static int process_volumes(void)
 
         if(path.Len() > MAX_ENV_VAR_LENGTH){
             // path is too long to be put into environment variable
-            etrace("%ls path is too long",path.wc_str());
-            display_error(wxString::Format(
-                wxT("%ls path is too long"),
-                path.wc_str()).char_str());
+            wxString s = path << wxT(" path is too long");
+            etrace("%ls",ws(s)); display_error(ws(s));
             continue;
         }
 
@@ -368,7 +383,7 @@ static int process_volumes(void)
         // and reset it then before putting the current
         // path into it
         if((path.Len() + cut_filter.Len() > MAX_ENV_VAR_LENGTH) \
-            || (letter != 0 && path[0] != letter))
+            || (letter != 0 && (char)path[0] != letter))
         {
             wxSetEnv(wxT("UD_CUT_FILTER"),cut_filter);
             if(process_single_volume(letter))
@@ -378,11 +393,11 @@ static int process_volumes(void)
         }
 
         cut_filter << path;
-        letter = path[0];
+        letter = (char)path[0];
 
         color(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
         if(!first_group) printf("\n");
-        print_unicode(path.wchar_str());
+        print_unicode(ws(path));
         printf("\n");
         color(FOREGROUND_GREEN | FOREGROUND_INTENSITY);
     }
@@ -478,14 +493,9 @@ void *StatThread::Entry()
         if(s.Cmp(wxT("1")) == 0) enabled = false;
 
     if(enabled){
-#ifndef _WIN64
-        ga_request(wxT("/appstat/console-x86.html"));
-#else
-    #if defined(_IA64_)
-        ga_request(wxT("/appstat/console-ia64.html"));
-    #else
-        ga_request(wxT("/appstat/console-x64.html"));
-    #endif
+        GA_REQUEST(USAGE_TRACKING);
+#ifdef SEND_TEST_REPORTS
+        GA_REQUEST(TEST_TRACKING);
 #endif
     }
 
@@ -555,15 +565,15 @@ void cleanup(void)
     winx_flush_dbg_log(0);
     delete g_Log;
 
-    // deinitialize wxWidgets
-    wxUninitialize();
-
     // restore text color
     color(g_default_color);
 
     // release resources
     delete g_volumes;
     delete g_paths;
+
+    // deinitialize wxWidgets
+    wxUninitialize();
 }
 
 // =======================================================================
@@ -583,13 +593,18 @@ static int out_of_memory_handler(size_t n)
 
 int __cdecl main(int argc, char **argv)
 {
-    int result = 1;
-
     // initialize udefrag library
     if(udefrag_init_library() < 0){
         fprintf(stderr,"Initialization failed!\n");
         return 1;
     }
+
+    // enable memory corruption handling
+#ifdef ATTACH_DEBUGGER
+    attach_debugger();
+#endif
+
+    int result = 1;
 
     // set out of memory handler
 #if !defined(__GNUC__)
@@ -607,7 +622,7 @@ int __cdecl main(int argc, char **argv)
         return 0;
     }
 
-    printf(VERSIONINTITLE ", Copyright (c) UltraDefrag Development Team, 2007-2015.\n"
+    printf(VERSIONINTITLE ", Copyright (c) UltraDefrag Development Team, 2007-2017.\n"
         "UltraDefrag comes with ABSOLUTELY NO WARRANTY. This is free software, \n"
         "and you are welcome to redistribute it under certain conditions.\n\n"
     );
@@ -615,6 +630,23 @@ int __cdecl main(int argc, char **argv)
     // uncomment to test out of memory condition
     /*for(int i = 0; i < 1000000000; i++)
         char *p = new char[1024];*/
+
+#ifdef CRASH_TESTS
+#ifndef _WIN64
+    if(true){
+        wchar_t *s1 = new wchar_t[1024];
+        wcscpy(s1,wxT("hello"));
+        delete s1;
+        wcscpy(s1,wxT("world"));
+        delete s1;
+    }
+#else
+    // the code above fails to crash
+    // on Windows XP 64-bit edition
+    void *p = NULL;
+    *(char *)p = 0;
+#endif
+#endif
 
     if(g_list_volumes){
         result = list_volumes();

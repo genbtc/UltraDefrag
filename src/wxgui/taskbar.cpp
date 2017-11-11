@@ -83,21 +83,21 @@ public:
 static ITaskbarList3 *GetTaskbarInstance()
 {
     if(winx_get_os_version() < WINDOWS_7)
-        return NULL; // interface introduced in Win7
+        return nullptr; // interface introduced in Win7
 
-    ::CoInitialize(NULL);
+    ::CoInitialize(nullptr);
 
     const GUID clsid = CLSID_TaskbarList;
     const GUID iid = IID_ITaskbarList3;
-    ITaskbarList3 *taskBar = NULL;
+    ITaskbarList3 *taskBar = nullptr;
 
     HRESULT result = ::CoCreateInstance(
-        clsid,NULL,CLSCTX_INPROC_SERVER,
+        clsid, nullptr,CLSCTX_INPROC_SERVER,
         iid,reinterpret_cast<void **>(&taskBar)
     );
     if(!SUCCEEDED(result) || !taskBar){
         etrace("failed with code 0x%x",(UINT)result);
-        return NULL;
+        return nullptr;
     }
 
     return taskBar;
@@ -140,7 +140,7 @@ void MainFrame::RemoveTaskbarIconOverlay()
 
     if(taskBar){
         HRESULT result = taskBar->SetOverlayIcon(
-            (HWND)g_mainFrame->GetHandle(),NULL,NULL
+            (HWND)g_mainFrame->GetHandle(), nullptr, nullptr
         );
         if(!SUCCEEDED(result))
             etrace("failed with code 0x%x",(UINT)result);

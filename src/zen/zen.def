@@ -1,0 +1,4 @@
+LIBRARY zen.dll
+
+EXPORTS
+    zen

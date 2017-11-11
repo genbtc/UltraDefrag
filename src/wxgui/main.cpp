@@ -52,7 +52,7 @@
 //                            Global variables
 // =======================================================================
 
-MainFrame *g_mainFrame = NULL;
+MainFrame *g_mainFrame = NULL;      // all 'extern'ed in main.h
 double g_scaleFactor = 1.0f;   // DPI-aware scaling factor
 int g_iconSize;                // small icon size
 HANDLE g_synchEvent = NULL;    // synchronization for threads
@@ -96,8 +96,11 @@ BOOL CALLBACK DummyDlgProc(HWND hWnd,
         hInst = (HINSTANCE)GetModuleHandle(NULL);
         if(hInst){
             HICON hIcon = LoadIcon(hInst,wxT("appicon"));
+            //https://msdn.microsoft.com/en-us/library/aa384267(VS.85).aspx
+            //Casting the hICON handles is complicated because of 32/64 and microsoft.
+            //So we use this: HandleToLong()
             if(hIcon) (void)SetClassLongPtr( \
-                hWnd,GCLP_HICON,(LONG_PTR)hIcon);
+                hWnd,GCLP_HICON, HandleToLong(hIcon));
         }
         // kill our window before showing it :)
         (void)EndDialog(hWnd,1);
@@ -106,6 +109,9 @@ BOOL CALLBACK DummyDlgProc(HWND hWnd,
         // handle it too, just for safety
         (void)EndDialog(hWnd,1);
         return TRUE;
+    default:
+        assert("Something went totally wrong.");
+        break;
     }
     return FALSE;
 }
@@ -284,6 +290,7 @@ int App::OnExit()
     return wxApp::OnExit();
 }
 
+//This is the Entry Point.
 IMPLEMENT_APP(App)
 
 // =======================================================================
@@ -302,6 +309,8 @@ MainFrame::MainFrame()
     m_currentJob = NULL;
     m_busy = false;
     m_paused = false;
+    m_legendPopup = NULL;
+    m_DriveSubMenu = NULL;
 
     // set main window icon
     wxIconBundle icons;
@@ -346,11 +355,11 @@ MainFrame::MainFrame()
         GetPosition(&m_x,&m_y);
     }
     Move(m_x,m_y);
-    if(m_maximized) Maximize(true);
+    if(m_maximized) wxTopLevelWindowMSW::Maximize(true);
 
-    SetMinSize(wxSize(DPI(MAIN_WINDOW_MIN_WIDTH),DPI(MAIN_WINDOW_MIN_HEIGHT)));
+	wxTopLevelWindowBase::SetMinSize(wxSize(DPI(MAIN_WINDOW_MIN_WIDTH),DPI(MAIN_WINDOW_MIN_HEIGHT)));
 
-    // create menu, tool and status bars
+    // create menu, tool and status bars (menu.cpp), (toolbar.cpp), (statbar.cpp)
     InitMenu(); InitToolbar(); InitStatusBar();
 
 	//make sizer1 to hold the the tabbed "notebook". And make the notebook
@@ -362,8 +371,9 @@ MainFrame::MainFrame()
 	m_panel1 = new wxPanel( m_notebook1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 
     // create list of volumes and cluster map (with splitter as parent)
+    // use wxSP_NO_XP_THEME to draw borders correctly on Windows XP theme
     m_splitter = new wxSplitterWindow(m_panel1,wxID_ANY, wxDefaultPosition,wxDefaultSize, 
-                                      wxSP_3D | wxCLIP_CHILDREN);
+                                      wxSP_3D | wxSP_NO_XP_THEME | wxCLIP_CHILDREN);
     m_splitter->SetMinimumPaneSize(DPI(MIN_PANEL_HEIGHT));
 
     m_vList = new DrivesList(m_splitter,wxLC_REPORT | wxLC_NO_SORT_HEADER | 
@@ -373,15 +383,14 @@ MainFrame::MainFrame()
 
     m_splitter->SplitHorizontally(m_vList,m_cMap);
 
-    int height = GetClientSize().GetHeight();
-    int maxPanelHeight = height - DPI(MIN_PANEL_HEIGHT) - m_splitter->GetSashSize();
+    const int height = GetClientSize().GetHeight();
+    const int maxPanelHeight = height - DPI(MIN_PANEL_HEIGHT) - m_splitter->GetSashSize();
     if(m_separatorPosition < DPI(MIN_PANEL_HEIGHT)) m_separatorPosition = DPI(MIN_PANEL_HEIGHT);
     else if(m_separatorPosition > maxPanelHeight) m_separatorPosition = maxPanelHeight;
     m_splitter->SetSashPosition(m_separatorPosition);
 
-    // update frame layout so we'll be able
-    // to initialize list of volumes and
-    // cluster map properly
+    // update frame layout so we'll be able to initialize
+    // list of volumes and cluster map properly
     wxSizeEvent evt(wxSize(m_width,m_height));
     GetEventHandler()->ProcessEvent(evt);
     m_splitter->UpdateSize();
@@ -404,8 +413,8 @@ MainFrame::MainFrame()
 	//make a 2nd panel inside the notebook to hold the 2nd page(a grid)
 	m_panel2 = new wxPanel( m_notebook1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 
-    m_filesList = new FilesList(m_panel2,wxLC_REPORT /* | wxLC_SINGLE_SEL  | wxLC_NO_SORT_HEADER*/ \
-                                        | wxLC_VIRTUAL | wxLC_HRULES | wxLC_VRULES | wxBORDER_NONE);
+    m_filesList = new FilesList(m_panel2,wxLC_REPORT | wxLC_VIRTUAL | 
+                                         wxLC_HRULES | wxLC_VRULES | wxBORDER_NONE);
     InitFilesList();
 
 	//make sizer3 to Fit the page2list, and initialize it.
@@ -434,9 +443,8 @@ MainFrame::MainFrame()
         m_menuBar->Check(ID_BootEnable,true);
         m_toolBar->ToggleTool(ID_BootEnable,true);
         m_btdEnabled = true;
-    } else {
+    } else
         m_btdEnabled = false;
-    }
 
     // launch threads for time consuming operations
     m_btdThread = btd ? new BtdThread() : NULL;
@@ -449,6 +457,8 @@ MainFrame::MainFrame()
 
     m_upgradeThread = new UpgradeThread(ulevel);
 
+    m_rdiThread = new RefreshDrivesInfoThread();
+
     // set system tray icon
     m_systemTrayIcon = new SystemTrayIcon();
     if(!m_systemTrayIcon->IsOk()){
@@ -457,7 +467,7 @@ MainFrame::MainFrame()
     }
     ProcessCommandEvent(this,ID_AdjustSystemTrayIcon);
 
-	// set localized text
+    // set localized text
 	ProcessCommandEvent(this, ID_LocaleChange + g_locale->GetLanguage());
 
     // allow disk processing
@@ -465,14 +475,21 @@ MainFrame::MainFrame()
 
     //create query thread to perform queries without blocking the GUI
     //(sort of like jobs) - may not be good to have both possibly running at once.
-    //Create Query Tab, Tab #3.
+    m_queryThread = new QueryThread();
+    //Create Query Tab, Panel #3.
     InitQueryMenu();
-    
-    UD_DisableTool(ID_Stop);    //change stop icon to be not always enabled.
+
+    //Create LCN Tab, Panel #4
+    InitLCNPanel();
+
+    //change stop icon to be not always enabled.
+    m_menuBar->Enable(ID_Stop, false);
+    m_toolBar->EnableTool(ID_Stop, false);
+    delete m_btdThread;
 }
 
 /**
- * @brief Deinitializes main window.
+ * @brief Destructor for main window. Save Config. Free Resources. Close.
  */
 MainFrame::~MainFrame()
 {
@@ -483,6 +500,7 @@ MainFrame::~MainFrame()
     delete m_configThread;
     delete m_jobThread;
     delete m_listThread;
+    delete m_rdiThread;
 
     // save configuration
     SaveAppConfiguration();
@@ -497,10 +515,8 @@ MainFrame::~MainFrame()
 }
 
 /**
- * @brief Returns true if the program
- * is going to be terminated.
- * @param[in] time timeout interval,
- * in milliseconds.
+ * @brief Returns true if the program is going to be terminated.
+ * @param[in] time timeout interval, in milliseconds.
  */
 bool MainFrame::CheckForTermination(int time)
 {
@@ -517,15 +533,18 @@ bool MainFrame::CheckForTermination(int time)
 // =======================================================================
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
-    // action menu
-    EVT_MENU_RANGE(ID_Analyze, ID_MftOpt,
+// action menu
+EVT_MENU_RANGE(ID_Analyze, ID_MftOpt,
                    MainFrame::OnStartJob)
+    // includes jobs: ID_Analyze = 1,    ID_Defrag,
+    //      ID_QuickOpt,    ID_FullOpt,    ID_MftOpt,
+    // and now     ID_MoveToFront,     ID_MoveToEnd,
+    // but we dont use those in this menu
+
     EVT_MENU(ID_Pause, MainFrame::OnPause)
     EVT_MENU(ID_Stop,  MainFrame::OnStop)
 
     EVT_MENU(ID_ShowReport, MainFrame::OnShowReport)
-
-    EVT_MENU(ID_Repeat,  MainFrame::OnRepeat)
 
     EVT_MENU(ID_SkipRem, MainFrame::OnSkipRem)
     EVT_MENU(ID_Rescan,  MainFrame::OnRescan)
@@ -547,7 +566,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_BootEnable, MainFrame::OnBootEnable)
     EVT_MENU(ID_BootScript, MainFrame::OnBootScript)
 
-    // help menu
+    EVT_MENU(ID_ChooseFont, MainFrame::ChooseFontDialog)          //genBTC help menu
     EVT_MENU(ID_HelpContents,     MainFrame::OnHelpContents)
     EVT_MENU(ID_HelpBestPractice, MainFrame::OnHelpBestPractice)
     EVT_MENU(ID_HelpFaq,          MainFrame::OnHelpFaq)
@@ -562,12 +581,15 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_HelpAbout, MainFrame::OnHelpAbout)
 
     // event handlers
-    EVT_ACTIVATE(MainFrame::OnActivate)
+    // GENBTC - took out the custom OnActivate handler.
+    // (now that we have more than one tab it needs to be more complex)
+    //EVT_ACTIVATE(MainFrame::OnActivate)
     EVT_MOVE(MainFrame::OnMove)
     EVT_SIZE(MainFrame::OnSize)
 
     EVT_MENU(ID_AdjustListColumns, MainFrame::AdjustListColumns)
     EVT_MENU(ID_AdjustListHeight,  MainFrame::AdjustListHeight)
+    EVT_MENU(ID_AdjustFilesListColumns, MainFrame::FilesAdjustListColumns)//genBTC
     EVT_MENU(ID_AdjustSystemTrayIcon,     MainFrame::AdjustSystemTrayIcon)
     EVT_MENU(ID_AdjustTaskbarIconOverlay, MainFrame::AdjustTaskbarIconOverlay)
     EVT_MENU(ID_BootChange,        MainFrame::OnBootChange)
@@ -575,9 +597,13 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_DefaultAction,     MainFrame::OnDefaultAction)
     EVT_MENU(ID_DiskProcessingFailure, MainFrame::OnDiskProcessingFailure)
     EVT_MENU(ID_JobCompletion,     MainFrame::OnJobCompletion)
+    EVT_MENU(ID_QueryCompletion, MainFrame::OnQueryCompletion)  //genBTC query.cpp
     EVT_MENU(ID_PopulateList,      MainFrame::PopulateList)
+    EVT_MENU(ID_PopulateFilesList, MainFrame::FilesPopulateList) //genBTC
     EVT_MENU(ID_ReadUserPreferences,   MainFrame::ReadUserPreferences)
     EVT_MENU(ID_RedrawMap,         MainFrame::RedrawMap)
+    EVT_MENU(ID_RefreshDrivesInfo, MainFrame::RefreshDrivesInfo)
+    EVT_MENU(ID_RefreshFrame,      MainFrame::RefreshFrame)
     EVT_MENU(ID_SelectAll,         MainFrame::SelectAll)
     EVT_MENU(ID_SetWindowTitle,    MainFrame::SetWindowTitle)
     EVT_MENU(ID_ShowUpgradeDialog, MainFrame::ShowUpgradeDialog)
@@ -585,7 +611,15 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_UpdateStatusBar,   MainFrame::UpdateStatusBar)
     EVT_MENU(ID_UpdateVolumeInformation, MainFrame::UpdateVolumeInformation)
     EVT_MENU(ID_UpdateVolumeStatus,      MainFrame::UpdateVolumeStatus)
-END_EVENT_TABLE()
+    EVT_MENU(ID_SelectProperDrive, MainFrame::ReSelectProperDrive)  //genBTC
+    EVT_MENU(ID_QueryClusters, MainFrame::QueryClusters)    //genBTC query.cpp Frags #s
+    EVT_BUTTON(ID_PerformQueryBUTTON, MainFrame::QueryClusters)   //  ""
+    EVT_MENU(ID_QueryOperation2, MainFrame::QueryClusters)    //genBTC query.cpp Free VCNs
+    EVT_MENU(ID_QueryOperation3, MainFrame::QueryOperation3)    //genBTC query.cpp Op 3 //TODO
+    EVT_MENU(ID_QueryOperation4, MainFrame::QueryOperation4)    //genBTC query.cpp Op 4 //TODO
+    EVT_TOGGLEBUTTON(ID_LCNButton1,MainFrame::GetAllLCNs)       //genBTC LCN.cpp (ALL) #1
+    EVT_BUTTON(ID_LCNButton2, MainFrame::GetSpecificLCNRange) //genBTC LCN.cpp (Specific) #2
+END_EVENT_TABLE();
 
 // =======================================================================
 //                            Event handlers
@@ -605,7 +639,7 @@ void MainFrame::SetWindowTitle(wxCommandEvent& event)
 {
     if(event.GetString().IsEmpty()){
         if(CheckOption(wxT("UD_DRY_RUN"))){
-            SetTitle(*m_title + wxT(" (dry run)"));
+            SetTitle(*m_title + wxT(" (Dry Run)"));
         } else {
             SetTitle(*m_title);
         }
@@ -613,15 +647,16 @@ void MainFrame::SetWindowTitle(wxCommandEvent& event)
         SetTitle(event.GetString());
     }
 }
-
+/* genBTC commented this out because it conflicts with
+   the idea of multiple Tabs, for the moment.
 void MainFrame::OnActivate(wxActivateEvent& event)
 {
-    /* suggested by Brian Gaff */
+    // suggested by Brian Gaff
     if(event.GetActive() && m_vList)
         m_vList->SetFocus();
     event.Skip();
 }
-
+*/
 void MainFrame::OnMove(wxMoveEvent& event)
 {
     if(!IsMaximized() && !IsIconized()){
@@ -668,9 +703,22 @@ void MainFrame::OnHelpFaq(wxCommandEvent& WXUNUSED(event))
     Utils::OpenHandbook(wxT("FAQ.html"));
 }
 
+//Display the Legend inside the Help Menu. (instead of the old GUI.html)
 void MainFrame::OnHelpLegend(wxCommandEvent& WXUNUSED(event))
 {
-    Utils::OpenHandbook(wxT("GUI.html"),wxT("cluster_map_legend"));
-}
+    //Utils::OpenHandbook(wxT("GUI.html"),wxT("cluster_map_legend"));
 
+    //Cluster Map Legend:
+    delete m_legendPopup;
+    m_legendPopup = new LegendTransientPopup(this);
+    wxPoint pos = wxGetMousePosition();
+    //offset the Mouse position by 10 for aesthetics
+    pos.x += 10;
+    pos.y += 10;
+    wxSize szo(0, 0);
+    //offset size 0 handles itself
+    m_legendPopup->Position(pos, szo);
+    //dtrace("Opening the Cluster Map Legend...");
+    m_legendPopup->Popup();
+}
 /** @} */

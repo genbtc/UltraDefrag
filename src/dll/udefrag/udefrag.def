@@ -1,17 +1,23 @@
 LIBRARY udefrag.dll
 
 EXPORTS
-    udefrag_get_error_description
-    udefrag_get_results
-    udefrag_get_vollist
-    udefrag_get_volume_information
     udefrag_init_library
-    udefrag_release_results
+	udefrag_unload_library
+	udefrag_get_vollist
     udefrag_release_vollist
+	udefrag_validate_volume
+	udefrag_get_volume_information
+	udefrag_start_job
+    udefrag_get_results
+    udefrag_release_results
+	udefrag_get_error_description
     udefrag_set_log_file_path
-    udefrag_start_job
-    udefrag_unload_library
-    udefrag_validate_volume
+    convert_path_to_native
+    calc_percentage
     gui_fileslist_finished
-    udefrag_starts_query
-    gui_query_finished
+	gui_query_finished
+
+    move_file
+    can_move
+    can_move_entirely
+	udefrag_starts_query

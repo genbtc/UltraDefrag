@@ -36,7 +36,6 @@
 
 #include "prec.h"
 #include "main.h"
-#pragma comment(lib, "advapi32")
 
 // =======================================================================
 //              Boot time defragmenter registration tracking

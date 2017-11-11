@@ -1,6 +1,6 @@
 /*
  *  ZenWINX - WIndows Native eXtended library.
- *  Copyright (c) 2009-2013 Dmitri Arkhangelski (dmitriar@gmail.com).
+ *  Copyright (c) 2009-2016 Dmitri Arkhangelski (dmitriar@gmail.com).
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,18 +24,19 @@
  * @{
  */
 
-#include "ntndk.h"
+#include "prec.h"
 #include "zenwinx.h"
 
-int winx_filetime2timefields(ULONGLONG input,TIME_FIELDS *output);//genBTC
-int winx_timefields2winxtime(TIME_FIELDS input,winx_time *output);//genBTC
+//int winx_filetime2timefields(ULONGLONG input,TIME_FIELDS *output);//genBTC
+//int winx_timefields2winxtime(TIME_FIELDS input,winx_time *output);//genBTC
 
 /**
- * @brief Converts a formatted string to the time value in seconds.
- * @param[in] string the formatted string to be converted.
- * Format example: 3y 12d 4h 8m 37s.
- * @return Time interval in seconds.
+ * @brief Converts a string to time interval.
+ * @param[in] string the string to be converted,
+ * like that: 3y 12d 4h 8m 37s.
+ * @return The time interval, in seconds.
  */
+//TODO: VS calls this a Buffer report range check error failure.
 ULONGLONG winx_str2time(char *string)
 {
     ULONGLONG time = 0;
@@ -49,12 +50,13 @@ ULONGLONG winx_str2time(char *string)
         return 0;
     
     for(i = 0;; i++){ /* loop through all characters of the string */
+        //TODO: Its this part that is wrong
         c = string[i];
         if(!c) break;
         if(c >= '0' && c <= '9'){
-            buffer[index] = c;
-            index++;
-        }
+                buffer[index] = c;
+                index++;
+            }
 
         k = 0;
         c = winx_toupper(c);
@@ -72,7 +74,9 @@ ULONGLONG winx_str2time(char *string)
             k = 3600 * 24;
             break;
         case 'Y':
-            k = 3600 * 24 * 356;
+            k = 3600 * 24 * 365;
+            break;
+        default:
             break;
         }
         if(k){
@@ -85,10 +89,10 @@ ULONGLONG winx_str2time(char *string)
 }
 
 /**
- * @brief Converts a time value in seconds to the formatted string.
+ * @brief Converts a time interval to string.
  * @param[in] time the time interval, in seconds.
- * @param[out] buffer the storage for the resulting string.
- * @param[in] size the length of the buffer, in characters.
+ * @param[out] buffer the output buffer.
+ * @param[in] size size of the buffer, in characters.
  * @return The number of characters stored.
  * @note The time interval should not exceed 140 years
  * (0xFFFFFFFF seconds), otherwise it will be truncated.
@@ -127,12 +131,12 @@ int winx_time2str(ULONGLONG time,char *buffer,int size)
 int xtime_failed = 0;
 
 /**
- * @brief Returns time interval since 
+ * @brief Returns the time interval since 
  * some abstract unique event in the past.
- * @return Time, in milliseconds.
+ * @return The time interval, in milliseconds.
  * Zero indicates failure.
  * @note
- * - Useful for performance measures.
+ * - Useful for performance measurements.
  * - Has no physical meaning.
  */
 ULONGLONG winx_xtime(void)
@@ -181,12 +185,12 @@ int winx_get_system_time(winx_time *t)
     NTSTATUS status;
     
     if(t == NULL)
-        return -1;
+        return (-1);
     
     status = NtQuerySystemTime(&SystemTime);
     if(status != STATUS_SUCCESS){
         strace(status,"NtQuerySystemTime failed");
-        return -1;
+        return (-1);
     }
     
     RtlTimeToTimeFields(&SystemTime,&TimeFields);
@@ -216,18 +220,18 @@ int winx_get_local_time(winx_time *t)
     NTSTATUS status;
     
     if(t == NULL)
-        return -1;
+        return (-1);
     
     status = NtQuerySystemTime(&SystemTime);
     if(status != STATUS_SUCCESS){
         strace(status,"NtQuerySystemTime failed");
-        return -1;
+        return (-1);
     }
     
     status = RtlSystemTimeToLocalTime(&SystemTime,&LocalTime);
     if(status != STATUS_SUCCESS){
         strace(status,"RtlSystemTimeToLocalTime failed");
-        return -1;
+        return (-1);
     }
     
     RtlTimeToTimeFields(&LocalTime,&TimeFields);
@@ -256,13 +260,13 @@ int winx_filetime2timefields(ULONGLONG input,TIME_FIELDS *output)
     int status;
 
     if(output == NULL)
-        return -1;
+        return (-1);
 
     SystemTime.QuadPart = input;
     status = RtlSystemTimeToLocalTime(&SystemTime,&LocalTime);
     if(status != STATUS_SUCCESS){
         strace(status,"RtlSystemTimeToLocalTime failed");
-        return -1;
+        return (-1);
     }
 
     RtlTimeToTimeFields(&LocalTime,output);
@@ -280,7 +284,7 @@ int winx_filetime2timefields(ULONGLONG input,TIME_FIELDS *output)
 int winx_timefields2winxtime(TIME_FIELDS input,winx_time *output)
 {
     if(output == NULL)
-        return -1;
+        return (-1);
 
     output->year = input.Year;
     output->month = input.Month;

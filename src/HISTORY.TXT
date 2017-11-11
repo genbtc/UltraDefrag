@@ -1,12 +1,67 @@
 ﻿HISTORY
 
-  Version 7.0.0 2015-06-xx
+  Version 7.1.0 2017-12-xx
   ------------------------------------------------------------------------------
-    beta3:
+    - the "repeat action" option was retired, now all
+      the disk processing algorithms decide themselves
+      whether it's worth to run one more pass or not
+    - options.lua file was moved to conf subfolder to
+      fix configuration tracking (bugs #222 and #225)
+    - fragmentation reports were forced to take
+      daylight saving time settings into account
+    - a lot of minor bugs were fixed
+    - documentation was expanded
+    - Estonian translation was updated
+    - Internals: compilation was optimized for speed
+
+
+  Version 7.0.2 2016-12-17
+  ------------------------------------------------------------------------------
+    - graphical and command line tools were optimized for speed and size
+    - the following translations were updated:
+
+      Arabic, Filipino (Tagalog), Iloko, Indonesian,
+      Japanese, Ukrainian, Uzbek (Latin)
+
+
+  Version 7.0.1 2016-03-26
+  ------------------------------------------------------------------------------
+    - wxWidgets were upgraded to the latest 3.1.0 release
+    - crash handler was improved to handle division by zero errors
+    - Uzbek (Latin) translation was added
+    - the following translations were updated:
+    
+      Filipino (Tagalog), Iloko, Korean
+
+
+  Version 7.0.0 2015-12-23
+  ------------------------------------------------------------------------------
+    RC1:
     - few minor bugs were fixed
     - the following translations were updated:
 
-      xxx
+      Filipino (Tagalog), Spanish
+    
+    beta6:
+    - few major bugs affecting thread safety were fixed
+
+    beta5:
+    - wxWidgets were upgraded to the latest stable 3.0.2 release
+    - a lot of minor bugs were fixed
+    - Finnish translation was updated
+    - NOTE: the language selection got broken, because wxWidgets 3.0.2
+      uses different language identifiers; just click Settings > Language
+      and select yours once again to fix that
+    
+    beta4:
+    - safer options were used for compilation
+    - Slovak translation was updated
+    - one minor bug was fixed
+    
+    beta3:
+    - crash handling was reimplemented
+    - few minor bugs were fixed
+    - Portuguese (Brazil) translation was updated
 
     beta2:
     - the following translations were updated:
@@ -37,7 +92,12 @@
 
                                     ***
 
-  Version 6.1.1 2015-05-xx
+  Version 6.1.2 2016-06-09
+  ------------------------------------------------------------------------------
+    - crash handling was reimplemented
+
+
+  Version 6.1.1 2015-11-20
   ------------------------------------------------------------------------------
     - graphical interface forced to check for available updates more reliably
 

@@ -1,6 +1,6 @@
 /*
  *  UltraDefrag - a powerful defragmentation tool for Windows NT.
- *  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+ *  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
  *  Copyright (c) 2010-2013 Stefan Pendl (stefanpe@users.sourceforge.net).
  *
  *  Permission is granted to copy, distribute and/or modify this document
@@ -279,24 +279,6 @@
  * @endlatexonly
  * @par Show report (F8)
  * Open the file fragmentation report for the selected disk(s).
- *
- * @htmlonly
- * </td></tr><tr><td>
- * @endhtmlonly
- * @latexonly
- * \\ \hline
- * @endlatexonly
- * @image html "repeat.png"
- * @htmlonly
- * </td><td style="width: 90%;">
- * @endhtmlonly
- * @latexonly
- * \raisebox{-2.1\height}{\includeicon{repeat.png}} &
- * @endlatexonly
- * @par Repeat action (Shift+R)
- * Allow to repeat the disk processing multiple times
- * whenever it makes sense. Usually it increases processing
- * time, but leads to better results.
  *
  * @htmlonly
  * </td></tr><tr><td>

@@ -1,6 +1,6 @@
 /*
  *  UltraDefrag - a powerful defragmentation tool for Windows NT.
- *  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+ *  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ void test_move(winx_file_info *f,udefrag_job_parameters *jp)
         dtrace("move succeeded for %ws",f->path);
     }
     /* try to move the first cluster back */
-    if(can_move(f,jp)){
+    if(can_move(f,jp->is_fat)){
         if(move_file(f,f->disp.blockmap->vcn,1,source_lcn,jp) < 0){
             etrace("move failed for %ws",f->path);
             return;
@@ -89,13 +89,8 @@ void test_special_files_defrag(udefrag_job_parameters *jp)
     
     dtrace("test of special files defragmentation started");
 
-    /* open the volume */
-    jp->fVolume = winx_vopen(winx_toupper(jp->volume_letter));
-    if(jp->fVolume == NULL)
-        return;
-
     for(f = jp->filelist; f; f = f->next){
-        if(can_move(f,jp)){
+        if(can_move(f,jp->is_fat)){
             special_file = 0;
             if(is_reparse_point(f)){
                 dtrace("reparse point detected: %ws",f->path);
@@ -116,7 +111,6 @@ void test_special_files_defrag(udefrag_job_parameters *jp)
         if(f->next == jp->filelist) break;
     }
     
-    winx_fclose(jp->fVolume);
     dtrace("test of special files defragmentation completed");
 }
 #endif /* TEST_SPECIAL_FILES_DEFRAG */
@@ -126,11 +120,12 @@ void test_special_files_defrag(udefrag_job_parameters *jp)
 /************************************************************/
 
 /**
- * @brief Defines whether the file can be defragmented or not.
+ * @internal
+ * @brief Defines whether a file can be defragmented or not.
  */
 static int can_defragment(winx_file_info *f,udefrag_job_parameters *jp)
 {
-    if(!can_move(f,jp))
+    if(!can_move(f, jp->fs_type))
         return 0;
 
     /* skip not fragmented files */
@@ -138,7 +133,7 @@ static int can_defragment(winx_file_info *f,udefrag_job_parameters *jp)
         return 0;
         
     /* skip MFT */
-    if(is_mft(f,jp))
+    if(is_mft(f,jp->fs_type))
         return 0;
     
     /* skip FAT directories */
@@ -154,6 +149,7 @@ static int can_defragment(winx_file_info *f,udefrag_job_parameters *jp)
 }
 
 /**
+ * @internal
  * @brief build_fragments_list helper.
  */
 static winx_blockmap *add_fragment(winx_blockmap **fragments,
@@ -172,7 +168,8 @@ static winx_blockmap *add_fragment(winx_blockmap **fragments,
 }
 
 /**
- * @brief Builds list of file fragments.
+ * @internal
+ * @brief Enumerates fragments of a file.
  */
 winx_blockmap *build_fragments_list(winx_file_info *f,ULONGLONG *n_fragments)
 {
@@ -214,7 +211,8 @@ winx_blockmap *build_fragments_list(winx_file_info *f,ULONGLONG *n_fragments)
 }
 
 /**
- * @brief Releases list of file fragments.
+ * @internal
+ * @brief Releases a list of file fragments.
  */
 void release_fragments_list(winx_blockmap **fragments)
 {
@@ -222,7 +220,8 @@ void release_fragments_list(winx_blockmap **fragments)
 }
 
 /**
- * @brief Clears the UD_FILE_CURRENTLY_EXCLUDED flag for all of the files.
+ * @internal
+ * @brief Clears UD_FILE_CURRENTLY_EXCLUDED flag for all files.
  */
 void clear_currently_excluded_flag(udefrag_job_parameters *jp)
 {
@@ -235,8 +234,9 @@ void clear_currently_excluded_flag(udefrag_job_parameters *jp)
 }
 
 /**
- * @brief Calculates total number of clusters
- * needed to be moved to complete the defragmentation.
+ * @internal
+ * @brief Calculates number of clusters which
+ * need to be moved to complete defragmentation.
  */
 static ULONGLONG defrag_cc_routine(udefrag_job_parameters *jp)
 {
@@ -246,21 +246,22 @@ static ULONGLONG defrag_cc_routine(udefrag_job_parameters *jp)
     
     /* fine calculation will take too much time */
     prb_t_init(&t,jp->fragmented_files);
-    file = (winx_file_info*)prb_t_first(&t,jp->fragmented_files);
+    file = prb_t_first(&t,jp->fragmented_files);
     while(file){
         if(jp->termination_router((void *)jp)) break;
         /* count all fragmented files which can be processed */
         if(can_defragment(file,jp)) n += file->disp.clusters;
-        file = (winx_file_info*)prb_t_next(&t);
+        file = prb_t_next(&t);
     }
     return n;
 }
 
 /**
- * @brief Eliminates little fragments
- * respect to the fragment size threshold filter.
+ * @internal
+ * @brief Eliminates little fragments respect
+ * to the fragment size threshold filter.
  */
-static int defrag_routine(udefrag_job_parameters *jp)
+static void defrag_routine(udefrag_job_parameters *jp)
 {
     winx_volume_region *rgn, *largest_rgn;
     struct prb_traverser t;
@@ -275,13 +276,8 @@ static int defrag_routine(udefrag_job_parameters *jp)
     ULONGLONG cut_length;
     int defrag_succeeded;
     char buffer[32];
-    
-    //aliases for code re-use reading simplicity.
-    ULONGLONG max_frag_size,bpc;
-    max_frag_size = jp->udo.fragment_size_threshold;
-    bpc = jp->v_info.bytes_per_cluster; //bytes per cluster.
 
-    winx_dbg_print_header(0,0,I"defragmentation pass #%u",jp->pi.pass_number);
+    winx_dbg_print_header(0,0,I"defragmentation pass #%u",++jp->pi.pass_number);
     jp->pi.current_operation = VOLUME_DEFRAGMENTATION;
     jp->pi.moved_clusters = 0;
 
@@ -291,14 +287,8 @@ static int defrag_routine(udefrag_job_parameters *jp)
     /* no files are excluded by this task currently */
     clear_currently_excluded_flag(jp);
 
-    /* open the volume */
-    jp->fVolume = winx_vopen(winx_toupper(jp->volume_letter));
-    if(jp->fVolume == NULL){
-        jp->pi.pass_number ++; /* the pass is completed */
-        return -1;
-    }
-
-    jp->pi.clusters_to_process = jp->pi.processed_clusters + defrag_cc_routine(jp);
+    jp->pi.clusters_to_process = \
+        jp->pi.processed_clusters + defrag_cc_routine(jp);
         
     /*
     dtrace(">>> %I64u\\%I64u <<<",
@@ -311,32 +301,28 @@ static int defrag_routine(udefrag_job_parameters *jp)
     */
     defragmented_files = 0;
     prb_t_init(&t,jp->fragmented_files);
-    file = (winx_file_info*)prb_t_first(&t,jp->fragmented_files);
+    file = prb_t_first(&t,jp->fragmented_files);
     while(file){
         if(jp->termination_router((void *)jp)) break;
-        next_file = (winx_file_info*)prb_t_next(&t);
+        next_file = prb_t_next(&t);
         if(can_defragment(file,jp)){
             move_entirely = 0;
-            if(file->disp.clusters * bpc < 2 * max_frag_size)
-                move_entirely = 1;  /* keep algorithm simple */
+            if(file->disp.clusters * jp->v_info.bytes_per_cluster \
+              < 2 * jp->udo.fragment_size_threshold) move_entirely = 1;
             else if(jp->win_version < WINDOWS_XP && jp->fs_type == FS_NTFS)
                 move_entirely = 1; /* keep algorithm simple */
             if(move_entirely){
-                /* move entire file */
+                /* move the entire file */
                 rgn = find_first_free_region(jp,0,file->disp.clusters,NULL);
                 if(rgn){
                     x = jp->pi.moved_clusters;
-                    if(jp->udo.dbgprint_level >= DBG_DETAILED)
-                        itrace("Before: The File has %I64u fragments & resides @ LCN: %I64u",file->disp.fragments,file->disp.blockmap->lcn);
                     if(move_file(file,file->disp.blockmap->vcn,
                      file->disp.clusters,rgn->lcn,jp) >= 0){
-                        if(jp->udo.dbgprint_level >= DBG_DETAILED){
+                        if(jp->udo.dbgprint_level >= DBG_DETAILED)
                             itrace("Defrag success for %ws",file->path);
-                            itrace("After: The File has %I64u fragments & resides @ LCN: %I64u",file->disp.fragments,file->disp.blockmap->lcn);
-                        }
                         defragmented_files ++;
                         defragmented_entirely ++;
-                        moved_entirely += jp->pi.moved_clusters - x;
+                        moved_entirely += (jp->pi.moved_clusters - x);
                     } else {
                         etrace("Defrag failure for %ws",file->path);
                     }
@@ -344,7 +330,8 @@ static int defrag_routine(udefrag_job_parameters *jp)
             } else {
                 /* eliminate little fragments */
                 min_vcn = file->disp.blockmap->vcn;
-                max_vcn = file->disp.blockmap->prev->vcn + file->disp.blockmap->prev->length;
+                max_vcn = file->disp.blockmap->prev->vcn + \
+                    file->disp.blockmap->prev->length;
                 defrag_succeeded = 0;
                 x = jp->pi.moved_clusters;
                 while(min_vcn < max_vcn && can_defragment(file,jp)){
@@ -356,40 +343,43 @@ static int defrag_routine(udefrag_job_parameters *jp)
                     for(fr = fragments; fr; fr = next_fr){
                         head_fr = fragments;
                         next_fr = fr->next;
-                        if(fr->vcn < min_vcn || fr->vcn + fr->length > max_vcn)
+                        if(fr->vcn < min_vcn || (fr->vcn + fr->length > max_vcn))
                             winx_list_remove((list_entry **)(void *)&fragments,(list_entry *)(void *)fr);
                         if(fragments == NULL) goto completed;
                         if(next_fr == head_fr) break;
                     }
                     
-                    /* how many clusters can we join together? */
+                    /* how much clusters can we join together? */
                     largest_rgn = find_largest_free_region(jp);
                     if(largest_rgn == NULL) break;
-                    //COMBINE LITTLE FRAGMENTS up to the size of max_frag_size
+                    
                     /* find clusters needing optimization */
                     vcn = length = n = new_min_vcn = 0;
                     for(fr = fragments; fr; fr = fr->next){
                         /* find the first little fragment */
-                        if(fr->length * bpc < max_frag_size){
+                        if(fr->length * jp->v_info.bytes_per_cluster < jp->udo.fragment_size_threshold){
                             if(fr->length >= largest_rgn->length) break;
                             vcn = fr->vcn;
                             length = fr->length, n++;
                             new_min_vcn = fr->vcn + fr->length;
                             /* look forward for the next little fragments */
                             for(fr2 = fr->next; fr2 != fragments; fr2 = fr2->next){
-                                if(fr2->length * bpc >= max_frag_size) break;
+                                if(fr2->length * jp->v_info.bytes_per_cluster >= jp->udo.fragment_size_threshold)
+                                    break;
                                 if(length + fr2->length > largest_rgn->length) goto move_clusters;
                                 length += fr2->length, n++;
                                 new_min_vcn = fr2->vcn + fr2->length;
                             }
-                            if(largest_rgn->length * bpc < max_frag_size) break;
-                            if(length * bpc < max_frag_size){
-                                cut_length = max_frag_size / bpc;
-                                if(cut_length * bpc != max_frag_size) cut_length ++;
+                            if(largest_rgn->length * jp->v_info.bytes_per_cluster < jp->udo.fragment_size_threshold) break;
+                            if(length * jp->v_info.bytes_per_cluster < jp->udo.fragment_size_threshold){
+                                cut_length = jp->udo.fragment_size_threshold / jp->v_info.bytes_per_cluster;
+                                if(cut_length * jp->v_info.bytes_per_cluster != jp->udo.fragment_size_threshold)
+                                    cut_length ++;
                                 cut_length -= length;
                                 if(fr2 != fragments){
                                     /* let's cut from the next fragment */
-                                    if((fr2->length - cut_length) * bpc < max_frag_size){
+                                    if((fr2->length - cut_length) * jp->v_info.bytes_per_cluster \
+                                      < jp->udo.fragment_size_threshold){
                                         length += fr2->length, n++;
                                         new_min_vcn = fr2->vcn + fr2->length;
                                     } else {
@@ -398,7 +388,8 @@ static int defrag_routine(udefrag_job_parameters *jp)
                                     }
                                 } else if(fr != fragments){
                                     /* let's cut from the previous fragment */
-                                    if((fr->prev->length - cut_length) * bpc < max_frag_size){
+                                    if((fr->prev->length - cut_length) * jp->v_info.bytes_per_cluster \
+                                      < jp->udo.fragment_size_threshold){
                                         vcn = fr->prev->vcn;
                                         length += fr->prev->length, n++;
                                     } else {
@@ -436,7 +427,7 @@ move_clusters:
                 if(defrag_succeeded){
                     defragmented_files ++;
                     defragmented_partially ++;
-                    moved_partially += jp->pi.moved_clusters - x;
+                    moved_partially += (jp->pi.moved_clusters - x);
                 }
             }
         }
@@ -451,56 +442,35 @@ completed:
     */
 
     /* display amount of moved data and number of defragmented files */
-    winx_bytes_to_hr(moved_entirely * bpc,2,buffer,sizeof buffer);
-    itrace("%I64u files defragmented entirely, %I64u clusters (%s) moved", \
-            defragmented_entirely,moved_entirely, buffer);
-
-    winx_bytes_to_hr(moved_partially * bpc,2,buffer,sizeof buffer);
-    itrace("%I64u files defragmented partially, %I64u clusters (%s) moved", \
-            defragmented_partially,moved_partially, buffer);
-
-    winx_bytes_to_hr(jp->pi.moved_clusters * bpc,2,buffer,sizeof buffer);
-    itrace("%I64u files defragmented overall, %I64u clusters (%s) moved (total)", \
-            defragmented_files,jp->pi.moved_clusters, buffer);
-
+    itrace("%I64u files defragmented",defragmented_files);
+    itrace("  %I64u clusters moved",jp->pi.moved_clusters);
+    winx_bytes_to_hr(jp->pi.moved_clusters * jp->v_info.bytes_per_cluster,1,buffer,sizeof(buffer));
+    itrace("  %s moved",buffer);
+    
+    itrace("%I64u files defragmented entirely",defragmented_entirely);
+    itrace("  %I64u clusters moved",moved_entirely);
+    winx_bytes_to_hr(moved_entirely * jp->v_info.bytes_per_cluster,1,buffer,sizeof(buffer));
+    itrace("  %s moved",buffer);
+    itrace("%I64u files defragmented partially",defragmented_partially);
+    itrace("  %I64u clusters moved",moved_partially);
+    winx_bytes_to_hr(moved_partially * jp->v_info.bytes_per_cluster,1,buffer,sizeof(buffer));
+    itrace("  %s moved",buffer);
+    
     /* cleanup */
     clear_currently_excluded_flag(jp);
-    winx_fclose(jp->fVolume);
-    jp->fVolume = NULL;
-
-    /* the pass is completed */
-    jp->pi.pass_number ++;
-    return 0;
 }
 
 /**
- * @brief Performes a sequence of operations
- * needed for the complete disk defragmentation.
+ * @internal
+ * @brief Defragments the disk once.
  */
-static int defrag_sequence(udefrag_job_parameters *jp)
+static void defrag_sequence(udefrag_job_parameters *jp)
 {
-    int result, overall_result = -1;
-    
-    if(jp->pi.fragmented == 0) return 0;
-    
-    while(!jp->termination_router((void *)jp)){
-        result = defrag_routine(jp);
-        if(result == 0){
-            /* defragmentation succeeded at least once */
-            overall_result = 0;
-        }
-        
-        /* break if nothing moved */
-        if(result < 0 || jp->pi.moved_clusters == 0) break;
-        
-        /* break if no repeat allowed */
-        if(!(jp->udo.job_flags & UD_JOB_REPEAT)) break;
-        
-        /* break if no more fragmented files exist */
-        if(jp->pi.fragmented == 0) break;
-    }
-    
-    if(jp->pi.fragmented == 0) return overall_result;
+    do {
+        if(jp->pi.fragmented == 0) return;
+        if(jp->termination_router((void *)jp)) return;
+        defrag_routine(jp);
+    } while(jp->pi.moved_clusters);
     
     /* defragment remaining files partially */
     if(jp->udo.fragment_size_threshold == DEFAULT_FRAGMENT_SIZE_THRESHOLD){
@@ -508,26 +478,14 @@ static int defrag_sequence(udefrag_job_parameters *jp)
         jp->udo.algorithm_defined_fst = 1;
         itrace("partial defragmentation: fragment size threshold = %I64u",
             jp->udo.fragment_size_threshold);
-        while(!jp->termination_router((void *)jp)){
-            result = defrag_routine(jp);
-            if(result == 0){
-                /* defragmentation succeeded at least once */
-                overall_result = 0;
-            }
-            
-            /* break if nothing moved */
-            if(result < 0 || jp->pi.moved_clusters == 0) break;
-            
-            /* break if no repeat allowed */
-            if(!(jp->udo.job_flags & UD_JOB_REPEAT)) break;
-
-            /* break if no more fragmented files exist */
+        do {
             if(jp->pi.fragmented == 0) break;
-        }
+            if(jp->termination_router((void *)jp)) break;
+            defrag_routine(jp);
+        } while(jp->pi.moved_clusters);
         jp->udo.fragment_size_threshold = DEFAULT_FRAGMENT_SIZE_THRESHOLD;
         jp->udo.algorithm_defined_fst = 0;
     }
-    return overall_result;
 }
 
 /************************************************************/
@@ -535,7 +493,8 @@ static int defrag_sequence(udefrag_job_parameters *jp)
 /************************************************************/
 
 /**
- * @brief Performs a volume defragmentation.
+ * @internal
+ * @brief Defragments the disk.
  * @details To avoid infinite data moves in multipass
  * processing, we exclude files for which moving failed.
  * On the other hand, number of fragmented files instantly
@@ -544,16 +503,17 @@ static int defrag_sequence(udefrag_job_parameters *jp)
  */
 int defragment(udefrag_job_parameters *jp)
 {
-    int result, overall_result = -1;
+    int result;
     struct prb_traverser t;
     winx_file_info *file;
     int second_attempt = 0;
     ULONGLONG time;
     
     if(jp->job_type == DEFRAGMENTATION_JOB){
-        /* perform volume analysis */
+        /* analyze the disk */
         result = analyze(jp); /* we need to call it once, here */
         if(result < 0) return result;
+        if(jp->termination_router((void *)jp)) return 0;
     #ifdef TEST_SPECIAL_FILES_DEFRAG
         test_special_files_defrag(jp);
         return 0;
@@ -569,37 +529,27 @@ int defragment(udefrag_job_parameters *jp)
     time = start_timing("defragmentation",jp);
 
     /* do the job */
-    result = defrag_sequence(jp);
-    if(result == 0){
-        /* defragmentation succeeded at least once */
-        overall_result = 0;
-    }
+    defrag_sequence(jp);
     
     /*
-    * Some file moves failed because the disk space
-    * was already in use at the moment of the move.
-    * So, let's give them another chance.
+    * Some files haven't been moved because target
+    * space turned out to be already in use. So, 
+    * let's give those files another chance.
     */
     prb_t_init(&t,jp->fragmented_files);
-    file = (winx_file_info*)prb_t_first(&t,jp->fragmented_files);
+    file = prb_t_first(&t,jp->fragmented_files);
     while(file){
         if(jp->termination_router((void *)jp)) break;
         if(is_moving_failed(file)){
             second_attempt = 1;
             file->user_defined_flags &= ~UD_FILE_MOVING_FAILED;
         }
-        file = (winx_file_info*)prb_t_next(&t);
+        file = prb_t_next(&t);
     }
-    if(second_attempt){
-        result = defrag_sequence(jp);
-        if(result == 0){
-            /* defragmentation succeeded at least once */
-            overall_result = 0;
-        }
-    }
+    if(second_attempt) defrag_sequence(jp);
     
     stop_timing("defragmentation",time,jp);
-    return jp->termination_router((void *)jp) ? 0 : overall_result;
+    return 0;
 }
 
 /** @} */

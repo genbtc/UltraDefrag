@@ -1,6 +1,6 @@
 /*
  *  ZenWINX - WIndows Native eXtended library.
- *  Copyright (c) 2007-2013 Dmitri Arkhangelski (dmitriar@gmail.com).
+ *  Copyright (c) 2007-2016 Dmitri Arkhangelski (dmitriar@gmail.com).
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,13 +31,13 @@
 #define _NTNDK_H_
 
 /*
-* Extremely important notes for the 64-bit compilation.
+* Extremely important notes for 64-bit compilation.
 *
 * 1. Always use SIZE_T type for all the unknown parameters of the native calls,
 *    since it represents a whole processor register on all the platforms,
 *    therefore is safe for system calls prototyping.
 *
-* 2. Always fill output buffer with zeros before the following system calls:
+* 2. Always fill the output buffer with zeros before the following system calls:
 *    NtDeviceIoControlFile        (?)
 *    NtFsControlFile              (!)
 *    NtQueryInformationProcess    (?)
@@ -48,9 +48,9 @@
 *
 *    Otherwise Windows might trash stack during these calls.
 *
-* 3. If you are waiting on a file handle for NtWriteFile request completion,
+* 3. If you are waiting on a file handle for the NtWriteFile request completion,
 *    don't check for STATUS_PENDING code. Instead of that wait immediately.
-*    ReactOS has wrong implementation of WriteFile() function, the following
+*    ReactOS has wrong implementation of the WriteFile() function, the following
 *    works much better:
 *
 *    Status = NtWriteFile(...);
@@ -807,7 +807,7 @@ typedef struct _FILE_BOTH_DIRECTORY_INFORMATION {
 } FILE_BOTH_DIRECTORY_INFORMATION, *PFILE_BOTH_DIRECTORY_INFORMATION,
   FILE_BOTH_DIR_INFORMATION, *PFILE_BOTH_DIR_INFORMATION;
 
-#ifndef _INC_COMDEF
+#ifndef _WINIOCTL_
 
 #define VOLUME_IS_DIRTY  1
 
@@ -1101,6 +1101,10 @@ typedef struct _FILE_FS_DEVICE_INFORMATION {
   ULONG  Characteristics;
 } FILE_FS_DEVICE_INFORMATION, *PFILE_FS_DEVICE_INFORMATION;
 
+//This ifdef thing makes it work on Win 7.1 SDK and Win8.1 SDK 
+// 8.1 redefines PROCESS_INFORMATION_CLASS. 
+//I may have done this wrong but it works - (genBTC) - 
+#ifndef PROCESS_INFORMATION_CLASS
 typedef enum _PROCESSINFOCLASS {
     ProcessBasicInformation = 0,
     ProcessQuotaLimits = 1,
@@ -1136,7 +1140,8 @@ typedef enum _PROCESSINFOCLASS {
     ProcessDebugFlags = 31,
     ProcessHandleTracing = 32,
     MaxProcessInfoClass
-} PROCESSINFOCLASS, PROCESS_INFORMATION_CLASS;
+} PROCESSINFOCLASS;
+#endif
 
 /*
 * DriveMap member must be declared as unsigned int
@@ -1303,7 +1308,7 @@ NTSTATUS    NTAPI    NtQueryVolumeInformationFile(HANDLE,PIO_STATUS_BLOCK,PVOID,
 NTSTATUS    NTAPI    NtReadFile(HANDLE,HANDLE,PIO_APC_ROUTINE,PVOID,PIO_STATUS_BLOCK,PVOID,SIZE_T,PLARGE_INTEGER,PULONG);
 NTSTATUS    NTAPI    NtReleaseMutant(PHANDLE,SIZE_T *);
 NTSTATUS    NTAPI    NtSetEvent(HANDLE,PULONG);
-NTSTATUS    NTAPI    NtSetInformationProcess(HANDLE,PROCESS_INFORMATION_CLASS,PVOID,SIZE_T);
+NTSTATUS    NTAPI    NtSetInformationProcess(HANDLE, PROCESSINFOCLASS, PVOID, SIZE_T);
 NTSTATUS    NTAPI    NtSetSystemPowerState(POWER_ACTION SystemAction,SYSTEM_POWER_STATE MinSystemState,SIZE_T Flags);
 NTSTATUS    NTAPI    NtSetValueKey(HANDLE,PUNICODE_STRING,SIZE_T,SIZE_T,PVOID,SIZE_T);
 NTSTATUS    NTAPI    NtShutdownSystem(SHUTDOWN_ACTION);

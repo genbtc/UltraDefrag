@@ -200,7 +200,7 @@ int MainFrame::ShowShutdownDialog(int action)
 
 void MainFrame::Shutdown(wxCommandEvent& WXUNUSED(event))
 {
-    int action = 0;
+    int action=-1;//action was uninitialized
 
     if(m_menuBar->IsChecked(ID_WhenDoneNone)){
         // nothing to do

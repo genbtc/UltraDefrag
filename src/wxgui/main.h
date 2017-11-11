@@ -28,17 +28,6 @@
 //                               Headers
 // =======================================================================
 #include "prec.h"
-#include "../include/dbg.h"
-#include "../include/version.h"
-
-#ifndef _UDEFRAG_INCLUDED_ZENWINX_H
-#define _UDEFRAG_INCLUDED_ZENWINX_H
-#include "../dll/zenwinx/zenwinx.h"
-#endif
-#ifndef _UDEFRAG_INCLUDED_UDEFRAG_H
-#define _UDEFRAG_INCLUDED_UDEFRAG_H
-#include "../dll/udefrag/udefrag.h"
-#endif
 
 // =======================================================================
 //                              Constants
@@ -85,8 +74,6 @@ enum {
     ID_Stop,
 
     ID_ShowReport,
-
-    ID_Repeat,
 
     ID_SkipRem,
     ID_Rescan,
@@ -151,11 +138,13 @@ enum {
     ID_DefaultAction,
     ID_DiskProcessingFailure,
     ID_JobCompletion,
-    ID_QueryCompletion,             //genBTC query.cpp
+    ID_QueryCompletion,             //genBTC query.cpp callback
     ID_PopulateList,
     ID_PopulateFilesList,           //genBTC fileslist.cpp
     ID_ReadUserPreferences,
     ID_RedrawMap,
+    ID_RefreshDrivesInfo,
+    ID_RefreshFrame,
     ID_SelectAll,
     ID_SetWindowTitle,
     ID_ShowUpgradeDialog,
@@ -169,19 +158,25 @@ enum {
     ID_PauseMenu,
     ID_ExitMenu,
     ID_SelectProperDrive,
-    ID_QueryClusters,
+    ID_QueryClusters,               //genBTC query.cpp action
+    ID_QueryFreeGaps,
+    ID_QueryOperation2,
+    ID_QueryOperation3,
+    ID_QueryOperation4,
     
-    ID_ANALYZE,
+    ID_ANALYZE,                     //genBTC query.cpp buttons
     ID_WXCOMBOBOX1,
     ID_WXFILEPICKERCTRL1,
     ID_WXTEXTCTRL1,
     ID_WXSTATICTEXT1,
-    ID_PERFORMQUERY,
+    ID_PerformQueryBUTTON,
+    ID_LCNButton1,
+    ID_LCNButton2,
 
     // language selection menu item, must always be last in the list
     ID_LocaleChange
 };
-
+//set defaults:
 #define MAIN_WINDOW_DEFAULT_WIDTH  900
 #define MAIN_WINDOW_DEFAULT_HEIGHT 600
 #define MAIN_WINDOW_MIN_WIDTH      640
@@ -192,8 +187,8 @@ enum {
 // dialog layout constants
 #define SMALL_SPACING  DPI(5)
 #define LARGE_SPACING  DPI(11)
-
-#define DEFAULT_DRY_RUN          1  //genbtc TODO: change this for production.
+//default gui.ini
+#define DEFAULT_DRY_RUN          1      //genbtc wants this. TODO: decide.
 #define DEFAULT_FREE_COLOR_R   255
 #define DEFAULT_FREE_COLOR_G   255
 #define DEFAULT_FREE_COLOR_B   255
@@ -232,7 +227,7 @@ enum {
 * NOTE: Use it to pass strings to functions only as returned
 * objects may be temporary!
 */
-#define ansi(s) ((const char *)s.mb_str())
+#define CVT_ANSI(s) ((const char *)s.mb_str())
 #define ws(s) ((const wchar_t *)s.wc_str())
 
 /* converts pixels from 96 DPI to the current one */
@@ -265,22 +260,24 @@ public:
     StatThread() : wxThread(wxTHREAD_JOINABLE) { Create(); Run(); }
     ~StatThread() { Wait(); }
 
-    virtual void *Entry();
+    void *Entry() override;
 };
 
 class Log: public wxLog {
 public:
     Log()  { delete SetActiveTarget(this); };
-    ~Log() { SetActiveTarget(NULL); };
+    ~Log() { SetActiveTarget(nullptr); };
 
-    virtual void DoLogTextAtLevel(wxLogLevel level, const wxString& msg);
+    void DoLogTextAtLevel(wxLogLevel level, const wxString& msg) override;
 };
 
 class App: public wxApp {
 public:
-    virtual bool OnInit();
-    virtual int  OnExit();
-    virtual void OnInitCmdLine(wxCmdLineParser& parser) {
+    bool OnInit() override;
+    int  OnExit() override;
+
+    void OnInitCmdLine(wxCmdLineParser& parser) override
+    {
         /* wxWidgets raises an "assert failure" message without them */
         parser.AddSwitch(wxT("s"),wxT("setup"),wxT("setup"));
         parser.AddSwitch(wxT("v"),wxT("verbose"),wxT("verbose"));
@@ -306,7 +303,7 @@ public:
     BtdThread() : wxThread(wxTHREAD_JOINABLE) { Create(); Run(); }
     ~BtdThread() { Wait(); }
 
-    virtual void *Entry();
+    void *Entry() override;
 };
 
 class ConfigThread: public wxThread {
@@ -314,7 +311,7 @@ public:
     ConfigThread() : wxThread(wxTHREAD_JOINABLE) { Create(); Run(); }
     ~ConfigThread() { Wait(); }
 
-    virtual void *Entry();
+    void *Entry() override;
 };
 
 class JobThread: public wxThread {
@@ -324,7 +321,7 @@ public:
     }
     ~JobThread() { Wait(); }
 
-    virtual void *Entry();
+    void *Entry() override;
 
     bool m_launch;
     wxArrayString *m_volumes;
@@ -348,9 +345,22 @@ public:
     }
     ~ListThread() { Wait(); }
 
-    virtual void *Entry();
+    void *Entry() override;
 
     bool m_rescan;
+};
+
+class RefreshDrivesInfoThread : public wxThread {
+public:
+    RefreshDrivesInfoThread() : wxThread(wxTHREAD_JOINABLE) { Create(); Run(); }
+    ~RefreshDrivesInfoThread() { Wait(); }
+
+    void *Entry() override;
+};
+
+class RecoveryConsole : public wxProcess {
+public:
+    void OnTerminate(int pid, int status) override;
 };
 
 //genBTC query.cpp Query Thread.
@@ -361,12 +371,13 @@ public:
     }
     ~QueryThread() { Wait(); }
 
-	void *Entry() override;
+    int stopgap_finish_operation3();
+    void *Entry() override;
     
     void DisplayQueryResults(udefrag_query_parameters* qp);
     
     bool m_startquery;
-    wchar_t *m_querypath;
+    wxString m_querypath;
     int m_flags;
     bool singlefile;
     int m_mapSize;
@@ -386,7 +397,7 @@ public:
     }
     ~UpgradeThread() { Wait(); }
 
-    virtual void *Entry();
+    void *Entry() override;
 
     bool m_check;
     int m_level;
@@ -397,7 +408,7 @@ private:
 
 class SystemTrayIcon: public wxTaskBarIcon {
 public:
-    virtual wxMenu *CreatePopupMenu();
+    wxMenu *CreatePopupMenu() override;
 
     void OnMenuShowHide(wxCommandEvent& event);
     void OnMenuPause(wxCommandEvent& event);
@@ -415,6 +426,9 @@ public:
         wxDefaultPosition,wxDefaultSize,style) {}
     ~DrivesList() {}
 
+    void DeSelectAll();
+    int GetIndexFromLetter(char sel = 0);
+    char GetLetter(int i = -1);
     void OnKeyDown(wxKeyEvent& event);
     void OnKeyUp(wxKeyEvent& event);
     void OnMouse(wxMouseEvent& event);
@@ -425,7 +439,7 @@ public:
 
 class ListSortInfo{
 public:
-        ListSortInfo(): ListCtrl(nullptr)
+        ListSortInfo(): ListCtrl(NULL)
 	{
 		SortAscending = false;
 		Column = 1; //pre-sorted by Fragments.
@@ -439,9 +453,28 @@ struct FilesListItem{
     wxString col0,col1,col2,col3,col4,col5;
     ULONGLONG col2bytes;
     long currindex;
+    wxString ReturnColumn(long column) const
+    {
+        switch (column) {
+        case 0:
+            return col0;
+        case 1:
+            return col1;
+        case 2:
+            return col2;
+        case 3:
+            return col3;
+        case 4:
+            return col4;
+        case 5:
+            return col5;
+        default:
+            wxFAIL_MSG("Invalid column index in FilesList::OnGetItemText");
+            return wxEmptyString;
+        }        
+    }
 };
-//TODO: Dont do this here?
-#include <vector>
+
 typedef std::vector<FilesListItem> FilesListItems;
 
 //genBTC FilesList.cpp
@@ -450,7 +483,7 @@ public:
     FilesList(wxWindow* parent, long style)
 		: wxListCtrl(parent, wxID_ANY,
 		             wxDefaultPosition, wxDefaultSize, style), currentlyselected(0),
-		  currently_being_workedon_filenames(nullptr), n_lastItem(0)
+		  currently_being_workedon_filenames(NULL), n_lastItem(0)
 	{
 	}
 
@@ -492,8 +525,10 @@ public:
     void RClickOpenExplorer(wxCommandEvent& event);
     void RClickCopyClipboard(wxCommandEvent& event);
     void RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event);
+    void GetFilesAndMakeFilterLists();
     void ReSelectProperDrive(wxCommandEvent& event);
     void RClickDefragMoveSingle(wxCommandEvent& event);
+    bool RemoveSingleFileAt();
 
     wxListItem GetListItem(long index=-1,long col=-1);
 
@@ -504,37 +539,54 @@ public:
     ListSortInfo m_sortinfo; 
     void OnColClick(wxListEvent& event );
 
-    DECLARE_EVENT_TABLE()    
-protected:
+    DECLARE_EVENT_TABLE()
+
     //overload required for virtual mode.
 	wxString OnGetItemText(long item, long column) const override;    
-private:
-    
+};
+
+//simple struct for a out& param from ClusterMap::GetGridSizeforCMap
+struct cmapreturn
+{
+    int width, height;
+    int block_size;
+    int line_width;
+    int cell_size;
+    int blocks_per_line;
+    int lines;
+};
+
+class LegendTransientPopup : public wxPopupTransientWindow
+{
+public:
+    explicit LegendTransientPopup(wxWindow* parent);
+    wxWindow* m_owner;  //PARENT
+    wxWindow* m_window;
 };
 
 class ClusterMap: public wxWindow {
 public:
-    ClusterMap(wxWindow* parent);
+    explicit ClusterMap(wxWindow* parent);
     ~ClusterMap();
 
-	/**
-     * \brief 
-     * \param event 
-     */
     void OnEraseBackground(wxEraseEvent& event);
     void OnPaint(wxPaintEvent& event);
-
+    ULONGLONG getLCNsfromMousePos(const wxPoint& pos) const;
+    void ClusterMapGetLCN(wxMouseEvent& event);
+    static void DrawSingleRectangleBorder(HDC m_cacheDC2, int xblock, int yblock, int line_width, int cell_size, HBRUSH brush,
+        HBRUSH infill);
+    ClusterMap *m_ClusterMap;
 private:
-    char *ScaleMap(int scaled_size);
-
+    static char *ScaleMap(int scaled_size);
+    void GetGridSizeforCMap(cmapreturn* gridsize) const;    
     int m_width;
     int m_height;
     HDC m_cacheDC;
     HBITMAP m_cacheBmp;
-
     HBRUSH m_brushes[SPACE_STATES];
+    LegendTransientPopup* m_legendPopup;
 
-    DECLARE_EVENT_TABLE()
+DECLARE_EVENT_TABLE()
 };
 
 typedef struct _JobsCacheEntry {
@@ -544,8 +596,13 @@ typedef struct _JobsCacheEntry {
     bool stopped;
 } JobsCacheEntry;
 
+//STDLib unordered map.
 WX_DECLARE_HASH_MAP(int, JobsCacheEntry*, \
-    wxIntegerHash, wxIntegerEqual, JobsCache);
+    wxIntegerHash, wxIntegerEqual, JobsCache);;
+
+// =======================================================================
+//                          Main Frame
+// =======================================================================
 
 class MainFrame: public wxFrame {
 public:
@@ -560,28 +617,20 @@ public:
     void OnStartJob(wxCommandEvent& event);
     void OnPause(wxCommandEvent& event);
     void OnStop(wxCommandEvent& event);
-
     void OnShowReport(wxCommandEvent& event);
-
-
-
-    void OnRepeat(wxCommandEvent& event);
-    
     void OnRepair(wxCommandEvent& event);
-
     void OnExit(wxCommandEvent& event);
 
     // settings menu handlers
     void OnLangTranslateOnline(wxCommandEvent& event);
     void OnLangTranslateOffline(wxCommandEvent& event);
     void OnLangOpenFolder(wxCommandEvent& event);
-
     void OnGuiOptions(wxCommandEvent& event);
-
     void OnBootEnable(wxCommandEvent& event);
     void OnBootScript(wxCommandEvent& event);
 
-    void ChooseFontPickerDialog(wxCommandEvent& event);//genBTC fontpicker.
+    void ChooseFontDialog(wxCommandEvent& event);//genBTC fontpicker.
+
     // help menu handlers
     void OnHelpContents(wxCommandEvent& event);
     void OnHelpBestPractice(wxCommandEvent& event);
@@ -595,7 +644,7 @@ public:
     void OnHelpAbout(wxCommandEvent& event);
 
     // event handlers
-    void OnActivate(wxActivateEvent& event);
+    //void OnActivate(wxActivateEvent& event);
     void OnMove(wxMoveEvent& event);
     void OnSize(wxSizeEvent& event);
 
@@ -607,10 +656,11 @@ public:
     void OnDiskProcessingFailure(wxCommandEvent& event);
     void OnJobCompletion(wxCommandEvent& event);
     void OnQueryCompletion(wxCommandEvent& event);  //genBTC query.cpp
-	void UD_UpdateMenuItemLabel(int id, wxString label, wxString accel) const;
     void OnLocaleChange(wxCommandEvent& event);
     void ReadUserPreferences(wxCommandEvent& event);
     void RedrawMap(wxCommandEvent& event);
+    void RefreshDrivesInfo(wxCommandEvent& event);
+    void RefreshFrame(wxCommandEvent& event);
     void SelectAll(wxCommandEvent& event);
     void SetWindowTitle(wxCommandEvent& event);
     void ShowUpgradeDialog(wxCommandEvent& event);
@@ -627,6 +677,8 @@ public:
     void PopulateList(wxCommandEvent& event);
     void UpdateVolumeInformation(wxCommandEvent& event);
     void UpdateVolumeStatus(wxCommandEvent& event);
+    int GetIndexFromDriveLetter();  //genBTC
+    int GetDriveLetter();           //genBTC
 
     // Files List (new) by genBTC
     void FilesAdjustListColumns(wxCommandEvent& event);
@@ -636,13 +688,19 @@ public:
 
     //for Query Menu (new) by genBTC
     void QueryClusters(wxCommandEvent& event);   //genBTC query.cpp
+    void QueryOperation4(wxCommandEvent& event);   //genBTC query.cpp Op2.
+    void QueryOperation3(wxCommandEvent& event);   //genBTC query.cpp Op3.
 
     // common routines
-    int  CheckOption(const wxString& name);
+    static int  CheckOption(const wxString& name);
     void SetTaskbarProgressState(TBPFLAG flag);
     void SetTaskbarProgressValue(ULONGLONG completed, ULONGLONG total);
 
-    bool m_repeat;
+    //for LCN Menu (new) by genBTC
+    void InitLCNPanel();                            //genBTC LCN.cpp
+    void GetAllLCNs(wxCommandEvent& event);
+    void GetSpecificLCNRange(wxCommandEvent& event);
+
     bool m_skipRem;
     bool m_busy;
     bool m_paused;
@@ -662,18 +720,24 @@ public:
 
     wxMenu     *m_RClickPopupMenu1;     //genBTC Right Click Popup Menu
     wxMenu     *m_DriveSubMenu;         //genBTC Right Click Popup Menu
-    wxTextCtrl *WxTextCtrl1;
+
+    wxTextCtrl  *m_WxTextCtrl1;            //genBTC Query - tab 3.
+    wxButton    *m_PerformQuery1;             //genBTC Query - tab 3.
+    wxFilePickerCtrl *m_WxFilePickerQuery1;    //genBTC Query - tab 3.
+    wxToggleButton *m_toggleBtn1;       //genBTC LCN - tab 4
+    wxButton    *m_toggleBtn2;       //genBTC LCN - tab 4
+    volume_info  m_volinfocache;     //genBTC
+    LegendTransientPopup* m_legendPopup;    //genBTC legend.
 private:
     int GetMapSize();       //genBTC - used by job.cpp & query.cpp
     void InitQueryMenu();   //genBTC query.cpp
-    void InitPopupMenus();              //genBTC Right Click Popup Menu
+    void InitPopupMenus();  //genBTC Right Click Popup Menu
+    void InitFilesList();    //genBTC FilesList.cpp
     void InitMenu();
     void InitToolbar();
     void InitStatusBar();
     void InitVolList();
-    void InitFilesList();    //genBTC FilesList.cpp
     void ReadAppConfiguration();
-    void ReadUserPreferences();
     void ReleasePause();
     void RemoveTaskbarIconOverlay();
     void SaveAppConfiguration();
@@ -691,24 +755,16 @@ private:
     bool m_maximized;
     int  m_separatorPosition;
 
-    // list column widths ratios:
-    // 0.5 means that a column acquires
-    // a half of the entire list width
-    double m_r[LIST_COLUMNS];
-    double m_fcolsr[LIST_COLUMNS]; //file-list column ratios //genbtc
-
-    // list column widths:
-    // used to check whether the user
-    // has changed them or not
-    int m_w[LIST_COLUMNS];
-    int m_fcolsw[LIST_COLUMNS]; //file-list column widths //genbtc
-
-    // list height
+    // list dimensions
+    double m_fcolsr[LIST_COLUMNS]; //genBTC FilesList.cpp column ratios
+    int m_fcolsw[LIST_COLUMNS]; //genBTC FilesList.cpp column widths
     int m_vListHeight;
-    int m_filesListHeight;  //genBTC FilesList.cpp
+    int m_filesListHeight;  //genBTC FilesList.cpp height
+    int m_origColumnWidths[LIST_COLUMNS];
+    int m_columnWidths[LIST_COLUMNS];
 
     wxFont *m_vListFont;
-    wxFont *m_filesListFont;  //genBTC FilesList.cpp
+    wxFont *m_filesListFont;  //genBTC FilesList.cpp font
 
     wxString   *m_title;
     wxToolBar  *m_toolBar;
@@ -721,22 +777,17 @@ private:
     wxMenuItem *m_subMenuUpgrade;
     wxMenu     *m_menuLanguage;
 
-    wxNotebook* m_notebook1;        //genBTC New Tabs
-    wxPanel* m_panel1;              //genBTC New Tabs
-    wxSplitterWindow* m_splitter1;  //genBTC New Tabs
-    wxPanel* m_panel2;              //genBTC New Tabs
-//    wxGrid* m_grid1;                //genBTC New Tabs
-    wxPanel* m_panel3;              //genBTC Tab3
+    wxNotebook *m_notebook1;        //genBTC New Tabs Notebook
+    wxPanel *m_panel1;              //genBTC Tab1
+    wxSplitterWindow *m_splitter1;  //genBTC New Tabs Splitter
+    wxPanel *m_panel2;              //genBTC Tab2
+    wxPanel *m_panel3;              //genBTC Tab3
+    wxPanel *m_panel4;              //genBTC Tab4
 
     wxSplitterWindow *m_splitter;
     DrivesList       *m_vList;
     ClusterMap       *m_cMap;
     FilesList        *m_filesList;  //genBTC FilesList.cpp
-    volume_info      m_volinfocache; //genBTC
-
-    wxBitmap m_repeatButtonBitmap;
-
-    //wxBitmap m_repeatButtonBitmap;
 
     bool m_btdEnabled;
     BtdThread *m_btdThread;
@@ -745,17 +796,7 @@ private:
     ListThread      *m_listThread;
     UpgradeThread   *m_upgradeThread;
 
-    //genBTC Query - tab 3.
-    wxButton *PerformQuery;     
-    wxStaticText *WxStaticText1;
-    
-    wxFilePickerCtrl *WxFilePickerCtrl1;
-    wxComboBox *WxComboBox1;
-    wxButton *Analyze;
-    wxPanel *WxNoteBookPage2;
-    wxPanel *WxNoteBookPage1;
-    wxNotebook *WxNotebook1;
-    wxBoxSizer *WxBoxSizer1;    
+    RefreshDrivesInfoThread *m_rdiThread;
 
     DECLARE_EVENT_TABLE()
 };
@@ -783,23 +824,6 @@ public:
     static wxString makefiltertext(wxString itemtext);
 };
 
-/* flags for Utils::ShellExec */
-#define SHELLEX_SILENT  0x1
-#define SHELLEX_NOASYNC 0x2
-
-// =======================================================================
-//                     #Defined Functions
-// =======================================================================
-//from job.cpp
-#define UD_EnableTool(id) { \
-    m_menuBar->Enable(id,true); \
-    m_toolBar->EnableTool(id,true); \
-}
-
-#define UD_DisableTool(id) { \
-    m_menuBar->Enable(id,false); \
-    m_toolBar->EnableTool(id,false); \
-}
 // =======================================================================
 //                           Global variables
 // =======================================================================
@@ -809,5 +833,7 @@ extern wxLocale *g_locale;
 extern double g_scaleFactor;
 extern int g_iconSize;
 extern HANDLE g_synchEvent;
-
+extern bool g_refreshDrivesInfo;
+extern const wchar_t* g_colornames[SPACE_STATES];   //genbtc
+extern COLORREF g_colors[SPACE_STATES];             //genbtc
 #endif /* _UDEFRAG_GUI_MAIN_H_ */

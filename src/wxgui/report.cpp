@@ -49,7 +49,7 @@ void MainFrame::OnShowReport(wxCommandEvent& WXUNUSED(event))
 
     long i = m_vList->GetFirstSelected();
     while(i != -1){
-        char letter = (char)m_vList->GetItemText(i)[0];
+        char letter = m_vList->GetLetter(i);
         wxString path = wxString::Format(
             wxT(".\\reports\\fraglist_%c.luar"),
             winx_tolower(letter));

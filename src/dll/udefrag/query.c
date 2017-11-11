@@ -28,13 +28,10 @@
  * @addtogroup Query
  * @{
  * @todo
+ * //TODO:
 //possibly think about combining query and job. This whole splitting them apart thing is horrible at the moment.
 // my hope is that it all becomes worth it eventually, as to not confuse the two functions and query should be a lot simpler and different.
- * might want to have an "Query Mode" where the analysis/lists don't get destroyed, and instead are stored in RAM
-
-//should invent a new query structure that the GUI can figure out. did. (query_parameters)
-//  this involves making the GUI aware of the already existing structures.
- */
+ * might want to have an "Query Mode Cache" where the analysis/lists don't get destroyed, and instead are stored in RAM
 
 /************************************************************/
 /*                    The query.c code                      */
@@ -69,46 +66,16 @@ static int query_terminator(void *p)
 }
 
 BOOL isGUIqueryFinishedBoolean = FALSE;
+//Set from query.cpp; Read below @ line 183
 void gui_query_finished(void)
 {
     isGUIqueryFinishedBoolean = TRUE;
-    ////do nothing; save this function for later.
 }
-static DWORD WINAPI query_wait_delete_lists_thread(LPVOID p)
-{
-/*    udefrag_job_parameters *jp = (udefrag_job_parameters *)p;
-    int delwaitcount;
-    if (jp == NULL)
-    {
-        etrace("Error. Trying to clear a list thats already gone. JP was null.");
-        return 1;
-    }
-    if (&jp->qp == NULL)
-    {
-        etrace("Error. Trying to clear a list thats already gone. &jp->qp was null.");
-        return 1;
-    }
-    if (jp->qp.engineFinished == TRUE) return 1;
-    delwaitcount = 0;
-    //wait for both threads to come back and say they're done.
-    do {
-        dtrace("---Sleeping 150ms waiting for deletion to complete. Wait Count = %d", delwaitcount);
-        delwaitcount++;
-        winx_sleep(150);
-    } while (!isGUIqueryFinishedBoolean);
-
-    destroy_lists(jp);
-    jp->qp.engineFinished = TRUE;
-
-    winx_exit_thread(0);
-    return 0;*/
-}
-
 
 static DWORD WINAPI query_starter(LPVOID p)
 {
     udefrag_job_parameters *jp = (udefrag_job_parameters *)p;
-    int result = -1;
+    int result;
     //analyze.
     (void)winx_vflush(jp->volume_letter); /* flush all file buffers */
     result = analyze(jp);
@@ -205,8 +172,9 @@ done:
     /* cleanup */
     result = jp.pi.completion_status;
     delwaitcount = 0;
+    //TODO: Replace this with a spinlock or a mutex or something.
     do {
-        dtrace("---Sleeping 150ms waiting for deletion to complete. Wait Count = %d", delwaitcount);
+        dtrace("Sleeping 150ms waiting for deletion to complete. Wait Count = %d", delwaitcount);
         delwaitcount++;
         winx_sleep(150);
     } while (!isGUIqueryFinishedBoolean);
@@ -214,7 +182,7 @@ done:
     destroy_lists(&jp);
     jp.qp.engineFinished = TRUE;
     if(result < 0) return result;
-    return result > 0 ? 0 : -1;
+    return (result > 0) ? 0 : (-1);
 }
 
 
@@ -225,28 +193,27 @@ int query_get_VCNlist(udefrag_job_parameters *jp)
 {
     winx_file_info *file;
     wchar_t *native_path;
+    wchar_t *buffer;
+    buffer = winx_getenv(L"UD_CUT_FILTER");
+    dtrace("Inside GUI result was (Buffer = CUT_FILTER): Path was: %ws", buffer);
+    winx_free(buffer);
     
-    //dtrace("Path was: %ws",jp->qp->path);
-    convert_path_to_native(jp->qp.path,&native_path);
+    dtrace("Inside GUI result was (JP qp path): Path was: %ws",jp->qp.path);
+    convert_path_to_native((wchar_t *)jp->qp.path,&native_path);
     
     /* iterate through the filelist (no other way) */
     for(file = jp->filelist; file != NULL; file = file->next){
         if(_wcsicmp(file->path,native_path) == 0) break;
         if(file->next == jp->filelist){
             etrace("Abnormal error. Could not match path to any scanned file...");
-            return -1;
+            return (-1);
         }
     }
+    //TODO: This assumes file disp is there and everything went ok, BUT 
+    // this FAILS after a stopgap_enumerates (and likely a volume_close) and tries to run this thing again.
     jp->qp.filedisp = file->disp;
     dtrace("The VCNList Query has been stored in the qp. Throwing back to QueryThread to display it..");
-/*    winx_scan_disk_release(jp->filelist);
-    winx_release_free_volume_regions(jp->free_regions);
-    if(jp->fragmented_files) 
-        prb_destroy(jp->fragmented_files,NULL);
-
-    jp->qp.engineFinished = TRUE;    */
     /*cleanup*/
-    //winx_free(file);
     winx_free(native_path);
     clear_currently_excluded_flag(jp); //again?
     winx_fclose(jp->fVolume);

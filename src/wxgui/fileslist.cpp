@@ -49,10 +49,8 @@
 /**=========================================================================**
 ***                        Declarations                                     **
 ***=========================================================================**/
-#include "wx/wxprec.h"
+#include "prec.h"
 #include "main.h"
-#include "udefrag-internals_flags.h"
-#include <algorithm>
 
 //genBTC. Event ID's for fileslist.cpp right click popup menu
 enum
@@ -70,37 +68,25 @@ enum
 bool sortcol0 (FilesListItem i,FilesListItem j) {
     //sorts Ascending by default
     int cmp = i.col0.Cmp(j.col0);
-    if(cmp < 0)
-        return true;
-    else
-        return false;
+    return (cmp < 0);
 }
 bool sortcol1 (FilesListItem i,FilesListItem j) {
     //sorts DE-scending by default
     long l1,l2;
     i.col1.ToLong(&l1);
     j.col1.ToLong(&l2);
-    if(l1 < l2)
-        return false;
-    else
-        return true;   
+    return(l1 > l2);
 }
 bool sortcol2 (FilesListItem i,FilesListItem j) {
     //sorts DE-scending by default
-    if(i.col2bytes < j.col2bytes)
-        return false;
-    else
-        return true;   
+    return(i.col2bytes > j.col2bytes);
 }
 bool sortcol5 (FilesListItem i,FilesListItem j) { 
     //sorts DE-scending by default
     wxDateTime ldDate1, ldDate2;
-    bool lbRetVal = true;
-    ldDate1.ParseFormat( i.col5, "%m/%d/%Y %H:%M:%S" );
-    ldDate2.ParseFormat( j.col5, "%m/%d/%Y %H:%M:%S" );
-    if ( ldDate1.IsEarlierThan( ldDate2 ) )
-        lbRetVal = false;
-    return lbRetVal;
+    ldDate1.ParseFormat( i.col5, L"%m/%d/%Y %H:%M:%S" );
+    ldDate2.ParseFormat( j.col5, L"%m/%d/%Y %H:%M:%S" );
+    return ldDate1.IsLaterThan(ldDate2);
 }
 void FilesList::SortVirtualItems(int Column)
 {
@@ -128,12 +114,12 @@ void FilesList::SortVirtualItems(int Column)
     }
     this->Thaw();
     m_sortinfo.Column = Column; // set the last-clicked column 
-//    for (std::vector<FilesListItem>::iterator it=allitems.begin(); it!=allitems.end(); ++it){
 }
 
 void FilesList::OnColClick(wxListEvent& event)
 {
-    int col = event.GetColumn();
+    const int col = event.GetColumn();
+    //cant sort col 3 or 4.
     if (col == 3 || col == 4)
         return;
     SortVirtualItems(col);
@@ -197,7 +183,7 @@ void MainFrame::InitFilesList()
     // ensure that the list will cover integral number of items
     m_filesListHeight = 0xFFFFFFFF; // prevent expansion of the list
 
-    Connect(wxEVT_SIZE,wxSizeEventHandler(MainFrame::FilesOnListSize), nullptr,this);
+    Connect(wxEVT_SIZE,wxSizeEventHandler(MainFrame::FilesOnListSize), NULL,this);
 
     InitPopupMenus();
     ListSortInfo *p_sortinfo = new ListSortInfo();
@@ -210,12 +196,12 @@ void MainFrame::InitFilesList()
 */
 void MainFrame::InitPopupMenus()
 {
-	m_RClickPopupMenu1 = new wxMenu("");
-	m_RClickPopupMenu1->Append(ID_RPOPMENU_OPEN_EXPLORER_1004, "Open in Explorer", "", wxITEM_NORMAL);
-	m_RClickPopupMenu1->Append(ID_RPOPMENU_COPY_CLIPBOARD_1005, "Copy path to clipboard", "", wxITEM_NORMAL);
-	m_RClickPopupMenu1->Append(ID_RPOPMENU_DEFRAG_SINGLE_1006, "Defragment Now", "", wxITEM_NORMAL);
-	m_RClickPopupMenu1->Append(ID_RPOPMENU_DEFRAG_MOVE2FRONT_1007, "Move to Front of Drive", "", wxITEM_NORMAL);
-	m_RClickPopupMenu1->Append(ID_RPOPMENU_DEFRAG_MOVE2END_1008, "Move to End of Drive", "", wxITEM_NORMAL);
+	m_RClickPopupMenu1 = new wxMenu;
+	m_RClickPopupMenu1->Append(ID_RPOPMENU_OPEN_EXPLORER_1004, wxT("Open in Explorer"), wxT(""), wxITEM_NORMAL);
+	m_RClickPopupMenu1->Append(ID_RPOPMENU_COPY_CLIPBOARD_1005, wxT("Copy path to clipboard"), wxT(""), wxITEM_NORMAL);
+	m_RClickPopupMenu1->Append(ID_RPOPMENU_DEFRAG_SINGLE_1006, wxT("Defragment Now"), wxT(""), wxITEM_NORMAL);
+	m_RClickPopupMenu1->Append(ID_RPOPMENU_DEFRAG_MOVE2FRONT_1007, wxT("Move to Front of Drive"), wxT(""), wxITEM_NORMAL);
+	m_RClickPopupMenu1->Append(ID_RPOPMENU_DEFRAG_MOVE2END_1008, wxT("Move to End of Drive"), wxT(""), wxITEM_NORMAL);
 	//Last Item is "Move File to Drive *: ", created in vollist.cpp because it needs the list of drives.
 }
 
@@ -227,8 +213,8 @@ void MainFrame::InitPopupMenus()
 wxListItem FilesList::GetListItem(long index,long col)
 {
     wxListItem theitem;
-    theitem.m_itemId = index!=-1 ? index : currentlyselected;
-    theitem.m_col = col!=-1 ? col : 0;
+    theitem.m_itemId = (index!=-1) ? index : currentlyselected;
+    theitem.m_col = (col!=-1) ? col : 0;
     theitem.m_mask = wxLIST_MASK_TEXT;
     GetItem(theitem);
     return theitem;
@@ -240,20 +226,17 @@ void FilesList::ReSelectProperDrive(wxCommandEvent& event)
 }
 void MainFrame::ReSelectProperDrive(wxCommandEvent& event)
 {
+    //find the drive-letter of the fragmented files tab. (check first item)
     wxString itemtext = m_filesList->GetListItem().GetText();
-    char letter;
-    letter = (char)itemtext[0]; //find the drive-letter of the fragmented files tab.
+    if (itemtext.empty())
+        return;
+    char letter = (char)itemtext[0];
     //DeSelect All Drives
-    int n = m_vList->GetItemCount();
-    for (int i = 0; i < n; i++)
-        m_vList->SetItemState(i,0,wxLIST_STATE_SELECTED);
+    m_vList->DeSelectAll();
     //Select the Proper Drive. (to match the fragmented files list tab)
-    for (int i = 0; i < n; i++){
-        if(letter == (char)m_vList->GetItemText(i)[0]){
-            m_vList->Select(i);  m_vList->Focus(i);
-            break;
-        }
-    }
+    int index = m_vList->GetIndexFromLetter(letter);
+    m_vList->Select(index);
+    m_vList->Focus(index);
 }
 
 /**=========================================================================**
@@ -261,15 +244,16 @@ void MainFrame::ReSelectProperDrive(wxCommandEvent& event)
 ***=========================================================================**/
 
 BEGIN_EVENT_TABLE(FilesList, wxListCtrl)
-    EVT_LIST_ITEM_RIGHT_CLICK(wxID_ANY,FilesList::OnItemRClick)
-    EVT_LIST_ITEM_SELECTED(wxID_ANY,   FilesList::OnSelect)
+    EVT_LIST_ITEM_RIGHT_CLICK(wxID_ANY, FilesList::OnItemRClick)
+    EVT_LIST_ITEM_SELECTED(wxID_ANY, FilesList::OnSelect)
     EVT_LIST_ITEM_DESELECTED(wxID_ANY, FilesList::OnDeSelect)
     EVT_MENU(ID_RPOPMENU_OPEN_EXPLORER_1004, FilesList::RClickOpenExplorer)
-    EVT_MENU(ID_RPOPMENU_COPY_CLIPBOARD_1005,FilesList::RClickCopyClipboard)
+    EVT_MENU(ID_RPOPMENU_COPY_CLIPBOARD_1005, FilesList::RClickCopyClipboard)
     EVT_LIST_COL_CLICK(wxID_ANY, FilesList::OnColClick)
-    EVT_MENU_RANGE(1006,1008, FilesList::RClickDefragMoveSingle)
-    EVT_MENU_RANGE(2065,2090,FilesList::RClickSubMenuMoveFiletoDriveX)
-END_EVENT_TABLE()
+    EVT_MENU_RANGE(1006, 1008, FilesList::RClickDefragMoveSingle)
+    EVT_MENU_RANGE(2065, 2090, FilesList::RClickSubMenuMoveFiletoDriveX)
+END_EVENT_TABLE();
+
 //events 2065-2090 are signifying drive A-Z (their letter's char2int)
 //calls the function below to move the file to the corresponding drive's eventID.
 /**=========================================================================**
@@ -278,26 +262,42 @@ END_EVENT_TABLE()
 
 void FilesList::RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event)
 {
-	wxString itemtext = GetListItem().GetText();
+    wxString itemtext = GetListItem().GetText();
 
 	const wchar_t letter = wchar_t(event.GetId() - 2000);
-	wchar_t *srcfilename = _wcsdup(itemtext.wc_str());
-	wchar_t *dstfilename = _wcsdup(itemtext.wc_str());
+    wchar_t *srcfilename = _wcsdup(itemtext.wc_str());
+    wchar_t *dstfilename = _wcsdup(itemtext.wc_str());
 
-	dstfilename[0] = letter;
+    dstfilename[0] = letter;
 
-	wchar_t *dstpath = _wcsdup(dstfilename);
-	winx_path_remove_filename(dstpath);
+    wchar_t *dstpath = _wcsdup(dstfilename);
+    winx_path_remove_filename(dstpath);
 
-	Utils::createDirectoryRecursively(dstpath);
-	MoveFile(srcfilename, dstfilename);
-	//    dtrace("srcfilename was %ws",srcfilename);
-	//    dtrace("dstfilename was %ws",dstfilename);
-	//    dtrace("dst path was %ws",dstpath);
-	delete srcfilename;    delete dstfilename;    delete dstpath;
+    GetFilesAndMakeFilterLists();
+
+    Utils::createDirectoryRecursively(dstpath);
+    
+    winx_file_info checkMove;
+    checkMove.path = srcfilename;
+    //TODO Change "NTFS" to detect what it actually is and if able to move it..
+    const int result = can_move(&checkMove, FS_NTFS);
+    if (result)
+        MoveFile(srcfilename,dstfilename);
+    //TODO: maybe Zenwinx native move_file is better instead or something?
+//    dtrace("srcfilename was %ws",srcfilename);
+//    dtrace("dstfilename was %ws",dstfilename);
+//    dtrace("dst path was %ws",dstpath);
+    delete srcfilename;    delete dstfilename;    delete dstpath;
+
+    RemoveSingleFileAt(); //remove from the listview.
+    g_mainFrame->m_jobThread->singlefile = false;
+    wxUnsetEnv(L"UD_CUT_FILTER");
+    dtrace("The Move Has Completed Fully."); //Final Complete Message.
 }
 
-void FilesList::RClickDefragMoveSingle(wxCommandEvent& event)
+//Take the FilesList and read what files are selected, then 
+// turn those into a filter list for the back end.
+void FilesList::GetFilesAndMakeFilterLists()
 {
     wxString filtertext;
     currently_being_workedon_filenames = new wxArrayString;
@@ -306,13 +306,20 @@ void FilesList::RClickDefragMoveSingle(wxCommandEvent& event)
     while(i != -1){
         wxString selitem = GetItemText(i);
         //do not exceed max environment variable length.
-        if(filtertext.Length() + selitem.Length() + 3 > 32767) break;
+        if((filtertext.Length() + selitem.Length() + 3) > 32767) break;
         currently_being_workedon_filenames->Add(selitem);
         Utils::extendfiltertext(selitem,&filtertext);
         i = GetNextSelected(i);
     }
-    wxSetEnv("UD_CUT_FILTER",filtertext);
+    wxSetEnv(L"UD_CUT_FILTER",filtertext);
     g_mainFrame->m_jobThread->singlefile = true;
+}
+
+//event function to call the right job event 
+void FilesList::RClickDefragMoveSingle(wxCommandEvent& event)
+{
+    GetFilesAndMakeFilterLists();
+    //NOTES:
     //Job.cpp @ MainFrame::OnJobCompletion @ Line 301-303 handles single-file mode.
     //Job.cpp @ MainFrame::OnJobCompletion @ Line 358-361 handles cleanup.
     //FilesList.cpp @ MainFrame::FilesPopulateList @ Line 370-380 handles list-item-removal.
@@ -327,7 +334,7 @@ void FilesList::RClickDefragMoveSingle(wxCommandEvent& event)
         break;
     case ID_RPOPMENU_DEFRAG_MOVE2END_1008:
         ProcessCommandEvent(this, ID_MoveToEnd);
-        break;    
+        break;
     default:
         break;
     }
@@ -335,7 +342,7 @@ void FilesList::RClickDefragMoveSingle(wxCommandEvent& event)
 
 void FilesList::RClickCopyClipboard(wxCommandEvent& event)
 {
-    wxString itemtext = GetListItem().GetText();
+    const wxString itemtext = GetListItem().GetText();
     if (wxTheClipboard->Open()){
         wxTheClipboard->SetData( new wxTextDataObject(itemtext) );
         wxTheClipboard->Close();
@@ -397,18 +404,43 @@ void MainFrame::FilesOnListSize(wxSizeEvent& event)
     // scale list columns; avoid horizontal scrollbar appearance
     wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED,ID_AdjustFilesListColumns);
     evt.SetInt(new_width);
-    if(new_width < old_width){
-        ProcessEvent(evt);
         //dtrace("Files new_width %d was < %d", new_width,old_width);
-    }
-    else if(new_width > old_width){
-        wxPostEvent(this,evt);
-        //dtrace("Files new_width %d was > %d", new_width,old_width);
-    }
+    if (new_width < old_width)
+        GetEventHandler()->ProcessEvent(evt);
+    else
+        GetEventHandler()->AddPendingEvent(evt);
 
     event.Skip();
 }
 
+bool FilesList::RemoveSingleFileAt()
+{
+    bool something_removed = false;
+    if (g_mainFrame->m_jobThread->singlefile == TRUE) {
+        int c = GetItemCount();
+        int d = currently_being_workedon_filenames->Count();
+        for (int i = 0; i<c; i++) {
+            for (int j = 0; j<d; j++) {
+                if ((*currently_being_workedon_filenames)[j] == GetItemText(i)) {
+                    allitems.erase(allitems.begin() + i);
+                    Select(i, false);   //de-select removed item.
+                    c--;
+                    currently_being_workedon_filenames->RemoveAt(j);
+                    d--; j--;
+                    something_removed = true;
+                }
+            }
+        }
+        dtrace("Fragmented Files List updated - item(s) removed.");
+        SetItemCount(allitems.size());   //set new virtual-list size.
+        Refresh();
+        //Focus(0);
+    }
+    else
+        etrace("Fragmented Files List Error - Not Found.");
+
+    return something_removed;
+}
 /**
  * @brief Deletes the files list and re-populates.
 */
@@ -418,12 +450,7 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
     winx_file_info *file;
     int currentitem = 0;
     bool something_removed = false;
-	/*
-    if(!&m_jobsCache){
-      etrace("FAILED to obtain currentJob CacheEntry!!");
-      return;
-    }*/
-    //JobsCacheEntry *newEntry = (JobsCacheEntry *)event.GetClientData();
+    //TODO: might wanna check if we actually have a valid jobs cache entry
     char letter = (char)event.GetInt();
     JobsCacheEntry cacheEntry = *m_jobsCache[(int)letter];
 
@@ -431,98 +458,74 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
         etrace("For some odd reason, Completion status was NOT complete.");
         return;
     }
-	prb_t_init(&trav,cacheEntry.pi.fragmented_files_prb);
-	file = (winx_file_info *)prb_t_first(&trav,cacheEntry.pi.fragmented_files_prb);
-	if (!file){
-		//code here testsfor/finds/removes any files that were just defragmented.
-		if (m_jobThread->singlefile == TRUE){
-			int c = m_filesList->GetItemCount();
-			int d = m_filesList->currently_being_workedon_filenames->Count();
-			for (int i=0; i<c; i++){
-				for (int j=0; j<d; j++){
-					if((*m_filesList->currently_being_workedon_filenames)[j] == m_filesList->GetItemText(i)){
-						m_filesList->allitems.erase(m_filesList->allitems.begin()+i);
-						m_filesList->Select(i,false);   //de-select removed item.
-						c--;
-						m_filesList->currently_being_workedon_filenames->RemoveAt(j);
-						d--; j--;
-						something_removed = true;
-					}
-				}
-			}
-		}
-		else
-			etrace("Fragmented Files List Not Found.");
-	}
-	else{
-		m_filesList->allitems.clear();  //clear entire list.
-	}
-	//Begin Iterating The Files.
-	while (file){
-		FilesListItem item;
+    prb_t_init(&trav,cacheEntry.pi.fragmented_files_prb);
+    file = (winx_file_info *)prb_t_first(&trav,cacheEntry.pi.fragmented_files_prb);
+    if (!file){
+        //code here testsfor/finds/removes any files that were just defragmented.
+        something_removed = m_filesList->RemoveSingleFileAt();
+    }
+    else{
+        m_filesList->allitems.clear();  //clear entire list.
+    }
+    //Begin Iterating The Files.
+    while (file) {
+        FilesListItem item;
         //Name/Path:
-		item.col0 << file->path + 4; /* skip the 4 chars: \??\  */
-		//Fragments:
-		item.col1 << file->disp.fragments;
-		//Size:
-		const int bpc = m_volinfocache.bytes_per_cluster;
-		item.col2bytes = file->disp.clusters * bpc;
-		char filesize_hr[32];
-		winx_bytes_to_hr(item.col2bytes,2,filesize_hr,sizeof filesize_hr);
-		item.col2 = wxString::FromUTF8(filesize_hr);
+        item.col0 << file->path + 4; /* skip the 4 chars: \??\  */
+                                        //Fragments:
+        item.col1 << file->disp.fragments;
+        //Size:
+        const int bpc = m_volinfocache.bytes_per_cluster;
+        item.col2bytes = file->disp.clusters * bpc;
+        char filesize_hr[32];
+        winx_bytes_to_hr(item.col2bytes, 2, filesize_hr, sizeof filesize_hr);
+        item.col2 = wxString::FromUTF8(filesize_hr);
 
-		//Info:
-		if(is_directory(file))
-			item.col3 = "[DIR]";
-		else if(is_compressed(file))
-			item.col3 = "Compressed";
-		else if(is_essential_boot_file(file)) //needed a flag from udefrag-internals.h (should manually #define it and only it)
-			item.col3 = "[BOOT]";
-		else if(is_mft_file(file))
-			item.col3 = "[MFT]";
-		else
-			item.col3 = "";
-		//Locked:
-		if(is_locked(file))
-			item.col4 = "Locked";
-		else
-			item.col4 = "";
-		//Last Modified time:
-		// ULONGLONG time is stored in how many of 100 nanoseconds (0.1 microseconds) or (0.0001 milliseconds) or 0.0000001 seconds.
-		//WindowsTickToUnixSeconds() (alternate function unused.)
-		winx_time lmt;             
-		winx_filetime2winxtime(file->last_modification_time,&lmt);
+        //Info:
+        if (is_directory(file))
+            item.col3 = "[DIR]";
+        else if (is_compressed(file))
+            item.col3 = "Compressed";
+        else if (is_essential_boot_file(file)) //needed a flag from udefrag-internals.h (should manually #define it and only it)
+            item.col3 = "[BOOT]";
+        else if (is_mft_file(file))
+            item.col3 = "[MFT]";
+        else
+            item.col3 = "";
+        //Locked:
+        if (is_locked(file))
+            item.col4 = "Locked";
+        else
+            item.col4 = "";
+        //Last Modified time:
+        // ULONGLONG time is stored in how many of 100 nanoseconds (0.1 microseconds) or (0.0001 milliseconds) or 0.0000001 seconds.
+        //WindowsTickToUnixSeconds() (alternate function unused.)
+        winx_time lmt;
+        winx_filetime2winxtime(file->last_modification_time, &lmt);
 
-		char lmtbuffer[30];
-		(void)_snprintf(lmtbuffer,sizeof lmtbuffer,
-		                "%02i/%02i/%04i"
-		                " "
-		                "%02i:%02i:%02i",
-		                (int)lmt.month,(int)lmt.day,(int)lmt.year,
-		                (int)lmt.hour,(int)lmt.minute,(int)lmt.second
-		);
-		lmtbuffer[sizeof lmtbuffer - 1] = 0; //terminate with a 0.
-		item.col5 = wxString::Format("%hs",lmtbuffer);
+        char lmtbuffer[30];
+        (void)_snprintf_s(lmtbuffer, sizeof lmtbuffer,
+            "%02i/%02i/%04i "
+            "%02i:%02i:%02i",
+            (int)lmt.month, (int)lmt.day, (int)lmt.year,
+            (int)lmt.hour, (int)lmt.minute, (int)lmt.second
+        );
+        lmtbuffer[sizeof lmtbuffer - 1] = 0; //terminate with a 0.
+        item.col5 = wxString::Format("%hs", lmtbuffer);
 
-		m_filesList->allitems.push_back(item);  //store item in virtual list's container.
-		currentitem++;
-		//iterate next & repeat
-		file = (winx_file_info *)prb_t_next(&trav);
-	}
+        m_filesList->allitems.push_back(item);  //store item in virtual list's container.
+        currentitem++;
+        //iterate next & repeat
+        file = (winx_file_info *)prb_t_next(&trav);
+    }
 	//Finished:
-	if (currentitem > 0){
+    if (currentitem > 0){
         dtrace("Successfully finished with the Populate List Loop");
         m_filesList->SetItemCount(m_filesList->allitems.size());   //set new virtual-list size.        
         ProcessCommandEvent(this,ID_AdjustFilesListColumns);
     }
     else if (!something_removed)
         dtrace("Populate List Loop Did not run, no files were added.");
-    else{
-        dtrace("Fragmented Files List updated - item(s) removed.");
-        m_filesList->SetItemCount(m_filesList->allitems.size());   //set new virtual-list size.
-        m_filesList->Refresh();
-        m_filesList->Focus(0);
-    }
 
     //signal to the INTERNALS native job-thread that the GUI has finished
     //  processing files, so it can clear the lists and exit.
@@ -537,20 +540,15 @@ wxString FilesList::OnGetItemText(long item, long column) const
     
     switch (column) {
         case 0:
-            return allitems[item].col0;
         case 1:
-            return allitems[item].col1;
         case 2:
-            return allitems[item].col2;
         case 3:
-            return allitems[item].col3;
         case 4:
-            return allitems[item].col4;
         case 5:
-            return allitems[item].col5;
+            return allitems[item].ReturnColumn(column);
         default:
             wxFAIL_MSG("Invalid column index in FilesList::OnGetItemText");
     }
-    return "";    
+    return "";
 }
 /** @} */

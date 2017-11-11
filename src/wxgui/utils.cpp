@@ -36,8 +36,13 @@
 
 #include "prec.h"
 #include "main.h"
-#include <urlmon.h>
+//#include <urlmon.h>
 #pragma comment(lib, "urlmon.lib")
+#pragma comment(lib, "shell32.lib")
+
+/* flags for Utils::ShellExec */
+#define SHELLEX_SILENT  0x1
+#define SHELLEX_NOASYNC 0x2
 
 // =======================================================================
 //                         Auxiliary utilities
@@ -248,9 +253,8 @@ bool Utils::SetProcessPriority(int priority)
     return (result != 0 ? true : false);
 }
 
-#pragma comment(lib, "shell32")
 /**
- * @brief Windows ShellExecute analog. reqs Shell32
+ * @brief Windows ShellExecute analog.
  */
 void Utils::ShellExec(
     const wxString& file,
@@ -312,7 +316,8 @@ int Utils::MessageDialog(wxFrame *parent,
 {
     wxString message;
     va_list args;
-    va_start(args,format);
+    wxString localFormat(format);
+    va_start(args, localFormat);
     message.PrintfV(format,args);
     va_end(args);
 
@@ -407,7 +412,8 @@ void Utils::ShowError(const wxString& format, ...)
 {
     wxString message;
     va_list args;
-    va_start(args,format);
+    wxString localFormat(format);
+    va_start(args, localFormat);
     message.PrintfV(format,args);
     va_end(args);
 
@@ -421,38 +427,38 @@ void Utils::ShowError(const wxString& format, ...)
     }
 }
 
-
 void Utils::createDirectoryRecursively(const std::wstring &directory) {
 
-  // If the specified directory name doesn't exist, do our thing
-  DWORD fileAttributes = ::GetFileAttributesW(directory.c_str());
-  if(fileAttributes == INVALID_FILE_ATTRIBUTES) {
+    // If the specified directory name doesn't exist, do our thing
+    DWORD fileAttributes = ::GetFileAttributesW(directory.c_str());
+    if (fileAttributes == INVALID_FILE_ATTRIBUTES) {
 
-    // Recursively do it all again for the parent directory, if any
-    std::size_t slashIndex = directory.find_last_of(wxT("\\/"));
-    if(slashIndex != std::wstring::npos) {
-      createDirectoryRecursively(directory.substr(0, slashIndex));
+        // Recursively do it all again for the parent directory, if any
+        std::size_t slashIndex = directory.find_last_of(wxT("\\/"));
+        if (slashIndex != std::wstring::npos) {
+            createDirectoryRecursively(directory.substr(0, slashIndex));
+        }
+
+        // Create the last directory on the path (the recursive calls will have taken
+        // care of the parent directories by now)
+        BOOL result = ::CreateDirectoryW(directory.c_str(), NULL);
+        if (result == FALSE) {
+            throw std::runtime_error("Could not create directory");
+        }
+
     }
+    else { // Specified directory name already exists as a file or directory
 
-    // Create the last directory on the path (the recursive calls will have taken
-    // care of the parent directories by now)
-    BOOL result = ::CreateDirectoryW(directory.c_str(), nullptr);
-    if(result == FALSE) {
-      throw std::runtime_error("Could not create directory");
+        bool isDirectoryOrJunction =
+            (fileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0 ||
+            (fileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != 0;
+
+        if (!isDirectoryOrJunction) {
+            throw std::runtime_error(
+                "Could not create directory because a file with the same name exists"
+            );
+        }
     }
-
-  } else { // Specified directory name already exists as a file or directory
-
-    bool isDirectoryOrJunction =
-      (fileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0 ||
-      (fileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != 0;
-
-    if(!isDirectoryOrJunction) {
-      throw std::runtime_error(
-        "Could not create directory because a file with the same name exists"
-      );
-    }
-  }
 }
 
 /**

@@ -30,6 +30,7 @@ if "%ULTRADFGVER%" == "" (
 )
 
 pushd ..
+::Read the file exclude-from-sources.lst and skip any files that match
 "%SEVENZIP_PATH%\7z.exe" a -r -mx9 -x@src\exclude-from-sources.lst^
     ultradefrag-%UDVERSION_SUFFIX%.src.7z doc src || goto fail
 popd

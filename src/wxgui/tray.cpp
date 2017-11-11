@@ -46,7 +46,7 @@ BEGIN_EVENT_TABLE(SystemTrayIcon, wxTaskBarIcon)
     EVT_MENU(ID_PauseMenu, SystemTrayIcon::OnMenuPause)
     EVT_MENU(ID_ExitMenu, SystemTrayIcon::OnMenuExit)
     EVT_TASKBAR_LEFT_UP(SystemTrayIcon::OnLeftButtonUp)
-END_EVENT_TABLE()
+END_EVENT_TABLE();
 
 wxMenu *SystemTrayIcon::CreatePopupMenu()
 {

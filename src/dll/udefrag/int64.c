@@ -1,6 +1,6 @@
 /*
  *  UltraDefrag - a powerful defragmentation tool for Windows NT.
- *  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+ *  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,11 +19,11 @@
 
 /**
  * @file int64.c
- * @brief 64-bit integers arithmetic support.
+ * @brief 64-bit integer arithmetic support.
  * @{
  */
 
-#include "udefrag-internals.h"
+
 
 #if defined(__GNUC__)
 #ifndef _WIN64

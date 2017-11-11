@@ -1,6 +1,6 @@
 /*
  *  UltraDefrag - a powerful defragmentation tool for Windows NT.
- *  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+ *  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
  *  Copyright (c) 2010-2013 Stefan Pendl (stefanpe@users.sourceforge.net).
  *
  *  Permission is granted to copy, distribute and/or modify this document
@@ -49,9 +49,13 @@
  * <a href="http://en.wikipedia.org/wiki/Backup_and_Restore">backup</a>
  * software instead for serious purposes.
  *
- * <h3>How to adjust optimization to imitate v5 one?</h3>
- * Unset all filters and set the <b>optimizer_file_size_threshold</b>
- * parameter to <b>15 EB</b>.
+ * <h3>How to move everything to the beginning of the disk?</h3>
+ * Usually it doesn't make sense to move big fragments, but if you'd like
+ * to get all files perfectly sorted or just want to pack everything as tight
+ * as possible before partition shrinking you can easily do it. Just set the <b>fragment_size_threshold</b> parameter to <b>0</b>,
+ * the <b>optimizer_file_size_threshold</b> parameter to <b>15 EB</b> and unset all filters.
+ * This way UltraDefrag will move all files, regardless of their fragments
+ * size, to the beginning of the disk.
  *
  * <h1>Graphical interface</h1>
  * <h3>When will the cluster map become interactive, so I'll be able to know where

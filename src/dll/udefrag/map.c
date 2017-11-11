@@ -1,6 +1,6 @@
 /*
  *  UltraDefrag - a powerful defragmentation tool for Windows NT.
- *  Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+ *  Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,30 +32,27 @@
 #include "udefrag-internals.h"
 
 /*
-* Because of huge number of clusters
-* on contemporary hard drives, we cannot
-* define exacly, which color is on each
-* individual cluster.
+* Contemporary hard drives may contain
+* huge number of clusters. To draw each
+* cluster on the map we need at least
+* 4 bits of memory. Therefore, to draw
+* 1 billion of clusters, we'll need at
+* least 500 MB of memory.
 *
-* For example, let's assume that hard disk
-* has 1 billion clusters. We need at least
-* 4 bits to save color of each cluster.
-* Therefore, we need to allocate 500 MB
-* of memory, which isn't acceptable.
+* That's definitely too much, so the program
+* never tries to draw individual clusters on
+* the map. Instead, it splits the disk into
+* cells and draws them on the map afterwards.
 *
-* Due to this reason, we're splitting
-* the disk to cells of fixed size.
-* Each cell contains number of clusters
-* of each color.
-*
-* When we're defining cell's color,
-* the most occured inside wins.
+* Each cell keeps information on how much
+* clusters of each kind belongs to it.
 */
 
 /**
+ * @internal
  * @brief Allocates cluster map.
  * @param[in] map_size the number of cells.
- * @param[in,out] jp pointer to job parameters.
+ * @param[in,out] jp pointer to the job parameters.
  * @return Zero for success, negative value otherwise.
  */
 int allocate_map(int map_size,udefrag_job_parameters *jp)
@@ -63,15 +60,13 @@ int allocate_map(int map_size,udefrag_job_parameters *jp)
     int array_size;
     ULONGLONG used_cells;
     
-    /* reset all internal data */
-    jp->pi.cluster_map = NULL;
-    jp->pi.cluster_map_size = 0;
-    memset(&jp->cluster_map,0,sizeof(cmap));
-    
     itrace("map size = %u",map_size);
     if(map_size == 0)
         return 0;
-    
+
+    /* reset all internal data */
+    free_map(jp);
+
     /* get volume information */
     if(winx_get_volume_information(jp->volume_letter,&jp->v_info) < 0){
         etrace("Couldn't get volume information for Drive: %c",jp->volume_letter);
@@ -83,13 +78,13 @@ int allocate_map(int map_size,udefrag_job_parameters *jp)
     }
 
     /* allocate memory */
-    jp->pi.cluster_map = (char *)winx_tmalloc(map_size);
+    jp->pi.cluster_map = winx_tmalloc(map_size);
     if(jp->pi.cluster_map == NULL){
         etrace("cannot allocate %u bytes of memory",map_size);
         return UDEFRAG_NO_MEM;
     }
     array_size = map_size * SPACE_STATES * sizeof(ULONGLONG);
-    jp->cluster_map.array = (ULONGLONG(*)[SPACE_STATES])winx_tmalloc(array_size);
+    jp->cluster_map.array = winx_tmalloc(array_size);
     if(jp->cluster_map.array == NULL){
         etrace("cannot allocate %u bytes of memory",
             array_size);
@@ -126,13 +121,14 @@ int allocate_map(int map_size,udefrag_job_parameters *jp)
             jp->cluster_map.field_size,jp->cluster_map.cells_per_cluster,jp->cluster_map.unused_cells);
     }
 
-    /* reset map */
+    /* reset the map */
     reset_cluster_map(jp);
     return 0;
 }
 
 /**
- * @brief Fills the map by default color.
+ * @internal
+ * @brief Fills the map by the default color.
  */
 void reset_cluster_map(udefrag_job_parameters *jp)
 {
@@ -157,9 +153,10 @@ void reset_cluster_map(udefrag_job_parameters *jp)
 }
 
 /**
- * @brief Colorizes specified range of clusters.
- * @note If new color is equal to MFT_ZONE_SPACE,
- * old color is ignored.
+ * @internal
+ * @brief Colorizes the specified range of clusters.
+ * @note If the new color is equal to MFT_ZONE_SPACE,
+ * the old color is ignored.
  */
 void colorize_map_region(udefrag_job_parameters *jp,
         ULONGLONG lcn, ULONGLONG length, int new_color, int old_color)
@@ -190,7 +187,7 @@ void colorize_map_region(udefrag_job_parameters *jp,
         cell = lcn / jp->cluster_map.clusters_per_cell;
         offset = lcn % jp->cluster_map.clusters_per_cell;
         if(cell >= jp->cluster_map.map_size) return;
-        while(cell < jp->cluster_map.map_size - 1 && length){
+        while(cell < (jp->cluster_map.map_size - 1) && length){
             n = min(length,jp->cluster_map.clusters_per_cell - offset);
             jp->cluster_map.array[cell][new_color] += n;
             if(new_color != MFT_ZONE_SPACE){
@@ -224,10 +221,11 @@ void colorize_map_region(udefrag_job_parameters *jp,
 }
 
 /**
- * @brief Defines whether the file is $Mft or not.
+ * @internal
+ * @brief Defines whether a file is $Mft or not.
  * @return Nonzero value indicates that the file is $Mft.
  */
-int is_mft(winx_file_info *f,udefrag_job_parameters *jp)
+int is_mft(winx_file_info *f, fs_type_enum fs_type)
 {
     int length;
     wchar_t mft_name[] = L"$Mft";
@@ -235,7 +233,7 @@ int is_mft(winx_file_info *f,udefrag_job_parameters *jp)
     if(f == NULL)
         return 0;
     
-    if(jp->fs_type != FS_NTFS)
+    if(fs_type != FS_NTFS)
         return 0;
     
     if(is_not_mft_file(f)) return 0;
@@ -254,12 +252,13 @@ int is_mft(winx_file_info *f,udefrag_job_parameters *jp)
 }
 
 /**
+ * @internal
  * @brief Defines file's color.
  */
 int get_file_color(udefrag_job_parameters *jp, winx_file_info *f)
 {
-    /* show $MFT file in dark magenta color */
-    if(is_mft(f,jp))
+    /* show the $MFT file in dark magenta color */
+    if(is_mft(f,jp->fs_type))
         return MFT_SPACE;
     
     if(is_locked(f))
@@ -269,27 +268,21 @@ int get_file_color(udefrag_job_parameters *jp, winx_file_info *f)
     if(is_fragmented(f) && !is_excluded(f))
         return is_over_limit(f) ? FRAGM_OVER_LIMIT_SPACE : FRAGM_SPACE;
 
-    if(is_directory(f)){
-        if(is_over_limit(f))
-            return DIR_OVER_LIMIT_SPACE;
-        else
-            return DIR_SPACE;
-    } else if(is_compressed(f)){
-        if(is_over_limit(f))
-            return COMPRESSED_OVER_LIMIT_SPACE;
-        else
-            return COMPRESSED_SPACE;
-    } else {
-        if(is_over_limit(f))
-            return UNFRAGM_OVER_LIMIT_SPACE;
-        else
-            return UNFRAGM_SPACE;
-    }
-    return UNFRAGM_SPACE; /* this point will never be reached */
+    if(is_directory(f))
+        return is_over_limit(f) ? DIR_OVER_LIMIT_SPACE : DIR_SPACE;
+    
+    if(is_compressed(f))
+        return is_over_limit(f) ? COMPRESSED_OVER_LIMIT_SPACE : COMPRESSED_SPACE;
+    
+    if (is_over_limit(f))
+        return UNFRAGM_OVER_LIMIT_SPACE;
+    //default case:
+    return UNFRAGM_SPACE;
 }
 
 /**
- * @brief Colorizes space belonging to the file.
+ * @internal
+ * @brief Colorizes space belonging to a file.
  */
 void colorize_file(udefrag_job_parameters *jp, winx_file_info *f, int old_color)
 {
@@ -307,6 +300,7 @@ void colorize_file(udefrag_job_parameters *jp, winx_file_info *f, int old_color)
 }
 
 /**
+ * @internal
  * @brief Frees resources
  * allocated by allocate_map.
  */

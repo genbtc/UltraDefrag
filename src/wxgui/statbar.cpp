@@ -98,7 +98,7 @@ void MainFrame::UpdateStatusBar(wxCommandEvent& event)
     UD_SetStatusText(3, _("compressed"), compressed);
 
     char s[32]; winx_bytes_to_hr(mft_size,2,s,sizeof(s));
-    SetStatusText(wxString::Format(wxT("%hs MFT"),s), 4);
+    SetStatusText(wxString::Format(wxT("%hs MFT/SYS"),s), 4);
 }
 
 /** @} */

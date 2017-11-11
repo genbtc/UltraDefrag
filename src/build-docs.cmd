@@ -1,7 +1,7 @@
 @echo off
 ::
 :: Build script for UltraDefrag documentation.
-:: Copyright (c) 2007-2015 Dmitri Arkhangelski (dmitriar@gmail.com).
+:: Copyright (c) 2007-2017 Dmitri Arkhangelski (dmitriar@gmail.com).
 :: Copyright (c) 2010-2013 Stefan Pendl (stefanpe@users.sourceforge.net).
 ::
 :: This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,6 @@
 ::
 
 echo Build UltraDefrag documentation...
-echo.
 
 call ParseCommandLine.cmd %*
 
@@ -31,14 +30,16 @@ if "%ULTRADFGVER%" equ "" (
         call "setvars_%COMPUTERNAME%_%ORIG_USERNAME%.cmd"
     if exist "setvars_%COMPUTERNAME%_%USERNAME%.cmd"^
         call "setvars_%COMPUTERNAME%_%USERNAME%.cmd"
+    echo.
 )
 
 doxygen --version >nul 2>&1 || goto fail
 
-if "%UD_BLD_FLG_BUILD_DEV%" == "1" (
+if "%UD_BLD_FLG_BUILD_DEV_DOCS%" == "1" (
     call :compile_docs .\dll\udefrag || goto fail
     call :compile_docs .\dll\zenwinx || goto fail
 )
+
 call :compile_docs ..\doc\handbook || goto fail
 
 :: compile PDF documentation if MiKTeX is installed
