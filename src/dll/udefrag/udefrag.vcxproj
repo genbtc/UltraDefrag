@@ -221,6 +221,7 @@
       </ForceSymbolReferences>
       <AdditionalDependencies>ntdll.lib</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <ResourceCompile />
     <Manifest>
@@ -281,6 +282,7 @@
       </ForceSymbolReferences>
       <AdditionalDependencies>ntdll.lib</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <ResourceCompile />
     <Manifest>

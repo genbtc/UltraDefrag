@@ -1,6 +1,7 @@
 /* Any copyright is dedicated to the Public Domain.
    http://creativecommons.org/publicdomain/zero/1.0/ */
 /* Written by Nils Maier in 2014. */
+/* 2017 modified by genBTC*/
 #include "prec.h"
 
 namespace
@@ -229,7 +230,7 @@ void registerPath()
     }
     if (res != ERROR_SUCCESS) {
       if (::RegSetValueEx(env, kPath, 0, REG_EXPAND_SZ, (BYTE *)path.c_str(),
-                          (path.length() + 1) * sizeof(wchar_t)) != ERROR_SUCCESS) {
+          (DWORD)(path.length() + 1) * sizeof(wchar_t)) != ERROR_SUCCESS) {
         throw std::exception("Failed to create value");
       }
       return;
@@ -246,7 +247,7 @@ void registerPath()
     str.append(path);
     std::wcout << L"Setting: " << str << std::endl;
     if (::RegSetValueEx(env, kPath, 0, REG_EXPAND_SZ, (BYTE *)str.c_str(),
-                        (str.length() + 1) * sizeof(wchar_t)) != ERROR_SUCCESS) {
+        (DWORD)(str.length() + 1) * sizeof(wchar_t)) != ERROR_SUCCESS) {
       throw std::exception("Failed to set value");
     }
   }
@@ -309,7 +310,7 @@ void unregisterPath()
     str = str.replace(pos, path.length(), L"");
     std::wcout << L"Setting: " << str << std::endl;
     if (::RegSetValueEx(env, kPath, 0, REG_EXPAND_SZ, (BYTE *)str.c_str(),
-                        (str.length() + 1) * sizeof(wchar_t)) != ERROR_SUCCESS) {
+        (DWORD)(str.length() + 1) * sizeof(wchar_t)) != ERROR_SUCCESS) {
       throw std::exception("Failed to set value");
     }
   }

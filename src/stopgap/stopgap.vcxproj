@@ -98,6 +98,7 @@
       <ForceSymbolReferences>
       </ForceSymbolReferences>
       <AdditionalDependencies>ntdll.lib</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -125,6 +126,7 @@
       </ForceSymbolReferences>
       <AdditionalDependencies>ntdll.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Software\Boost165\lib32-msvc-10.0;</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -157,6 +159,7 @@
       </ForceSymbolReferences>
       <AdditionalDependencies>ntdll.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Software\Boost165\lib64-msvc-10.0;</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -189,6 +192,7 @@
       <ForceSymbolReferences>
       </ForceSymbolReferences>
       <AdditionalDependencies>ntdll.lib</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

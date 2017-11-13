@@ -1,6 +1,7 @@
 ﻿/* Any copyright is dedicated to the Public Domain.
    http://creativecommons.org/publicdomain/zero/1.0/ */
 /* Written by Nils Maier in 2014. */
+/* 2017 modified by genBTC*/
 #include "prec.h"
 
 void RedirectIOToConsole() {

@@ -591,31 +591,10 @@ static int ftw_helper(wchar_t *path, int flags,
 
 /**
  * @internal
- * @brief Removes resident streams from the file list.
- */
-static void ftw_remove_resident_streams(winx_file_info **filelist)
-{
-    winx_file_info *f, *head, *next = NULL;
-
-    for(f = *filelist; f; f = next){
-        head = *filelist;
-        next = f->next;
-        if(f->disp.fragments == 0){
-            winx_free(f->name);
-            winx_free(f->path);
-            winx_list_destroy((list_entry **)(void *)&f->disp.blockmap);
-            winx_list_remove((list_entry **)(void *)filelist,(list_entry *)f);
-        }
-        if(*filelist == NULL) break;
-        if(next == head) break;
-    }
-}
-
-/**
- * @internal
  * @brief Removes invalid streams from the file list.
+ * @brief Removes resident streams from the file list. (combined by genBTC)
  */
-static void ftw_remove_invalid_streams(winx_file_info **filelist)
+static void ftw_remove_invalid_streams(winx_file_info **filelist, int flags)
 {
     winx_file_info *f, *head, *next = NULL;
     int invalid_entry;
@@ -624,12 +603,13 @@ static void ftw_remove_invalid_streams(winx_file_info **filelist)
         head = *filelist;
         next = f->next;
         invalid_entry = 0;
-        if(f->path == NULL){
+        if(f->path == NULL)
             invalid_entry = 1;
-        } else if(f->path[0] == 0){
+        else if(f->path[0] == 0)
             invalid_entry = 1;
-        }
-        if(invalid_entry){
+        else if (flags & WINX_FTW_SKIP_RESIDENT_STREAMS && f->disp.fragments == 0)
+            invalid_entry = 1;
+        if(invalid_entry) {
             winx_free(f->name);
             winx_free(f->path);
             winx_list_destroy((list_entry **)(void *)&f->disp.blockmap);
@@ -731,12 +711,9 @@ winx_file_info *winx_ftw(wchar_t *path, int flags,
         winx_ftw_release(filelist);
         return NULL;
     }
-      
-    if(flags & WINX_FTW_SKIP_RESIDENT_STREAMS)
-        ftw_remove_resident_streams(&filelist);
-    
-    /* get rid of invalid entries */
-    ftw_remove_invalid_streams(&filelist);
+
+    /* get rid of invalid entries and WINX_FTW_SKIP_RESIDENT_STREAMS*/
+    ftw_remove_invalid_streams(&filelist,flags);
     return filelist;
 }
 
@@ -806,10 +783,8 @@ winx_file_info *winx_scan_disk(char volume_letter, int flags,
     }
 
 cleanup:
-    if(flags & WINX_FTW_SKIP_RESIDENT_STREAMS)
-        ftw_remove_resident_streams(&filelist);
-    /* get rid of invalid entries */
-    ftw_remove_invalid_streams(&filelist);
+    /* get rid of invalid entries and WINX_FTW_SKIP_RESIDENT_STREAMS*/
+    ftw_remove_invalid_streams(&filelist, flags);
         
 done:
     winx_dbg_print_header(0,0,I"winx_scan_disk completed in %I64u ms",

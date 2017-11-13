@@ -71,6 +71,7 @@ void MainFrame::InitQueryMenu()
 ***                  Functions in the Query Menu/Tab.                       **
 ***=========================================================================**/
 //right now this is equivalent to Job.cpp @ void MainFrame::OnStartJob(wxCommandEvent& event)
+//All these handlers are crazy.
 void MainFrame::QueryClusters(wxCommandEvent& event){
     wxString filtertext,itemtext;
     
@@ -132,9 +133,10 @@ void MainFrame::QueryClusters(wxCommandEvent& event){
     m_WxTextCtrl1->AppendText(L"Starting Query!.....\n");    
 }
 
+//event handler for operation 3, spawns QueryThread.
 void MainFrame::QueryOperation3(wxCommandEvent& event)
 {
-    int id = event.GetId();
+    const int id = event.GetId();
     if (id == ID_QueryOperation3) {
         switch (id) {
         case ID_QueryOperation3:
@@ -153,6 +155,7 @@ void MainFrame::QueryOperation3(wxCommandEvent& event)
     m_queryThread->m_startquery = true; //BEGIN LAUNCH. (entry)
 }
 
+//QueryThread calls stopgap and paints the textbox.
 int QueryThread::stopgap_finish_operation3()
 {
     dtrace("Query.cpp starts calling stopgap_enumerate_gaps()");
@@ -165,6 +168,7 @@ int QueryThread::stopgap_finish_operation3()
 }
 
 
+//Direct wx menu event Call (no threading) stopgap is quick
 void MainFrame::QueryOperation4(wxCommandEvent& event)
 {
     dtrace("Query.cpp starts calling stopgap_count_gaps()");

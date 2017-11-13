@@ -359,3 +359,4 @@ vc141.idb
 /src/wxgui/reports.lng
 .vs*
 /src/.vs*
+/src/wxgui/gui.ini

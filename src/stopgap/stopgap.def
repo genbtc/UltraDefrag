@@ -14,3 +14,4 @@ EXPORTS
 	stopgap_close_gaps
 	stopgap_enumerate_gaps
 	stopgap_count_gaps
+	stopgap_findfiles_at_LCN

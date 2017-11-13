@@ -106,8 +106,7 @@ int udefrag_starts_query(char volume_letter,udefrag_query_type query_type,int fl
         udefrag_query_progress_callback qpcb,udefrag_terminator t,udefrag_query_parameters qp,void *p)
 {
     udefrag_job_parameters jp;
-    //udefrag_query_parameters qp_pass;
-	int result, delwaitcount;// , callback;
+	int result, delwaitcount;
 
     /* initialize the job */
     memset(&jp,0,sizeof(udefrag_job_parameters));
@@ -174,7 +173,7 @@ done:
     delwaitcount = 0;
     //TODO: Replace this with a spinlock or a mutex or something.
     do {
-        dtrace("Sleeping 150ms waiting for deletion to complete. Wait Count = %d", delwaitcount);
+        //dtrace("Sleeping 150ms waiting for deletion to complete. Wait Count = %d", delwaitcount);
         delwaitcount++;
         winx_sleep(150);
     } while (!isGUIqueryFinishedBoolean);
@@ -201,7 +200,7 @@ int query_get_VCNlist(udefrag_job_parameters *jp)
     dtrace("Inside GUI result was (JP qp path): Path was: %ws",jp->qp.path);
     convert_path_to_native((wchar_t *)jp->qp.path,&native_path);
     
-    /* iterate through the filelist (no other way) */
+    /* iterate through the filelist to check (no other way) */
     for(file = jp->filelist; file != NULL; file = file->next){
         if(_wcsicmp(file->path,native_path) == 0) break;
         if(file->next == jp->filelist){
@@ -209,8 +208,8 @@ int query_get_VCNlist(udefrag_job_parameters *jp)
             return (-1);
         }
     }
-    //TODO: This assumes file disp is there and everything went ok, BUT 
-    // this FAILS after a stopgap_enumerates (and likely a volume_close) and tries to run this thing again.
+    //Fixed: This assumes file disp is there and everything went ok, BUT 
+    // this likely fails after a volume_close(like after a stopgap_enumerates)
     jp->qp.filedisp = file->disp;
     dtrace("The VCNList Query has been stored in the qp. Throwing back to QueryThread to display it..");
     /*cleanup*/

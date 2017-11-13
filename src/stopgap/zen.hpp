@@ -1,11 +1,9 @@
 /* Any copyright is dedicated to the Public Domain.
 http://creativecommons.org/publicdomain/zero/1.0/ */
 /* Written by Nils Maier in 2014. */
+/* 2017 modified by genBTC*/
 #ifndef ZEN_HPP
 #define ZEN_HPP
-
-//#include "prec.h"
-//#include "util.hpp"
 
 
 namespace zen
@@ -20,13 +18,17 @@ namespace zen
         }
     }
 
-    static volatile long consoleTerminated = 0;
-
     class winx
     {
     public:
-        winx();
-        ~winx();
+        winx()
+        {
+            winx_init_library();
+        }
+        ~winx()
+        {
+            winx_unload_library();
+        }
     };
 
     class Volume
@@ -63,12 +65,12 @@ namespace zen
             }
         }
 
-        HANDLE handle()
+        HANDLE handle() const
         {
             return file_->hFile;
         }
-
-        operator HANDLE()
+        //"non-explicit conversion operator" is OK.
+        operator HANDLE() const
         {
             return file_->hFile;
         }
@@ -93,6 +95,7 @@ namespace zen
     }
 
     //anonymous namespace, local, hidden and unique
+    // should handle auto file close on destruction. RAII
     namespace
     {
         struct file_close
@@ -197,15 +200,14 @@ namespace zen
     class GapEnumeration
     {
     private:
-        typedef std::pair<uint64_t, winx_volume_region *>
-        pair_t;
-        //typedef boost::fast_pool_allocator   < pair_t, boost::default_user_allocator_new_delete, boost::details::pool::null_mutex, 1024 >   alloc_t;
+        typedef std::pair<uint64_t, winx_volume_region*>
+         pair_t;
         typedef std::allocator<pair_t>
-        alloc_t;
-        typedef std::map<uint64_t, winx_volume_region *, std::less<uint64_t>, alloc_t>
-        regions_t;
-        typedef std::multimap<uint64_t, winx_volume_region *, std::less<uint64_t>, alloc_t>
-        sizes_t;
+         alloc_t;
+        typedef std::map<uint64_t, winx_volume_region*, std::less<uint64_t>, alloc_t>
+         regions_t;
+        typedef std::multimap<uint64_t, winx_volume_region*, std::less<uint64_t>, alloc_t>
+         sizes_t;
 
         winx_volume_region* info_;
         regions_t regions_;
@@ -305,29 +307,26 @@ namespace zen
     class FileEnumeration
     {
     public:
-        typedef std::vector<winx_file_info *> files_t;
+        typedef std::vector<winx_file_info*> files_t;
 
     private:
-        typedef std::pair<uint64_t, winx_file_info *>
-        pair_t;
-        //typedef boost::fast_pool_allocator   < pair_t, boost::default_user_allocator_new_delete, boost::details::pool::null_mutex, 25600 >   alloc_t;
+        typedef std::pair<uint64_t, winx_file_info*>
+            pair_t;
         typedef std::allocator<pair_t>
-        alloc_t;
-        typedef std::multimap<uint64_t, winx_file_info *, std::less<uint64_t>, alloc_t>
-        buckets_t;
-        typedef std::map<uint64_t, winx_file_info *, std::less<uint64_t>, alloc_t>
-        lcns_t;
-
-        //typedef boost::fast_pool_allocator   < pair_t, boost::default_user_allocator_new_delete, boost::details::pool::null_mutex, 1024 >   alloc_known_t;
+            alloc_t;
+        typedef std::multimap<uint64_t, winx_file_info*, std::less<uint64_t>, alloc_t>
+         buckets_t;
+        typedef std::map<uint64_t, winx_file_info*, std::less<uint64_t>, alloc_t>
+            lcns_t;
         typedef std::allocator<pair_t>
-        alloc_known_t;
-        typedef std::multimap<buckets_t::key_type, buckets_t::mapped_type, std::greater<buckets_t::key_type>,
-                              alloc_known_t>
-        known_t;
+         alloc_known_t;
+        typedef std::multimap<buckets_t::key_type, buckets_t::mapped_type, 
+                std::greater<buckets_t::key_type>,alloc_known_t>
+         known_t;
 
         static int terminator(void*)
         {
-            return consoleTerminated;
+            return util::ConsoleHandler::gTerminated;
         }
 
         static known_t known_;
@@ -348,9 +347,8 @@ namespace zen
         {
             if (info_)
             {
-#ifndef NO_PATCH
+                //was #ifndef NO_PATCH
                 winx_scan_disk_release(info_);
-#endif
                 info_ = nullptr;
             }
 
@@ -385,6 +383,7 @@ namespace zen
         }
 
         winx_file_info* findAt(uint64_t lcn);
+        std::vector<std::wstring> findAll(uint64_t lcn, uint64_t len);
 
         void pop(const winx_file_info* f);
 

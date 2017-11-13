@@ -330,6 +330,35 @@ int exclude_by_fragment_size(winx_file_info *f,udefrag_job_parameters *jp)
 }
 
 /**
+* @internal
+* @brief Excludes files according to startLCN and endLCN parameters.
+*/
+int exclude_by_region(winx_file_info *f, ULONGLONG startLCN, ULONGLONG endLCN)
+{
+    winx_blockmap *block;
+    int exclude = 0;
+    //not needed. already checked before.
+    //if (f->disp.blockmap == NULL) return 0;
+
+    //iterate the entire blockmap for each file, checking LCNs along the way.
+    for (block = f->disp.blockmap; block; block = block->next) {
+        //first file
+        if (block == f->disp.blockmap) {
+            if (block->lcn > startLCN && block->lcn < endLCN)
+                exclude = 1;
+        }
+        //confirmation for nextfiles. (partials?)
+        else if (block->lcn == block->prev->lcn + block->prev->length) {
+            if (block->lcn > startLCN && block->lcn < endLCN)
+                exclude = 1;
+        }
+        if (exclude)
+            return exclude;
+        if (block->next == f->disp.blockmap) break;
+    }
+    return 0;
+}
+/**
  * @internal
  * @brief Excludes files according to UD_FRAGMENTS_THRESHOLD filter.
  */

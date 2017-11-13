@@ -386,7 +386,7 @@ void MainFrame::ChooseFontDialog(wxCommandEvent& WXUNUSED(event))
         dtrace("Chose new Font = %ws,%d", font.GetFaceName().wc_str(), font.GetPointSize());
     }
     dialog->Destroy();
-    delete dialog;
+    //delete dialog;
 }
 
 /** @} */

@@ -172,6 +172,7 @@ enum {
     ID_PerformQueryBUTTON,
     ID_LCNButton1,
     ID_LCNButton2,
+    ID_LCNnumTextInput,
 
     // language selection menu item, must always be last in the list
     ID_LocaleChange
@@ -181,14 +182,14 @@ enum {
 #define MAIN_WINDOW_DEFAULT_HEIGHT 600
 #define MAIN_WINDOW_MIN_WIDTH      640
 #define MAIN_WINDOW_MIN_HEIGHT     480
-#define DEFAULT_LIST_HEIGHT        145
+#define DEFAULT_LIST_HEIGHT        165
 #define MIN_PANEL_HEIGHT            42
 
 // dialog layout constants
 #define SMALL_SPACING  DPI(5)
 #define LARGE_SPACING  DPI(11)
 //default gui.ini
-#define DEFAULT_DRY_RUN          1      //genbtc wants this. TODO: decide.
+#define DEFAULT_DRY_RUN          1      //genbtc wants this on for debug
 #define DEFAULT_FREE_COLOR_R   255
 #define DEFAULT_FREE_COLOR_G   255
 #define DEFAULT_FREE_COLOR_B   255
@@ -698,6 +699,7 @@ public:
 
     //for LCN Menu (new) by genBTC
     void InitLCNPanel();                            //genBTC LCN.cpp
+    void OnLCNnumInputClicked(wxMouseEvent&);
     void GetAllLCNs(wxCommandEvent& event);
     void GetSpecificLCNRange(wxCommandEvent& event);
 
@@ -727,6 +729,8 @@ public:
     wxToggleButton *m_toggleBtn1;       //genBTC LCN - tab 4
     wxButton    *m_toggleBtn2;       //genBTC LCN - tab 4
     volume_info  m_volinfocache;     //genBTC
+    wxTextCtrl  *m_WxTextCtrl2;            //genBTC LCN - tab 4
+    wxTextCtrl  *m_WxTextCtrl_LCNno;            //genBTC LCN - tab 4
     LegendTransientPopup* m_legendPopup;    //genBTC legend.
 private:
     int GetMapSize();       //genBTC - used by job.cpp & query.cpp

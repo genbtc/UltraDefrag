@@ -1,7 +1,8 @@
 /* Any copyright is dedicated to the Public Domain.
    http://creativecommons.org/publicdomain/zero/1.0/ */
 /* Written by Nils Maier in 2014. */
-/* Modified to work with UltraDefrag by genBTC in 2017*/
+/* 2017 modified by genBTC*/
+/* Modified to work with UltraDefrag */
 #include "prec.h"
 
 void __cdecl progress(winx_file_info *f, uint64_t *count)
@@ -357,6 +358,42 @@ std::wstring stopgap_enumerate_gaps(char driveLetter)
     verboseOutput << "There are "  << op.fe->fragmented() << " fragmented files" << std::endl;
     verboseOutput << "Initial gap count: "  << op.ge->count() << std::endl;
     
+    return verboseOutput.str();
+}
+
+
+std::wstring stopgap_findfiles_at_LCN(char driveLetter, ULONGLONG LCN, ULONGLONG length_range)
+{
+    std::wstringstream verboseOutput;
+    Operation op;
+    op.opts.volume = driveLetter;
+    op.vol.init(op.opts.volume);
+    op.opts.maxSize = static_cast<size_t>(op.opts.maxSize * 1024 / op.vol.info.bytes_per_cluster);
+    //These commands are what do the work:
+    op.ge.reset(new zen::GapEnumeration(op.opts.volume));
+    uint64_t count = 0;
+    op.fe.reset(new zen::FileEnumeration(op.opts.volume, (ftw_progress_callback)progress,
+        &count));
+    if (count == 0) return nullptr;
+    ////Verbose File Listing:
+    //if (op.opts.verbose) {
+    //    for (auto i = op.fe->unmovable().begin(), e = op.fe->unmovable().end(); i != e; ++i) {
+    //        verboseOutput << ((*i)->path + 4) << std::endl;
+    //    }
+    //}
+    //Single File Result - Exact Match
+    auto winx_file_result = op.fe->findAt(LCN);
+    if (winx_file_result)
+        verboseOutput << "Found a match: " << winx_file_result->path << " at the exact LCN #" << LCN << ".\n" << std::endl;
+    //Multiple Files Results - Within range
+    auto winx_filevectors = op.fe->findAll(LCN,length_range);
+    if (winx_filevectors.size() < 1)
+        return verboseOutput.str();
+    verboseOutput << "Found file(s) around at LCN location (within a range of +/- one GUI cell): \n" << std::endl;
+    for each (std::wstring file in winx_filevectors)
+        verboseOutput << file << std::endl;
+    if (winx_filevectors.size() > 1)
+        verboseOutput << "Total Files Found: " << winx_filevectors.size() << "\n" << std::endl;
     return verboseOutput.str();
 }
 

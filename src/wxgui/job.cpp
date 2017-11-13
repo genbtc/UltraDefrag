@@ -530,7 +530,7 @@ void MainFrame::OnDiskProcessingFailure(wxCommandEvent& event)
     wxString msg = caption + wxT("\n") \
         + wxString::Format(wxT("%hs"),
         udefrag_get_error_description(error));
-
+    //TODO: This caused an error. Figure out what all the conversions here do.
     Utils::ShowError(wxT("%ls"),ws(msg));
 }
 

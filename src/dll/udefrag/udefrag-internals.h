@@ -102,7 +102,6 @@ void dbg_print_footer(udefrag_job_parameters *jp);
 
 int check_region(udefrag_job_parameters *jp,ULONGLONG lcn,ULONGLONG length);
 
-//NTSTATUS udefrag_fopen(winx_file_info *f,HANDLE *phFile);
 int is_file_locked(winx_file_info *f,udefrag_job_parameters *jp);
 int is_mft(winx_file_info *f, fs_type_enum fs_type);    //genBTC
 

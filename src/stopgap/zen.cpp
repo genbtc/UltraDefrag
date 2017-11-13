@@ -24,23 +24,13 @@ namespace
 
 namespace zen
 {
-    winx::winx()
-    {
-        winx_init_library();
-    }
-
-    winx::~winx()
-    {
-        winx_unload_library();
-    }
-
     const winx_volume_region* GapEnumeration::best(uint64_t clusters, const winx_volume_region *notnot, bool behindOnly) const
     {
         if (sizes_.empty()) {
             return nullptr;
         }
         // Find a matching region.
-        auto range = sizes_.equal_range(clusters);
+        const auto range = sizes_.equal_range(clusters);
         for (auto i = range.first; i != range.second; ++i) {
             if (behindOnly && notnot && i->second->lcn <= notnot->lcn) {
                 continue;
@@ -97,7 +87,7 @@ namespace zen
             scan();
             return;
         }
-        auto range = sizes_.equal_range(g->second->length);
+        const auto range = sizes_.equal_range(g->second->length);
         for (auto i = range.first; i != range.second; ++i) {
             if (i->second != g->second) {
                 continue;
@@ -136,11 +126,12 @@ namespace zen
             if (!b->length) {
                 continue;
             }
-            auto prev = std::prev(regions_.lower_bound(b->lcn));
-            auto next = regions_.find(b->lcn + b->length);
-            bool mergePrev = prev != regions_.end() &&
+            //FixMaybe: Changed these to const but there may be reason why not.
+            const auto prev = std::prev(regions_.lower_bound(b->lcn));
+            const auto next = regions_.find(b->lcn + b->length);
+            const bool mergePrev = prev != regions_.end() &&
                 prev->second->lcn + prev->second->length == b->lcn;
-            bool mergeNext = next != regions_.end();
+            const bool mergeNext = next != regions_.end();
 
             // Try to merge with existing region(s).
             if (mergePrev && mergeNext) {
@@ -167,7 +158,7 @@ namespace zen
             }
 
             if (mergePrev) {
-                auto range = sizes_.equal_range(prev->second->length);
+                const auto range = sizes_.equal_range(prev->second->length);
                 for (auto i = range.first; i != range.second; ++i) {
                     if (i->second != prev->second) {
                         continue;
@@ -180,7 +171,7 @@ namespace zen
                 continue;
             }
             if (mergeNext) {
-                auto range = sizes_.equal_range(next->second->length);
+                const auto range = sizes_.equal_range(next->second->length);
                 for (auto i = range.first; i != range.second; ++i) {
                     if (i->second != next->second) {
                         continue;
@@ -204,7 +195,7 @@ namespace zen
             }
 
             // Insert a new region.
-            auto item = prev != regions_.end() ? prev->second : std::prev(
+            const auto item = prev != regions_.end() ? prev->second : std::prev(
                 regions_.end())->second;
             auto nr = (winx_volume_region *)winx_list_insert((list_entry **)(
                 void *)&info_, (list_entry *)item, sizeof(winx_volume_region));
@@ -271,16 +262,40 @@ namespace zen
                 std::for_each(
                     bm.begin(),
                     bm.end(),
-                    [&](const winx_blockmap & block) {
+                    [&](const winx_blockmap &block) {
                     lcns_.insert(std::make_pair(block.lcn, bi->second));
                 });
             }
         }
-        auto m = lcns_.find(lcn);
+        const auto m = lcns_.find(lcn);
         if (m == lcns_.end()) {
             return nullptr;
         }
         return m->second;
+    }
+
+    std::vector<std::wstring> FileEnumeration::findAll(uint64_t queryLCN, uint64_t len)
+    {
+        lcns_.clear();
+        for (auto bi = buckets_.begin(), be = buckets_.end(); bi != be; ++bi) {
+            auto bm = zen::List<winx_blockmap>(bi->second->disp.blockmap);
+            std::for_each(
+                bm.begin(),
+                bm.end(),
+                [&](const winx_blockmap &block) {
+                if (block.lcn <= queryLCN &&
+                    block.lcn <= queryLCN + len && 
+                    block.lcn + block.length >= queryLCN)
+                lcns_.insert(std::make_pair(block.lcn, bi->second));
+            });
+        }
+        std::vector<std::wstring> filelist;
+        for (auto li = lcns_.begin(), le = lcns_.end(); li != le; ++li)
+        {
+            filelist.push_back(li->second->path);
+        }
+        lcns_.clear();
+        return filelist;
     }
 
     void FileEnumeration::pop(const winx_file_info *f)
@@ -290,11 +305,11 @@ namespace zen
             std::for_each(
                 bm.begin(),
                 bm.end(),
-                [&](const winx_blockmap & i) {
+                [&](const winx_blockmap &i) {
                 lcns_.erase(i.lcn);
             });
         }
-        auto range = buckets_.equal_range(f->disp.clusters);
+        const auto range = buckets_.equal_range(f->disp.clusters);
         for (auto i = range.first; i != range.second; ++i) {
             if (i->second == f) {
                 buckets_.erase(i);
@@ -311,7 +326,7 @@ namespace zen
             std::for_each(
                 bm.begin(),
                 bm.end(),
-                [this, f](const winx_blockmap & i) {
+                [this, f](const winx_blockmap &i) {
                 lcns_.insert(std::make_pair(i.lcn, f));
             });
         }
@@ -324,17 +339,14 @@ namespace zen
     {
         files_t rvs;
 
-        auto filter = [&](const winx_file_info * f) -> bool {
-            if (f->disp.blockmap->lcn <= lcn) {
-                return true;
-            }
-            return false;
+        auto filter = [&](const winx_file_info *f) -> bool {
+            return (f->disp.blockmap->lcn <= lcn);
         };
 
         // Find perfect item
         {
             winx_file_info *perfect = nullptr;
-            auto range = buckets_.equal_range(length);
+            const auto range = buckets_.equal_range(length);
             for (auto i = range.first; i != range.second; ++i) {
                 if (filter(i->second)) {
                     continue;
@@ -352,7 +364,7 @@ namespace zen
         // Build candidate list
         files_t cands;
         {
-            auto filter2 = [&](winx_file_info * f) -> bool {
+            const auto filter2 = [&](winx_file_info * f) -> bool {
                 if (filter(f)) {
                     return true;
                 }
@@ -378,11 +390,11 @@ namespace zen
                 if (filter2(i->second)) {
                     continue;
                 }
-                auto k = known_.count(i->first);
+                const auto k = known_.count(i->first);
                 if ((i->first < 4 && k < 1) || k < 4) {
                     known_.insert(*i);
                 }
-                auto range = known_.equal_range(i->first);
+                const auto range = known_.equal_range(i->first);
                 for (auto ri = range.first; ri != range.second; ++ri) {
                     if (ri->second->disp.blockmap->lcn >= i->second->disp.blockmap->lcn) {
                         continue;
@@ -427,8 +439,6 @@ namespace zen
 
         const uint64_t nlength = length;
 
-
-        //typedef boost::dynamic_bitset<uint64_t> bitset;
         typedef std::vector<uint64_t> vectorbitset;
         struct sol_t {
             uint64_t value;
@@ -454,8 +464,8 @@ namespace zen
         solutions_t solutions(extends);
 
         for (uint64_t i = 1; i <= ncands; i++) {
-            auto cand = cands[i - 1];
-            auto candw = cand->disp.clusters;
+            const auto cand = cands[i - 1];
+            const auto candw = cand->disp.clusters;
             for (uint64_t w = 1; w <= nlength; w++) {
                 if (candw <= w) {
                     auto candsol = solutions[i - 1][w - candw];

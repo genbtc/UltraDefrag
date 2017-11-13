@@ -95,8 +95,6 @@
 #include <functional>
 #include <sstream>
 #include <cstdio>
-//ZEN
-//#include "../zen/zen.hpp"
 //UDEFRAG/ZenWinx
 #include "../dll/udefrag/udefrag-internals.h"
 
@@ -143,6 +141,4 @@ HRESULT WINAPI URLDownloadToCacheFileW(
 #endif
 
 
-//Guicon.cpp
-void RedirectIOToConsole();
 #endif /* _UDEFRAG_GUI_PREC_H_ */

@@ -48,4 +48,5 @@ void stopgap_defrag(char driveLetter);
 //Guicon.cpp
 void RedirectIOToConsole();
 size_t stopgap_count_gaps(char driveLetter);
+std::wstring stopgap_findfiles_at_LCN(char driveLetter, ULONGLONG LCN, ULONGLONG length);
 #endif // _STOPGAP_HPP
