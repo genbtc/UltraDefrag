@@ -1,181 +1,47 @@
 # configurations
+cmake_minimum_required(VERSION 3.8)
+set( PACKAGE_NAME "udefrag" )
+project(${PACKAGE_NAME})
+set( PACKAGE_STRING "${PACKAGE_NAME} 7.0.3" )
+set( PACKAGE_TARNAME "${PACKAGE_NAME}" )
+set( PACKAGE_VERSION "7.0.3" )
+
+include_directories( )
+
+add_definitions(
+	-D_NO_CRT_STDIO_INLINE
+	-DBUILD_DLL
+	-DUSE_WINSDK
+	-D_CRT_SECURE_NO_WARNINGS
+	-D_CONSOLE
+	-DUDEFRAG_EXPORTS
+)
 if(Debug)
-	include_directories(
-	)
-
-	add_definitions(
-		-D_NO_CRT_STDIO_INLINE
-		-DBUILD_DLL
-		-DUSE_WINSDK
-		-D_CRT_SECURE_NO_WARNINGS
-		-DATTACH_DEBUGGER
-		-D_CONSOLE
-		-DUDEFRAG_EXPORTS
-	)
-
-	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
-	set(ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
-
-	add_library(udefrag
-		analyze.c
-		auxiliary.c
-		defrag.c
-		entry.c
-		int64.c
-		map.c
-		move.c
-		optimize.c
-		options.c
-		query.c
-		reports.c
-		search.c
-		udefrag.c
-		volume.c
-	)
-
-	link_directories(
-		
-	)
-
-	target_link_libraries(udefrag
-		ntdll
-		$(NOINHERIT)
-	)
-
+    add_definitions(-DATTACH_DEBUGGER)
 endif()
 
-if(Debug)
-	include_directories(
-	)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+set(ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
-	add_definitions(
-		-D_NO_CRT_STDIO_INLINE
-		-DBUILD_DLL
-		-DUSE_WINSDK
-		-D_CRT_SECURE_NO_WARNINGS
-		-DATTACH_DEBUGGER
-		-D_CONSOLE
-		-DUDEFRAG_EXPORTS
-	)
+add_library(${PACKAGE_NAME}
+	analyze.c
+	auxiliary.c
+	defrag.c
+	entry.c
+	int64.c
+	map.c
+	move.c
+	optimize.c
+	options.c
+	query.c
+	reports.c
+	search.c
+	udefrag.c
+	volume.c
+)
 
-	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
-	set(ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+link_directories( )
 
-	add_library(udefrag
-		analyze.c
-		auxiliary.c
-		defrag.c
-		entry.c
-		int64.c
-		map.c
-		move.c
-		optimize.c
-		options.c
-		query.c
-		reports.c
-		search.c
-		udefrag.c
-		volume.c
-	)
-
-	link_directories(
-		
-	)
-
-	target_link_libraries(udefrag
-		ntdll
-		$(NOINHERIT)
-	)
-
-endif()
-
-if(Release)
-	include_directories(
-	)
-
-	add_definitions(
-		-D_NO_CRT_STDIO_INLINE
-		-DBUILD_DLL
-		-DUSE_WINSDK
-		-D_CRT_SECURE_NO_WARNINGS
-		-DOFFICIAL_RELEASE
-		-D_CONSOLE
-		-DUDEFRAG_EXPORTS
-	)
-
-	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
-	set(ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
-
-	add_library(udefrag
-		analyze.c
-		auxiliary.c
-		defrag.c
-		entry.c
-		int64.c
-		map.c
-		move.c
-		optimize.c
-		options.c
-		query.c
-		reports.c
-		search.c
-		udefrag.c
-		volume.c
-	)
-
-	link_directories(
-		
-	)
-
-	target_link_libraries(udefrag
-		ntdll
-		$(NOINHERIT)
-	)
-
-endif()
-
-if(Release)
-	include_directories(
-	)
-
-	add_definitions(
-		-D_NO_CRT_STDIO_INLINE
-		-DBUILD_DLL
-		-DUSE_WINSDK
-		-D_CRT_SECURE_NO_WARNINGS
-		-DOFFICIAL_RELEASE
-		-D_CONSOLE
-		-DUDEFRAG_EXPORTS
-	)
-
-	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
-	set(ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
-
-	add_library(udefrag
-		analyze.c
-		auxiliary.c
-		defrag.c
-		entry.c
-		int64.c
-		map.c
-		move.c
-		optimize.c
-		options.c
-		query.c
-		reports.c
-		search.c
-		udefrag.c
-		volume.c
-	)
-
-	link_directories(
-		
-	)
-
-	target_link_libraries(udefrag
-		ntdll
-		$(NOINHERIT)
-	)
-
-endif()
-
+target_link_libraries(${PACKAGE_NAME}
+	ntdll
+)

@@ -360,3 +360,4 @@ vc141.idb
 .vs*
 /src/.vs*
 /src/wxgui/gui.ini
+/src/.vs/*

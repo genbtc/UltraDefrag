@@ -76,6 +76,7 @@
     <ResourceCompile Include="zenwinx.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="CMakeLists.txt" />
     <None Include="zenwinx.def" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

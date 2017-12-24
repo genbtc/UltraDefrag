@@ -27,6 +27,7 @@
 #if defined(__cplusplus)
 extern "C" {
 #endif
+#include "udefrag-internals.h"
 
 int udefrag_init_library(void);
 void udefrag_unload_library(void);

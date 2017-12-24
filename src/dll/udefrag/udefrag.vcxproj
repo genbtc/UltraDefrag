@@ -339,6 +339,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="CMakeLists.txt" />
     <None Include="udefrag.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -246,6 +246,9 @@
       <Project>{f8b3905f-aa13-48e4-8dfc-854f0f21013b}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="CMakeLists.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.targets" Condition="Exists('..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.targets')" />

@@ -224,6 +224,7 @@
     <ResourceCompile Include="stopgap.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="CMakeLists.txt" />
     <None Include="harddisk.ico" />
     <None Include="Readme.md">
       <FileType>Document</FileType>
