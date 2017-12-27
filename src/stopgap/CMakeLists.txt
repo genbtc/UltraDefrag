@@ -45,7 +45,7 @@ message("${Boost_LIBRARIES}")
 #C++14 features:
 target_compile_features(${PACKAGE_NAME} INTERFACE cxx_std_14)
 #Compile it.
-target_link_libraries(${PACKAGE_NAME} PRIVATE
+target_link_libraries(${PACKAGE_NAME} INTERFACE
 	kernel32
 	user32
 	ntdll
@@ -55,6 +55,5 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE
 	msvcrtd
 	msvcprtd
     Boost::boost
-    Boost::dynamic_linking
     ${Boost_LIBRARIES}
 )

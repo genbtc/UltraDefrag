@@ -27,7 +27,7 @@ if (Debug)
     )
 endif()
 #WXWidgets is required.
-find_package(wxWidgets REQUIRED net gl core base)
+find_package(wxWidgets REQUIRED base core adv)
 if(wxWidgets_FOUND)
     include(${wxWidgets_USE_FILE})  #wx/setup.h?
 endif()
@@ -92,4 +92,4 @@ add_executable(${PACKAGE_NAME} WIN32
 #C++11 features:
 target_compile_features(${PACKAGE_NAME} INTERFACE cxx_std_11)
 #Link Libraries
-target_link_libraries(${PACKAGE_NAME} ${wxWidgets_LIBRARIES} udefrag zenwinx lua5.1a stopgap)
+target_link_libraries(${PACKAGE_NAME} ${wxWidgets_LIBRARIES} udefrag zenwinx lua5.1a stopgap ${Boost_LIBRARIES})
