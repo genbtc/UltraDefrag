@@ -24,8 +24,6 @@
 #define _UDEFRAG_CONSOLE_PREC_H_
 
 #define wxUSE_GUI 0
-#define wxUSE_DBGHELP 0
-
 #include <wx/setup.h>
 #include <wx/wx.h>
 #include <wx/cmdline.h>
