@@ -36,6 +36,7 @@
 #include <ctype.h>
 #include <commctrl.h>
 
+#include "../dll/zenwinx/ntndk.h"
 #include "../dll/zenwinx/zenwinx.h"
 
 #define error(msg) { \
