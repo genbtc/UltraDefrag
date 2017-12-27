@@ -34,15 +34,18 @@ add_library(${PACKAGE_NAME}
 )
 
 #Include Boost, (mandatory)
+set(Boost_USE_STATIC_LIBS ON)
 set(BOOST_ROOT "A:/boostlib165")
 set(BOOST_INCLUDEDIR "${BOOST_ROOT}/include")
-set(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib64-msvc-14.1")
-find_package(Boost 1.65 REQUIRED)
+set(Boost_LIBRARY_DIR "${BOOST_ROOT}/lib64-msvc-14.1")
+find_package(Boost 1.65 REQUIRED program_options regex)
 include_directories(${Boost_INCLUDE_DIRS}) 
 link_directories(${Boost_LIBRARY_DIRS})
+message("${Boost_LIBRARIES}")
 #C++14 features:
 target_compile_features(${PACKAGE_NAME} INTERFACE cxx_std_14)
-target_link_libraries(${PACKAGE_NAME} PUBLIC
+#Compile it.
+target_link_libraries(${PACKAGE_NAME} PRIVATE
 	kernel32
 	user32
 	ntdll
