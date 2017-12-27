@@ -54,30 +54,35 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
     <Import Project="..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsBuildProperties.props" Condition="Exists('..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsBuildProperties.props')" />
-    <Import Project="..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.props" Condition="Exists('..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.props')" />
   </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetName>UltraDefrag</TargetName>
     <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
     <GenerateManifest>false</GenerateManifest>
-    <SourcePath>$(VC_SourcePath);$(WindowsSdk_71A_IncludePath);$(WXWIDGETS)\include;$(SourcePath)</SourcePath>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;$(WXWIDGETS)\include\msvc;$(WXWIDGETS)\include</IncludePath>
+    <LibraryPath>A:\WxWidgets\lib\vcWindows7.1SDK_x64_dll;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>UltraDefrag</TargetName>
     <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
     <GenerateManifest>false</GenerateManifest>
-    <SourcePath>$(VC_SourcePath);$(WindowsSdk_71A_IncludePath);$(WXWIDGETS)\include;$(SourcePath)</SourcePath>
+    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;$(WXWIDGETS)\include\msvc;$(WXWIDGETS)\include</IncludePath>
+    <LibraryPath>A:\WxWidgets\lib\vcWindows7.1SDK_x64_dll;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>UltraDefrag</TargetName>
     <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
     <GenerateManifest>false</GenerateManifest>
+    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;$(WXWIDGETS)\include\msvc;$(WXWIDGETS)\include</IncludePath>
+    <LibraryPath>A:\WxWidgets\lib\vcWindows7.1SDK_x64_dll;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>UltraDefrag</TargetName>
     <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
     <GenerateManifest>false</GenerateManifest>
+    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;$(WXWIDGETS)\include\msvc;$(WXWIDGETS)\include</IncludePath>
+    <LibraryPath>A:\WxWidgets\lib\vcWindows7.1SDK_x64_dll;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -92,6 +97,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <StringPooling>true</StringPooling>
+      <PreprocessorDefinitions>WXWIDGETS_AUTO_NUGET_PKG;_CRTDBG_MAP_ALLOC;_WINDOWS;__WXMSW__;WIN32;__WXDEBUG__;WXUSINGDLL;_UNICODE;UNICODE;wxMSVC_VERSION=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -121,6 +127,7 @@
       <DiagnosticsFormat>Column</DiagnosticsFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <StringPooling>true</StringPooling>
+      <PreprocessorDefinitions>WIN64;WXWIDGETS_AUTO_NUGET_PKG;_CRTDBG_MAP_ALLOC;_WINDOWS;__WXMSW__;WIN32;__WXDEBUG__;WXUSINGDLL;_UNICODE;UNICODE;wxMSVC_VERSION=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -146,7 +153,7 @@
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
-      <PreprocessorDefinitions>OFFICIAL_RELEASE;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WXWIDGETS_AUTO_NUGET_PKG;_CRTDBG_MAP_ALLOC;_WINDOWS;__WXMSW__;WIN32;__WXDEBUG__;WXUSINGDLL;_UNICODE;UNICODE;wxMSVC_VERSION=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <StringPooling>true</StringPooling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -174,7 +181,7 @@
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
-      <PreprocessorDefinitions>OFFICIAL_RELEASE;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN64;WXWIDGETS_AUTO_NUGET_PKG;_CRTDBG_MAP_ALLOC;_WINDOWS;__WXMSW__;WIN32;__WXDEBUG__;WXUSINGDLL;_UNICODE;UNICODE;wxMSVC_VERSION=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <StringPooling>true</StringPooling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -250,7 +257,5 @@
     <None Include="CMakeLists.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.targets" Condition="Exists('..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.targets')" />
-  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets" />
 </Project>
