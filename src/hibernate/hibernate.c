@@ -28,6 +28,7 @@
 #include <ctype.h>
 #include <powrprof.h>
 
+#include "../dll/zenwinx/ntndk.h"
 #include "../dll/zenwinx/zenwinx.h"
 
 static void show_help(void)

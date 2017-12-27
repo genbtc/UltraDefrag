@@ -6,15 +6,17 @@
 #define MAXIMUM_GAP_SIZE_DEFAULT 102400 //in KB:
 
 struct Options {
-    size_t maxSize{MAXIMUM_GAP_SIZE_DEFAULT};
-    int verbose{true};
-    char volume{'A'};
-    bool aggressive{false};
-    bool gaps{false};
-    bool defrag{false};
-    bool widen{false};
+    size_t maxSize;
+    int verbose;
+    char volume;
+    bool aggressive;
+    bool gaps;
+    bool defrag;
+    bool widen;
 
-    Options() {}
+    Options(){
+        Reset();
+    }
     void parseCmdLine(int argc, wchar_t **argv);
     void Reset() {
         this->aggressive = false;

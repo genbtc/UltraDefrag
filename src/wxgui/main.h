@@ -440,7 +440,7 @@ public:
 
 class ListSortInfo{
 public:
-        ListSortInfo() 
+    ListSortInfo() : ListCtrl(NULL)
 	{
 		SortAscending = false;
 		Column = 1; //pre-sorted by Fragments.
@@ -448,7 +448,7 @@ public:
 
 	bool SortAscending;
     int Column;
-    class FilesList *ListCtrl{NULL};
+    class FilesList *ListCtrl;
 };
 struct FilesListItem{
     wxString col0,col1,col2,col3,col4,col5;
