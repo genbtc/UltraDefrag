@@ -22,6 +22,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "defrag_native", "native\def
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bootexctrl", "bootexctrl\bootexctrl.vcxproj", "{9023D164-D167-4575-8CFC-774E5BE70DA1}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "console", "console\console.vcxproj", "{7D5AB24B-4937-4903-9DF3-7933787364AC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -86,6 +88,14 @@ Global
 		{9023D164-D167-4575-8CFC-774E5BE70DA1}.Release|Win32.Build.0 = Release|Win32
 		{9023D164-D167-4575-8CFC-774E5BE70DA1}.Release|x64.ActiveCfg = Release|x64
 		{9023D164-D167-4575-8CFC-774E5BE70DA1}.Release|x64.Build.0 = Release|x64
+		{7D5AB24B-4937-4903-9DF3-7933787364AC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7D5AB24B-4937-4903-9DF3-7933787364AC}.Debug|Win32.Build.0 = Debug|Win32
+		{7D5AB24B-4937-4903-9DF3-7933787364AC}.Debug|x64.ActiveCfg = Debug|x64
+		{7D5AB24B-4937-4903-9DF3-7933787364AC}.Debug|x64.Build.0 = Debug|x64
+		{7D5AB24B-4937-4903-9DF3-7933787364AC}.Release|Win32.ActiveCfg = Release|Win32
+		{7D5AB24B-4937-4903-9DF3-7933787364AC}.Release|Win32.Build.0 = Release|Win32
+		{7D5AB24B-4937-4903-9DF3-7933787364AC}.Release|x64.ActiveCfg = Release|x64
+		{7D5AB24B-4937-4903-9DF3-7933787364AC}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

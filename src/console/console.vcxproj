@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.props" Condition="Exists('packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -20,7 +21,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{708F7D4C-EEBA-4449-B496-85341AAFD275}</ProjectGuid>
+    <ProjectGuid>{7D5AB24B-4937-4903-9DF3-7933787364AC}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -29,25 +30,25 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>Windows7.1SDK</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>Windows7.1SDK</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>Windows7.1SDK</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>Windows7.1SDK</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -75,86 +76,82 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;..\native;..\dll\\udefrag;..\dll\\zenwinx;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;USE_WINSDK;_CRT_SECURE_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;USE_WINSDK;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <TreatWChar_tAsBuiltInType />
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Native</SubSystem>
-      <AdditionalDependencies>ntdll.lib;</AdditionalDependencies>
-      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
-      <EntryPointSymbol>NtProcessStartup</EntryPointSymbol>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;..\native;..\dll\\udefrag;..\dll\\zenwinx;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;USE_WINSDK;_CRT_SECURE_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <PreprocessorDefinitions>WIN32;USE_WINSDK;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <TreatWChar_tAsBuiltInType />
-      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Native</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ntdll.lib;</AdditionalDependencies>
-      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
-      <EntryPointSymbol>NtProcessStartup</EntryPointSymbol>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <PreprocessorDefinitions>WIN32;USE_WINSDK;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-    </ClCompile>
     <Link>
-      <SubSystem>Native</SubSystem>
-      <AdditionalDependencies>ntdll.lib;</AdditionalDependencies>
-      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
-      <EntryPointSymbol>NtProcessStartup</EntryPointSymbol>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <ClCompile>
+      <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <PreprocessorDefinitions>WIN32;USE_WINSDK;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-    </ClCompile>
     <Link>
-      <SubSystem>Native</SubSystem>
-      <AdditionalDependencies>ntdll.lib;</AdditionalDependencies>
-      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
-      <EntryPointSymbol>NtProcessStartup</EntryPointSymbol>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <ClCompile>
+      <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="commands.c" />
-    <ClCompile Include="defrag_native.c" />
-    <ClCompile Include="script.c" />
-    <ClCompile Include="udefrag.c" />
+    <ClCompile Include="crash.cpp" />
+    <ClCompile Include="help.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="map.cpp" />
+    <ClCompile Include="options.cpp" />
+    <ClCompile Include="prec.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">prec.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">prec.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">prec.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">prec.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="defrag_native.h" />
+    <ClInclude Include="main.h" />
+    <ClInclude Include="prec.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="defrag_native.rc" />
+    <ResourceCompile Include="console.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\dll\udefrag\udefrag.vcxproj">
@@ -163,8 +160,19 @@
     <ProjectReference Include="..\dll\zenwinx\zenwinx.vcxproj">
       <Project>{601c4f2c-3f3b-4b28-ae2c-920908b65e3a}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\lua5.1\lua5.1.vcxproj">
+      <Project>{acbd919a-5791-4ac1-afd5-bf7e45bb705b}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.targets" Condition="Exists('packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.props'))" />
+    <Error Condition="!Exists('packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.targets'))" />
+  </Target>
 </Project>

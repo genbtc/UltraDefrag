@@ -162,12 +162,12 @@ void __cdecl AbortHandler(int signal)
  */
 LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS* ExceptionInfo)
 {
-    DWORD exception_code = ExceptionInfo-> \
+    DWORD local_exception_code = ExceptionInfo-> \
         ExceptionRecord->ExceptionCode;
     void *exception_address = ExceptionInfo-> \
         ExceptionRecord->ExceptionAddress;
 
-    switch(exception_code){
+    switch (local_exception_code) {
     case EXCEPTION_ACCESS_VIOLATION:
     case STATUS_HEAP_CORRUPTION:
     case STATUS_FATAL_APP_EXIT:
@@ -179,16 +179,16 @@ LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS* ExceptionInfo)
     case EXCEPTION_FLT_DIVIDE_BY_ZERO:
     case EXCEPTION_INT_DIVIDE_BY_ZERO:
         // handle the most interesting cases
-        if(sd){
+        if (sd) {
             // send crash report
             sd->version = SHARED_DATA_VERSION;
-            sd->exception_code = exception_code;
+            sd->ud_exception_code = local_exception_code;
             sd->exception_address = exception_address;
-            wcscpy(sd->tracking_id,TEST_TRACKING_ID);
+            wcscpy(sd->tracking_id, TEST_TRACKING_ID);
             sd->ready = true;
 
             // terminate process safely
-            TerminateProcess(GetCurrentProcess(),3);
+            TerminateProcess(GetCurrentProcess(), 3);
         }
         break;
     default:
