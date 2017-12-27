@@ -17,7 +17,7 @@ $(LIBPATH):
 $(OBJPATH):
 	@if not exist $(OBJPATH) mkdir $(OBJPATH)
 
-CFLAGS = /nologo /W3 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "USE_WINSDK" /D "_CRT_SECURE_NO_WARNINGS" /GS- /Gd /Od /MT /D "_CONSOLE"
+CFLAGS = /nologo /W3 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "USE_WINSDK" /D "_CRT_SECURE_NO_WARNINGS" /D "ATTACH_DEBUGGER" /GS- /Gd /Od /MT /D "_CONSOLE"
 RCFLAGS = /nologo /l 0x409 /d "NDEBUG"
 LDFLAGS = /nologo /incremental:no /machine:AMD64 /subsystem:console
 

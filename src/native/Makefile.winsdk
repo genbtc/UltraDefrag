@@ -17,7 +17,7 @@ $(LIBPATH):
 $(OBJPATH):
 	@if not exist $(OBJPATH) mkdir $(OBJPATH)
 
-CFLAGS = /nologo /W3 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "USE_WINSDK" /D "_CRT_SECURE_NO_WARNINGS" /GS- /Gd /Od /MT
+CFLAGS = /nologo /W3 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "USE_WINSDK" /D "_CRT_SECURE_NO_WARNINGS" /D "ATTACH_DEBUGGER" /GS- /Gd /Od /MT
 RCFLAGS = /nologo /l 0x409 /d "NDEBUG"
 LDFLAGS = /nologo /incremental:no /nodefaultlib /machine:AMD64 /subsystem:native /entry:"NtProcessStartup"
 
@@ -38,7 +38,8 @@ $(UD_ROOT)\native\*.h \
 $(UD_ROOT)\dll\udefrag\*.h \
 $(UD_ROOT)\dll\zenwinx\*.h 
 
-resource_files: 
+resource_files: \
+C:\UDefrag\ultradefrag-src\src\native\x64\Debug\defrag_native.exe.intermediate.manifest 
 
 $(OBJPATH)\commands-amd64.obj: commands.c header_files
 	@$(CC) $(CFLAGS) $(C_INCLUDE_DIRS) /Fo$(OBJPATH)\commands-amd64.obj /c commands.c
