@@ -20,6 +20,10 @@
 #ifndef _UDEFRAG_INTERNALS_H_
 #define _UDEFRAG_INTERNALS_H_
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #include "../zenwinx/ntndk.h"
 #include "../zenwinx/zenwinx.h"
 
@@ -29,8 +33,25 @@
 #include "udefrag.h"
 #include "../../include/version.h"
 
+
+//auxiliary.c
+double calc_percentage(ULONGLONG x, ULONGLONG y);
+
+//Callbacks. (for udefrag_start_job)
+typedef void(*udefrag_progress_callback)(udefrag_progress_info *pi, void *p);
+typedef int(*udefrag_terminator)(void *p);
+//Callbacks (For udefrag_start_query)
 typedef void(*udefrag_query_progress_callback)(udefrag_query_parameters *qp, void *p);
-typedef int (*udefrag_termination_router)(void /*udefrag_job_parameters*/ *p);
+typedef int(*udefrag_termination_router)(void *p);
+
+//Query.c
+void gui_fileslist_finished(void);
+void gui_query_finished(void);
+
+// Helps extern/export defs, dont remove:
+#if defined(__cplusplus)
+}
+#endif
 
 /**
 * \brief aka "jp->". Job Parameters = A whole littany of objects. Kitchen Sink. Passed back and forth All-The-Time. Holds State too.
@@ -135,14 +156,13 @@ int movefile_to_start_or_end(udefrag_job_parameters *jp,int start_or_end);
 void deliver_progress_info(udefrag_job_parameters *jp,int completion_status);
 
 /*Begin Query.C definitions */
+#if defined(__cplusplus)
+extern "C" {
+#endif
 //void otherCleanupFunction(udefrag_job_parameters* jp);
 int query_get_VCNlist(udefrag_job_parameters *jp);
 int query_get_freeRegions(udefrag_job_parameters *jp);
 
-// Helps extern/export defs, dont remove:
-#if defined(__cplusplus)
-extern "C" {
-#endif
 int move_file(winx_file_info *f,
     ULONGLONG vcn,
     ULONGLONG length,

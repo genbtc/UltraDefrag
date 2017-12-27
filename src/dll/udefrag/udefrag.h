@@ -24,10 +24,11 @@
 #ifndef _UDEFRAG_H_
 #define _UDEFRAG_H_
 
+#include "udefrag-internals.h"
+
 #if defined(__cplusplus)
 extern "C" {
 #endif
-#include "udefrag-internals.h"
 
 int udefrag_init_library(void);
 void udefrag_unload_library(void);
@@ -37,7 +38,8 @@ void udefrag_release_vollist(volume_info *v);
 int udefrag_validate_volume(char volume_letter,int skip_removable);
 int udefrag_get_volume_information(char volume_letter,volume_info *v);
 
-//callbacks. (for udefrag_start_job)
+//TODO: Duplicated:
+    //callbacks. (for udefrag_start_job)
 typedef void  (*udefrag_progress_callback)(udefrag_progress_info *pi, void *p);
 typedef int   (*udefrag_terminator)(void *p);
 
@@ -52,13 +54,6 @@ char *udefrag_get_error_description(int error_code);
 int udefrag_set_log_file_path(void);
 
 int convert_path_to_native(wchar_t *path, wchar_t **native_path);
-
-//auxiliary.c
-double calc_percentage(ULONGLONG x,ULONGLONG y);
-
-//Query.c
-void gui_fileslist_finished(void);
-void gui_query_finished(void);
 
 // Helps extern/export defs, dont remove:
 #if defined(__cplusplus)
