@@ -3,11 +3,6 @@
 #internal dependencies: udefrag.dll, zenwinx.dll, stopgap.dll, and lua5.1
 #created by genBTC - December 23, 2017
 cmake_minimum_required(VERSION 3.8)
-#Include Dependencies (each is a sub-project):
-add_subdirectory(../dll/zenwinx ${CMAKE_BINARY_DIR}/zenwinx EXCLUDE_FROM_ALL)
-add_subdirectory(../dll/udefrag ${CMAKE_BINARY_DIR}/udefrag EXCLUDE_FROM_ALL)
-add_subdirectory(../lua5.1 ${CMAKE_BINARY_DIR}/lua5.1a EXCLUDE_FROM_ALL)
-add_subdirectory(../stopgap ${CMAKE_BINARY_DIR}/stopgap EXCLUDE_FROM_ALL)
 
 #Declare the WXGUI project.
 set( PACKAGE_NAME "wxgui" )
@@ -39,7 +34,7 @@ endif()
 
 #if using Microsoft VS2017 Cmake
 if(MSVC)
-    #fixes the wxUSE_WEBVIEW has no backend error
+    #Required. fixes the wxUSE_WEBVIEW has no backend error
     add_definitions(
         -D__WXMSW__
     )

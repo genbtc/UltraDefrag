@@ -6,7 +6,7 @@ set( PACKAGE_STRING "${PACKAGE_NAME} 7.0.3" )
 set( PACKAGE_TARNAME "${PACKAGE_NAME}" )
 set( PACKAGE_VERSION "7.0.3" )
 
-include_directories( )
+#include_directories( )
 
 add_definitions(
 	-D_CRT_SECURE_NO_WARNINGS
@@ -54,7 +54,7 @@ add_library(${PACKAGE_NAME}
 	zenwinx.c
 )
 
-link_directories( )
+#link_directories( )
 
 target_link_libraries(${PACKAGE_NAME}
 	ntdll

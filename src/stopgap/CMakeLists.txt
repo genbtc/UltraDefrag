@@ -40,11 +40,9 @@ set(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib64-msvc-14.1")
 find_package(Boost 1.65 REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS}) 
 link_directories(${Boost_LIBRARY_DIRS})
-# Turn on C++ 14 flag.
-set(CMAKE_CXX_STANDARD 14)
 #C++14 features:
 target_compile_features(${PACKAGE_NAME} INTERFACE cxx_std_14)
-target_link_libraries(${PACKAGE_NAME}
+target_link_libraries(${PACKAGE_NAME} PUBLIC
 	kernel32
 	user32
 	ntdll
@@ -53,5 +51,7 @@ target_link_libraries(${PACKAGE_NAME}
 	advapi32
 	msvcrtd
 	msvcprtd
+    Boost::boost
+    Boost::dynamic_linking
     ${Boost_LIBRARIES}
 )

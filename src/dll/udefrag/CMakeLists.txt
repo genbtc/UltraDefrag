@@ -6,14 +6,16 @@ set( PACKAGE_STRING "${PACKAGE_NAME} 7.0.3" )
 set( PACKAGE_TARNAME "${PACKAGE_NAME}" )
 set( PACKAGE_VERSION "7.0.3" )
 
-include_directories( )
+#include_directories( )
 
 add_definitions(
-	-D_NO_CRT_STDIO_INLINE
-	-DBUILD_DLL
-	-DUSE_WINSDK
-	-D_CRT_SECURE_NO_WARNINGS
 	-D_CONSOLE
+    -DUNICODE
+    -D_UNICODE
+	-D_NO_CRT_STDIO_INLINE
+    -D_CRT_SECURE_NO_WARNINGS
+	-DBUILD_DLL
+	-DUSE_WINSDK	
 	-DUDEFRAG_EXPORTS
 )
 if(Debug)
@@ -40,7 +42,7 @@ add_library(${PACKAGE_NAME}
 	volume.c
 )
 
-link_directories( )
+#link_directories( )
 
 target_link_libraries(${PACKAGE_NAME}
 	ntdll
