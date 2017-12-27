@@ -177,11 +177,12 @@ exit /B 1
     rem set environment
     if %WindowsSDKVersionOverride%x neq v7.1x goto NoWin7SDK
     if x%CommandPromptType% neq xCross goto NoWin7SDK
-    set PATH=%PATH%;%VS100COMNTOOLS%\..\..\VC\Bin
+    set path=%PATH%;%VS100COMNTOOLS%\..\..\VC\Bin
 
     :NoWin7SDK
     set WXWIDGETS_INC_PATH=%WXWIDGETSDIR%\include
     set WX_CONFIG=%BUILD_ENV%-%1
+    ::set WX_CONFIG=
     if %BUILD_ENV% equ winsdk if %1 equ X86 (
         set WXWIDGETS_LIB_PATH=%WXWIDGETSDIR%\lib\vc_lib%WX_CONFIG%
     )
@@ -223,20 +224,12 @@ exit /B 1
     :: revert manifests to their default state
     if %1 neq X86 call make-manifests.cmd X86
 
-    set WX_CONFIG=
-    set WXWIDGETS_INC_PATH=
-    set WXWIDGETS_INC2_PATH=
-    set WXWIDGETS_LIB_PATH=
     exit /B 0
 
     :fail
     :: revert manifests to their default state
     if %1 neq X86 call make-manifests.cmd X86
 
-    set WX_CONFIG=
-    set WXWIDGETS_INC_PATH=
-    set WXWIDGETS_INC2_PATH=
-    set WXWIDGETS_LIB_PATH=
     exit /B 1
     
 exit /B 0
