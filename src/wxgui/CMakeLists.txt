@@ -40,22 +40,6 @@ if(MSVC)
     )
 endif()
 
-################# Flags ################
-# Defines Flags for Windows and Linux. # 
-########################################
-#(copied from somewhere, edit as you please)
-#if(MSVC)
-#   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /W3 /MD /Zi /EHsc")
-#   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /W3 /GL /Gy")
-#endif(MSVC)
-#if(NOT MSVC)
-#   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-#   if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-#       set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-#   endif()
-#endif(NOT MSVC)
-
-#This is being wrongly propagated to everything for some reason
 add_definitions(
 	-DOFFICIAL_RELEASE
     -DUNICODE
@@ -72,6 +56,7 @@ add_executable(${PACKAGE_NAME} WIN32
 	i18n.cpp
 	job.cpp
 	LCN.cpp
+    LegendTransientPopup.cpp
 	log.cpp
 	main.cpp
 	map.cpp
@@ -79,8 +64,7 @@ add_executable(${PACKAGE_NAME} WIN32
 	prec.cpp
 	query.cpp
 	report.cpp
-	shutdown.cpp
-	LegendTransientPopup.cpp
+	shutdown.cpp	
 	statbar.cpp
 	taskbar.cpp
 	toolbar.cpp
@@ -88,8 +72,11 @@ add_executable(${PACKAGE_NAME} WIN32
 	upgrade.cpp
 	utils.cpp
 	vollist.cpp
+    wxgui.rc
 )
+#Disable the default manifest because we provide our own in wxgui.rc resource file above^
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
 #C++11 features:
 target_compile_features(${PACKAGE_NAME} INTERFACE cxx_std_11)
-#Link Libraries
+#Link Libraries, Make the EXE
 target_link_libraries(${PACKAGE_NAME} ${wxWidgets_LIBRARIES} udefrag zenwinx lua5.1a stopgap ${Boost_LIBRARIES})

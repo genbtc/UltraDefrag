@@ -10,7 +10,6 @@ set( PACKAGE_VERSION "7.0.3" )
 
 add_definitions(
 	-D_CRT_SECURE_NO_WARNINGS
-    -D_NO_CRT_STDIO_INLINE
     -D_CRT_NON_CONFORMING_SWPRINTFS
 	-DBUILD_DLL
 	-DUSE_WINSDK		
@@ -60,6 +59,6 @@ target_link_libraries(${PACKAGE_NAME}
 	ntdll
     #Somethings like These are needed for _snprintf and vswprintf that kinda thing,
     #(or Win7SDK msvcrt100 or ucrtd from new win10.)
-    msvcrtd
-    msvcprtd
+    #msvcrtd
+    #msvcprtd
 )
