@@ -29,3 +29,13 @@ if "%RELEASE_STAGE%" neq "" (
 ) else (
     set UDVERSION_SUFFIX=%ULTRADFGVER%
 )
+
+:: Temporary to quickbuild
+set WXWIDGETS=A:\wxWidgets
+set WXWIDGETSDIR=A:\WxWidgets
+set WXWIN=A:\wxWidgets
+set WX_CONFIG=winsdk-amd64
+set WX_GCC_CPPFLAGS=-g0 -Wno-deprecated -m64
+set WXWIDGETS_INC2_PATH=A:\WxWidgets\lib\vc_x64_%WX_CONFIG%\mswu
+set WXWIDGETS_INC_PATH=A:\WxWidgets\include
+set WXWIDGETS_LIB_PATH=A:\WxWidgets\lib\vc_x64_%WX_CONFIG%

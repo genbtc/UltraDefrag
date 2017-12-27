@@ -177,7 +177,7 @@ exit /B 1
     rem set environment
     if %WindowsSDKVersionOverride%x neq v7.1x goto NoWin7SDK
     if x%CommandPromptType% neq xCross goto NoWin7SDK
-    set path=%PATH%;%VS100COMNTOOLS%\..\..\VC\Bin
+    set PATH=%PATH%;%VS100COMNTOOLS%\..\..\VC\Bin
 
     :NoWin7SDK
     set WXWIDGETS_INC_PATH=%WXWIDGETSDIR%\include

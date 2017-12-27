@@ -24,11 +24,17 @@
 #define _UDEFRAG_CONSOLE_PREC_H_
 
 #define wxUSE_GUI 0
+#define wxUSE_DBGHELP 0
+
+#include <wx/setup.h>
 #include <wx/wx.h>
 #include <wx/cmdline.h>
 #include <wx/dynlib.h>
 #include <wx/filename.h>
 #include <wx/thread.h>
+#include <wx/string.h>
+#include <wx/unichar.h>
+#include <wx/debug.h>
 
 #define _WIN32_WINNT 0x0501
 #include <windows.h>
