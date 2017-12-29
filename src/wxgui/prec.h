@@ -22,7 +22,7 @@
 
 #ifndef _UDEFRAG_GUI_PREC_H_
 #define _UDEFRAG_GUI_PREC_H_
-#include <wx/setup.h>
+#include "wx/setup.h"
 #include <wx/wx.h>
 #include <wx/artprov.h>
 #include <wx/clipbrd.h>//genBTC (right-click menu) copy to clipboard

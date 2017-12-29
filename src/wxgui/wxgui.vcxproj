@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.props" Condition="Exists('..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -101,7 +102,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <StringPooling>true</StringPooling>
-      <PreprocessorDefinitions>_CRTDBG_MAP_ALLOC;_WINDOWS;__WXMSW__;WIN32;__WXDEBUG__;WXUSINGDLL;_UNICODE;UNICODE;wxCFG=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;WINDOWS;wxUSE_STATTEXT=1;wxUSE_GUI=1;wxUSE_POPUPWIN=1;wxUSE_GLCANVAS=0;_CRT_SECURE_NO_WARNINGS;_CONSOLE;wxMSVC_VERSION=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;%(PreprocessorDefinitions);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;wxCFG=$(PlatformToolsetVersion);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -131,7 +132,7 @@
       <DiagnosticsFormat>Column</DiagnosticsFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <StringPooling>true</StringPooling>
-      <PreprocessorDefinitions>_CRTDBG_MAP_ALLOC;_WINDOWS;__WXMSW__;WIN32;__WXDEBUG__;WXUSINGDLL;_UNICODE;UNICODE;wxCFG=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;WINDOWS;wxUSE_STATTEXT=1;wxUSE_GUI=1;wxUSE_POPUPWIN=1;wxUSE_GLCANVAS=0;_CRT_SECURE_NO_WARNINGS;WXUSINGDLL;wxMSVC_VERSION=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;%(PreprocessorDefinitions);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;wxCFG=$(PlatformToolsetVersion);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -162,7 +163,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRTDBG_MAP_ALLOC;_WINDOWS;__WXMSW__;WIN32;__WXDEBUG__;WXUSINGDLL;_UNICODE;UNICODE;wxCFG=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;WINDOWS;wxUSE_STATTEXT=1;wxUSE_GUI=1;wxUSE_POPUPWIN=1;wxUSE_GLCANVAS=0;_CRT_SECURE_NO_WARNINGS;_CONSOLE;wxMSVC_VERSION=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;%(PreprocessorDefinitions);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;wxCFG=$(PlatformToolsetVersion);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -190,7 +191,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRTDBG_MAP_ALLOC;_WINDOWS;__WXMSW__;WIN32;__WXDEBUG__;WXUSINGDLL;_UNICODE;UNICODE;wxCFG=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;WINDOWS;wxUSE_STATTEXT=1;wxUSE_GUI=1;wxUSE_POPUPWIN=1;wxUSE_GLCANVAS=0;_CRT_SECURE_NO_WARNINGS;_CONSOLE;wxMSVC_VERSION=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;%(PreprocessorDefinitions);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;wxCFG=$(PlatformToolsetVersion);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -259,7 +260,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="CMakeLists.txt" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.targets" Condition="Exists('..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.props'))" />
+    <Error Condition="!Exists('..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\wxWidgetsTemplate.2.5.3\build\wxWidgetsTemplate.targets'))" />
+  </Target>
 </Project>
