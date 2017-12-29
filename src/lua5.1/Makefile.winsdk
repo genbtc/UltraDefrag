@@ -38,7 +38,9 @@ $(UD_ROOT)\lua5.1\*.h
 
 resource_files: \
 C:\UDefrag\ultradefrag-src\src\lua5.1\Debug\lua5.1a.dll.intermediate.manifest \
-C:\UDefrag\ultradefrag-src\src\lua5.1\x64\Debug\lua5.1a.dll.intermediate.manifest 
+C:\UDefrag\ultradefrag-src\src\lua5.1\Release\lua5.1a.dll.intermediate.manifest \
+C:\UDefrag\ultradefrag-src\src\lua5.1\x64\Debug\lua5.1a.dll.intermediate.manifest \
+C:\UDefrag\ultradefrag-src\src\lua5.1\x64\Release\lua5.1a.dll.intermediate.manifest 
 
 $(OBJPATH)\lapi-amd64.obj: lapi.c header_files
 	@$(CC) $(CFLAGS) $(C_INCLUDE_DIRS) /Fo$(OBJPATH)\lapi-amd64.obj /c lapi.c

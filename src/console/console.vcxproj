@@ -71,29 +71,29 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;A:\WxWidgets\include\msvc;A:\WxWidgets\include;</IncludePath>
-    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib;A:\WxWidgets\lib\vcWindows7.1SDK_x64_dll</LibraryPath>
+    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;A:\WxWidgets\lib\vc_x64_libWindows7.1SDK\mswud;A:\WxWidgets\include;</IncludePath>
+    <LibraryPath>$(LibraryPath);$(VSInstallDir);A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK;$(VSInstallDir)lib;A:\WxWidgets\lib\vcWindows7.1SDK_x64_dll</LibraryPath>
     <SourcePath>$(VCInstallDir)atlmfc\src\mfc;$(VCInstallDir)atlmfc\src\mfcm;$(VCInstallDir)atlmfc\src\atl;$(VCInstallDir)crt\src;A:\WxWidgets\include;</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;A:\WxWidgets\include\msvc;A:\WxWidgets\include;</IncludePath>
-    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib;A:\WxWidgets\lib\vcWindows7.1SDK_x64_dll</LibraryPath>
+    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;A:\WxWidgets\lib\vc_x64_libWindows7.1SDK\mswud;A:\WxWidgets\include;</IncludePath>
+    <LibraryPath>$(LibraryPath);$(VSInstallDir);A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK;$(VSInstallDir)lib;A:\WxWidgets\lib\vcWindows7.1SDK_x64_dll</LibraryPath>
     <SourcePath>$(VCInstallDir)atlmfc\src\mfc;$(VCInstallDir)atlmfc\src\mfcm;$(VCInstallDir)atlmfc\src\atl;$(VCInstallDir)crt\src;A:\WxWidgets\include;</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;A:\WxWidgets\include\msvc;A:\WxWidgets\include;</IncludePath>
-    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib\amd64;A:\WxWidgets\lib\vcWindows7.1SDK_x64_dll</LibraryPath>
+    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;A:\WxWidgets\lib\vc_x64_libWindows7.1SDK\mswud;A:\WxWidgets\include;</IncludePath>
+    <LibraryPath>$(LibraryPath);$(VSInstallDir);A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK;$(VSInstallDir)lib\amd64;A:\WxWidgets\lib\vcWindows7.1SDK_x64_dll</LibraryPath>
     <SourcePath>$(VCInstallDir)atlmfc\src\mfc;$(VCInstallDir)atlmfc\src\mfcm;$(VCInstallDir)atlmfc\src\atl;$(VCInstallDir)crt\src;A:\WxWidgets\include;</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;A:\WxWidgets\include\msvc;A:\WxWidgets\include;</IncludePath>
-    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib\amd64;A:\WxWidgets\lib\vcWindows7.1SDK_x64_dll</LibraryPath>
+    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;A:\WxWidgets\lib\vc_x64_libWindows7.1SDK\mswud;A:\WxWidgets\include;</IncludePath>
+    <LibraryPath>$(LibraryPath);$(VSInstallDir);A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK;$(VSInstallDir)lib\amd64;A:\WxWidgets\lib\vcWindows7.1SDK_x64_dll</LibraryPath>
     <SourcePath>$(VCInstallDir)atlmfc\src\mfc;$(VCInstallDir)atlmfc\src\mfcm;$(VCInstallDir)atlmfc\src\atl;$(VCInstallDir)crt\src;A:\WxWidgets\include;</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>WIN32;NDEBUG;ATTACH_DEBUGGER;_CRT_SECURE_NO_WARNINGS;_CONSOLE;wxMSVC_VERSION=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;ATTACH_DEBUGGER;_CRT_SECURE_NO_WARNINGS;_CONSOLE;wxCFG=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;__WXMSW__;WXUSINGDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -110,7 +110,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>WIN32;NDEBUG;ATTACH_DEBUGGER;_CRT_SECURE_NO_WARNINGS;_CONSOLE;wxMSVC_VERSION=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;ATTACH_DEBUGGER;_CRT_SECURE_NO_WARNINGS;_CONSOLE;wxCFG=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;__WXMSW__;WXUSINGDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
@@ -134,7 +134,7 @@
       <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;ATTACH_DEBUGGER;_CRT_SECURE_NO_WARNINGS;_CONSOLE;wxMSVC_VERSION=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;ATTACH_DEBUGGER;_CRT_SECURE_NO_WARNINGS;_CONSOLE;wxCFG=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;__WXMSW__;WXUSINGDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -146,7 +146,7 @@
     <ClCompile>
       <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;ATTACH_DEBUGGER;_CRT_SECURE_NO_WARNINGS;_CONSOLE;wxMSVC_VERSION=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;ATTACH_DEBUGGER;_CRT_SECURE_NO_WARNINGS;_CONSOLE;wxCFG=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;__WXMSW__;WXUSINGDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
   </ItemDefinitionGroup>

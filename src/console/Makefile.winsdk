@@ -41,7 +41,9 @@ $(UD_ROOT)\dll\zenwinx\*.h
 
 resource_files: \
 C:\UDefrag\ultradefrag-src\src\console\console.manifest \
-C:\UDefrag\ultradefrag-src\src\console\res\console_app.ico 
+C:\UDefrag\ultradefrag-src\src\console\res\console_app.ico \
+C:\UDefrag\ultradefrag-src\src\console\x64\Debug\console.exe.intermediate.manifest \
+C:\UDefrag\ultradefrag-src\src\console\x64\Release\console.exe.intermediate.manifest 
 
 prec.pch: prec.h
 	@$(CXX) $(CFLAGS) $(C_INCLUDE_DIRS) /Yc /c prec.cpp /Fo$(OBJPATH)\prec-amd64.obj

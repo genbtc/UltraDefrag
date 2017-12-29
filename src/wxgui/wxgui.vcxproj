@@ -60,29 +60,33 @@
     <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
     <GenerateManifest>false</GenerateManifest>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;$(WXWIDGETS)\include\msvc;$(WXWIDGETS)\include</IncludePath>
-    <LibraryPath>A:\WxWidgets\lib\vcWindows7.1SDK_x64_dll;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK\mswud;$(WXWIDGETS)\include</IncludePath>
+    <SourcePath>$(VCInstallDir)atlmfc\src\mfc;$(VCInstallDir)atlmfc\src\mfcm;$(VCInstallDir)atlmfc\src\atl;$(VCInstallDir)crt\src;A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK\mswud;$(WXWIDGETS)\include;;$(SourcePath)</SourcePath>
+    <LibraryPath>$(LibraryPath);$(VSInstallDir);A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK;$(VSInstallDir)lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>UltraDefrag</TargetName>
     <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;$(WXWIDGETS)\include\msvc;$(WXWIDGETS)\include</IncludePath>
-    <LibraryPath>A:\WxWidgets\lib\vcWindows7.1SDK_x64_dll;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK\mswud;$(WXWIDGETS)\include</IncludePath>
+    <SourcePath>$(VCInstallDir)atlmfc\src\mfc;$(VCInstallDir)atlmfc\src\mfcm;$(VCInstallDir)atlmfc\src\atl;$(VCInstallDir)crt\src;A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK\mswud;$(WXWIDGETS)\include;$(SourcePath);$(SourcePath)</SourcePath>
+    <LibraryPath>$(LibraryPath);$(VSInstallDir);A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK;$(VSInstallDir)lib\amd64</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>UltraDefrag</TargetName>
     <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;$(WXWIDGETS)\include\msvc;$(WXWIDGETS)\include</IncludePath>
-    <LibraryPath>A:\WxWidgets\lib\vcWindows7.1SDK_x64_dll;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK\mswud;$(WXWIDGETS)\include</IncludePath>
+    <SourcePath>$(VCInstallDir)atlmfc\src\mfc;$(VCInstallDir)atlmfc\src\mfcm;$(VCInstallDir)atlmfc\src\atl;$(VCInstallDir)crt\src;A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK\mswud;$(WXWIDGETS)\include;;$(SourcePath)</SourcePath>
+    <LibraryPath>$(LibraryPath);$(VSInstallDir);A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK;$(VSInstallDir)lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>UltraDefrag</TargetName>
     <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;$(WXWIDGETS)\include\msvc;$(WXWIDGETS)\include</IncludePath>
-    <LibraryPath>A:\WxWidgets\lib\vcWindows7.1SDK_x64_dll;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK\mswud;$(WXWIDGETS)\include</IncludePath>
+    <SourcePath>$(VCInstallDir)atlmfc\src\mfc;$(VCInstallDir)atlmfc\src\mfcm;$(VCInstallDir)atlmfc\src\atl;$(VCInstallDir)crt\src;A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK\mswud;$(WXWIDGETS)\include;;$(SourcePath)</SourcePath>
+    <LibraryPath>$(LibraryPath);$(VSInstallDir);A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK;$(VSInstallDir)lib\amd64</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -97,7 +101,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <StringPooling>true</StringPooling>
-      <PreprocessorDefinitions>WXWIDGETS_AUTO_NUGET_PKG;_CRTDBG_MAP_ALLOC;_WINDOWS;__WXMSW__;WIN32;__WXDEBUG__;WXUSINGDLL;_UNICODE;UNICODE;wxMSVC_VERSION=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRTDBG_MAP_ALLOC;_WINDOWS;__WXMSW__;WIN32;__WXDEBUG__;WXUSINGDLL;_UNICODE;UNICODE;wxCFG=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;WINDOWS;wxUSE_STATTEXT=1;wxUSE_GUI=1;wxUSE_POPUPWIN=1;wxUSE_GLCANVAS=0;_CRT_SECURE_NO_WARNINGS;_CONSOLE;wxMSVC_VERSION=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;%(PreprocessorDefinitions);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -127,7 +131,7 @@
       <DiagnosticsFormat>Column</DiagnosticsFormat>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <StringPooling>true</StringPooling>
-      <PreprocessorDefinitions>WIN64;WXWIDGETS_AUTO_NUGET_PKG;_CRTDBG_MAP_ALLOC;_WINDOWS;__WXMSW__;WIN32;__WXDEBUG__;WXUSINGDLL;_UNICODE;UNICODE;wxMSVC_VERSION=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRTDBG_MAP_ALLOC;_WINDOWS;__WXMSW__;WIN32;__WXDEBUG__;WXUSINGDLL;_UNICODE;UNICODE;wxCFG=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;WINDOWS;wxUSE_STATTEXT=1;wxUSE_GUI=1;wxUSE_POPUPWIN=1;wxUSE_GLCANVAS=0;_CRT_SECURE_NO_WARNINGS;WXUSINGDLL;wxMSVC_VERSION=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;%(PreprocessorDefinitions);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -153,12 +157,12 @@
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
-      <PreprocessorDefinitions>WXWIDGETS_AUTO_NUGET_PKG;_CRTDBG_MAP_ALLOC;_WINDOWS;__WXMSW__;WIN32;__WXDEBUG__;WXUSINGDLL;_UNICODE;UNICODE;wxMSVC_VERSION=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <StringPooling>true</StringPooling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>_CRTDBG_MAP_ALLOC;_WINDOWS;__WXMSW__;WIN32;__WXDEBUG__;WXUSINGDLL;_UNICODE;UNICODE;wxCFG=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;WINDOWS;wxUSE_STATTEXT=1;wxUSE_GUI=1;wxUSE_POPUPWIN=1;wxUSE_GLCANVAS=0;_CRT_SECURE_NO_WARNINGS;_CONSOLE;wxMSVC_VERSION=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;%(PreprocessorDefinitions);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -181,12 +185,12 @@
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
-      <PreprocessorDefinitions>WIN64;WXWIDGETS_AUTO_NUGET_PKG;_CRTDBG_MAP_ALLOC;_WINDOWS;__WXMSW__;WIN32;__WXDEBUG__;WXUSINGDLL;_UNICODE;UNICODE;wxMSVC_VERSION=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <StringPooling>true</StringPooling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>_CRTDBG_MAP_ALLOC;_WINDOWS;__WXMSW__;WIN32;__WXDEBUG__;WXUSINGDLL;_UNICODE;UNICODE;wxCFG=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;WINDOWS;wxUSE_STATTEXT=1;wxUSE_GUI=1;wxUSE_POPUPWIN=1;wxUSE_GLCANVAS=0;_CRT_SECURE_NO_WARNINGS;_CONSOLE;wxMSVC_VERSION=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;%(PreprocessorDefinitions);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
