@@ -117,7 +117,7 @@ int winx_time2str(ULONGLONG time,char *buffer,int size)
     s = t % 60;
     
     result = _snprintf(buffer,size - 1,
-        "%uy %ud %uh %um %us",
+        "%luy %lud %luh %lum %lus",
         y,d,h,m,s);
     buffer[size - 1] = 0;
     return result;

@@ -566,11 +566,6 @@ static int list_environment_variables(int argc,wchar_t **argv,wchar_t **envp)
         winx_free(strings[i]);
     winx_free(strings);
     return result;
-
-    for(i = 0; i < n; i++)
-        winx_free(strings[i]);
-    winx_free(strings);
-    return (-1);
 }
 
 /**

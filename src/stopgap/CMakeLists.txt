@@ -1,150 +1,59 @@
-# configurations
-if(Debug)
-	include_directories(
-	)
+# confitgurations CMake for Stopgap - (Dependencies: Boost) 
+# created by genBTC - December 23 2017
+cmake_minimum_required(VERSION 3.8)
+#Package definitions
+set( PACKAGE_NAME "stopgap" )
+project(${PACKAGE_NAME})
+set( PACKAGE_STRING "${PACKAGE_NAME} 7.0.3" )
+set( PACKAGE_TARNAME "${PACKAGE_NAME}" )
+set( PACKAGE_VERSION "7.0.3" )
 
-	add_definitions(
-		-D_CONSOLE
-	)
-
-	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
-	set(ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
-
-	add_library(stopgap
-		guicon.cpp
-		main.cpp
-		op.cpp
-		util.cpp
-		zen.cpp
-	)
-
-	link_directories(
-		
-	)
-
-	target_link_libraries(stopgap
-		kernel32
-		user32
-		ntdll
-		version
-		shlwapi
-		advapi32
-		msvcrtd
-		msvcprtd
-		$(NOINHERIT)
-	)
-
+add_definitions(
+	-D_CONSOLE
+    -DUNICODE
+    -D_UNICODE
+)
+#COMMON TO ALL DEBUG CONFIGS
+if (Debug)
+    add_definitions(
+        -DDEBUG
+        -D_DEBUG
+    )
 endif()
 
-if(Debug)
-	include_directories(
-	)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+set(ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
-	add_definitions(
-		-D_CONSOLE
-	)
+add_library(${PACKAGE_NAME}
+	guicon.cpp
+	main.cpp
+	op.cpp
+	util.cpp
+	zen.cpp
+    prec.cpp
+)
 
-	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
-	set(ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
-
-	add_library(stopgap
-		guicon.cpp
-		main.cpp
-		op.cpp
-		util.cpp
-		zen.cpp
-	)
-
-	link_directories(
-		C:\Software\Boost165\lib64-msvc-12.0
-	)
-
-	target_link_libraries(stopgap
-		kernel32
-		user32
-		ntdll
-		version
-		shlwapi
-		advapi32
-		msvcrtd
-		msvcprtd
-		$(NOINHERIT)
-	)
-
-endif()
-
-if(Release)
-	include_directories(
-	)
-
-	add_definitions(
-		-D_CONSOLE
-	)
-
-	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
-	set(ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
-
-	add_library(stopgap
-		guicon.cpp
-		main.cpp
-		op.cpp
-		util.cpp
-		zen.cpp
-	)
-
-	link_directories(
-		$(NOINHERIT)
-	)
-
-	target_link_libraries(stopgap
-		kernel32
-		user32
-		ntdll
-		version
-		shlwapi
-		advapi32
-		msvcrt
-		msvcprt
-		$(NOINHERIT)
-	)
-
-endif()
-
-if(Release)
-	include_directories(
-	)
-
-	add_definitions(
-		-D_CONSOLE
-	)
-
-	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
-	set(ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
-
-	add_library(stopgap
-		guicon.cpp
-		main.cpp
-		op.cpp
-		util.cpp
-		zen.cpp
-	)
-
-	link_directories(
-		C:\Boost\lib64
-		C:\WinDDK\7600.16385.1\lib\win7\amd64
-	)
-
-	target_link_libraries(stopgap
-		kernel32
-		user32
-		ntdll
-		version
-		shlwapi
-		advapi32
-		msvcrt
-		msvcprt
-		$(NOINHERIT)
-	)
-
-endif()
-
+#Include Boost, (mandatory)
+set(Boost_USE_STATIC_LIBS ON)
+set(BOOST_ROOT "A:/boostlib165")
+set(BOOST_INCLUDEDIR "${BOOST_ROOT}/include")
+set(Boost_LIBRARY_DIR "${BOOST_ROOT}/lib64-msvc-14.1")
+find_package(Boost 1.65 REQUIRED program_options regex)
+include_directories(${Boost_INCLUDE_DIRS}) 
+link_directories(${Boost_LIBRARY_DIRS})
+message("${Boost_LIBRARIES}")
+#C++14 features:
+target_compile_features(${PACKAGE_NAME} INTERFACE cxx_std_14)
+#Compile it.
+target_link_libraries(${PACKAGE_NAME} INTERFACE
+	kernel32
+	user32
+	ntdll
+	version
+	shlwapi
+	advapi32
+	msvcrtd
+	msvcprtd
+    Boost::boost
+    ${Boost_LIBRARIES}
+)

@@ -440,7 +440,7 @@ public:
 
 class ListSortInfo{
 public:
-        ListSortInfo(): ListCtrl(NULL)
+    ListSortInfo() : ListCtrl(NULL)
 	{
 		SortAscending = false;
 		Column = 1; //pre-sorted by Fragments.

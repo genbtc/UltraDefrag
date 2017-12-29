@@ -29,6 +29,7 @@
 
 #include "../include/dbg.h"
 #include "../include/version.h"
+#include "../dll/zenwinx/ntndk.h"
 #include "../dll/zenwinx/zenwinx.h"
 #include "../dll/udefrag/udefrag.h"
 

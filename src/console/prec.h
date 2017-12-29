@@ -22,15 +22,22 @@
 
 #ifndef _UDEFRAG_CONSOLE_PREC_H_
 #define _UDEFRAG_CONSOLE_PREC_H_
-
+#define _WIN32_WINNT 0x0501
+#undef wxUSE_GUI
+#define wxUSE_GUI 0
+#include <wx/setup.h>
+#undef wxUSE_GUI
 #define wxUSE_GUI 0
 #include <wx/wx.h>
 #include <wx/cmdline.h>
 #include <wx/dynlib.h>
 #include <wx/filename.h>
 #include <wx/thread.h>
-
-#define _WIN32_WINNT 0x0501
+#include <wx/string.h>
+#include <wx/unichar.h>
+#include <wx/debug.h>
+#include <wx/log.h>
+#include <wx/thread.h>  //Not included by wx/wxprec.h
 #include <windows.h>
 #include <conio.h>
 

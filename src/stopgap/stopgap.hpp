@@ -14,29 +14,25 @@ struct Options {
     bool defrag;
     bool widen;
 
-    Options()
-        : maxSize(MAXIMUM_GAP_SIZE_DEFAULT), verbose(true), volume('\0'), aggressive(false), gaps(true),
-        defrag(false), widen(false) {
+    Options(){
+        Reset();
     }
-
     void parseCmdLine(int argc, wchar_t **argv);
-
-    void Reset()
-    {
+    void Reset() {
         this->aggressive = false;
         this->defrag = false;
         this->gaps = false;
         this->maxSize = MAXIMUM_GAP_SIZE_DEFAULT;
         this->verbose = true;
         this->volume = 'A';
-        this->widen = true;
+        this->widen = false;
     }
 };
-extern "C" {
-    #include "../dll/zenwinx/ntndk.h"
-    #include "../dll/zenwinx/zenwinx.h"
-}
 
+extern "C" {
+#include "../dll/zenwinx/ntndk.h"
+#include "../dll/zenwinx/zenwinx.h"
+}
 
 void stopgap_init_run();
 void stopgap_move_file(Options opts, winx_file_info *f, const winx_volume_region *g);
@@ -49,4 +45,5 @@ void stopgap_defrag(char driveLetter);
 void RedirectIOToConsole();
 size_t stopgap_count_gaps(char driveLetter);
 std::wstring stopgap_findfiles_at_LCN(char driveLetter, ULONGLONG LCN, ULONGLONG length);
+
 #endif // _STOPGAP_HPP
