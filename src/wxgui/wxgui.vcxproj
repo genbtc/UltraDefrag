@@ -61,33 +61,21 @@
     <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
     <GenerateManifest>false</GenerateManifest>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK\mswud;$(WXWIDGETS)\include</IncludePath>
-    <SourcePath>$(VCInstallDir)atlmfc\src\mfc;$(VCInstallDir)atlmfc\src\mfcm;$(VCInstallDir)atlmfc\src\atl;$(VCInstallDir)crt\src;A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK\mswud;$(WXWIDGETS)\include;;$(SourcePath)</SourcePath>
-    <LibraryPath>$(LibraryPath);$(VSInstallDir);A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK;$(VSInstallDir)lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>UltraDefrag</TargetName>
     <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK\mswud;$(WXWIDGETS)\include</IncludePath>
-    <SourcePath>$(VCInstallDir)atlmfc\src\mfc;$(VCInstallDir)atlmfc\src\mfcm;$(VCInstallDir)atlmfc\src\atl;$(VCInstallDir)crt\src;A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK\mswud;$(WXWIDGETS)\include;$(SourcePath);$(SourcePath)</SourcePath>
-    <LibraryPath>$(LibraryPath);$(VSInstallDir);A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK;$(VSInstallDir)lib\amd64</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>UltraDefrag</TargetName>
     <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK\mswud;$(WXWIDGETS)\include</IncludePath>
-    <SourcePath>$(VCInstallDir)atlmfc\src\mfc;$(VCInstallDir)atlmfc\src\mfcm;$(VCInstallDir)atlmfc\src\atl;$(VCInstallDir)crt\src;A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK\mswud;$(WXWIDGETS)\include;;$(SourcePath)</SourcePath>
-    <LibraryPath>$(LibraryPath);$(VSInstallDir);A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK;$(VSInstallDir)lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>UltraDefrag</TargetName>
     <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK\mswud;$(WXWIDGETS)\include</IncludePath>
-    <SourcePath>$(VCInstallDir)atlmfc\src\mfc;$(VCInstallDir)atlmfc\src\mfcm;$(VCInstallDir)atlmfc\src\atl;$(VCInstallDir)crt\src;A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK\mswud;$(WXWIDGETS)\include;;$(SourcePath)</SourcePath>
-    <LibraryPath>$(LibraryPath);$(VSInstallDir);A:\WxWidgets\lib\vc_x64_dllWindows7.1SDK;$(VSInstallDir)lib\amd64</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
