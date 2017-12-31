@@ -579,7 +579,7 @@ public:
     ClusterMap *m_ClusterMap;
 private:
     static char *ScaleMap(int scaled_size);
-    void GetGridSizeforCMap(cmapreturn* gridsize) const;    
+    void GetGridSizeforCMap(cmapreturn& gs) const;    
     int m_width;
     int m_height;
     HDC m_cacheDC;

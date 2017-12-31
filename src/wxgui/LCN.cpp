@@ -68,6 +68,7 @@ void MainFrame::GetSpecificLCNRange(wxCommandEvent& event)
     //Found \??\A:\VM\Windows 10 x64\Windows 10 x64-000001-s004.vmdk at the LCN in question.
     g_mainFrame->m_WxTextCtrl2->Clear();
     g_mainFrame->m_WxTextCtrl2->AppendText(resultName);
+    //Re-Initialize the ZenWinX lib, (because everytime Stopgap Runs, it unloads it)
     if (winx_init_library() < 0)
         return;
 }

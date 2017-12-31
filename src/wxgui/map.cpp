@@ -239,7 +239,7 @@ void ClusterMap::OnPaint(wxPaintEvent& WXUNUSED(event))
 {
     JobsCacheEntry *currentJob;
     
-    cmapreturn *gs = new cmapreturn();
+    cmapreturn gs;
     GetGridSizeforCMap(gs);
 
     // fill map by the free color
@@ -247,26 +247,26 @@ void ClusterMap::OnPaint(wxPaintEvent& WXUNUSED(event))
     char free_g = (char)g_mainFrame->CheckOption(wxT("UD_FREE_COLOR_G"));
     char free_b = (char)g_mainFrame->CheckOption(wxT("UD_FREE_COLOR_B"));
     HBRUSH brush = ::CreateSolidBrush(RGB(free_r,free_g,free_b));
-    RECT rc; rc.left = rc.top = 0; rc.right = gs->width; rc.bottom = gs->height;
+    RECT rc; rc.left = rc.top = 0; rc.right = gs.width; rc.bottom = gs.height;
     ::FillRect(m_cacheDC,&rc,brush); ::DeleteObject(brush);
-    if(!gs->blocks_per_line || !gs->lines) goto draw;
+    if(!gs.blocks_per_line || !gs.lines) goto draw;
 
     // draw grid lines.
-    if(gs->line_width){
+    if(gs.line_width){
         char grid_r = (char)g_mainFrame->CheckOption(wxT("UD_GRID_COLOR_R"));
         char grid_g = (char)g_mainFrame->CheckOption(wxT("UD_GRID_COLOR_G"));
         char grid_b = (char)g_mainFrame->CheckOption(wxT("UD_GRID_COLOR_B"));
         brush = ::CreateSolidBrush(RGB(grid_r,grid_g,grid_b));
-        for(int i = 0; i < gs->blocks_per_line + 1; i++){
-            RECT rc; rc.left = gs->cell_size * i; rc.top = 0;
-            rc.right = rc.left + gs->line_width;
-            rc.bottom = gs->cell_size * gs->lines + gs->line_width;
+        for(int i = 0; i < gs.blocks_per_line + 1; i++){
+            RECT rc; rc.left = gs.cell_size * i; rc.top = 0;
+            rc.right = rc.left + gs.line_width;
+            rc.bottom = gs.cell_size * gs.lines + gs.line_width;
             ::FillRect(m_cacheDC,&rc,brush);
         }
-        for(int i = 0; i < gs->lines + 1; i++){
-            RECT rc; rc.left = 0; rc.top = gs->cell_size * i;
-            rc.right = gs->cell_size * gs->blocks_per_line + gs->line_width;
-            rc.bottom = rc.top + gs->line_width;
+        for(int i = 0; i < gs.lines + 1; i++){
+            RECT rc; rc.left = 0; rc.top = gs.cell_size * i;
+            rc.right = gs.cell_size * gs.blocks_per_line + gs.line_width;
+            rc.bottom = rc.top + gs.line_width;
             ::FillRect(m_cacheDC,&rc,brush);
         }
         //Delete the brush:
@@ -277,19 +277,19 @@ void ClusterMap::OnPaint(wxPaintEvent& WXUNUSED(event))
     currentJob = g_mainFrame->m_currentJob;
     if(currentJob){
         if(currentJob->pi.cluster_map_size){
-            int scaled_size = gs->blocks_per_line * gs->lines;
+            int scaled_size = gs.blocks_per_line * gs.lines;
             char *scaledMap = ScaleMap(scaled_size);
 
             // draw either normal or scaled map
             char *map = scaledMap ? scaledMap : currentJob->clusterMap;
-            for(int i = 0; i < gs->lines; i++){
-                for(int j = 0; j < gs->blocks_per_line; j++){
+            for(int i = 0; i < gs.lines; i++){
+                for(int j = 0; j < gs.blocks_per_line; j++){
                     RECT rc;
-                    rc.top = gs->cell_size * i + gs->line_width;
-                    rc.left = gs->cell_size * j + gs->line_width;
-                    rc.right = rc.left + gs->block_size;
-                    rc.bottom = rc.top + gs->block_size;
-                    int index = (int)map[i * gs->blocks_per_line + j];
+                    rc.top = gs.cell_size * i + gs.line_width;
+                    rc.left = gs.cell_size * j + gs.line_width;
+                    rc.right = rc.left + gs.block_size;
+                    rc.bottom = rc.top + gs.block_size;
+                    int index = (int)map[i * gs.blocks_per_line + j];
                     if(index != FREE_SPACE){
                         ::FillRect(m_cacheDC,&rc,m_brushes[index]);
                     }
@@ -304,9 +304,8 @@ draw:
     // draw map on the screen
     PAINTSTRUCT ps;
     HDC hdc = ::BeginPaint((HWND)GetHandle(),&ps);
-    ::BitBlt(hdc,0,0, gs->width, gs->height,m_cacheDC,0,0,SRCCOPY);
+    ::BitBlt(hdc,0,0, gs.width, gs.height,m_cacheDC,0,0,SRCCOPY);
     ::EndPaint((HWND)GetHandle(),&ps);
-    delete gs;
 }
 
 
@@ -326,15 +325,15 @@ int MainFrame::GetMapSize() {
 
 // =======================================================================
 // duplicated the above by accident. didnt see it (was in Job.cpp)
-void ClusterMap::GetGridSizeforCMap(cmapreturn *gs) const
+void ClusterMap::GetGridSizeforCMap(cmapreturn &gs) const
 {
-    GetClientSize(&gs->width, &gs->height);
-    gs->block_size = g_mainFrame->CheckOption(wxT("UD_MAP_BLOCK_SIZE"));
-    gs->line_width = g_mainFrame->CheckOption(wxT("UD_GRID_LINE_WIDTH"));
+    GetClientSize(&gs.width, &gs.height);
+    gs.block_size = g_mainFrame->CheckOption(wxT("UD_MAP_BLOCK_SIZE"));
+    gs.line_width = g_mainFrame->CheckOption(wxT("UD_GRID_LINE_WIDTH"));
 
-    gs->cell_size = gs->block_size + gs->line_width;
-    gs->blocks_per_line = gs->cell_size ? (gs->width - gs->line_width) / gs->cell_size : 0;
-    gs->lines = gs->cell_size ? (gs->height - gs->line_width) / gs->cell_size : 0;
+    gs.cell_size = gs.block_size + gs.line_width;
+    gs.blocks_per_line = gs.cell_size ? (gs.width - gs.line_width) / gs.cell_size : 0;
+    gs.lines = gs.cell_size ? (gs.height - gs.line_width) / gs.cell_size : 0;
 }
 
 void ClusterMap::ClusterMapGetLCN(wxMouseEvent& WXUNUSED(event))
@@ -348,44 +347,41 @@ void ClusterMap::ClusterMapGetLCN(wxMouseEvent& WXUNUSED(event))
     auto ActualLCN = getLCNsfromMousePos(relPos);
     if (ActualLCN)
         dtrace("Actual LCN was %I64u", ActualLCN);
+    //Do something:
 }
 
 ULONGLONG ClusterMap::getLCNsfromMousePos(const wxPoint& pos) const
 {
-    cmapreturn *gs = new cmapreturn();
+    cmapreturn gs;
     GetGridSizeforCMap(gs);
 
     //get current cell in full cell integers.
-    const int currentRow = ceil(pos.y / (double)gs->cell_size);
-    const int currentCol = ceil(pos.x / (double)gs->cell_size);
+    const int currentRow = ceil(pos.y / (double)gs.cell_size);
+    const int currentCol = ceil(pos.x / (double)gs.cell_size);
     //infer the X/Y matrix into a single cell.
-    const int rowsused = gs->blocks_per_line * (currentRow-1);
+    const int rowsused = gs.blocks_per_line * (currentRow-1);
     int ActualCell = rowsused + currentCol;
-    dtrace("Actual cell was %i", ActualCell);
-    LONGLONG total_space;
-    int bpc;    
-    ULONGLONG clusters;
-    int cmapCells;
-    double LCNperCell;
+    //If you click on the outer border(like 1 pixel), it may be negative. 
+    if (ActualCell < 0)
+        ActualCell = 0;
+    dtrace("Clicked GUI cell was %i", ActualCell);
     //TODO: We Cant do any of this if Map has not been generated by analysis yet...
     JobsCacheEntry *currentJob;
     currentJob = g_mainFrame->m_currentJob;
     if (currentJob) {
-        total_space = g_mainFrame->m_volinfocache.total_space.QuadPart; //120038031360
-        bpc = g_mainFrame->m_volinfocache.bytes_per_cluster;    //4096
-        clusters = total_space / bpc;                   //29306160
-        cmapCells = currentJob->pi.cluster_map_size;    //14508
+        LONGLONG total_space = g_mainFrame->m_volinfocache.total_space.QuadPart; //120038031360
+        int bpc = g_mainFrame->m_volinfocache.bytes_per_cluster;    //4096
+        ULONGLONG clusters = total_space / bpc;                   //29306160
+        int cmapCells = currentJob->pi.cluster_map_size;    //14508
         if (cmapCells) {
-            LCNperCell = (double)clusters / cmapCells;  //2020
-            int scaled_size = gs->blocks_per_line * gs->lines;
+            double LCNperCell = (double)clusters / cmapCells;  //2020
+            int scaled_size = gs.blocks_per_line * gs.lines;
             
             //These should be equal. Make sure nothing weird happens while I debug this.
             assert(scaled_size == cmapCells);
-            delete gs;
             return (LCNperCell * ActualCell);
         }
     }
-    delete gs;
     return 0;
 }
 
