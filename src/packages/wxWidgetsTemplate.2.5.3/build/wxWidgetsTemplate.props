@@ -9,10 +9,10 @@
     <!--Each appear to be re-evaluated during build: in VS2010 are re-evaluated on condition-param change, in VS2012 are re-evaluated at a time before they are used in the build.-->
     <wxWidgets Condition="'$(WXWIN)'!='' And $(wxWidgets)==''">$(WXWIN)</wxWidgets>
     <LIBTYPE_SUFFIX Condition="'$(LIBTYPE_SUFFIX)'==''">dll</LIBTYPE_SUFFIX>
-    <wxMSVC_VERSION Condition="'$(wxMSVC_VERSION)'==''"/>
+    <wxMSVC_VERSION Condition="'$(wxMSVC_VERSION)'==''">$(PlatformToolsetVersion)</wxMSVC_VERSION>
     <BuildwxWidgets Condition="'$(BuildwxWidgets)'==''">false</BuildwxWidgets>
     <wxTOOLKIT_PREFIX Condition="'$(wxTOOLKIT_PREFIX)'==''">msw</wxTOOLKIT_PREFIX>
-    <PrintMSBuildVars Condition="'$(PrintMSBuildVars)'==''">false</PrintMSBuildVars>
+    <PrintMSBuildVars Condition="'$(PrintMSBuildVars)'==''">true</PrintMSBuildVars>
     <COMPILER_PREFIX>vc</COMPILER_PREFIX>
     <ARCH_SUFFIX Condition="'$(Platform)'=='x64'">_x64</ARCH_SUFFIX>
     <ARCH_SUFFIX Condition="'$(Platform)'=='Itanium'">_ia64</ARCH_SUFFIX>
@@ -34,11 +34,6 @@
       <PreprocessorDefinitions Condition="'$(Platform)'=='Win32'">WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(wxTOOLKIT_PREFIX)'=='mswuniv'">__WXUNIVERSAL__;wxTOOLKIT_PREFIX=mswuniv;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(wxMSVC_VERSION)'!=''">wxMSVC_VERSION=$(wxMSVC_VERSION);%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(PrecompiledHeaderFile)'==''">wx/wxprec.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>$(ProjectDir)$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(wxWidgets)\lib\$(COMPILER_PREFIX)$(wxMSVC_VERSION)$(ARCH_SUFFIX)_$(LIBTYPE_SUFFIX);%(Link.AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
