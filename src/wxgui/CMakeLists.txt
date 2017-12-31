@@ -17,13 +17,16 @@ set( PACKAGE_VERSION "7.0.3" )
 #Set your $WXWIDGETS env variable or just set the dir here:
 #set(WXWIDGETS "A:/wxWidgets")
 set(wxWidgets_ROOT_DIR ${WXWIDGETS})
+message("${wxWidgets_ROOT_DIR}")
 #TODO: Replace this forceed hack if/when FindwxWidgets.cmake Line 501 
 #       is changed from if(MSVC_VERSION EQUAL 1910) to GREATER_EQUAL
 #So it can find the toolset as 141 (otherwise it detects as 1912 in VC2017 Preview6)
 if(MSVC_VERSION GREATER_EQUAL 1910)
     set(MSVC_VERSION 1910)
+elseif(MSVC_VERSION EQUAL 1600)
+    set(wxWidgets_LIB_DIR "${wxWidgets_ROOT_DIR}/lib/vcWindows7.1SDK_x64_dll")
+    message("${wxWidgets_LIB_DIR}")
 endif()
-message(${wxWidgets_ROOT_DIR})
 set(wxWidgets_USE_UNICODE 1)    #use U always
 set(BUILD_SHARED_LIBS 1)    #use dlls 
 #COMMON TO ALL DEBUG CONFIGS
