@@ -61,30 +61,25 @@
     <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
     <GenerateManifest>false</GenerateManifest>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;$(wxWidgets)\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>UltraDefrag</TargetName>
     <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;$(wxWidgets)\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>UltraDefrag</TargetName>
     <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;$(wxWidgets)\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>UltraDefrag</TargetName>
     <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;$(wxWidgets)\include</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <ShowIncludes>false</ShowIncludes>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <UseFullPaths>true</UseFullPaths>
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
@@ -114,7 +109,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <ShowIncludes>false</ShowIncludes>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <UseFullPaths>true</UseFullPaths>
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
@@ -141,7 +135,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <CompileAs>Default</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
@@ -168,7 +161,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <CompileAs>Default</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>

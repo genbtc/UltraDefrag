@@ -22,60 +22,66 @@
 
 #ifndef _UDEFRAG_GUI_PREC_H_
 #define _UDEFRAG_GUI_PREC_H_
-#include "wx/setup.h"
-#include <wx/wx.h>
-#include <wx/artprov.h>
-#include <wx/clipbrd.h>//genBTC (right-click menu) copy to clipboard
-#include <wx/cmdline.h>
-#include <wx/colordlg.h>
-#include <wx/confbase.h>
-#include <wx/dataview.h>//genbtc LCN Tab 4
-#include <wx/datetime.h>
-#include <wx/dcbuffer.h>
-#include <wx/dcgraph.h>
-#include <wx/dir.h>
-#include <wx/display.h>
-#include <wx/dynlib.h>
-#include <wx/encconv.h> //genbtc for encodings
-#include <wx/event.h>
-#include <wx/fileconf.h>
-#include <wx/filename.h>
-#include <wx/filepicker.h>//genBTC query tab 3
-#include <wx/fontdlg.h>//genBTC (font-chooser)
-#include <wx/gbsizer.h>
-#include <wx/gdicmn.h>
-#include <wx/graphics.h>
-#include <wx/grid.h>//genbtc
-#include <wx/hashmap.h>
-#include <wx/hyperlink.h>
-#include <wx/image.h>
-#include <wx/intl.h>
-#include <wx/listbase.h>
-#include <wx/listctrl.h>
-#include <wx/menu.h>//genbtc (right-click menu)
-#include <wx/metafile.h>
-#include <wx/mstream.h>
-#include <wx/process.h>
-#include <wx/notebook.h>//genbtc
-#include <wx/overlay.h>
-#include <wx/panel.h>//genbtc
-#include <wx/popupwin.h>    //genBTC ClusterMapLegend
-#include <wx/settings.h>
-#include <wx/sizer.h>//genbtc
-#include <wx/spinctrl.h>    //genBTC ClusterMapLegend
-#include <wx/splitter.h>
-#include <wx/stattext.h>//genBTC query tab 3
-#include <wx/string.h>
-#include <wx/sysopt.h>
-#include <wx/taskbar.h>
-#include <wx/textctrl.h>//genBTC query tab
-#include <wx/textfile.h>
-#include <wx/thread.h>  //Not included by wx/wxprec.h
-#include <wx/tglbtn.h> //genbtc LCN Tab 4
-#include <wx/toolbar.h>
-#include <wx/uri.h>
-#include <wx/xlocale.h>
-#include <wx/xml/xml.h> //Not included by wx/wxprec.h
+#include <wx/setup.h>
+#include "wx/wx.h"
+#include "wx/artprov.h"
+#include "wx/clipbrd.h"//genBTC (right-click menu) copy to clipboard
+#include "wx/cmdline.h"
+#include "wx/colordlg.h"
+#include "wx/confbase.h"
+#include "wx/dataview.h"//genbtc LCN Tab 4
+#include "wx/datetime.h"
+#include "wx/dcbuffer.h"
+#include "wx/dcgraph.h"
+#include "wx/dir.h"
+#include "wx/display.h"
+#include "wx/dynlib.h"
+#include "wx/encconv.h" //genbtc for encodings
+#include "wx/event.h"
+#include "wx/fileconf.h"
+#include "wx/filename.h"
+#include "wx/filepicker.h"//genBTC query tab 3
+#include "wx/fontdlg.h"//genBTC (font-chooser)
+#include "wx/gbsizer.h"
+#include "wx/gdicmn.h"
+#include "wx/graphics.h"
+#include "wx/grid.h"//genbtc
+#include "wx/hashmap.h"
+#include "wx/hyperlink.h"
+#include "wx/image.h"
+#include "wx/msw/setup.h"
+#include "wx/intl.h"
+#include "wx/listbase.h"
+#include "wx/listctrl.h"
+#include <wx/msw/menu.h>
+#include <wx/msw/menuitem.h>
+#include "wx/menu.h"//genbtc (right-click menu)
+#include "wx/metafile.h"
+#include "wx/mstream.h"
+#include "wx/notebook.h"
+#include <wx/msw/notebook.h>
+#include "wx/process.h"
+#include "wx/notebook.h"//genbtc
+#include "wx/overlay.h"
+#include "wx/panel.h"//genbtc
+#include "wx/popupwin.h"    //genBTC ClusterMapLegend
+#include "wx/settings.h"
+#include "wx/sizer.h"//genbtc
+#include "wx/spinctrl.h"    //genBTC ClusterMapLegend
+#include "wx/splitter.h"
+#include "wx/stattext.h"//genBTC query tab 3
+#include "wx/string.h"
+#include "wx/sysopt.h"
+#include "wx/taskbar.h"
+#include "wx/textctrl.h"//genBTC query tab
+#include "wx/textfile.h"
+#include "wx/thread.h"  //Not included by wx/wxprec.h
+#include "wx/tglbtn.h" //genbtc LCN Tab 4
+#include <wx/msw/toolbar.h>
+#include "wx/toolbar.h"
+#include "wx/uri.h"
+#include "wx/xlocale.h"
+#include "wx/xml/xml.h" //Not included by wx/wxprec.h
 //STOPGAP
 #include "../stopgap/stopgap.hpp"
 //STL
