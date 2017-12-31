@@ -706,9 +706,10 @@ void MainFrame::OnHelpFaq(wxCommandEvent& WXUNUSED(event))
 //Display the Legend inside the Help Menu. (instead of the old GUI.html)
 void MainFrame::OnHelpLegend(wxCommandEvent& WXUNUSED(event))
 {
+    //Old legend...
     //Utils::OpenHandbook(wxT("GUI.html"),wxT("cluster_map_legend"));
 
-    //Cluster Map Legend:
+    //New Cluster Map Legend:
     delete m_legendPopup;
     m_legendPopup = new LegendTransientPopup(this);
     wxPoint pos = wxGetMousePosition();

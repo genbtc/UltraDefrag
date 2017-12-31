@@ -572,14 +572,14 @@ public:
 
     void OnEraseBackground(wxEraseEvent& event);
     void OnPaint(wxPaintEvent& event);
-    ULONGLONG getLCNsfromMousePos(const wxPoint& pos) const;
+
     void ClusterMapGetLCN(wxMouseEvent& event);
+    void GetGridSizeforCMap(cmapreturn& gs) const;
     static void DrawSingleRectangleBorder(HDC m_cacheDC2, int xblock, int yblock, int line_width, int cell_size, HBRUSH brush,
         HBRUSH infill);
     ClusterMap *m_ClusterMap;
 private:
     static char *ScaleMap(int scaled_size);
-    void GetGridSizeforCMap(cmapreturn& gs) const;    
     int m_width;
     int m_height;
     HDC m_cacheDC;
@@ -733,7 +733,7 @@ public:
     wxTextCtrl  *m_WxTextCtrl_LCNno;            //genBTC LCN - tab 4
     LegendTransientPopup* m_legendPopup;    //genBTC legend.
 private:
-    int GetMapSize();       //genBTC - used by job.cpp & query.cpp
+    static int GetMapSize();       //genBTC - used by job.cpp & query.cpp
     void InitQueryMenu();   //genBTC query.cpp
     void InitPopupMenus();  //genBTC Right Click Popup Menu
     void InitFilesList();    //genBTC FilesList.cpp

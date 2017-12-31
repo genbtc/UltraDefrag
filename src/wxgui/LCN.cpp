@@ -62,13 +62,14 @@ void MainFrame::GetSpecificLCNRange(wxCommandEvent& event)
     const char letter = g_mainFrame->GetDriveLetter();
     ULONGLONG LCN;
     m_WxTextCtrl_LCNno->GetValue().ToULongLong(&LCN);
-    //TODO: Replace 2000 with the actual cluster map's current cell size.
-    const wxString resultName = stopgap_findfiles_at_LCN(letter, LCN, 2000);
+    cmapreturn gs;
+    g_mainFrame->m_cMap->GetGridSizeforCMap(gs);
+    const wxString resultName = stopgap_findfiles_at_LCN(letter, LCN, gs.cell_size);
     //direct hit! output: from 785233
     //Found \??\A:\VM\Windows 10 x64\Windows 10 x64-000001-s004.vmdk at the LCN in question.
     g_mainFrame->m_WxTextCtrl2->Clear();
     g_mainFrame->m_WxTextCtrl2->AppendText(resultName);
     //Re-Initialize the ZenWinX lib, (because everytime Stopgap Runs, it unloads it)
     if (winx_init_library() < 0)
-        return;
+        dtrace("Could not reload ZenWinX after using Stopgap.");
 }
