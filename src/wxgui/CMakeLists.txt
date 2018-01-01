@@ -1,7 +1,7 @@
 # CMakeLists.txt configurations - for UltraDefrag's wxGUI based on WXWIDGETS
 #Dependencies (external) = WxWidgets (for wxGUI), Boost 1.65 (for stopgap.dll)
 #internal dependencies: udefrag.dll, zenwinx.dll, stopgap.dll, and lua5.1
-#created by genBTC - December 23, 2017
+#created by genBTC - January 1, 2018
 cmake_minimum_required(VERSION 3.8)
 
 #Declare the WXGUI project.
@@ -29,16 +29,21 @@ elseif(MSVC_VERSION EQUAL 1600)
 endif()
 set(wxWidgets_USE_UNICODE 1)    #use U always
 set(BUILD_SHARED_LIBS 1)    #use dlls 
-#/D _UNICODE /D UNICODE /D wxMSVC_VERSION=Windows7.1SDK /D __WXDEBUG__ /D WXUSINGDLL /D _CRTDBG_MAP_ALLOC /D _WINDOWS /D __WXMSW__ 
+
 add_definitions(
     -DOFFICIAL_RELEASE
     -DUNICODE
     -D_UNICODE
     -DWXUSINGDLL
     -D_CRTDBG_MAP_ALLOC
+    -DWIN32
+    -D_WIN32
+    -D_WINDOWS
+    -D_WINDLL
 )
 #/Zi /nologo /W3 /WX- /Od /GF /Gm /EHsc /RTC1 /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"prec.h" /Fp"x64\Debug\UltraDefrag.pch" /Fo"x64\Debug\\" /Fd"x64\Debug\vcWindows7.1SDK.pdb" /Gd /TP
-add_compile_options(/Zi /nologo /W3 /WX- /Od /GF /Gm /EHsc /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Gd /TP)
+#add_compile_options(/Zi /nologo /W3 /WX- /Od /GF /Gm /EHsc /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Gd /TP)
+set(CMAKE_CXX_FLAGS_DEBUG "/Zi /nologo /W3 /WX- /Ob0 /Od /GF /Gm /EHsc /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Gd /TP")
 #COMMON TO ALL DEBUG CONFIGS
 if (Debug)
     set(wxWidgets_USE_DEBUG 1)

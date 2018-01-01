@@ -84,7 +84,6 @@
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <CompileAsManaged>false</CompileAsManaged>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>A:\boostlib165</AdditionalIncludeDirectories>
@@ -113,7 +112,6 @@
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <CompileAsManaged>false</CompileAsManaged>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <AdditionalIncludeDirectories>A:\boostlib165</AdditionalIncludeDirectories>
     </ClCompile>
@@ -143,7 +141,6 @@
       <Cpp0xSupport>true</Cpp0xSupport>
       <MinimalRebuild>true</MinimalRebuild>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <CompileAsManaged>false</CompileAsManaged>
       <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
@@ -178,7 +175,6 @@
       <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
       <MinimalRebuild>true</MinimalRebuild>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <CompileAsManaged>false</CompileAsManaged>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

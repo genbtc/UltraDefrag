@@ -139,7 +139,6 @@
       <PreprocessorDefinitions>NDEBUG;_NO_CRT_STDIO_INLINE;_CRT_NON_CONFORMING_SWPRINTFS;BUILD_DLL;WIN32;_WIN32;_MBCS;USE_WINSDK;_CRT_SECURE_NO_WARNINGS;_CONSOLE;_USRDLL;ZENWINX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ErrorReporting>
       </ErrorReporting>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType />
       <ForceConformanceInForLoopScope />
       <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
@@ -209,7 +208,6 @@
       <PreprocessorDefinitions>NDEBUG;_NO_CRT_STDIO_INLINE;_CRT_NON_CONFORMING_SWPRINTFS;BUILD_DLL;WIN32;_WIN32;_MBCS;USE_WINSDK;_CRT_SECURE_NO_WARNINGS;_CONSOLE;_USRDLL;ZENWINX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ErrorReporting>
       </ErrorReporting>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>
       </TreatWChar_tAsBuiltInType>
       <ForceConformanceInForLoopScope>
@@ -283,18 +281,17 @@
       <PreprocessorDefinitions>_NO_CRT_STDIO_INLINE;_CRT_NON_CONFORMING_SWPRINTFS;DEBUG;_DEBUG;BUILD_DLL;WIN32;_WIN32;_MBCS;USE_WINSDK;_CRT_SECURE_NO_WARNINGS;_CONSOLE;_USRDLL;ZENWINX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ErrorReporting>
       </ErrorReporting>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType />
       <ForceConformanceInForLoopScope />
       <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <StringPooling>true</StringPooling>
       <WarningLevel>Level3</WarningLevel>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <CompileAs>CompileAsC</CompileAs>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -350,20 +347,19 @@
       <PreprocessorDefinitions>_NO_CRT_STDIO_INLINE;_CRT_NON_CONFORMING_SWPRINTFS;DEBUG;_DEBUG;BUILD_DLL;WIN32;_WIN32;_MBCS;USE_WINSDK;_CRT_SECURE_NO_WARNINGS;_CONSOLE;_USRDLL;ZENWINX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ErrorReporting>
       </ErrorReporting>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>
       </TreatWChar_tAsBuiltInType>
       <ForceConformanceInForLoopScope>
       </ForceConformanceInForLoopScope>
       <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <StringPooling>true</StringPooling>
       <WarningLevel>Level3</WarningLevel>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <CompileAs>CompileAsC</CompileAs>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

@@ -36,6 +36,7 @@
 
 #include "prec.h"
 #include "main.h"
+#pragma comment(lib, "urlmon.lib") //for URLDownloadToCacheFileW
 
 #define WIN_TMPF_TRUETYPE 0x04
 typedef struct WIN_CONSOLE_FONT_INFO_EX {

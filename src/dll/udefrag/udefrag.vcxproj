@@ -81,7 +81,7 @@
       <MinimalRebuild>true</MinimalRebuild>
     </ClCompile>
     <Link>
-      <SubSystem>Native</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>DllMain</EntryPointSymbol>
       <ShowProgress>LinkVerboseLib</ShowProgress>
       <SetChecksum>
@@ -144,7 +144,7 @@
       <OmitFramePointers>false</OmitFramePointers>
     </ClCompile>
     <Link>
-      <SubSystem>Native</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>DllMain</EntryPointSymbol>
       <ShowProgress>LinkVerboseLib</ShowProgress>
       <SetChecksum>
@@ -210,7 +210,7 @@
       <EnableUAC />
       <UACExecutionLevel />
       <UACUIAccess />
-      <SubSystem>Native</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>DllMain</EntryPointSymbol>
       <RandomizedBaseAddress />
       <DataExecutionPrevention />
@@ -267,7 +267,7 @@
       </UACExecutionLevel>
       <UACUIAccess>
       </UACUIAccess>
-      <SubSystem>Native</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>DllMain</EntryPointSymbol>
       <RandomizedBaseAddress>
       </RandomizedBaseAddress>

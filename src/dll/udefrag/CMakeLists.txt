@@ -12,9 +12,11 @@ add_definitions(
     -D_CONSOLE
     -DUNICODE
     -D_UNICODE
-    -D_WIN32
+    -D_MBCS
     -DWIN32
-    -D_MBCS 
+    -D_WIN32
+    -D_WINDOWS
+    -D_WINDLL    
 )
 add_definitions(
     -D_NO_CRT_STDIO_INLINE
@@ -25,8 +27,7 @@ add_definitions(
     -DUSE_WINSDK    
     -DUDEFRAG_EXPORTS
 )
-#/Zi /nologo /W3 /WX- /Od /Oy- /GF /Gm /EHsc /MDd /GS- /Gy /fp:precise /Gd
-add_compile_options(/Zi /nologo /W3 /WX- /Od /Oy- /GF /Gm /EHsc /MDd /GS- /Gy /fp:precise /Gd /TC)
+set(CMAKE_C_FLAGS_DEBUG "/Zi /nologo /W3 /WX- /Ob0 /Od /Oy- /GF /Gm /EHsc /MDd /GS- /Gy /fp:precise /Gd /TC")
 if(Debug)
     add_definitions(
         -DATTACH_DEBUGGER
@@ -62,4 +63,4 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE
     ntdll
     zenwinx
 )
-set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/NODEFAULTLIB /SUBSYSTEM:NATIVE /ENTRY:\"DllMain\"")
+set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/NODEFAULTLIB /SUBSYSTEM:WINDOWS /ENTRY:\"DllMain\"")

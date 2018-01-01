@@ -10,11 +10,13 @@ set(BUILD_SHARED_LIBS 1)    #use dlls
 #_NO_CRT_STDIO_INLINE /D _CRT_NON_CONFORMING_SWPRINTFS /D DEBUG /D _DEBUG /D BUILD_DLL /D WIN32 /D _WIN32 /D _MBCS /D USE_WINSDK /D _CRT_SECURE_NO_WARNINGS /D _CONSOLE /D _USRDLL /D ZENWINX_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE 
 add_definitions(
     -D_CONSOLE
+    -DUNICODE
+    -D_UNICODE
+    -D_MBCS
     -DWIN32
     -D_WIN32
-    -D_MBCS
-    -D_UNICODE
-    -DUNICODE
+    -D_WINDOWS
+    -D_WINDLL    
 )
 add_definitions(
     -D_NO_CRT_STDIO_INLINE
@@ -26,7 +28,7 @@ add_definitions(
     -DUSE_WINSDK        
     -DZENWINX_EXPORTS
 )
-add_compile_options(/Zi /nologo /W3 /WX- /Od /GF /Gm /EHsc /MDd /GS- /fp:precise /TC)
+set(CMAKE_C_FLAGS_DEBUG "/Zi /nologo /W3 /WX- /Ob0 /Od /GF /Gm /EHsc /MDd /GS- /fp:precise /TC")
 if(Debug)
     add_definitions(
         -DATTACH_DEBUGGER

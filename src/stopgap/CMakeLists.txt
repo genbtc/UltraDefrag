@@ -9,16 +9,18 @@ set( PACKAGE_TARNAME "${PACKAGE_NAME}" )
 set( PACKAGE_VERSION "7.0.4" )
 
 set(BUILD_SHARED_LIBS 1)    #use dlls 
-#/D WIN32 /D _DEBUG /D _CONSOLE /D _WINDLL /D _UNICODE /D UNICODE
+
 add_definitions(
     -D_CONSOLE
     -DUNICODE
     -D_UNICODE
     -DWIN32
+    -D_WIN32
+    -D_WINDOWS
     -D_WINDLL
 )
-# /Zi /nologo /W3 /WX- /Od /GF /Gm /EHsc /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Gd
-add_compile_options(/Zi /nologo /W3 /WX- /Od /GF /Gm /EHsc /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Gd /TP)
+
+set(CMAKE_CXX_FLAGS_DEBUG "/GS /W3 /Gy /Zc:wchar_t /Zi /Gm /Ob0 /Od /fp:precise /errorReport:prompt /GF /WX- /Zc:forScope /Gd /MDd /EHsc /nologo /TP")
 #COMMON TO ALL DEBUG CONFIGS
 if(Debug)
     add_definitions(
@@ -82,4 +84,4 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE
     zenwinx
     ntdll
 )
-set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/SUBSYSTEM:CONSOLE /ENTRY:\"DllMain\"")
+set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/SUBSYSTEM:CONSOLE")
