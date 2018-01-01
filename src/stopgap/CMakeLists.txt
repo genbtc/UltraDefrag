@@ -9,6 +9,8 @@ set( PACKAGE_TARNAME "${PACKAGE_NAME}" )
 set( PACKAGE_VERSION "7.0.4" )
 
 set(BUILD_SHARED_LIBS 1)    #use dlls 
+include (GenerateExportHeader)
+
 add_definitions(
     -D_CONSOLE
     -DUNICODE
@@ -44,13 +46,15 @@ message("${Boost_LIBRARY_DIRS}")
 message("${Boost_LIBRARIES}")
 
 #Source Files:
-add_library(${PACKAGE_NAME}
+add_library(${PACKAGE_NAME} SHARED
     prec.cpp
     util.cpp
     zen.cpp    
     op.cpp
     main.cpp
+    stopgap.def
 )
+generate_export_header(${PACKAGE_NAME})
 #C++14 features:
 target_compile_features(${PACKAGE_NAME} INTERFACE cxx_std_14)
 #Compile it.

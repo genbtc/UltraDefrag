@@ -11,8 +11,8 @@ set( PACKAGE_STRING "${PACKAGE_NAME} 7.0.4" )
 set( PACKAGE_TARNAME "${PACKAGE_NAME}" )
 set( PACKAGE_VERSION "7.0.4" )
 
-set(CMAKE_BINARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
-set(ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+set(ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
 #Set your $WXWIDGETS env variable or just set the dir here:
 set(WXWIDGETS "A:/wxWidgets")
@@ -88,6 +88,6 @@ add_executable(${PACKAGE_NAME} WIN32
 #Disable the default manifest because we provide our own in wxgui.rc resource file above^
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
 #C++11 features:
-target_compile_features(${PACKAGE_NAME} INTERFACE cxx_std_11)
+target_compile_features(${PACKAGE_NAME} INTERFACE cxx_std_14)
 #Link Libraries, Make the EXE
-target_link_libraries(${PACKAGE_NAME} ${wxWidgets_LIBRARIES} udefrag zenwinx lua5.1a stopgap ${Boost_LIBRARIES})
+target_link_libraries(${PACKAGE_NAME} PUBLIC ${wxWidgets_LIBRARIES} udefrag zenwinx lua5.1a stopgap ${Boost_LIBRARIES})

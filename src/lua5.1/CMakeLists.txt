@@ -8,6 +8,8 @@ set( PACKAGE_VERSION "5.1a" )
 
 #include_directories( )
 set(BUILD_SHARED_LIBS 1)    #use dlls 
+include (GenerateExportHeader)
+
 add_definitions(
     -D_MBCS
     -DWIN64
@@ -27,7 +29,7 @@ endif()
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 set(ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
-add_library(${PACKAGE_NAME}
+add_library(${PACKAGE_NAME} SHARED
     lapi.c
     lauxlib.c
     lbaselib.c
@@ -57,6 +59,7 @@ add_library(${PACKAGE_NAME}
     lundump.c
     lvm.c
     lzio.c
+    lua5.1.def
 )
-
+generate_export_header(${PACKAGE_NAME})
 #link_directories( )
