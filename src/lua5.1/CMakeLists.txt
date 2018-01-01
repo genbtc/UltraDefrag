@@ -6,9 +6,7 @@ set( PACKAGE_STRING "${PACKAGE_NAME}" )
 set( PACKAGE_TARNAME "${PACKAGE_NAME}" )
 set( PACKAGE_VERSION "5.1a" )
 
-#include_directories( )
 set(BUILD_SHARED_LIBS 1)    #use dlls 
-include (GenerateExportHeader)
 
 add_definitions(
     -D_MBCS
@@ -26,8 +24,8 @@ else()
     add_definitions(-DNDEBUG)
 endif()
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
-set(ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+#set(ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
 add_library(${PACKAGE_NAME} SHARED
     lapi.c
@@ -61,5 +59,3 @@ add_library(${PACKAGE_NAME} SHARED
     lzio.c
     lua5.1.def
 )
-generate_export_header(${PACKAGE_NAME})
-#link_directories( )

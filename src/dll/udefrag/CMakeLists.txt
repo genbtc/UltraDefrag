@@ -6,9 +6,7 @@ set( PACKAGE_STRING "${PACKAGE_NAME} 7.0.4" )
 set( PACKAGE_TARNAME "${PACKAGE_NAME}" )
 set( PACKAGE_VERSION "7.0.4" )
 
-#include_directories( )
 set(BUILD_SHARED_LIBS 1)    #use dlls 
-include (GenerateExportHeader)
 
 add_definitions(
     -D_CONSOLE
@@ -31,8 +29,8 @@ else()
     add_definitions(-DNDEBUG)
 endif()
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
-set(ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+#set(ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
 add_library(${PACKAGE_NAME} SHARED
     analyze.c
@@ -52,8 +50,6 @@ add_library(${PACKAGE_NAME} SHARED
     udefrag.def
 )
 
-#link_directories( )
-generate_export_header(${PACKAGE_NAME})
 target_link_libraries(${PACKAGE_NAME}
     ntdll
     zenwinx
