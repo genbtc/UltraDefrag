@@ -43,7 +43,7 @@ add_definitions(
 )
 #/Zi /nologo /W3 /WX- /Od /GF /Gm /EHsc /RTC1 /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"prec.h" /Fp"x64\Debug\UltraDefrag.pch" /Fo"x64\Debug\\" /Fd"x64\Debug\vcWindows7.1SDK.pdb" /Gd /TP
 #add_compile_options(/Zi /nologo /W3 /WX- /Od /GF /Gm /EHsc /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Gd /TP)
-set(CMAKE_CXX_FLAGS_DEBUG "/Zi /nologo /W3 /WX- /Ob0 /Od /GF /Gm /EHsc /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Gd /TP")
+set(CMAKE_CXX_FLAGS_DEBUG "/Zi /nologo /W3 /WX- /Ob0 /Od /GF /Gd /Gm /GR- /GS /Gy /EHsc /MDd /fp:precise /Zc:wchar_t /Zc:forScope /TP")
 #COMMON TO ALL DEBUG CONFIGS
 if (Debug)
     set(wxWidgets_USE_DEBUG 1)
@@ -97,11 +97,14 @@ add_executable(${PACKAGE_NAME} WIN32
     vollist.cpp
     wxgui.rc
 )
-target_sources(${PACKAGE_NAME} PRIVATE prec.h)
-#Disable the default manifest because we provide our own in wxgui.rc resource file above^
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
+#Add .H Files
+target_sources(${PACKAGE_NAME} PRIVATE prec.h udefrag-internals_flags.h main.h)
 #C++11 features:
-target_compile_features(${PACKAGE_NAME} INTERFACE cxx_std_14)
+target_compile_features(${PACKAGE_NAME} INTERFACE cxx_std_11)
 #Link Libraries, Make the EXE
 target_link_libraries(${PACKAGE_NAME} PUBLIC ${wxWidgets_LIBRARIES} udefrag zenwinx lua5.1a stopgap)
-set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")
+#Set Link Flags:
+#1.   Disable the default manifest because we provide our own in wxgui.rc resource file above^
+#2.   Disable incremental build.
+#3.   Set Subsystem
+set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/MANIFEST:NO /INCREMENTAL:NO /SUBSYSTEM:WINDOWS")

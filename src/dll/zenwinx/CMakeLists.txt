@@ -73,9 +73,9 @@ add_library(${PACKAGE_NAME} SHARED
     zenwinx.def
     zenwinx.rc
 )
-target_sources(${PACKAGE_NAME} PRIVATE prec.h)
-#Disable the default manifest because we provide our own in zenwinx.rc resource file above^
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
+#Add .H Files
+target_sources(${PACKAGE_NAME} PRIVATE prec.h case-tables.h ntfs.h ntndk.h prb.h z-defs.h zenwinx.h z-structs.h )
+#Link Libraries, Make the DLL
 target_link_libraries(${PACKAGE_NAME} PRIVATE
     ntdll
     #Somethings like These are needed for _snprintf and vswprintf that kinda thing,
@@ -83,4 +83,10 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE
     #msvcrtd
     #msvcprtd
 )
-set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/NODEFAULTLIB /SUBSYSTEM:CONSOLE /ENTRY:\"DllMain\"")
+#Set Link Flags:
+#1.   Disable the default manifest because we provide our own in zenwinx.rc resource file above^
+#2.   Disable incremental build.
+#3.   Set Subsystem
+#4.   No Default Libs
+#5.   Set Entry Point 
+set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/MANIFEST:NO /INCREMENTAL:NO /SUBSYSTEM:CONSOLE /NODEFAULTLIB /ENTRY:\"DllMain\"")

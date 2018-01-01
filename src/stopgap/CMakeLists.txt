@@ -19,7 +19,7 @@ add_definitions(
     -D_WINDOWS
     -D_WINDLL
 )
-
+#Set C++ Compile Flags
 set(CMAKE_CXX_FLAGS_DEBUG "/GS /W3 /Gy /Zc:wchar_t /Zi /Gm /Ob0 /Od /fp:precise /errorReport:prompt /GF /WX- /Zc:forScope /Gd /MDd /EHsc /nologo /TP")
 #COMMON TO ALL DEBUG CONFIGS
 if(Debug)
@@ -61,9 +61,8 @@ add_library(${PACKAGE_NAME} SHARED
     stopgap.def
     stopgap.rc
 )
-target_sources(${PACKAGE_NAME} PRIVATE prec.h)
-#Disable the default manifest because we provide our own in stopgap.rc resource file above^
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
+#Add .H Files
+target_sources(${PACKAGE_NAME} PRIVATE prec.h main.hpp op.hpp resource.h stopgap.hpp util.hpp zen.hpp)
 #C++14 features:
 target_compile_features(${PACKAGE_NAME} INTERFACE cxx_std_14)
 #Compile it.
@@ -84,4 +83,8 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE
     zenwinx
     ntdll
 )
-set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/SUBSYSTEM:CONSOLE")
+#Set Link Flags:
+#1.   Disable the default manifest because we provide our own in stopgap.rc resource file above^
+#2.   Disable incremental build.
+#3.   Set Subsystem
+set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/MANIFEST:NO /INCREMENTAL:NO /SUBSYSTEM:CONSOLE")
