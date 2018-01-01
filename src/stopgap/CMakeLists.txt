@@ -51,8 +51,10 @@ add_library(${PACKAGE_NAME} SHARED
     op.cpp
     main.cpp
     stopgap.def
+    stopgap.rc
 )
-
+#Disable the default manifest because we provide our own in stopgap.rc resource file above^
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
 #C++14 features:
 target_compile_features(${PACKAGE_NAME} INTERFACE cxx_std_14)
 #Compile it.

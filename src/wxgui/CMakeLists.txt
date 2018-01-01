@@ -89,4 +89,4 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
 #C++11 features:
 target_compile_features(${PACKAGE_NAME} INTERFACE cxx_std_14)
 #Link Libraries, Make the EXE
-target_link_libraries(${PACKAGE_NAME} PUBLIC ${wxWidgets_LIBRARIES} udefrag zenwinx lua5.1a stopgap ${Boost_LIBRARIES})
+target_link_libraries(${PACKAGE_NAME} PUBLIC ${wxWidgets_LIBRARIES} udefrag zenwinx lua5.1a stopgap)

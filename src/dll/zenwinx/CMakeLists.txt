@@ -61,8 +61,10 @@ add_library(${PACKAGE_NAME} SHARED
     volume.c
     zenwinx.c
     zenwinx.def
+    zenwinx.rc
 )
-
+#Disable the default manifest because we provide our own in zenwinx.rc resource file above^
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
 target_link_libraries(${PACKAGE_NAME}
     ntdll
     #Somethings like These are needed for _snprintf and vswprintf that kinda thing,

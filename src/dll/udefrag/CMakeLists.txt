@@ -47,8 +47,10 @@ add_library(${PACKAGE_NAME} SHARED
     udefrag.c
     volume.c
     udefrag.def
+    udefrag.rc
 )
-
+#Disable the default manifest because we provide our own in udefrag.rc resource file above^
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
 target_link_libraries(${PACKAGE_NAME}
     ntdll
     zenwinx
