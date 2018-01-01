@@ -25,15 +25,27 @@ if(MSVC_VERSION GREATER_EQUAL 1910)
 elseif(MSVC_VERSION EQUAL 1600)
     set(wxWidgets_LIB_DIR "${wxWidgets_ROOT_DIR}/lib/vcWindows7.1SDK_x64_dll")
     message("${wxWidgets_LIB_DIR}")
+    add_definitions(-D_USING_V110_SDK71_)
 endif()
 set(wxWidgets_USE_UNICODE 1)    #use U always
 set(BUILD_SHARED_LIBS 1)    #use dlls 
+#/D _UNICODE /D UNICODE /D wxMSVC_VERSION=Windows7.1SDK /D __WXDEBUG__ /D WXUSINGDLL /D _CRTDBG_MAP_ALLOC /D _WINDOWS /D __WXMSW__ 
+add_definitions(
+    -DOFFICIAL_RELEASE
+    -DUNICODE
+    -D_UNICODE
+    -DWXUSINGDLL
+    -D_CRTDBG_MAP_ALLOC
+)
+#/Zi /nologo /W3 /WX- /Od /GF /Gm /EHsc /RTC1 /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"prec.h" /Fp"x64\Debug\UltraDefrag.pch" /Fo"x64\Debug\\" /Fd"x64\Debug\vcWindows7.1SDK.pdb" /Gd /TP
+add_compile_options(/Zi /nologo /W3 /WX- /Od /GF /Gm /EHsc /RTC1 /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Gd /TP)
 #COMMON TO ALL DEBUG CONFIGS
 if (Debug)
     set(wxWidgets_USE_DEBUG 1)
     add_definitions(
         -DDEBUG
         -D_DEBUG
+        -D__WXDEBUG__
     )
 endif()
 #WXWidgets is required.
@@ -50,11 +62,6 @@ if(MSVC)
     )
 endif()
 
-add_definitions(
-    -DOFFICIAL_RELEASE
-    -DUNICODE
-    -D_UNICODE
-)
 
 #Compile the EXE
 add_executable(${PACKAGE_NAME} WIN32 

@@ -7,19 +7,26 @@ set( PACKAGE_TARNAME "${PACKAGE_NAME}" )
 set( PACKAGE_VERSION "7.0.4" )
 
 set(BUILD_SHARED_LIBS 1)    #use dlls 
-
+#/D _NO_CRT_STDIO_INLINE /D _DEBUG /D DEBUG /D BUILD_DLL /D _WIN32 /D WIN32 /D _MBCS /D USE_WINSDK /D _CRT_SECURE_NO_WARNINGS /D ATTACH_DEBUGGER /D _CONSOLE /D _USRDLL /D UDEFRAG_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE
 add_definitions(
     -D_CONSOLE
     -DUNICODE
     -D_UNICODE
+    -D_WIN32
+    -DWIN32
+    -D_MBCS 
 )
 add_definitions(
     -D_NO_CRT_STDIO_INLINE
     -D_CRT_SECURE_NO_WARNINGS
     -DBUILD_DLL
+    -D_USRDLL
+    -D_WINDLL
     -DUSE_WINSDK    
     -DUDEFRAG_EXPORTS
 )
+#/Zi /nologo /W3 /WX- /Od /Oy- /GF /Gm /EHsc /MDd /GS- /Gy /fp:precise /Gd
+add_compile_options(/Zi /nologo /W3 /WX- /Od /Oy- /GF /Gm /EHsc /MDd /GS- /Gy /fp:precise /Gd /TC)
 if(Debug)
     add_definitions(
         -DATTACH_DEBUGGER

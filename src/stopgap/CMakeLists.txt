@@ -9,12 +9,16 @@ set( PACKAGE_TARNAME "${PACKAGE_NAME}" )
 set( PACKAGE_VERSION "7.0.4" )
 
 set(BUILD_SHARED_LIBS 1)    #use dlls 
-
+#/D WIN32 /D _DEBUG /D _CONSOLE /D _WINDLL /D _UNICODE /D UNICODE
 add_definitions(
     -D_CONSOLE
     -DUNICODE
     -D_UNICODE
+    -DWIN32
+    -D_WINDLL
 )
+# /Zi /nologo /W3 /WX- /Od /GF /Gm /EHsc /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Gd
+add_compile_options(/Zi /nologo /W3 /WX- /Od /GF /Gm /EHsc /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Gd /TP)
 #COMMON TO ALL DEBUG CONFIGS
 if(Debug)
     add_definitions(
@@ -36,6 +40,7 @@ if(MSVC_VERSION GREATER_EQUAL 1910)
     set(Boost_LIBRARY_DIR "${BOOST_ROOT}/lib64-msvc-14.1")
 elseif(MSVC_VERSION EQUAL 1600)
     set(Boost_LIBRARY_DIR "${BOOST_ROOT}/lib64-msvc-10.0")
+    add_definitions(-D_USING_V110_SDK71_)
 endif()
 find_package(Boost 1.65 REQUIRED program_options regex)
 include_directories(${Boost_INCLUDE_DIRS}) 

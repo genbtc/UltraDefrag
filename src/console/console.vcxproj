@@ -93,7 +93,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>WIN32;NDEBUG;ATTACH_DEBUGGER;_CRT_SECURE_NO_WARNINGS;_CONSOLE;wxCFG=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;__WXMSW__;WXUSINGDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;ATTACH_DEBUGGER;_CRT_SECURE_NO_WARNINGS;_CONSOLE;USE_WINSDK;_USING_V110_SDK71_;__WXMSW__;WXUSINGDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -110,7 +110,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>WIN32;NDEBUG;ATTACH_DEBUGGER;_CRT_SECURE_NO_WARNINGS;_CONSOLE;wxCFG=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;__WXMSW__;WXUSINGDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;ATTACH_DEBUGGER;_CRT_SECURE_NO_WARNINGS;_CONSOLE;USE_WINSDK;_USING_V110_SDK71_;__WXMSW__;WXUSINGDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
@@ -134,7 +134,7 @@
       <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;ATTACH_DEBUGGER;_CRT_SECURE_NO_WARNINGS;_CONSOLE;wxCFG=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;__WXMSW__;WXUSINGDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;ATTACH_DEBUGGER;_CRT_SECURE_NO_WARNINGS;_CONSOLE;USE_WINSDK;_USING_V110_SDK71_;__WXMSW__;WXUSINGDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -146,7 +146,7 @@
     <ClCompile>
       <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;ATTACH_DEBUGGER;_CRT_SECURE_NO_WARNINGS;_CONSOLE;wxCFG=$(PlatformToolsetVersion);USE_WINSDK;_USING_V110_SDK71_;__WXMSW__;WXUSINGDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;ATTACH_DEBUGGER;_CRT_SECURE_NO_WARNINGS;_CONSOLE;USE_WINSDK;_USING_V110_SDK71_;__WXMSW__;WXUSINGDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
   </ItemDefinitionGroup>

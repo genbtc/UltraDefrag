@@ -7,7 +7,7 @@ set( PACKAGE_TARNAME "${PACKAGE_NAME}" )
 set( PACKAGE_VERSION "5.1a" )
 
 set(BUILD_SHARED_LIBS 1)    #use dlls 
-
+#/D WIN64 /D NDEBUG /D _MBCS /D USE_WINSDK /D _CRT_SECURE_NO_WARNINGS /D OFFICIAL_RELEASE /D ATTACH_DEBUGGER
 add_definitions(
     -D_MBCS
     -DWIN64
@@ -15,6 +15,8 @@ add_definitions(
     -D_CRT_SECURE_NO_WARNINGS
     -DOFFICIAL_RELEASE
 )
+#/Zi /nologo /W3 /WX- /Od /GF /Gm /EHsc /RTC1 /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Gd
+add_compile_options(/Zi /nologo /W3 /WX- /Od /GF /Gm /EHsc /RTC1 /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Gd /TC)
 if(Debug)
     add_definitions(
         -DATTACH_DEBUGGER

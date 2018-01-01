@@ -194,7 +194,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="guicon.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="op.cpp" />
     <ClCompile Include="prec.cpp">
