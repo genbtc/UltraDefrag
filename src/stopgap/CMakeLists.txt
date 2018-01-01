@@ -9,7 +9,6 @@ set( PACKAGE_TARNAME "${PACKAGE_NAME}" )
 set( PACKAGE_VERSION "7.0.4" )
 
 set(BUILD_SHARED_LIBS 1)    #use dlls 
-
 add_definitions(
     -D_CONSOLE
     -DUNICODE
@@ -21,6 +20,7 @@ if(Debug)
         -DATTACH_DEBUGGER
         -DDEBUG
         -D_DEBUG)
+    set(Boost_DEBUG 1)
 else()
     add_definitions(-DNDEBUG)
 endif()
@@ -39,9 +39,9 @@ elseif(MSVC_VERSION EQUAL 1600)
 endif()
 find_package(Boost 1.65 REQUIRED program_options regex)
 include_directories(${Boost_INCLUDE_DIRS}) 
-#link_directories(${Boost_LIBRARY_DIRS})
-#message("${Boost_LIBRARY_DIRS}")
-#message("${Boost_LIBRARIES}")
+link_directories(${Boost_LIBRARY_DIRS})
+message("${Boost_LIBRARY_DIRS}")
+message("${Boost_LIBRARIES}")
 
 #Source Files:
 add_library(${PACKAGE_NAME}
@@ -54,7 +54,7 @@ add_library(${PACKAGE_NAME}
 #C++14 features:
 target_compile_features(${PACKAGE_NAME} INTERFACE cxx_std_14)
 #Compile it.
-target_link_libraries(${PACKAGE_NAME} INTERFACE
+target_link_libraries(${PACKAGE_NAME} PUBLIC
     kernel32
     user32
     ntdll
