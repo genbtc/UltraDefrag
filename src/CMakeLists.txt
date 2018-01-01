@@ -5,6 +5,8 @@ set(CMAKE_BINARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set(ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 message("${CMAKE_BINARY_OUTPUT_DIRECTORY}")
+set(CMAKE_C_FLAGS_DEBUG "/MDd /Zi /Ob0 /Od")
+
 
 add_subdirectory(lua5.1 ${CMAKE_BINARY_DIR}/lua5.1a)        #Deps: None
 add_subdirectory(dll/zenwinx ${CMAKE_BINARY_DIR}/zenwinx)   #Deps: ntdll

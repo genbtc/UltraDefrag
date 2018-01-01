@@ -16,7 +16,7 @@ add_definitions(
     -DOFFICIAL_RELEASE
 )
 #/Zi /nologo /W3 /WX- /Od /GF /Gm /EHsc /RTC1 /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Gd
-add_compile_options(/Zi /nologo /W3 /WX- /Od /GF /Gm /EHsc /RTC1 /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Gd /TC)
+add_compile_options(/Zi /nologo /W3 /WX- /Od /GF /Gm /EHsc /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Gd /TC)
 if(Debug)
     add_definitions(
         -DATTACH_DEBUGGER
@@ -60,3 +60,4 @@ add_library(${PACKAGE_NAME} SHARED
     lzio.c
     lua5.1.def
 )
+set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")

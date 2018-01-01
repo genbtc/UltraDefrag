@@ -15,9 +15,9 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 #Set your $WXWIDGETS env variable or just set the dir here:
 set(WXWIDGETS "A:/wxWidgets")
-set(wxWidgets_ROOT_DIR ${WXWIDGETS})
+set(wxWidgets_ROOT_DIR "${WXWIDGETS}")
 message("${wxWidgets_ROOT_DIR}")
-#TODO: Replace this forceed hack if/when FindwxWidgets.cmake Line 501 
+#TODO: Replace this forced hack if/when FindwxWidgets.cmake Line 501 
 #       is changed from if(MSVC_VERSION EQUAL 1910) to GREATER_EQUAL
 #So it can find the toolset as 141 (otherwise it detects as 1912 in VC2017 Preview6)
 if(MSVC_VERSION GREATER_EQUAL 1910)
@@ -38,7 +38,7 @@ add_definitions(
     -D_CRTDBG_MAP_ALLOC
 )
 #/Zi /nologo /W3 /WX- /Od /GF /Gm /EHsc /RTC1 /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"prec.h" /Fp"x64\Debug\UltraDefrag.pch" /Fo"x64\Debug\\" /Fd"x64\Debug\vcWindows7.1SDK.pdb" /Gd /TP
-add_compile_options(/Zi /nologo /W3 /WX- /Od /GF /Gm /EHsc /RTC1 /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Gd /TP)
+add_compile_options(/Zi /nologo /W3 /WX- /Od /GF /Gm /EHsc /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Gd /TP)
 #COMMON TO ALL DEBUG CONFIGS
 if (Debug)
     set(wxWidgets_USE_DEBUG 1)
@@ -79,6 +79,7 @@ add_executable(${PACKAGE_NAME} WIN32
     map.cpp
     menu.cpp
     prec.cpp
+    prec.h
     query.cpp
     report.cpp
     shutdown.cpp    
@@ -91,9 +92,11 @@ add_executable(${PACKAGE_NAME} WIN32
     vollist.cpp
     wxgui.rc
 )
+target_sources(${PACKAGE_NAME} PRIVATE prec.h)
 #Disable the default manifest because we provide our own in wxgui.rc resource file above^
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
 #C++11 features:
 target_compile_features(${PACKAGE_NAME} INTERFACE cxx_std_14)
 #Link Libraries, Make the EXE
 target_link_libraries(${PACKAGE_NAME} PUBLIC ${wxWidgets_LIBRARIES} udefrag zenwinx lua5.1a stopgap)
+set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")

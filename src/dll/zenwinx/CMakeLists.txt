@@ -26,7 +26,6 @@ add_definitions(
     -DUSE_WINSDK        
     -DZENWINX_EXPORTS
 )
-#/Zi /nologo /W3 /WX- /Od /GF /Gm /EHsc /MDd /GS- /fp:precise
 add_compile_options(/Zi /nologo /W3 /WX- /Od /GF /Gm /EHsc /MDd /GS- /fp:precise /TC)
 if(Debug)
     add_definitions(
@@ -58,6 +57,7 @@ add_library(${PACKAGE_NAME} SHARED
     mutex.c
     path.c
     prec.c
+    prec.h
     prb.c
     privilege.c
     reg.c
@@ -71,12 +71,14 @@ add_library(${PACKAGE_NAME} SHARED
     zenwinx.def
     zenwinx.rc
 )
+target_sources(${PACKAGE_NAME} PRIVATE prec.h)
 #Disable the default manifest because we provide our own in zenwinx.rc resource file above^
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
-target_link_libraries(${PACKAGE_NAME}
+target_link_libraries(${PACKAGE_NAME} PRIVATE
     ntdll
     #Somethings like These are needed for _snprintf and vswprintf that kinda thing,
     #(or Win7SDK msvcrt100 or ucrtd from new win10.)
     #msvcrtd
     #msvcprtd
 )
+set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/NODEFAULTLIB /SUBSYSTEM:CONSOLE /ENTRY:\"DllMain\"")

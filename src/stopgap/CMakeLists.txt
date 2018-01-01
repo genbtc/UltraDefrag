@@ -51,6 +51,7 @@ message("${Boost_LIBRARIES}")
 #Source Files:
 add_library(${PACKAGE_NAME} SHARED
     prec.cpp
+    prec.h
     util.cpp
     zen.cpp    
     op.cpp
@@ -58,12 +59,13 @@ add_library(${PACKAGE_NAME} SHARED
     stopgap.def
     stopgap.rc
 )
+target_sources(${PACKAGE_NAME} PRIVATE prec.h)
 #Disable the default manifest because we provide our own in stopgap.rc resource file above^
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
 #C++14 features:
 target_compile_features(${PACKAGE_NAME} INTERFACE cxx_std_14)
 #Compile it.
-target_link_libraries(${PACKAGE_NAME} PUBLIC
+target_link_libraries(${PACKAGE_NAME} PRIVATE
     kernel32
     user32
     ntdll
@@ -80,3 +82,4 @@ target_link_libraries(${PACKAGE_NAME} PUBLIC
     zenwinx
     ntdll
 )
+set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/SUBSYSTEM:CONSOLE /ENTRY:\"DllMain\"")
