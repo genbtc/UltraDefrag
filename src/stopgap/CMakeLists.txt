@@ -26,8 +26,7 @@ else()
     add_definitions(-DNDEBUG)
 endif()
 
-#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
-#set(ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 #Include Boost, (mandatory)
 #set(Boost_USE_STATIC_LIBS OFF)
