@@ -52,37 +52,37 @@ if(MSVC)
 endif()
 
 add_definitions(
-	-DOFFICIAL_RELEASE
+    -DOFFICIAL_RELEASE
     -DUNICODE
     -D_UNICODE
 )
 
 #Compile the EXE
 add_executable(${PACKAGE_NAME} WIN32 
-	about.cpp
-	btd.cpp
-	config.cpp
-	crash.cpp
-	fileslist.cpp
-	i18n.cpp
-	job.cpp
-	LCN.cpp
+    about.cpp
+    btd.cpp
+    config.cpp
+    crash.cpp
+    fileslist.cpp
+    i18n.cpp
+    job.cpp
+    LCN.cpp
     LegendTransientPopup.cpp
-	log.cpp
-	main.cpp
-	map.cpp
-	menu.cpp
-	prec.cpp
-	query.cpp
-	report.cpp
-	shutdown.cpp	
-	statbar.cpp
-	taskbar.cpp
-	toolbar.cpp
-	tray.cpp
-	upgrade.cpp
-	utils.cpp
-	vollist.cpp
+    log.cpp
+    main.cpp
+    map.cpp
+    menu.cpp
+    prec.cpp
+    query.cpp
+    report.cpp
+    shutdown.cpp    
+    statbar.cpp
+    taskbar.cpp
+    toolbar.cpp
+    tray.cpp
+    upgrade.cpp
+    utils.cpp
+    vollist.cpp
     wxgui.rc
 )
 #Disable the default manifest because we provide our own in wxgui.rc resource file above^

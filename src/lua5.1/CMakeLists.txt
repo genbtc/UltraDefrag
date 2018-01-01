@@ -1,4 +1,4 @@
-#CMake Config, Builds OK. No dependencies or anything really.
+#CMake Config, Builds OK. No dependencies or anything really. Simple.
 cmake_minimum_required(VERSION 3.8)
 set( PACKAGE_NAME "lua5.1a" )
 project(${PACKAGE_NAME})
