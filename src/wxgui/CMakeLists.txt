@@ -7,15 +7,15 @@ cmake_minimum_required(VERSION 3.8)
 #Declare the WXGUI project.
 set( PACKAGE_NAME "wxgui" )
 project(${PACKAGE_NAME})
-set( PACKAGE_STRING "${PACKAGE_NAME} 7.0.3" )
+set( PACKAGE_STRING "${PACKAGE_NAME} 7.0.4" )
 set( PACKAGE_TARNAME "${PACKAGE_NAME}" )
-set( PACKAGE_VERSION "7.0.3" )
+set( PACKAGE_VERSION "7.0.4" )
 
-#set(CMAKE_BINARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
-#set(ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
+set(CMAKE_BINARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
+set(ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 
 #Set your $WXWIDGETS env variable or just set the dir here:
-#set(WXWIDGETS "A:/wxWidgets")
+set(WXWIDGETS "A:/wxWidgets")
 set(wxWidgets_ROOT_DIR ${WXWIDGETS})
 message("${wxWidgets_ROOT_DIR}")
 #TODO: Replace this forceed hack if/when FindwxWidgets.cmake Line 501 

@@ -7,14 +7,21 @@ set( PACKAGE_TARNAME "${PACKAGE_NAME}" )
 set( PACKAGE_VERSION "5.1a" )
 
 #include_directories( )
-
+set(BUILD_SHARED_LIBS 1)    #use dlls 
 add_definitions(
+    -D_MBCS
     -DWIN64
     -DUSE_WINSDK
     -D_CRT_SECURE_NO_WARNINGS
+    -DOFFICIAL_RELEASE
 )
 if(Debug)
-    add_definitions(-DATTACH_DEBUGGER)
+    add_definitions(
+        -DATTACH_DEBUGGER
+        -DDEBUG
+        -D_DEBUG)
+else()
+    add_definitions(-DNDEBUG)
 endif()
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)

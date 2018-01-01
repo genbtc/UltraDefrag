@@ -2,22 +2,32 @@
 cmake_minimum_required(VERSION 3.8)
 set( PACKAGE_NAME "zenwinx" )
 project(${PACKAGE_NAME})
-set( PACKAGE_STRING "${PACKAGE_NAME} 7.0.3" )
+set( PACKAGE_STRING "${PACKAGE_NAME} 7.0.4" )
 set( PACKAGE_TARNAME "${PACKAGE_NAME}" )
-set( PACKAGE_VERSION "7.0.3" )
+set( PACKAGE_VERSION "7.0.4" )
 
 #include_directories( )
-
+set(BUILD_SHARED_LIBS 1)    #use dlls 
+add_definitions(
+	-D_CONSOLE
+    -DUNICODE
+    -D_UNICODE
+)
 add_definitions(
 	-D_CRT_SECURE_NO_WARNINGS
     -D_CRT_NON_CONFORMING_SWPRINTFS
 	-DBUILD_DLL
 	-DUSE_WINSDK		
-	-D_CONSOLE
 	-DZENWINX_EXPORTS
-    -DUNICODE
-    -D_UNICODE
 )
+if(Debug)
+    add_definitions(
+        -DATTACH_DEBUGGER
+        -DDEBUG
+        -D_DEBUG)
+else()
+    add_definitions(-DNDEBUG)
+endif()
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 set(ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
