@@ -1,0 +1,365 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{5A469F0A-4FEE-38E4-8BA6-A00BC76C581A}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>udefrag</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\UDefrag\ultradefrag-src\src\bin\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">udefrag.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">udefrag</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.dll</TargetExt>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\UDefrag\ultradefrag-src\src\bin\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">udefrag.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">udefrag</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\UDefrag\ultradefrag-src\src\bin\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">udefrag.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">udefrag</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\UDefrag\ultradefrag-src\src\bin\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">udefrag.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">udefrag</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <CallingConvention>Cdecl</CallingConvention>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <MinimalRebuild>true</MinimalRebuild>
+      <OmitFramePointers>false</OmitFramePointers>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <StringPooling>true</StringPooling>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_CONSOLE;UNICODE;_UNICODE;_MBCS;_WIN32;_WINDLL;_NO_CRT_STDIO_INLINE;_CRT_SECURE_NO_WARNINGS;BUILD_DLL;_USRDLL;USE_WINSDK;UDEFRAG_EXPORTS;NDEBUG;CMAKE_INTDIR="Debug";udefrag_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CONSOLE;UNICODE;_UNICODE;_MBCS;_WIN32;_WINDLL;_NO_CRT_STDIO_INLINE;_CRT_SECURE_NO_WARNINGS;BUILD_DLL;_USRDLL;USE_WINSDK;UDEFRAG_EXPORTS;NDEBUG;CMAKE_INTDIR=\"Debug\";udefrag_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>ntdll.lib;..\zenwinx\Debug\zenwinx.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <EntryPointSymbol>DllMain</EntryPointSymbol>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/UDefrag/ultradefrag-src/src/bin/udefrag/Debug/udefrag.lib</ImportLibrary>
+      <ModuleDefinitionFile>C:/UDefrag/ultradefrag-src/src/dll/udefrag/udefrag.def</ModuleDefinitionFile>
+      <ProgramDataBaseFile>C:/UDefrag/ultradefrag-src/src/bin/udefrag/Debug/udefrag.pdb</ProgramDataBaseFile>
+      <SubSystem>Windows</SubSystem>
+      <Version>
+      </Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsC</CompileAs>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CONSOLE;UNICODE;_UNICODE;_MBCS;_WIN32;_WINDLL;_NO_CRT_STDIO_INLINE;_CRT_SECURE_NO_WARNINGS;BUILD_DLL;_USRDLL;USE_WINSDK;UDEFRAG_EXPORTS;CMAKE_INTDIR="Release";udefrag_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CONSOLE;UNICODE;_UNICODE;_MBCS;_WIN32;_WINDLL;_NO_CRT_STDIO_INLINE;_CRT_SECURE_NO_WARNINGS;BUILD_DLL;_USRDLL;USE_WINSDK;UDEFRAG_EXPORTS;CMAKE_INTDIR=\"Release\";udefrag_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>ntdll.lib;..\zenwinx\Release\zenwinx.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <EntryPointSymbol>DllMain</EntryPointSymbol>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/UDefrag/ultradefrag-src/src/bin/udefrag/Release/udefrag.lib</ImportLibrary>
+      <ModuleDefinitionFile>C:/UDefrag/ultradefrag-src/src/dll/udefrag/udefrag.def</ModuleDefinitionFile>
+      <ProgramDataBaseFile>C:/UDefrag/ultradefrag-src/src/bin/udefrag/Release/udefrag.pdb</ProgramDataBaseFile>
+      <SubSystem>Windows</SubSystem>
+      <Version>
+      </Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
+      <CompileAs>CompileAsC</CompileAs>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CONSOLE;UNICODE;_UNICODE;_MBCS;_WIN32;_WINDLL;_NO_CRT_STDIO_INLINE;_CRT_SECURE_NO_WARNINGS;BUILD_DLL;_USRDLL;USE_WINSDK;UDEFRAG_EXPORTS;CMAKE_INTDIR="MinSizeRel";udefrag_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CONSOLE;UNICODE;_UNICODE;_MBCS;_WIN32;_WINDLL;_NO_CRT_STDIO_INLINE;_CRT_SECURE_NO_WARNINGS;BUILD_DLL;_USRDLL;USE_WINSDK;UDEFRAG_EXPORTS;CMAKE_INTDIR=\"MinSizeRel\";udefrag_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>ntdll.lib;..\zenwinx\MinSizeRel\zenwinx.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <EntryPointSymbol>DllMain</EntryPointSymbol>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/UDefrag/ultradefrag-src/src/bin/udefrag/MinSizeRel/udefrag.lib</ImportLibrary>
+      <ModuleDefinitionFile>C:/UDefrag/ultradefrag-src/src/dll/udefrag/udefrag.def</ModuleDefinitionFile>
+      <ProgramDataBaseFile>C:/UDefrag/ultradefrag-src/src/bin/udefrag/MinSizeRel/udefrag.pdb</ProgramDataBaseFile>
+      <SubSystem>Windows</SubSystem>
+      <Version>
+      </Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CONSOLE;UNICODE;_UNICODE;_MBCS;_WIN32;_WINDLL;_NO_CRT_STDIO_INLINE;_CRT_SECURE_NO_WARNINGS;BUILD_DLL;_USRDLL;USE_WINSDK;UDEFRAG_EXPORTS;CMAKE_INTDIR="RelWithDebInfo";udefrag_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CONSOLE;UNICODE;_UNICODE;_MBCS;_WIN32;_WINDLL;_NO_CRT_STDIO_INLINE;_CRT_SECURE_NO_WARNINGS;BUILD_DLL;_USRDLL;USE_WINSDK;UDEFRAG_EXPORTS;CMAKE_INTDIR=\"RelWithDebInfo\";udefrag_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>ntdll.lib;..\zenwinx\RelWithDebInfo\zenwinx.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <EntryPointSymbol>DllMain</EntryPointSymbol>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/UDefrag/ultradefrag-src/src/bin/udefrag/RelWithDebInfo/udefrag.lib</ImportLibrary>
+      <ModuleDefinitionFile>C:/UDefrag/ultradefrag-src/src/dll/udefrag/udefrag.def</ModuleDefinitionFile>
+      <ProgramDataBaseFile>C:/UDefrag/ultradefrag-src/src/bin/udefrag/RelWithDebInfo/udefrag.pdb</ProgramDataBaseFile>
+      <SubSystem>Windows</SubSystem>
+      <Version>
+      </Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\dll\udefrag\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/UDefrag/ultradefrag-src/src/dll/udefrag/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+C:\msys64\mingw64\bin\cmake.exe -HC:/UDefrag/ultradefrag-src/src -BC:/UDefrag/ultradefrag-src/src/bin --check-stamp-file C:/UDefrag/ultradefrag-src/src/bin/udefrag/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/UDefrag/ultradefrag-src/src/dll/udefrag/CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\dll\udefrag\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeSystem.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeSystemSpecificInitialize.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeCCompiler.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeCXXCompiler.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeSystemSpecificInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeGenericSystem.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\WindowsPaths.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeLanguageInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC-C.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeRCCompiler.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeRCInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCommonLanguageInclude.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCXXInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeLanguageInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Compiler\MSVC-CXX.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC-CXX.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCommonLanguageInclude.cmake;C:\UDefrag\ultradefrag-src\src\dll\udefrag\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\UDefrag\ultradefrag-src\src\bin\udefrag\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/UDefrag/ultradefrag-src/src/dll/udefrag/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+C:\msys64\mingw64\bin\cmake.exe -HC:/UDefrag/ultradefrag-src/src -BC:/UDefrag/ultradefrag-src/src/bin --check-stamp-file C:/UDefrag/ultradefrag-src/src/bin/udefrag/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/UDefrag/ultradefrag-src/src/dll/udefrag/CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\dll\udefrag\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeSystem.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeSystemSpecificInitialize.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeCCompiler.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeCXXCompiler.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeSystemSpecificInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeGenericSystem.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\WindowsPaths.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeLanguageInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC-C.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeRCCompiler.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeRCInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCommonLanguageInclude.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCXXInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeLanguageInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Compiler\MSVC-CXX.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC-CXX.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCommonLanguageInclude.cmake;C:\UDefrag\ultradefrag-src\src\dll\udefrag\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\UDefrag\ultradefrag-src\src\bin\udefrag\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/UDefrag/ultradefrag-src/src/dll/udefrag/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+C:\msys64\mingw64\bin\cmake.exe -HC:/UDefrag/ultradefrag-src/src -BC:/UDefrag/ultradefrag-src/src/bin --check-stamp-file C:/UDefrag/ultradefrag-src/src/bin/udefrag/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/UDefrag/ultradefrag-src/src/dll/udefrag/CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\dll\udefrag\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeSystem.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeSystemSpecificInitialize.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeCCompiler.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeCXXCompiler.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeSystemSpecificInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeGenericSystem.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\WindowsPaths.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeLanguageInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC-C.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeRCCompiler.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeRCInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCommonLanguageInclude.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCXXInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeLanguageInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Compiler\MSVC-CXX.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC-CXX.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCommonLanguageInclude.cmake;C:\UDefrag\ultradefrag-src\src\dll\udefrag\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\UDefrag\ultradefrag-src\src\bin\udefrag\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/UDefrag/ultradefrag-src/src/dll/udefrag/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+C:\msys64\mingw64\bin\cmake.exe -HC:/UDefrag/ultradefrag-src/src -BC:/UDefrag/ultradefrag-src/src/bin --check-stamp-file C:/UDefrag/ultradefrag-src/src/bin/udefrag/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/UDefrag/ultradefrag-src/src/dll/udefrag/CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\dll\udefrag\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeSystem.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeSystemSpecificInitialize.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeCCompiler.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeCXXCompiler.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeSystemSpecificInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeGenericSystem.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\WindowsPaths.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeLanguageInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC-C.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeRCCompiler.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeRCInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCommonLanguageInclude.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCXXInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeLanguageInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Compiler\MSVC-CXX.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC-CXX.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCommonLanguageInclude.cmake;C:\UDefrag\ultradefrag-src\src\dll\udefrag\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\UDefrag\ultradefrag-src\src\bin\udefrag\CMakeFiles\generate.stamp</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\dll\udefrag\analyze.c" />
+    <ClCompile Include="..\..\dll\udefrag\auxiliary.c" />
+    <ClCompile Include="..\..\dll\udefrag\defrag.c" />
+    <ClCompile Include="..\..\dll\udefrag\entry.c" />
+    <ClCompile Include="..\..\dll\udefrag\int64.c" />
+    <ClCompile Include="..\..\dll\udefrag\map.c" />
+    <ClCompile Include="..\..\dll\udefrag\move.c" />
+    <ClCompile Include="..\..\dll\udefrag\optimize.c" />
+    <ClCompile Include="..\..\dll\udefrag\options.c" />
+    <ClCompile Include="..\..\dll\udefrag\query.c" />
+    <ClCompile Include="..\..\dll\udefrag\reports.c" />
+    <ClCompile Include="..\..\dll\udefrag\search.c" />
+    <ClCompile Include="..\..\dll\udefrag\udefrag.c" />
+    <ClCompile Include="..\..\dll\udefrag\volume.c" />
+    <None Include="..\..\dll\udefrag\udefrag.def" />
+    <ResourceCompile Include="..\..\dll\udefrag\udefrag.rc" />
+    <ClInclude Include="..\..\dll\udefrag\ud_enums.h" />
+    <ClInclude Include="..\..\dll\udefrag\ud_flags.h" />
+    <ClInclude Include="..\..\dll\udefrag\ud_structs.h" />
+    <ClInclude Include="..\..\dll\udefrag\udefrag-internals.h" />
+    <ClInclude Include="..\..\dll\udefrag\udefrag.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\UDefrag\ultradefrag-src\src\bin\ZERO_CHECK.vcxproj">
+      <Project>{AE5784C0-4D25-3DC9-9E72-E850580CBC75}</Project>
+      <Name>ZERO_CHECK</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\UDefrag\ultradefrag-src\src\bin\zenwinx\zenwinx.vcxproj">
+      <Project>{82164877-678B-3133-8F45-21476E2648E4}</Project>
+      <Name>zenwinx</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

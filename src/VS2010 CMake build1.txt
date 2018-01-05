@@ -1,0 +1,1126 @@
+C:\UDefrag\ultradefrag-src\src\bin>cmake -G "Visual Studio 10 2010 Win64" ..
+C:/UDefrag/ultradefrag-src/src/bin/bin
+-- The C compiler identification is MSVC 16.0.40219.1
+-- The CXX compiler identification is MSVC 16.0.40219.1
+-- Check for working C compiler: C:/Program Files (x86)/Microsoft Visual Studio 10.0/VC/bin/x86_amd64/cl.exe
+-- Check for working C compiler: C:/Program Files (x86)/Microsoft Visual Studio 10.0/VC/bin/x86_amd64/cl.exe -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working CXX compiler: C:/Program Files (x86)/Microsoft Visual Studio 10.0/VC/bin/x86_amd64/cl.exe
+-- Check for working CXX compiler: C:/Program Files (x86)/Microsoft Visual Studio 10.0/VC/bin/x86_amd64/cl.exe -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Boost version: 1.65.0
+-- Found the following Boost libraries:
+--   program_options
+--   regex
+A:/boostlib165/lib64-msvc-10.0
+A:/boostlib165/lib64-msvc-10.0/boost_program_options-vc100-mt-gd-1_65.lib;A:/boostlib165/lib64-msvc-10.0/boost_regex-vc100-mt-gd-1_65.lib
+A:/wxWidgets
+A:/wxWidgets/lib/vcWindows7.1SDK_x64_dll
+CMake Error at C:/msys64/mingw64/share/cmake-3.9/Modules/FindPackageHandleStandardArgs.cmake:137 (message):
+  Could NOT find wxWidgets (missing: wxWidgets_LIBRARIES
+  wxWidgets_INCLUDE_DIRS)
+Call Stack (most recent call first):
+  C:/msys64/mingw64/share/cmake-3.9/Modules/FindPackageHandleStandardArgs.cmake:377 (_FPHSA_FAILURE_MESSAGE)
+  C:/msys64/mingw64/share/cmake-3.9/Modules/FindwxWidgets.cmake:953 (find_package_handle_standard_args)
+  wxgui/CMakeLists.txt:57 (find_package)
+
+
+-- Configuring incomplete, errors occurred!
+See also "C:/UDefrag/ultradefrag-src/src/bin/CMakeFiles/CMakeOutput.log".
+
+C:\UDefrag\ultradefrag-src\src\bin>cmake -G "Visual Studio 10 2010 Win64" ..
+C:/UDefrag/ultradefrag-src/src/bin/bin
+-- Boost version: 1.65.0
+-- Found the following Boost libraries:
+--   program_options
+--   regex
+A:/boostlib165/lib64-msvc-10.0
+A:/boostlib165/lib64-msvc-10.0/boost_program_options-vc100-mt-gd-1_65.lib;A:/boostlib165/lib64-msvc-10.0/boost_regex-vc100-mt-gd-1_65.lib
+A:/wxWidgets
+A:/wxWidgets/lib/vcWindows7.1SDK_x64_dll
+-- Found wxWidgets: A:/wxWidgets/lib/vcWindows7.1SDK_x64_dll/wxbase31ud_net.lib;A:/wxWidgets/lib/vcWindows7.1SDK_x64_dll/wxmsw31ud_adv.lib;A:/wxWidgets/lib/vcWindows7.1SDK_x64_dll/wxmsw31ud_core.lib;A:/wxWidgets/lib/vcWindows7.1SDK_x64_dll/wxbase31ud.lib;A:/wxWidgets/lib/vcWindows7.1SDK_x64_dll/wxpngd.lib;A:/wxWidgets/lib/vcWindows7.1SDK_x64_dll/wxtiffd.lib;A:/wxWidgets/lib/vcWindows7.1SDK_x64_dll/wxjpegd.lib;A:/wxWidgets/lib/vcWindows7.1SDK_x64_dll/wxzlibd.lib;A:/wxWidgets/lib/vcWindows7.1SDK_x64_dll/wxregexud.lib;A:/wxWidgets/lib/vcWindows7.1SDK_x64_dll/wxexpatd.lib;winmm;comctl32;oleacc;rpcrt4;shlwapi;version;wsock32 (found version "3.1.0")
+-- Configuring done
+-- Generating done
+-- Build files have been written to: C:/UDefrag/ultradefrag-src/src/bin
+
+C:\UDefrag\ultradefrag-src\src\bin>cmake -G "Visual Studio 10 2010 Win64" ..
+
+C:\UDefrag\ultradefrag-src\src\bin>cmake --build --help
+Error: C:/UDefrag/ultradefrag-src/src/bin/--help is not a directory
+
+C:\UDefrag\ultradefrag-src\src\bin>cmake --help --build
+Usage
+
+  cmake [options] <path-to-source>
+  cmake [options] <path-to-existing-build>
+
+Specify a source directory to (re-)generate a build system for it in the
+current working directory.  Specify an existing build directory to
+re-generate its build system.
+
+Options
+  -C <initial-cache>           = Pre-load a script to populate the cache.
+  -D <var>[:<type>]=<value>    = Create a cmake cache entry.
+  -U <globbing_expr>           = Remove matching entries from CMake cache.
+  -G <generator-name>          = Specify a build system generator.
+  -T <toolset-name>            = Specify toolset name if supported by
+                                 generator.
+  -A <platform-name>           = Specify platform name if supported by
+                                 generator.
+  -Wdev                        = Enable developer warnings.
+  -Wno-dev                     = Suppress developer warnings.
+  -Werror=dev                  = Make developer warnings errors.
+  -Wno-error=dev               = Make developer warnings not errors.
+  -Wdeprecated                 = Enable deprecation warnings.
+  -Wno-deprecated              = Suppress deprecation warnings.
+  -Werror=deprecated           = Make deprecated macro and function warnings
+                                 errors.
+  -Wno-error=deprecated        = Make deprecated macro and function warnings
+                                 not errors.
+  -E                           = CMake command mode.
+  -L[A][H]                     = List non-advanced cached variables.
+  --build <dir>                = Build a CMake-generated project binary tree.
+  -N                           = View mode only.
+  -P <file>                    = Process script mode.
+  --find-package               = Run in pkg-config like mode.
+  --graphviz=[file]            = Generate graphviz of dependencies, see
+                                 CMakeGraphVizOptions.cmake for more.
+  --system-information [file]  = Dump information about this system.
+  --debug-trycompile           = Do not delete the try_compile build tree.
+                                 Only useful on one try_compile at a time.
+  --debug-output               = Put cmake in a debug mode.
+  --trace                      = Put cmake in trace mode.
+  --trace-expand               = Put cmake in trace mode with variable
+                                 expansion.
+  --trace-source=<file>        = Trace only this CMake file/module.  Multiple
+                                 options allowed.
+  --warn-uninitialized         = Warn about uninitialized values.
+  --warn-unused-vars           = Warn about unused variables.
+  --no-warn-unused-cli         = Don't warn about command line options.
+  --check-system-vars          = Find problems with variable usage in system
+                                 files.
+  --help,-help,-usage,-h,-H,/? = Print usage information and exit.
+  --version,-version,/V [<f>]  = Print version number and exit.
+  --help-full [<f>]            = Print all help manuals and exit.
+  --help-manual <man> [<f>]    = Print one help manual and exit.
+  --help-manual-list [<f>]     = List help manuals available and exit.
+  --help-command <cmd> [<f>]   = Print help for one command and exit.
+  --help-command-list [<f>]    = List commands with help available and exit.
+  --help-commands [<f>]        = Print cmake-commands manual and exit.
+  --help-module <mod> [<f>]    = Print help for one module and exit.
+  --help-module-list [<f>]     = List modules with help available and exit.
+  --help-modules [<f>]         = Print cmake-modules manual and exit.
+  --help-policy <cmp> [<f>]    = Print help for one policy and exit.
+  --help-policy-list [<f>]     = List policies with help available and exit.
+  --help-policies [<f>]        = Print cmake-policies manual and exit.
+  --help-property <prop> [<f>] = Print help for one property and exit.
+  --help-property-list [<f>]   = List properties with help available and
+                                 exit.
+  --help-properties [<f>]      = Print cmake-properties manual and exit.
+  --help-variable var [<f>]    = Print help for one variable and exit.
+  --help-variable-list [<f>]   = List variables with help available and exit.
+  --help-variables [<f>]       = Print cmake-variables manual and exit.
+
+Generators
+
+The following generators are available on this platform:
+  Visual Studio 15 2017 [arch] = Generates Visual Studio 2017 project files.
+                                 Optional [arch] can be "Win64" or "ARM".
+  Visual Studio 14 2015 [arch] = Generates Visual Studio 2015 project files.
+                                 Optional [arch] can be "Win64" or "ARM".
+  Visual Studio 12 2013 [arch] = Generates Visual Studio 2013 project files.
+                                 Optional [arch] can be "Win64" or "ARM".
+  Visual Studio 11 2012 [arch] = Generates Visual Studio 2012 project files.
+                                 Optional [arch] can be "Win64" or "ARM".
+  Visual Studio 10 2010 [arch] = Generates Visual Studio 2010 project files.
+                                 Optional [arch] can be "Win64" or "IA64".
+  Visual Studio 9 2008 [arch]  = Generates Visual Studio 2008 project files.
+                                 Optional [arch] can be "Win64" or "IA64".
+  Visual Studio 8 2005 [arch]  = Deprecated.  Generates Visual Studio 2005
+                                 project files.  Optional [arch] can be
+                                 "Win64".
+  Borland Makefiles            = Generates Borland makefiles.
+  NMake Makefiles              = Generates NMake makefiles.
+  NMake Makefiles JOM          = Generates JOM makefiles.
+  Green Hills MULTI            = Generates Green Hills MULTI files
+                                 (experimental, work-in-progress).
+  MSYS Makefiles               = Generates MSYS makefiles.
+  MinGW Makefiles              = Generates a make file for use with
+                                 mingw32-make.
+  Unix Makefiles               = Generates standard UNIX makefiles.
+  Ninja                        = Generates build.ninja files.
+  Watcom WMake                 = Generates Watcom WMake makefiles.
+  CodeBlocks - MinGW Makefiles = Generates CodeBlocks project files.
+  CodeBlocks - NMake Makefiles = Generates CodeBlocks project files.
+  CodeBlocks - NMake Makefiles JOM
+                               = Generates CodeBlocks project files.
+  CodeBlocks - Ninja           = Generates CodeBlocks project files.
+  CodeBlocks - Unix Makefiles  = Generates CodeBlocks project files.
+  CodeLite - MinGW Makefiles   = Generates CodeLite project files.
+  CodeLite - NMake Makefiles   = Generates CodeLite project files.
+  CodeLite - Ninja             = Generates CodeLite project files.
+  CodeLite - Unix Makefiles    = Generates CodeLite project files.
+  Sublime Text 2 - MinGW Makefiles
+                               = Generates Sublime Text 2 project files.
+  Sublime Text 2 - NMake Makefiles
+                               = Generates Sublime Text 2 project files.
+  Sublime Text 2 - Ninja       = Generates Sublime Text 2 project files.
+  Sublime Text 2 - Unix Makefiles
+                               = Generates Sublime Text 2 project files.
+  Kate - MinGW Makefiles       = Generates Kate project files.
+  Kate - NMake Makefiles       = Generates Kate project files.
+  Kate - Ninja                 = Generates Kate project files.
+  Kate - Unix Makefiles        = Generates Kate project files.
+  Eclipse CDT4 - NMake Makefiles
+                               = Generates Eclipse CDT 4.0 project files.
+  Eclipse CDT4 - MinGW Makefiles
+                               = Generates Eclipse CDT 4.0 project files.
+  Eclipse CDT4 - Ninja         = Generates Eclipse CDT 4.0 project files.
+  Eclipse CDT4 - Unix Makefiles= Generates Eclipse CDT 4.0 project files.
+
+
+C:\UDefrag\ultradefrag-src\src\bin>cmake --build .
+Microsoft (R) Build Engine version 4.6.1590.0
+[Microsoft .NET Framework, version 4.0.30319.42000]
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Build started 1/1/2018 6:24:09 AM.
+Project "C:\UDefrag\ultradefrag-src\src\bin\ALL_BUILD.vcxproj" on node 1 (default targets).
+Project "C:\UDefrag\ultradefrag-src\src\bin\ALL_BUILD.vcxproj" (1) is building "C:\UDefrag\ultradefrag-src\src\bin\ZERO_CHECK.vcxproj" (2) on node  1 (default targets).
+PrepareForBuild:
+  Creating directory "x64\Debug\ZERO_CHECK\".
+InitializeBuildStatus:
+  Creating "x64\Debug\ZERO_CHECK\ZERO_CHECK.unsuccessfulbuild" because "AlwaysCreate" was specified.
+CustomBuild:
+  Checking Build System
+  CMake does not need to re-run because C:/UDefrag/ultradefrag-src/src/bin/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because C:/UDefrag/ultradefrag-src/src/bin/lua5.1a/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because C:/UDefrag/ultradefrag-src/src/bin/zenwinx/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because C:/UDefrag/ultradefrag-src/src/bin/udefrag/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because C:/UDefrag/ultradefrag-src/src/bin/stopgap/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because C:/UDefrag/ultradefrag-src/src/bin/wxgui/CMakeFiles/generate.stamp is up-to-date.
+FinalizeBuildStatus:
+  Deleting file "x64\Debug\ZERO_CHECK\ZERO_CHECK.unsuccessfulbuild".
+  Touching "x64\Debug\ZERO_CHECK\ZERO_CHECK.lastbuildstate".
+Done Building Project "C:\UDefrag\ultradefrag-src\src\bin\ZERO_CHECK.vcxproj" (default targets).
+
+Project "C:\UDefrag\ultradefrag-src\src\bin\ALL_BUILD.vcxproj" (1) is building "C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj" (3) on  node 1 (default targets).
+PrepareForBuild:
+  Creating directory "lua5.1a.dir\Debug\".
+  Creating directory "C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\Debug\".
+InitializeBuildStatus:
+  Creating "lua5.1a.dir\Debug\lua5.1a.unsuccessfulbuild" because "AlwaysCreate" was specified.
+CustomBuild:
+  Building Custom Rule C:/UDefrag/ultradefrag-src/src/lua5.1/CMakeLists.txt
+  CMake does not need to re-run because C:/UDefrag/ultradefrag-src/src/bin/lua5.1a/CMakeFiles/generate.stamp is up-to-date.
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D USE_WINSDK
+  /D _CRT_SECURE_NO_WARNINGS /D OFFICIAL_RELEASE /D _MBCS /D WIN64 /D _WIN32 /D NDEBUG /D "CMAKE_INTDIR=\"Debug\"" /D lua5_1a_EXPORTS /D _WINDLL /
+  D _MBCS /GF /Gm /EHsc /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"lua5.1a.dir\Debug\\" /Fd"lua5.1a.dir\Debug\vcWindows7.1SDK.pdb" /Gd
+  /TC /errorReport:queue ..\..\lua5.1\lapi.c ..\..\lua5.1\lauxlib.c ..\..\lua5.1\lbaselib.c ..\..\lua5.1\lcode.c ..\..\lua5.1\ldblib.c ..\..\lua5.
+  1\ldebug.c ..\..\lua5.1\ldo.c ..\..\lua5.1\ldump.c ..\..\lua5.1\lfunc.c ..\..\lua5.1\lgc.c ..\..\lua5.1\linit.c ..\..\lua5.1\liolib.c ..\..\lua5
+  .1\llex.c ..\..\lua5.1\lmathlib.c ..\..\lua5.1\lmem.c ..\..\lua5.1\loadlib.c ..\..\lua5.1\lobject.c ..\..\lua5.1\lopcodes.c ..\..\lua5.1\loslib.
+  c ..\..\lua5.1\lparser.c ..\..\lua5.1\lstate.c ..\..\lua5.1\lstring.c ..\..\lua5.1\lstrlib.c ..\..\lua5.1\ltable.c ..\..\lua5.1\ltablib.c ..\..\
+  lua5.1\ltm.c ..\..\lua5.1\lundump.c ..\..\lua5.1\lvm.c ..\..\lua5.1\lzio.c
+  lzio.c
+  lvm.c
+  lundump.c
+  ltm.c
+  ltablib.c
+  ltable.c
+  lstrlib.c
+  lstring.c
+  lstate.c
+  lparser.c
+  loslib.c
+  lopcodes.c
+  lobject.c
+  loadlib.c
+  lmem.c
+  lmathlib.c
+  llex.c
+  liolib.c
+  linit.c
+  lgc.c
+  Generating Code...
+  Compiling...
+  lfunc.c
+  ldump.c
+  ldo.c
+  ldebug.c
+  ldblib.c
+  lcode.c
+  lbaselib.c
+  lauxlib.c
+  lapi.c
+  Generating Code...
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\UDefrag\ultradefrag-src\src\bin\lua5.1
+  a\Debug\lua5.1a.dll" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32
+  .lib advapi32.lib /NODEFAULTLIB /DEF:"C:/UDefrag/ultradefrag-src/src/lua5.1/lua5.1.def" /MANIFEST:NO /DEBUG /PDB:"C:/UDefrag/ultradefrag-src/src
+  /bin/lua5.1a/Debug/lua5.1a.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/UDefrag/ultradefrag-src/src/bin/lua5.1a/Debug/lua
+  5.1a.lib" /MACHINE:X64 /DLL lua5.1a.dir\Debug\lapi.obj
+  lua5.1a.dir\Debug\lauxlib.obj
+  lua5.1a.dir\Debug\lbaselib.obj
+  lua5.1a.dir\Debug\lcode.obj
+  lua5.1a.dir\Debug\ldblib.obj
+  lua5.1a.dir\Debug\ldebug.obj
+  lua5.1a.dir\Debug\ldo.obj
+  lua5.1a.dir\Debug\ldump.obj
+  lua5.1a.dir\Debug\lfunc.obj
+  lua5.1a.dir\Debug\lgc.obj
+  lua5.1a.dir\Debug\linit.obj
+  lua5.1a.dir\Debug\liolib.obj
+  lua5.1a.dir\Debug\llex.obj
+  lua5.1a.dir\Debug\lmathlib.obj
+  lua5.1a.dir\Debug\lmem.obj
+  lua5.1a.dir\Debug\loadlib.obj
+  lua5.1a.dir\Debug\lobject.obj
+  lua5.1a.dir\Debug\lopcodes.obj
+  lua5.1a.dir\Debug\loslib.obj
+  lua5.1a.dir\Debug\lparser.obj
+  lua5.1a.dir\Debug\lstate.obj
+  lua5.1a.dir\Debug\lstring.obj
+  lua5.1a.dir\Debug\lstrlib.obj
+  lua5.1a.dir\Debug\ltable.obj
+  lua5.1a.dir\Debug\ltablib.obj
+  lua5.1a.dir\Debug\ltm.obj
+  lua5.1a.dir\Debug\lundump.obj
+  lua5.1a.dir\Debug\lvm.obj
+  lua5.1a.dir\Debug\lzio.obj  /machine:x64
+     Creating library C:/UDefrag/ultradefrag-src/src/bin/lua5.1a/Debug/lua5.1a.lib and object C:/UDefrag/ultradefrag-src/src/bin/lua5.1a/Debug/lua
+  5.1a.exp
+ltable.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ltablib.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lundump.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lvm.obj : error LNK2019: unresolved external symbol _fltused referenced in function luaV_execute [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5. 1a.vcxproj]
+lobject.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+loslib.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lparser.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lstrlib.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ldo.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ldump.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+liolib.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lmathlib.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lapi.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lauxlib.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lbaselib.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lcode.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lvm.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+loslib.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lparser.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lstrlib.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ltm.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+liolib.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+llex.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+loadlib.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lobject.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lapi.obj : error LNK2019: unresolved external symbol strlen referenced in function lua_pushstring [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5 .1a.vcxproj]
+lauxlib.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ldblib.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ldo.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lundump.obj : error LNK2019: unresolved external symbol __GSHandlerCheck referenced in function luaU_undump [C:\UDefrag\ultradefrag-src\src\bin\lu a5.1a\lua5.1a.vcxproj]
+lvm.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lparser.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lstrlib.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ltable.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ltablib.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+llex.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+loadlib.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lobject.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+loslib.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ldebug.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ldo.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ldump.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+liolib.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lauxlib.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lbaselib.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lcode.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ldblib.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lauxlib.obj : error LNK2019: unresolved external symbol strcmp referenced in function luaL_argerror [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lu a5.1a.vcxproj]
+ldblib.obj : error LNK2001: unresolved external symbol strcmp [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+loslib.obj : error LNK2001: unresolved external symbol strcmp [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lundump.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lvm.obj : error LNK2019: unresolved external symbol __security_cookie referenced in function luaV_tostring [C:\UDefrag\ultradefrag-src\src\bin\lua 5.1a\lua5.1a.vcxproj]
+lparser.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lstrlib.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ltable.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ltablib.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+llex.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+loadlib.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lobject.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+loslib.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ldebug.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ldo.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ldump.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+liolib.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lauxlib.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lbaselib.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lcode.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ldblib.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lundump.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lvm.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lparser.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lstrlib.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ltable.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ltablib.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+llex.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+loadlib.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lobject.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+loslib.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ldebug.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ldo.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ldump.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+liolib.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lauxlib.obj : error LNK2019: unresolved external symbol __security_check_cookie referenced in function luaL_argerror [C:\UDefrag\ultradefrag-src\s rc\bin\lua5.1a\lua5.1a.vcxproj]
+lbaselib.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lcode.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ldblib.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lauxlib.obj : error LNK2019: unresolved external symbol __imp_strstr referenced in function luaL_gsub [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\ lua5.1a.vcxproj]
+llex.obj : error LNK2001: unresolved external symbol __imp_strchr [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+loadlib.obj : error LNK2001: unresolved external symbol __imp_strchr [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lobject.obj : error LNK2001: unresolved external symbol __imp_strchr [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lstrlib.obj : error LNK2001: unresolved external symbol __imp_strchr [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lauxlib.obj : error LNK2019: unresolved external symbol __imp_strchr referenced in function luaL_findtable [C:\UDefrag\ultradefrag-src\src\bin\lua 5.1a\lua5.1a.vcxproj]
+ldblib.obj : error LNK2001: unresolved external symbol __imp_strchr [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ldebug.obj : error LNK2001: unresolved external symbol __imp_strchr [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lgc.obj : error LNK2001: unresolved external symbol __imp_strchr [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lvm.obj : error LNK2001: unresolved external symbol memcpy [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lzio.obj : error LNK2001: unresolved external symbol memcpy [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lauxlib.obj : error LNK2019: unresolved external symbol memcpy referenced in function luaL_addvalue [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lu a5.1a.vcxproj]
+lstring.obj : error LNK2001: unresolved external symbol memcpy [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ltable.obj : error LNK2001: unresolved external symbol memcpy [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lundump.obj : error LNK2001: unresolved external symbol memcpy [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lauxlib.obj : error LNK2019: unresolved external symbol __imp_ferror referenced in function luaL_loadfile [C:\UDefrag\ultradefrag-src\src\bin\lua5 .1a\lua5.1a.vcxproj]
+liolib.obj : error LNK2001: unresolved external symbol __imp_ferror [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lauxlib.obj : error LNK2019: unresolved external symbol __imp_ungetc referenced in function luaL_loadfile [C:\UDefrag\ultradefrag-src\src\bin\lua5 .1a\lua5.1a.vcxproj]
+liolib.obj : error LNK2001: unresolved external symbol __imp_ungetc [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lauxlib.obj : error LNK2019: unresolved external symbol __imp_fclose referenced in function luaL_loadfile [C:\UDefrag\ultradefrag-src\src\bin\lua5 .1a\lua5.1a.vcxproj]
+liolib.obj : error LNK2001: unresolved external symbol __imp_fclose [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+loadlib.obj : error LNK2001: unresolved external symbol __imp_fclose [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lauxlib.obj : error LNK2019: unresolved external symbol __imp_getc referenced in function luaL_loadfile [C:\UDefrag\ultradefrag-src\src\bin\lua5.1 a\lua5.1a.vcxproj]
+liolib.obj : error LNK2001: unresolved external symbol __imp_getc [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lauxlib.obj : error LNK2019: unresolved external symbol __imp_fopen referenced in function luaL_loadfile [C:\UDefrag\ultradefrag-src\src\bin\lua5. 1a\lua5.1a.vcxproj]
+liolib.obj : error LNK2001: unresolved external symbol __imp_fopen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+loadlib.obj : error LNK2001: unresolved external symbol __imp_fopen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lauxlib.obj : error LNK2019: unresolved external symbol __imp___iob_func referenced in function luaL_loadfile [C:\UDefrag\ultradefrag-src\src\bin\ lua5.1a\lua5.1a.vcxproj]
+lbaselib.obj : error LNK2001: unresolved external symbol __imp___iob_func [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ldblib.obj : error LNK2001: unresolved external symbol __imp___iob_func [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+liolib.obj : error LNK2001: unresolved external symbol __imp___iob_func [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lauxlib.obj : error LNK2019: unresolved external symbol __imp_fread referenced in function getF [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1 a.vcxproj]
+liolib.obj : error LNK2001: unresolved external symbol __imp_fread [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lauxlib.obj : error LNK2019: unresolved external symbol __imp_feof referenced in function getF [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a .vcxproj]
+lauxlib.obj : error LNK2019: unresolved external symbol __imp_strerror referenced in function errfile [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\ lua5.1a.vcxproj]
+liolib.obj : error LNK2001: unresolved external symbol __imp_strerror [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+loslib.obj : error LNK2001: unresolved external symbol __imp_strerror [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lauxlib.obj : error LNK2019: unresolved external symbol __imp__errno referenced in function errfile [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lu a5.1a.vcxproj]
+liolib.obj : error LNK2001: unresolved external symbol __imp__errno [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+loslib.obj : error LNK2001: unresolved external symbol __imp__errno [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lauxlib.obj : error LNK2019: unresolved external symbol __imp_realloc referenced in function l_alloc [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\l ua5.1a.vcxproj]
+lauxlib.obj : error LNK2019: unresolved external symbol __imp_free referenced in function l_alloc [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5 .1a.vcxproj]
+loslib.obj : error LNK2001: unresolved external symbol __imp_free [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lauxlib.obj : error LNK2019: unresolved external symbol __imp_fprintf referenced in function panic [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua 5.1a.vcxproj]
+liolib.obj : error LNK2001: unresolved external symbol __imp_fprintf [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lbaselib.obj : error LNK2019: unresolved external symbol __imp_fputs referenced in function luaB_print [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a \lua5.1a.vcxproj]
+ldblib.obj : error LNK2001: unresolved external symbol __imp_fputs [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lbaselib.obj : error LNK2019: unresolved external symbol __imp_isspace referenced in function luaB_tonumber [C:\UDefrag\ultradefrag-src\src\bin\lu a5.1a\lua5.1a.vcxproj]
+llex.obj : error LNK2001: unresolved external symbol __imp_isspace [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lobject.obj : error LNK2001: unresolved external symbol __imp_isspace [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lstrlib.obj : error LNK2001: unresolved external symbol __imp_isspace [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lbaselib.obj : error LNK2019: unresolved external symbol __imp_strtoul referenced in function luaB_tonumber [C:\UDefrag\ultradefrag-src\src\bin\lu a5.1a\lua5.1a.vcxproj]
+lobject.obj : error LNK2001: unresolved external symbol __imp_strtoul [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lcode.obj : error LNK2019: unresolved external symbol abs referenced in function fixjump [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxpr oj]
+lcode.obj : error LNK2019: unresolved external symbol pow referenced in function constfolding [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a. vcxproj]
+lmathlib.obj : error LNK2001: unresolved external symbol pow [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lvm.obj : error LNK2001: unresolved external symbol pow [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lcode.obj : error LNK2019: unresolved external symbol __imp_floor referenced in function constfolding [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\ lua5.1a.vcxproj]
+lmathlib.obj : error LNK2001: unresolved external symbol __imp_floor [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lvm.obj : error LNK2001: unresolved external symbol __imp_floor [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ldblib.obj : error LNK2019: unresolved external symbol __imp_fgets referenced in function db_debug [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua 5.1a.vcxproj]
+liolib.obj : error LNK2001: unresolved external symbol __imp_fgets [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ldo.obj : error LNK2019: unresolved external symbol __imp_exit referenced in function luaD_throw [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5. 1a.vcxproj]
+loslib.obj : error LNK2001: unresolved external symbol __imp_exit [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+ldo.obj : error LNK2019: unresolved external symbol __imp_longjmp referenced in function luaD_throw [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lu a5.1a.vcxproj]
+ldo.obj : error LNK2019: unresolved external symbol _setjmp referenced in function luaD_rawrunprotected [C:\UDefrag\ultradefrag-src\src\bin\lua5.1 a\lua5.1a.vcxproj]
+liolib.obj : error LNK2019: unresolved external symbol __imp__popen referenced in function io_popen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lu a5.1a.vcxproj]
+liolib.obj : error LNK2019: unresolved external symbol __imp_tmpfile referenced in function io_tmpfile [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a \lua5.1a.vcxproj]
+liolib.obj : error LNK2019: unresolved external symbol __imp_clearerr referenced in function g_read [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lu a5.1a.vcxproj]
+liolib.obj : error LNK2019: unresolved external symbol __imp_fscanf referenced in function read_number [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a \lua5.1a.vcxproj]
+liolib.obj : error LNK2019: unresolved external symbol __imp_fwrite referenced in function g_write [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua 5.1a.vcxproj]
+liolib.obj : error LNK2019: unresolved external symbol __imp_ftell referenced in function f_seek [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5. 1a.vcxproj]
+liolib.obj : error LNK2019: unresolved external symbol __imp_fseek referenced in function f_seek [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5. 1a.vcxproj]
+liolib.obj : error LNK2019: unresolved external symbol __imp_setvbuf referenced in function f_setvbuf [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\ lua5.1a.vcxproj]
+liolib.obj : error LNK2019: unresolved external symbol __imp_fflush referenced in function io_flush [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lu a5.1a.vcxproj]
+liolib.obj : error LNK2019: unresolved external symbol __imp__pclose referenced in function io_pclose [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\ lua5.1a.vcxproj]
+llex.obj : error LNK2019: unresolved external symbol __imp_iscntrl referenced in function luaX_token2str [C:\UDefrag\ultradefrag-src\src\bin\lua5. 1a\lua5.1a.vcxproj]
+lstrlib.obj : error LNK2001: unresolved external symbol __imp_iscntrl [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+llex.obj : error LNK2019: unresolved external symbol __imp_isalnum referenced in function llex [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a .vcxproj]
+lstrlib.obj : error LNK2001: unresolved external symbol __imp_isalnum [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+llex.obj : error LNK2019: unresolved external symbol __imp_isalpha referenced in function llex [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a .vcxproj]
+lstrlib.obj : error LNK2001: unresolved external symbol __imp_isalpha [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+llex.obj : error LNK2019: unresolved external symbol __imp_isdigit referenced in function llex [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a .vcxproj]
+lstrlib.obj : error LNK2001: unresolved external symbol __imp_isdigit [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+llex.obj : error LNK2019: unresolved external symbol __imp_localeconv referenced in function trydecpoint [C:\UDefrag\ultradefrag-src\src\bin\lua5. 1a\lua5.1a.vcxproj]
+lmathlib.obj : error LNK2019: unresolved external symbol fabs referenced in function math_abs [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a. vcxproj]
+lmathlib.obj : error LNK2019: unresolved external symbol sin referenced in function math_sin [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.v cxproj]
+lmathlib.obj : error LNK2019: unresolved external symbol sinh referenced in function math_sinh [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a .vcxproj]
+lmathlib.obj : error LNK2019: unresolved external symbol cos referenced in function math_cos [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.v cxproj]
+lmathlib.obj : error LNK2019: unresolved external symbol cosh referenced in function math_cosh [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a .vcxproj]
+lmathlib.obj : error LNK2019: unresolved external symbol tan referenced in function math_tan [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.v cxproj]
+lmathlib.obj : error LNK2019: unresolved external symbol tanh referenced in function math_tanh [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a .vcxproj]
+lmathlib.obj : error LNK2019: unresolved external symbol asin referenced in function math_asin [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a .vcxproj]
+lmathlib.obj : error LNK2019: unresolved external symbol acos referenced in function math_acos [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a .vcxproj]
+lmathlib.obj : error LNK2019: unresolved external symbol atan referenced in function math_atan [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a .vcxproj]
+lmathlib.obj : error LNK2019: unresolved external symbol atan2 referenced in function math_atan2 [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5. 1a.vcxproj]
+lmathlib.obj : error LNK2019: unresolved external symbol __imp_ceil referenced in function math_ceil [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\l ua5.1a.vcxproj]
+lmathlib.obj : error LNK2019: unresolved external symbol fmod referenced in function math_fmod [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a .vcxproj]
+lmathlib.obj : error LNK2019: unresolved external symbol __imp_modf referenced in function math_modf [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\l ua5.1a.vcxproj]
+lmathlib.obj : error LNK2019: unresolved external symbol sqrt referenced in function math_sqrt [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a .vcxproj]
+lmathlib.obj : error LNK2019: unresolved external symbol log referenced in function math_log [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.v cxproj]
+lmathlib.obj : error LNK2019: unresolved external symbol log10 referenced in function math_log10 [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5. 1a.vcxproj]
+lmathlib.obj : error LNK2019: unresolved external symbol exp referenced in function math_exp [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.v cxproj]
+lmathlib.obj : error LNK2019: unresolved external symbol __imp_frexp referenced in function math_frexp [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a \lua5.1a.vcxproj]
+lmathlib.obj : error LNK2019: unresolved external symbol __imp_ldexp referenced in function math_ldexp [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a \lua5.1a.vcxproj]
+lmathlib.obj : error LNK2019: unresolved external symbol __imp_rand referenced in function math_random [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a \lua5.1a.vcxproj]
+lmathlib.obj : error LNK2019: unresolved external symbol __imp_srand referenced in function math_randomseed [C:\UDefrag\ultradefrag-src\src\bin\lu a5.1a\lua5.1a.vcxproj]
+lmathlib.obj : error LNK2001: unresolved external symbol __imp__HUGE [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+loadlib.obj : error LNK2019: unresolved external symbol __imp_strrchr referenced in function modinit [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\l ua5.1a.vcxproj]
+loadlib.obj : error LNK2019: unresolved external symbol __imp_getenv referenced in function setpath [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lu a5.1a.vcxproj]
+lobject.obj : error LNK2019: unresolved external symbol __imp_strtod referenced in function luaO_str2d [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a \lua5.1a.vcxproj]
+lobject.obj : error LNK2019: unresolved external symbol __imp_sprintf referenced in function luaO_pushvfstring [C:\UDefrag\ultradefrag-src\src\bin \lua5.1a\lua5.1a.vcxproj]
+lstrlib.obj : error LNK2001: unresolved external symbol __imp_sprintf [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lvm.obj : error LNK2001: unresolved external symbol __imp_sprintf [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lobject.obj : error LNK2019: unresolved external symbol __imp_strncat referenced in function luaO_chunkid [C:\UDefrag\ultradefrag-src\src\bin\lua5 .1a\lua5.1a.vcxproj]
+lobject.obj : error LNK2019: unresolved external symbol __imp_strcspn referenced in function luaO_chunkid [C:\UDefrag\ultradefrag-src\src\bin\lua5 .1a\lua5.1a.vcxproj]
+lobject.obj : error LNK2019: unresolved external symbol strcat referenced in function luaO_chunkid [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua 5.1a.vcxproj]
+lobject.obj : error LNK2019: unresolved external symbol strcpy referenced in function luaO_chunkid [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua 5.1a.vcxproj]
+lstrlib.obj : error LNK2001: unresolved external symbol strcpy [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lobject.obj : error LNK2019: unresolved external symbol __imp_strncpy referenced in function luaO_chunkid [C:\UDefrag\ultradefrag-src\src\bin\lua5 .1a\lua5.1a.vcxproj]
+lstrlib.obj : error LNK2001: unresolved external symbol __imp_strncpy [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+loslib.obj : error LNK2019: unresolved external symbol __imp_system referenced in function os_execute [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\ lua5.1a.vcxproj]
+loslib.obj : error LNK2019: unresolved external symbol __imp_malloc referenced in function convert_to_utf16 [C:\UDefrag\ultradefrag-src\src\bin\lu a5.1a\lua5.1a.vcxproj]
+loslib.obj : error LNK2019: unresolved external symbol __imp_remove referenced in function os_remove [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\l ua5.1a.vcxproj]
+loslib.obj : error LNK2019: unresolved external symbol __imp_rename referenced in function os_rename [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\l ua5.1a.vcxproj]
+loslib.obj : error LNK2019: unresolved external symbol __imp_tmpnam referenced in function os_tmpname [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\ lua5.1a.vcxproj]
+loslib.obj : error LNK2019: unresolved external symbol __imp_wcslen referenced in function convert_to_utf8 [C:\UDefrag\ultradefrag-src\src\bin\lua 5.1a\lua5.1a.vcxproj]
+loslib.obj : error LNK2019: unresolved external symbol __imp_clock referenced in function os_clock [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua 5.1a.vcxproj]
+loslib.obj : error LNK2019: unresolved external symbol __imp_strftime referenced in function os_date [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\l ua5.1a.vcxproj]
+loslib.obj : error LNK2019: unresolved external symbol __imp__gmtime64 referenced in function gmtime [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\l ua5.1a.vcxproj]
+loslib.obj : error LNK2019: unresolved external symbol __imp__localtime64 referenced in function localtime [C:\UDefrag\ultradefrag-src\src\bin\lua 5.1a\lua5.1a.vcxproj]
+loslib.obj : error LNK2019: unresolved external symbol __imp__time64 referenced in function time [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5. 1a.vcxproj]
+loslib.obj : error LNK2019: unresolved external symbol __imp__mktime64 referenced in function mktime [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\l ua5.1a.vcxproj]
+loslib.obj : error LNK2019: unresolved external symbol __imp__difftime64 referenced in function difftime [C:\UDefrag\ultradefrag-src\src\bin\lua5. 1a\lua5.1a.vcxproj]
+loslib.obj : error LNK2019: unresolved external symbol __imp_setlocale referenced in function os_setlocale [C:\UDefrag\ultradefrag-src\src\bin\lua 5.1a\lua5.1a.vcxproj]
+lstring.obj : error LNK2019: unresolved external symbol memcmp referenced in function luaS_newlstr [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua 5.1a.vcxproj]
+lstrlib.obj : error LNK2001: unresolved external symbol memcmp [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lundump.obj : error LNK2001: unresolved external symbol memcmp [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+lstrlib.obj : error LNK2019: unresolved external symbol __imp_tolower referenced in function str_lower [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a \lua5.1a.vcxproj]
+lstrlib.obj : error LNK2019: unresolved external symbol __imp_toupper referenced in function str_upper [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a \lua5.1a.vcxproj]
+lstrlib.obj : error LNK2019: unresolved external symbol __imp_strpbrk referenced in function str_find_aux [C:\UDefrag\ultradefrag-src\src\bin\lua5 .1a\lua5.1a.vcxproj]
+lstrlib.obj : error LNK2019: unresolved external symbol __imp_isxdigit referenced in function match_class [C:\UDefrag\ultradefrag-src\src\bin\lua5 .1a\lua5.1a.vcxproj]
+lstrlib.obj : error LNK2019: unresolved external symbol __imp_isupper referenced in function match_class [C:\UDefrag\ultradefrag-src\src\bin\lua5. 1a\lua5.1a.vcxproj]
+lstrlib.obj : error LNK2019: unresolved external symbol __imp_ispunct referenced in function match_class [C:\UDefrag\ultradefrag-src\src\bin\lua5. 1a\lua5.1a.vcxproj]
+lstrlib.obj : error LNK2019: unresolved external symbol __imp_islower referenced in function match_class [C:\UDefrag\ultradefrag-src\src\bin\lua5. 1a\lua5.1a.vcxproj]
+lstrlib.obj : error LNK2019: unresolved external symbol __imp_memchr referenced in function lmemfind [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\l ua5.1a.vcxproj]
+lvm.obj : error LNK2019: unresolved external symbol __imp_strcoll referenced in function l_strcmp [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5 .1a.vcxproj]
+LINK : error LNK2001: unresolved external symbol _DllMainCRTStartup [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\Debug\lua5.1a.dll : fatal error LNK1120: 104 unresolved externals [C:\UDefrag\ultradefrag-src\src\bin\l ua5.1a\lua5.1a.vcxproj]
+Done Building Project "C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj" (default targets) -- FAILED.
+
+Project "C:\UDefrag\ultradefrag-src\src\bin\ALL_BUILD.vcxproj" (1) is building "C:\UDefrag\ultradefrag-src\src\bin\stopgap\stopgap.vcxproj" (4) on  node 1 (default targets).
+Project "C:\UDefrag\ultradefrag-src\src\bin\stopgap\stopgap.vcxproj" (4) is building "C:\UDefrag\ultradefrag-src\src\bin\zenwinx\zenwinx.vcxproj"
+(5) on node 1 (default targets).
+PrepareForBuild:
+  Creating directory "zenwinx.dir\Debug\".
+  Creating directory "C:\UDefrag\ultradefrag-src\src\bin\zenwinx\Debug\".
+InitializeBuildStatus:
+  Creating "zenwinx.dir\Debug\zenwinx.unsuccessfulbuild" because "AlwaysCreate" was specified.
+CustomBuild:
+  Building Custom Rule C:/UDefrag/ultradefrag-src/src/dll/zenwinx/CMakeLists.txt
+  CMake does not need to re-run because C:/UDefrag/ultradefrag-src/src/bin/zenwinx/CMakeFiles/generate.stamp is up-to-date.
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D _CONSOLE /D
+   UNICODE /D _UNICODE /D _MBCS /D _WIN32 /D _WINDLL /D _NO_CRT_STDIO_INLINE /D _CRT_NON_CONFORMING_SWPRINTFS /D _CRT_SECURE_NO_WARNINGS /D BUILD_
+  DLL /D _USRDLL /D USE_WINSDK /D ZENWINX_EXPORTS /D NDEBUG /D "CMAKE_INTDIR=\"Debug\"" /D zenwinx_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /GF /
+  Gm /EHsc /MDd /GS- /fp:precise /Zc:wchar_t /Zc:forScope /Fo"zenwinx.dir\Debug\\" /Fd"zenwinx.dir\Debug\vcWindows7.1SDK.pdb" /Gd /TC /errorReport
+  :queue ..\..\dll\zenwinx\dbg.c ..\..\dll\zenwinx\entry.c ..\..\dll\zenwinx\env.c ..\..\dll\zenwinx\event.c ..\..\dll\zenwinx\file.c ..\..\dll\ze
+  nwinx\ftw.c ..\..\dll\zenwinx\ftw_ntfs.c ..\..\dll\zenwinx\int64.c ..\..\dll\zenwinx\keyboard.c ..\..\dll\zenwinx\keytrans.c ..\..\dll\zenwinx\l
+  dr.c ..\..\dll\zenwinx\list.c ..\..\dll\zenwinx\lock.c ..\..\dll\zenwinx\mem.c ..\..\dll\zenwinx\misc.c ..\..\dll\zenwinx\mutex.c ..\..\dll\zenw
+  inx\path.c ..\..\dll\zenwinx\prec.c ..\..\dll\zenwinx\prb.c ..\..\dll\zenwinx\privilege.c ..\..\dll\zenwinx\reg.c ..\..\dll\zenwinx\stdio.c ..\.
+  .\dll\zenwinx\string.c ..\..\dll\zenwinx\thread.c ..\..\dll\zenwinx\time.c ..\..\dll\zenwinx\utf8.c ..\..\dll\zenwinx\volume.c ..\..\dll\zenwinx
+  \zenwinx.c
+  zenwinx.c
+  volume.c
+  utf8.c
+  time.c
+  thread.c
+  string.c
+  stdio.c
+  reg.c
+  privilege.c
+  prb.c
+  prec.c
+  path.c
+  mutex.c
+  misc.c
+  mem.c
+  lock.c
+  list.c
+  ldr.c
+  keytrans.c
+  keyboard.c
+  Generating Code...
+  Compiling...
+  int64.c
+  ftw_ntfs.c
+  ftw.c
+  file.c
+  event.c
+  env.c
+  entry.c
+  dbg.c
+  Generating Code...
+ResourceCompile:
+  C:\Program Files\Microsoft SDKs\Windows\v7.1\bin\rc.exe /D WIN32 /D _DEBUG /D _WINDOWS /D _CONSOLE /D UNICODE /D _UNICODE /D _MBCS /D _WIN32 /D
+  _WINDLL /D _NO_CRT_STDIO_INLINE /D _CRT_NON_CONFORMING_SWPRINTFS /D _CRT_SECURE_NO_WARNINGS /D BUILD_DLL /D _USRDLL /D USE_WINSDK /D ZENWINX_EXP
+  ORTS /D NDEBUG /D "CMAKE_INTDIR=\\\"Debug\\\"" /D zenwinx_EXPORTS /D _UNICODE /D UNICODE /l"0x0409" /nologo /fo"zenwinx.dir\Debug\zenwinx.res" .
+  .\..\dll\zenwinx\zenwinx.rc
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\UDefrag\ultradefrag-src\src\bin\zenwin
+  x\Debug\zenwinx.dll" /INCREMENTAL:NO /NOLOGO ntdll.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.li
+  b comdlg32.lib advapi32.lib /NODEFAULTLIB /DEF:"C:/UDefrag/ultradefrag-src/src/dll/zenwinx/zenwinx.def" /MANIFEST:NO /DEBUG /PDB:"C:/UDefrag/ult
+  radefrag-src/src/bin/zenwinx/Debug/zenwinx.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /ENTRY:"DllMain" /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/UDefrag/ultradef
+  rag-src/src/bin/zenwinx/Debug/zenwinx.lib" /MACHINE:X64 /DLL zenwinx.dir\Debug\zenwinx.res
+  zenwinx.dir\Debug\dbg.obj
+  zenwinx.dir\Debug\entry.obj
+  zenwinx.dir\Debug\env.obj
+  zenwinx.dir\Debug\event.obj
+  zenwinx.dir\Debug\file.obj
+  zenwinx.dir\Debug\ftw.obj
+  zenwinx.dir\Debug\ftw_ntfs.obj
+  zenwinx.dir\Debug\int64.obj
+  zenwinx.dir\Debug\keyboard.obj
+  zenwinx.dir\Debug\keytrans.obj
+  zenwinx.dir\Debug\ldr.obj
+  zenwinx.dir\Debug\list.obj
+  zenwinx.dir\Debug\lock.obj
+  zenwinx.dir\Debug\mem.obj
+  zenwinx.dir\Debug\misc.obj
+  zenwinx.dir\Debug\mutex.obj
+  zenwinx.dir\Debug\path.obj
+  zenwinx.dir\Debug\prec.obj
+  zenwinx.dir\Debug\prb.obj
+  zenwinx.dir\Debug\privilege.obj
+  zenwinx.dir\Debug\reg.obj
+  zenwinx.dir\Debug\stdio.obj
+  zenwinx.dir\Debug\string.obj
+  zenwinx.dir\Debug\thread.obj
+  zenwinx.dir\Debug\time.obj
+  zenwinx.dir\Debug\utf8.obj
+  zenwinx.dir\Debug\volume.obj
+  zenwinx.dir\Debug\zenwinx.obj  /machine:x64
+     Creating library C:/UDefrag/ultradefrag-src/src/bin/zenwinx/Debug/zenwinx.lib and object C:/UDefrag/ultradefrag-src/src/bin/zenwinx/Debug/zen
+  winx.exp
+  zenwinx.vcxproj -> C:\UDefrag\ultradefrag-src\src\bin\zenwinx\Debug\zenwinx.dll
+FinalizeBuildStatus:
+  Deleting file "zenwinx.dir\Debug\zenwinx.unsuccessfulbuild".
+  Touching "zenwinx.dir\Debug\zenwinx.lastbuildstate".
+Done Building Project "C:\UDefrag\ultradefrag-src\src\bin\zenwinx\zenwinx.vcxproj" (default targets).
+
+PrepareForBuild:
+  Creating directory "stopgap.dir\Debug\".
+  Creating directory "C:\UDefrag\ultradefrag-src\src\bin\stopgap\Debug\".
+InitializeBuildStatus:
+  Creating "stopgap.dir\Debug\stopgap.unsuccessfulbuild" because "AlwaysCreate" was specified.
+CustomBuild:
+  Building Custom Rule C:/UDefrag/ultradefrag-src/src/stopgap/CMakeLists.txt
+  CMake does not need to re-run because C:/UDefrag/ultradefrag-src/src/bin/stopgap/CMakeFiles/generate.stamp is up-to-date.
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\CL.exe /c /IA:\boostlib165 /Zi /nologo /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDO
+  WS /D _CONSOLE /D UNICODE /D _UNICODE /D _WIN32 /D _WINDLL /D NDEBUG /D _USING_V110_SDK71_ /D BOOST_ALL_DYN_LINK /D "CMAKE_INTDIR=\"Debug\"" /D
+  stopgap_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /GF /Gm /EHsc /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"stopgap.dir\Debug\\" /
+  Fd"stopgap.dir\Debug\vcWindows7.1SDK.pdb" /Gd /TP /errorReport:prompt ..\..\stopgap\prec.cpp ..\..\stopgap\util.cpp ..\..\stopgap\zen.cpp ..\..\
+  stopgap\op.cpp ..\..\stopgap\main.cpp
+  main.cpp
+  op.cpp
+  zen.cpp
+C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xutility(2239): warning C4996: 'std::_Copy_impl': Function call with parameters tha t may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNIN GS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\UDefrag\ultradefrag-src\src\bin\stopgap\stopgap.vcxproj]
+          C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xutility(2224) : see declaration of 'std::_Copy_impl'
+          A:\boostlib165\boost/multi_array/extent_gen.hpp(49) : see reference to function template instantiation '_OutIt std::copy<const boost::de
+  tail::multi_array::extent_range<Extent,SizeType>*,boost::detail::multi_array::extent_range<Extent,SizeType>*>(_InIt,_InIt,_OutIt)' being compile
+  d
+          with
+          [
+              _OutIt=boost::detail::multi_array::extent_range<boost::detail::multi_array::extent_gen<NumRanges>::index,boost::detail::multi_array:
+  :extent_gen<NumRanges>::size_type> ,
+              Extent=boost::detail::multi_array::extent_gen<NumRanges>::index,
+              SizeType=boost::detail::multi_array::extent_gen<NumRanges>::size_type,
+              _InIt=const boost::detail::multi_array::extent_range<boost::detail::multi_array::extent_gen<NumRanges>::index,boost::detail::multi_a
+  rray::extent_gen<NumRanges>::size_type>
+          ]
+          A:\boostlib165\boost/multi_array/extent_gen.hpp(46) : while compiling class template member function 'boost::detail::multi_array::extent
+  _gen<NumRanges>::extent_gen(const boost::detail::multi_array::extent_gen<0x00> &,const boost::detail::multi_array::extent_gen<NumRanges>::range
+  &)'
+          with
+          [
+              NumRanges=0x01
+          ]
+          ..\..\stopgap\zen.cpp(463) : see reference to class template instantiation 'boost::detail::multi_array::extent_gen<NumRanges>' being com
+  piled
+          with
+          [
+              NumRanges=0x01
+          ]
+C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\algorithm(1119): warning C4996: 'std::_Transform1': Function call with parameters t hat may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARN INGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\UDefrag\ultradefrag-src\src\bin\stopgap\stopgap.vcxproj]
+          C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\algorithm(1100) : see declaration of 'std::_Transform1'
+          A:\boostlib165\boost/multi_array/multi_array_ref.hpp(371) : see reference to function template instantiation '_OutIt std::transform<cons
+  t boost::detail::multi_array::extent_range<Extent,SizeType>*,__int64*,boost::const_mem_fun_ref_t<S,T>>(_InIt,_InIt,_OutIt,_Fn1)' being compiled
+          with
+          [
+              _OutIt=__int64 *,
+              Extent=boost::detail::multi_array::extent_gen<NumRanges>::index,
+              SizeType=boost::detail::multi_array::extent_gen<NumRanges>::size_type,
+              S=__int64,
+              T=boost::detail::multi_array::extent_range<boost::detail::multi_array::extent_gen<NumRanges>::index,boost::detail::multi_array::exte
+  nt_gen<NumRanges>::size_type>,
+              _InIt=const boost::detail::multi_array::extent_range<boost::detail::multi_array::extent_gen<NumRanges>::index,boost::detail::multi_a
+  rray::extent_gen<NumRanges>::size_type> ,
+              _Fn1=boost::const_mem_fun_ref_t<__int64,boost::detail::multi_array::extent_range<boost::detail::multi_array::extent_gen<NumRanges>::
+  index,boost::detail::multi_array::extent_gen<NumRanges>::size_type>>
+          ]
+          A:\boostlib165\boost/multi_array/multi_array_ref.hpp(364) : while compiling class template member function 'void boost::const_multi_arra
+  y_ref<T,NumDims,TPtr>::init_from_extent_gen(const boost::detail::multi_array::extent_gen<NumRanges> &)'
+          with
+          [
+              T=zen::FileEnumeration::findBest::sol_t,
+              NumDims=0x02,
+              TPtr=zen::FileEnumeration::findBest::sol_t *,
+              NumRanges=0x02
+          ]
+          A:\boostlib165\boost/multi_array/multi_array_ref.hpp(414) : see reference to class template instantiation 'boost::const_multi_array_ref<
+  T,NumDims,TPtr>' being compiled
+          with
+          [
+              T=zen::FileEnumeration::findBest::sol_t,
+              NumDims=0x02,
+              TPtr=zen::FileEnumeration::findBest::sol_t *
+          ]
+          A:\boostlib165\boost/multi_array.hpp(113) : see reference to class template instantiation 'boost::multi_array_ref<T,NumDims>' being comp
+  iled
+          with
+          [
+              T=zen::FileEnumeration::findBest::sol_t,
+              NumDims=0x02
+          ]
+          ..\..\stopgap\zen.cpp(464) : see reference to class template instantiation 'boost::multi_array<T,NumDims>' being compiled
+          with
+          [
+              T=zen::FileEnumeration::findBest::sol_t,
+              NumDims=0x02
+          ]
+C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\algorithm(1119): warning C4996: 'std::_Transform1': Function call with parameters t hat may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARN INGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\UDefrag\ultradefrag-src\src\bin\stopgap\stopgap.vcxproj]
+          C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\algorithm(1100) : see declaration of 'std::_Transform1'
+          A:\boostlib165\boost/multi_array/multi_array_ref.hpp(377) : see reference to function template instantiation '_OutIt std::transform<cons
+  t boost::detail::multi_array::extent_range<Extent,SizeType>*,__int64*,boost::const_mem_fun_ref_t<S,T>>(_InIt,_InIt,_OutIt,_Fn1)' being compiled
+          with
+          [
+              _OutIt=__int64 *,
+              Extent=boost::detail::multi_array::extent_gen<NumRanges>::index,
+              SizeType=boost::detail::multi_array::extent_gen<NumRanges>::size_type,
+              S=unsigned __int64,
+              T=boost::detail::multi_array::extent_range<boost::detail::multi_array::extent_gen<NumRanges>::index,boost::detail::multi_array::exte
+  nt_gen<NumRanges>::size_type>,
+              _InIt=const boost::detail::multi_array::extent_range<boost::detail::multi_array::extent_gen<NumRanges>::index,boost::detail::multi_a
+  rray::extent_gen<NumRanges>::size_type> ,
+              _Fn1=boost::const_mem_fun_ref_t<unsigned __int64,boost::detail::multi_array::extent_range<boost::detail::multi_array::extent_gen<Num
+  Ranges>::index,boost::detail::multi_array::extent_gen<NumRanges>::size_type>>
+          ]
+C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xutility(2813): warning C4996: 'std::_Fill_n': Function call with parameters that m ay be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS.  See documentation on how to use Visual C++ 'Checked Iterators' [C:\UDefrag\ultradefrag-src\src\bin\stopgap\stopgap.vcxproj]
+          C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xutility(2799) : see declaration of 'std::_Fill_n'
+          A:\boostlib165\boost/array.hpp(181) : see reference to function template instantiation 'void std::fill_n<bool*,boost::array<T,N>::size_t
+  ype,T>(_OutIt,_Diff,const _Ty &)' being compiled
+          with
+          [
+              T=bool,
+              N=0x02,
+              _OutIt=bool *,
+              _Diff=boost::array<bool,0x02>::size_type,
+              _Ty=bool
+          ]
+          A:\boostlib165\boost/array.hpp(180) : while compiling class template member function 'void boost::array<T,N>::fill(const T &)'
+          with
+          [
+              T=bool,
+              N=0x02
+          ]
+          A:\boostlib165\boost/multi_array/storage_order.hpp(76) : see reference to class template instantiation 'boost::array<T,N>' being compile
+  d
+          with
+          [
+              T=bool,
+              N=0x02
+          ]
+          A:\boostlib165\boost/multi_array/multi_array_ref.hpp(350) : see reference to class template instantiation 'boost::general_storage_order<
+  NumDims>' being compiled
+          with
+          [
+              NumDims=0x02
+          ]
+  util.cpp
+  prec.cpp
+  Generating Code...
+ResourceCompile:
+  C:\Program Files\Microsoft SDKs\Windows\v7.1\bin\rc.exe /D WIN32 /D _DEBUG /D _WINDOWS /D _CONSOLE /D UNICODE /D _UNICODE /D _WIN32 /D _WINDLL /
+  D NDEBUG /D _USING_V110_SDK71_ /D BOOST_ALL_DYN_LINK /D "CMAKE_INTDIR=\\\"Debug\\\"" /D stopgap_EXPORTS /D _UNICODE /D UNICODE /l"0x0409" /IA:\b
+  oostlib165 /nologo /fo"stopgap.dir\Debug\stopgap.res" ..\..\stopgap\stopgap.rc
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\UDefrag\ultradefrag-src\src\bin\stopga
+  p\Debug\stopgap.dll" /INCREMENTAL:NO /NOLOGO /LIBPATH:"A:/boostlib165/lib64-msvc-10.0" /LIBPATH:"A:/boostlib165/lib64-msvc-10.0/Debug" kernel32.
+  lib user32.lib ntdll.lib version.lib shlwapi.lib advapi32.lib msvcrtd.lib msvcprtd.lib "A:\boostlib165\lib64-msvc-10.0\boost_program_options-vc1
+  00-mt-gd-1_65.lib" "A:\boostlib165\lib64-msvc-10.0\boost_regex-vc100-mt-gd-1_65.lib" "A:\boostlib165\lib64-msvc-10.0\boost_program_options-vc100
+  -mt-gd-1_65.lib" "A:\boostlib165\lib64-msvc-10.0\boost_regex-vc100-mt-gd-1_65.lib" ..\zenwinx\Debug\zenwinx.lib ntdll.lib version.lib shlwapi.li
+  b advapi32.lib msvcrtd.lib msvcprtd.lib "A:\boostlib165\lib64-msvc-10.0\boost_program_options-vc100-mt-gd-1_65.lib" "A:\boostlib165\lib64-msvc-1
+  0.0\boost_regex-vc100-mt-gd-1_65.lib" kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib ad
+  vapi32.lib /DEF:"C:/UDefrag/ultradefrag-src/src/stopgap/stopgap.def" /MANIFEST:NO /DEBUG /PDB:"C:/UDefrag/ultradefrag-src/src/bin/stopgap/Debug/
+  stopgap.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/UDefrag/ultradefrag-src/src/bin/stopgap/Debug/stopgap.lib" /MACHINE:
+  X64 /DLL stopgap.dir\Debug\stopgap.res
+  stopgap.dir\Debug\prec.obj
+  stopgap.dir\Debug\util.obj
+  stopgap.dir\Debug\zen.obj
+  stopgap.dir\Debug\op.obj
+  stopgap.dir\Debug\main.obj  /machine:x64
+     Creating library C:/UDefrag/ultradefrag-src/src/bin/stopgap/Debug/stopgap.lib and object C:/UDefrag/ultradefrag-src/src/bin/stopgap/Debug/sto
+  pgap.exp
+  stopgap.vcxproj -> C:\UDefrag\ultradefrag-src\src\bin\stopgap\Debug\stopgap.dll
+FinalizeBuildStatus:
+  Deleting file "stopgap.dir\Debug\stopgap.unsuccessfulbuild".
+  Touching "stopgap.dir\Debug\stopgap.lastbuildstate".
+Done Building Project "C:\UDefrag\ultradefrag-src\src\bin\stopgap\stopgap.vcxproj" (default targets).
+
+Project "C:\UDefrag\ultradefrag-src\src\bin\ALL_BUILD.vcxproj" (1) is building "C:\UDefrag\ultradefrag-src\src\bin\udefrag\udefrag.vcxproj" (6) on  node 1 (default targets).
+PrepareForBuild:
+  Creating directory "udefrag.dir\Debug\".
+  Creating directory "C:\UDefrag\ultradefrag-src\src\bin\udefrag\Debug\".
+InitializeBuildStatus:
+  Creating "udefrag.dir\Debug\udefrag.unsuccessfulbuild" because "AlwaysCreate" was specified.
+CustomBuild:
+  Building Custom Rule C:/UDefrag/ultradefrag-src/src/dll/udefrag/CMakeLists.txt
+  CMake does not need to re-run because C:/UDefrag/ultradefrag-src/src/bin/udefrag/CMakeFiles/generate.stamp is up-to-date.
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _CONSO
+  LE /D UNICODE /D _UNICODE /D _MBCS /D _WIN32 /D _WINDLL /D _NO_CRT_STDIO_INLINE /D _CRT_SECURE_NO_WARNINGS /D BUILD_DLL /D _USRDLL /D USE_WINSDK
+   /D UDEFRAG_EXPORTS /D NDEBUG /D "CMAKE_INTDIR=\"Debug\"" /D udefrag_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /GF /Gm /EHsc /MDd /GS- /Gy /fp:p
+  recise /Zc:wchar_t /Zc:forScope /Fo"udefrag.dir\Debug\\" /Fd"udefrag.dir\Debug\vcWindows7.1SDK.pdb" /Gd /TC /errorReport:queue ..\..\dll\udefrag
+  \analyze.c ..\..\dll\udefrag\auxiliary.c ..\..\dll\udefrag\defrag.c ..\..\dll\udefrag\entry.c ..\..\dll\udefrag\int64.c ..\..\dll\udefrag\map.c
+  ..\..\dll\udefrag\move.c ..\..\dll\udefrag\optimize.c ..\..\dll\udefrag\options.c ..\..\dll\udefrag\query.c ..\..\dll\udefrag\reports.c ..\..\dl
+  l\udefrag\search.c ..\..\dll\udefrag\udefrag.c ..\..\dll\udefrag\volume.c
+  volume.c
+  udefrag.c
+  search.c
+  reports.c
+  query.c
+  options.c
+  optimize.c
+  move.c
+  map.c
+  int64.c
+  entry.c
+  defrag.c
+  auxiliary.c
+  analyze.c
+  Generating Code...
+ResourceCompile:
+  C:\Program Files\Microsoft SDKs\Windows\v7.1\bin\rc.exe /D WIN32 /D _DEBUG /D _WINDOWS /D _CONSOLE /D UNICODE /D _UNICODE /D _MBCS /D _WIN32 /D
+  _WINDLL /D _NO_CRT_STDIO_INLINE /D _CRT_SECURE_NO_WARNINGS /D BUILD_DLL /D _USRDLL /D USE_WINSDK /D UDEFRAG_EXPORTS /D NDEBUG /D "CMAKE_INTDIR=\
+  \\"Debug\\\"" /D udefrag_EXPORTS /D _UNICODE /D UNICODE /l"0x0409" /nologo /fo"udefrag.dir\Debug\udefrag.res" ..\..\dll\udefrag\udefrag.rc
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\UDefrag\ultradefrag-src\src\bin\udefra
+  g\Debug\udefrag.dll" /INCREMENTAL:NO /NOLOGO ntdll.lib ..\zenwinx\Debug\zenwinx.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib o
+  le32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /NODEFAULTLIB /DEF:"C:/UDefrag/ultradefrag-src/src/dll/udefrag/udefrag.def" /MANIFEST:N
+  O /DEBUG /PDB:"C:/UDefrag/ultradefrag-src/src/bin/udefrag/Debug/udefrag.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /ENTRY:"DllMain" /DYNAMICBASE /NXCOMPAT
+   /IMPLIB:"C:/UDefrag/ultradefrag-src/src/bin/udefrag/Debug/udefrag.lib" /MACHINE:X64 /DLL udefrag.dir\Debug\udefrag.res
+  udefrag.dir\Debug\analyze.obj
+  udefrag.dir\Debug\auxiliary.obj
+  udefrag.dir\Debug\defrag.obj
+  udefrag.dir\Debug\entry.obj
+  udefrag.dir\Debug\int64.obj
+  udefrag.dir\Debug\map.obj
+  udefrag.dir\Debug\move.obj
+  udefrag.dir\Debug\optimize.obj
+  udefrag.dir\Debug\options.obj
+  udefrag.dir\Debug\query.obj
+  udefrag.dir\Debug\reports.obj
+  udefrag.dir\Debug\search.obj
+  udefrag.dir\Debug\udefrag.obj
+  udefrag.dir\Debug\volume.obj  /machine:x64
+     Creating library C:/UDefrag/ultradefrag-src/src/bin/udefrag/Debug/udefrag.lib and object C:/UDefrag/ultradefrag-src/src/bin/udefrag/Debug/ude
+  frag.exp
+  udefrag.vcxproj -> C:\UDefrag\ultradefrag-src\src\bin\udefrag\Debug\udefrag.dll
+FinalizeBuildStatus:
+  Deleting file "udefrag.dir\Debug\udefrag.unsuccessfulbuild".
+  Touching "udefrag.dir\Debug\udefrag.lastbuildstate".
+Done Building Project "C:\UDefrag\ultradefrag-src\src\bin\udefrag\udefrag.vcxproj" (default targets).
+
+Done Building Project "C:\UDefrag\ultradefrag-src\src\bin\ALL_BUILD.vcxproj" (default targets) -- FAILED.
+
+
+Build FAILED.
+
+"C:\UDefrag\ultradefrag-src\src\bin\ALL_BUILD.vcxproj" (default target) (1) ->
+"C:\UDefrag\ultradefrag-src\src\bin\stopgap\stopgap.vcxproj" (default target) (4) ->
+(ClCompile target) ->
+  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xutility(2239): warning C4996: 'std::_Copy_impl': Function call with parameters t hat may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARN INGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\UDefrag\ultradefrag-src\src\bin\stopgap\stopgap.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\algorithm(1119): warning C4996: 'std::_Transform1': Function call with parameters  that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WA RNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\UDefrag\ultradefrag-src\src\bin\stopgap\stopgap.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\algorithm(1119): warning C4996: 'std::_Transform1': Function call with parameters  that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WA RNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\UDefrag\ultradefrag-src\src\bin\stopgap\stopgap.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xutility(2813): warning C4996: 'std::_Fill_n': Function call with parameters that  may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNING S. See documentation on how to use Visual C++ 'Checked Iterators' [C:\UDefrag\ultradefrag-src\src\bin\stopgap\stopgap.vcxproj]
+
+
+"C:\UDefrag\ultradefrag-src\src\bin\ALL_BUILD.vcxproj" (default target) (1) ->
+"C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj" (default target) (3) ->
+(Link target) ->
+  ltable.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ltablib.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lundump.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lvm.obj : error LNK2019: unresolved external symbol _fltused referenced in function luaV_execute [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua 5.1a.vcxproj]
+  lobject.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  loslib.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lparser.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lstrlib.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ldo.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ldump.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  liolib.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lmathlib.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lapi.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lauxlib.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lbaselib.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lcode.obj : error LNK2001: unresolved external symbol _fltused [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lvm.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  loslib.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lparser.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lstrlib.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ltm.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  liolib.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  llex.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  loadlib.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lobject.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lapi.obj : error LNK2019: unresolved external symbol strlen referenced in function lua_pushstring [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lu a5.1a.vcxproj]
+  lauxlib.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ldblib.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ldo.obj : error LNK2001: unresolved external symbol strlen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lundump.obj : error LNK2019: unresolved external symbol __GSHandlerCheck referenced in function luaU_undump [C:\UDefrag\ultradefrag-src\src\bin\ lua5.1a\lua5.1a.vcxproj]
+  lvm.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lparser.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lstrlib.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ltable.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ltablib.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  llex.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  loadlib.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lobject.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  loslib.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ldebug.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ldo.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ldump.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  liolib.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lauxlib.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lbaselib.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lcode.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ldblib.obj : error LNK2001: unresolved external symbol __GSHandlerCheck [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lauxlib.obj : error LNK2019: unresolved external symbol strcmp referenced in function luaL_argerror [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\ lua5.1a.vcxproj]
+  ldblib.obj : error LNK2001: unresolved external symbol strcmp [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  loslib.obj : error LNK2001: unresolved external symbol strcmp [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lundump.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lvm.obj : error LNK2019: unresolved external symbol __security_cookie referenced in function luaV_tostring [C:\UDefrag\ultradefrag-src\src\bin\l ua5.1a\lua5.1a.vcxproj]
+  lparser.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lstrlib.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ltable.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ltablib.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  llex.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  loadlib.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lobject.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  loslib.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ldebug.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ldo.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ldump.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  liolib.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lauxlib.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lbaselib.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lcode.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ldblib.obj : error LNK2001: unresolved external symbol __security_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lundump.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lvm.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lparser.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lstrlib.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ltable.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ltablib.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  llex.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  loadlib.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lobject.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  loslib.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ldebug.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ldo.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ldump.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  liolib.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lauxlib.obj : error LNK2019: unresolved external symbol __security_check_cookie referenced in function luaL_argerror [C:\UDefrag\ultradefrag-src \src\bin\lua5.1a\lua5.1a.vcxproj]
+  lbaselib.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lcode.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ldblib.obj : error LNK2001: unresolved external symbol __security_check_cookie [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lauxlib.obj : error LNK2019: unresolved external symbol __imp_strstr referenced in function luaL_gsub [C:\UDefrag\ultradefrag-src\src\bin\lua5.1 a\lua5.1a.vcxproj]
+  llex.obj : error LNK2001: unresolved external symbol __imp_strchr [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  loadlib.obj : error LNK2001: unresolved external symbol __imp_strchr [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lobject.obj : error LNK2001: unresolved external symbol __imp_strchr [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lstrlib.obj : error LNK2001: unresolved external symbol __imp_strchr [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lauxlib.obj : error LNK2019: unresolved external symbol __imp_strchr referenced in function luaL_findtable [C:\UDefrag\ultradefrag-src\src\bin\l ua5.1a\lua5.1a.vcxproj]
+  ldblib.obj : error LNK2001: unresolved external symbol __imp_strchr [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ldebug.obj : error LNK2001: unresolved external symbol __imp_strchr [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lgc.obj : error LNK2001: unresolved external symbol __imp_strchr [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lvm.obj : error LNK2001: unresolved external symbol memcpy [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lzio.obj : error LNK2001: unresolved external symbol memcpy [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lauxlib.obj : error LNK2019: unresolved external symbol memcpy referenced in function luaL_addvalue [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\ lua5.1a.vcxproj]
+  lstring.obj : error LNK2001: unresolved external symbol memcpy [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ltable.obj : error LNK2001: unresolved external symbol memcpy [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lundump.obj : error LNK2001: unresolved external symbol memcpy [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lauxlib.obj : error LNK2019: unresolved external symbol __imp_ferror referenced in function luaL_loadfile [C:\UDefrag\ultradefrag-src\src\bin\lu a5.1a\lua5.1a.vcxproj]
+  liolib.obj : error LNK2001: unresolved external symbol __imp_ferror [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lauxlib.obj : error LNK2019: unresolved external symbol __imp_ungetc referenced in function luaL_loadfile [C:\UDefrag\ultradefrag-src\src\bin\lu a5.1a\lua5.1a.vcxproj]
+  liolib.obj : error LNK2001: unresolved external symbol __imp_ungetc [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lauxlib.obj : error LNK2019: unresolved external symbol __imp_fclose referenced in function luaL_loadfile [C:\UDefrag\ultradefrag-src\src\bin\lu a5.1a\lua5.1a.vcxproj]
+  liolib.obj : error LNK2001: unresolved external symbol __imp_fclose [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  loadlib.obj : error LNK2001: unresolved external symbol __imp_fclose [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lauxlib.obj : error LNK2019: unresolved external symbol __imp_getc referenced in function luaL_loadfile [C:\UDefrag\ultradefrag-src\src\bin\lua5 .1a\lua5.1a.vcxproj]
+  liolib.obj : error LNK2001: unresolved external symbol __imp_getc [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lauxlib.obj : error LNK2019: unresolved external symbol __imp_fopen referenced in function luaL_loadfile [C:\UDefrag\ultradefrag-src\src\bin\lua 5.1a\lua5.1a.vcxproj]
+  liolib.obj : error LNK2001: unresolved external symbol __imp_fopen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  loadlib.obj : error LNK2001: unresolved external symbol __imp_fopen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lauxlib.obj : error LNK2019: unresolved external symbol __imp___iob_func referenced in function luaL_loadfile [C:\UDefrag\ultradefrag-src\src\bi n\lua5.1a\lua5.1a.vcxproj]
+  lbaselib.obj : error LNK2001: unresolved external symbol __imp___iob_func [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ldblib.obj : error LNK2001: unresolved external symbol __imp___iob_func [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  liolib.obj : error LNK2001: unresolved external symbol __imp___iob_func [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lauxlib.obj : error LNK2019: unresolved external symbol __imp_fread referenced in function getF [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5 .1a.vcxproj]
+  liolib.obj : error LNK2001: unresolved external symbol __imp_fread [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lauxlib.obj : error LNK2019: unresolved external symbol __imp_feof referenced in function getF [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5. 1a.vcxproj]
+  lauxlib.obj : error LNK2019: unresolved external symbol __imp_strerror referenced in function errfile [C:\UDefrag\ultradefrag-src\src\bin\lua5.1 a\lua5.1a.vcxproj]
+  liolib.obj : error LNK2001: unresolved external symbol __imp_strerror [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  loslib.obj : error LNK2001: unresolved external symbol __imp_strerror [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lauxlib.obj : error LNK2019: unresolved external symbol __imp__errno referenced in function errfile [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\ lua5.1a.vcxproj]
+  liolib.obj : error LNK2001: unresolved external symbol __imp__errno [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  loslib.obj : error LNK2001: unresolved external symbol __imp__errno [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lauxlib.obj : error LNK2019: unresolved external symbol __imp_realloc referenced in function l_alloc [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a \lua5.1a.vcxproj]
+  lauxlib.obj : error LNK2019: unresolved external symbol __imp_free referenced in function l_alloc [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lu a5.1a.vcxproj]
+  loslib.obj : error LNK2001: unresolved external symbol __imp_free [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lauxlib.obj : error LNK2019: unresolved external symbol __imp_fprintf referenced in function panic [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\l ua5.1a.vcxproj]
+  liolib.obj : error LNK2001: unresolved external symbol __imp_fprintf [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lbaselib.obj : error LNK2019: unresolved external symbol __imp_fputs referenced in function luaB_print [C:\UDefrag\ultradefrag-src\src\bin\lua5. 1a\lua5.1a.vcxproj]
+  ldblib.obj : error LNK2001: unresolved external symbol __imp_fputs [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lbaselib.obj : error LNK2019: unresolved external symbol __imp_isspace referenced in function luaB_tonumber [C:\UDefrag\ultradefrag-src\src\bin\ lua5.1a\lua5.1a.vcxproj]
+  llex.obj : error LNK2001: unresolved external symbol __imp_isspace [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lobject.obj : error LNK2001: unresolved external symbol __imp_isspace [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lstrlib.obj : error LNK2001: unresolved external symbol __imp_isspace [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lbaselib.obj : error LNK2019: unresolved external symbol __imp_strtoul referenced in function luaB_tonumber [C:\UDefrag\ultradefrag-src\src\bin\ lua5.1a\lua5.1a.vcxproj]
+  lobject.obj : error LNK2001: unresolved external symbol __imp_strtoul [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lcode.obj : error LNK2019: unresolved external symbol abs referenced in function fixjump [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcx proj]
+  lcode.obj : error LNK2019: unresolved external symbol pow referenced in function constfolding [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1 a.vcxproj]
+  lmathlib.obj : error LNK2001: unresolved external symbol pow [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lvm.obj : error LNK2001: unresolved external symbol pow [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lcode.obj : error LNK2019: unresolved external symbol __imp_floor referenced in function constfolding [C:\UDefrag\ultradefrag-src\src\bin\lua5.1 a\lua5.1a.vcxproj]
+  lmathlib.obj : error LNK2001: unresolved external symbol __imp_floor [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lvm.obj : error LNK2001: unresolved external symbol __imp_floor [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ldblib.obj : error LNK2019: unresolved external symbol __imp_fgets referenced in function db_debug [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\l ua5.1a.vcxproj]
+  liolib.obj : error LNK2001: unresolved external symbol __imp_fgets [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ldo.obj : error LNK2019: unresolved external symbol __imp_exit referenced in function luaD_throw [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua 5.1a.vcxproj]
+  loslib.obj : error LNK2001: unresolved external symbol __imp_exit [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  ldo.obj : error LNK2019: unresolved external symbol __imp_longjmp referenced in function luaD_throw [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\ lua5.1a.vcxproj]
+  ldo.obj : error LNK2019: unresolved external symbol _setjmp referenced in function luaD_rawrunprotected [C:\UDefrag\ultradefrag-src\src\bin\lua5 .1a\lua5.1a.vcxproj]
+  liolib.obj : error LNK2019: unresolved external symbol __imp__popen referenced in function io_popen [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\ lua5.1a.vcxproj]
+  liolib.obj : error LNK2019: unresolved external symbol __imp_tmpfile referenced in function io_tmpfile [C:\UDefrag\ultradefrag-src\src\bin\lua5. 1a\lua5.1a.vcxproj]
+  liolib.obj : error LNK2019: unresolved external symbol __imp_clearerr referenced in function g_read [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\ lua5.1a.vcxproj]
+  liolib.obj : error LNK2019: unresolved external symbol __imp_fscanf referenced in function read_number [C:\UDefrag\ultradefrag-src\src\bin\lua5. 1a\lua5.1a.vcxproj]
+  liolib.obj : error LNK2019: unresolved external symbol __imp_fwrite referenced in function g_write [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\l ua5.1a.vcxproj]
+  liolib.obj : error LNK2019: unresolved external symbol __imp_ftell referenced in function f_seek [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua 5.1a.vcxproj]
+  liolib.obj : error LNK2019: unresolved external symbol __imp_fseek referenced in function f_seek [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua 5.1a.vcxproj]
+  liolib.obj : error LNK2019: unresolved external symbol __imp_setvbuf referenced in function f_setvbuf [C:\UDefrag\ultradefrag-src\src\bin\lua5.1 a\lua5.1a.vcxproj]
+  liolib.obj : error LNK2019: unresolved external symbol __imp_fflush referenced in function io_flush [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\ lua5.1a.vcxproj]
+  liolib.obj : error LNK2019: unresolved external symbol __imp__pclose referenced in function io_pclose [C:\UDefrag\ultradefrag-src\src\bin\lua5.1 a\lua5.1a.vcxproj]
+  llex.obj : error LNK2019: unresolved external symbol __imp_iscntrl referenced in function luaX_token2str [C:\UDefrag\ultradefrag-src\src\bin\lua 5.1a\lua5.1a.vcxproj]
+  lstrlib.obj : error LNK2001: unresolved external symbol __imp_iscntrl [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  llex.obj : error LNK2019: unresolved external symbol __imp_isalnum referenced in function llex [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5. 1a.vcxproj]
+  lstrlib.obj : error LNK2001: unresolved external symbol __imp_isalnum [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  llex.obj : error LNK2019: unresolved external symbol __imp_isalpha referenced in function llex [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5. 1a.vcxproj]
+  lstrlib.obj : error LNK2001: unresolved external symbol __imp_isalpha [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  llex.obj : error LNK2019: unresolved external symbol __imp_isdigit referenced in function llex [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5. 1a.vcxproj]
+  lstrlib.obj : error LNK2001: unresolved external symbol __imp_isdigit [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  llex.obj : error LNK2019: unresolved external symbol __imp_localeconv referenced in function trydecpoint [C:\UDefrag\ultradefrag-src\src\bin\lua 5.1a\lua5.1a.vcxproj]
+  lmathlib.obj : error LNK2019: unresolved external symbol fabs referenced in function math_abs [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1 a.vcxproj]
+  lmathlib.obj : error LNK2019: unresolved external symbol sin referenced in function math_sin [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a .vcxproj]
+  lmathlib.obj : error LNK2019: unresolved external symbol sinh referenced in function math_sinh [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5. 1a.vcxproj]
+  lmathlib.obj : error LNK2019: unresolved external symbol cos referenced in function math_cos [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a .vcxproj]
+  lmathlib.obj : error LNK2019: unresolved external symbol cosh referenced in function math_cosh [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5. 1a.vcxproj]
+  lmathlib.obj : error LNK2019: unresolved external symbol tan referenced in function math_tan [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a .vcxproj]
+  lmathlib.obj : error LNK2019: unresolved external symbol tanh referenced in function math_tanh [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5. 1a.vcxproj]
+  lmathlib.obj : error LNK2019: unresolved external symbol asin referenced in function math_asin [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5. 1a.vcxproj]
+  lmathlib.obj : error LNK2019: unresolved external symbol acos referenced in function math_acos [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5. 1a.vcxproj]
+  lmathlib.obj : error LNK2019: unresolved external symbol atan referenced in function math_atan [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5. 1a.vcxproj]
+  lmathlib.obj : error LNK2019: unresolved external symbol atan2 referenced in function math_atan2 [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua 5.1a.vcxproj]
+  lmathlib.obj : error LNK2019: unresolved external symbol __imp_ceil referenced in function math_ceil [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a \lua5.1a.vcxproj]
+  lmathlib.obj : error LNK2019: unresolved external symbol fmod referenced in function math_fmod [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5. 1a.vcxproj]
+  lmathlib.obj : error LNK2019: unresolved external symbol __imp_modf referenced in function math_modf [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a \lua5.1a.vcxproj]
+  lmathlib.obj : error LNK2019: unresolved external symbol sqrt referenced in function math_sqrt [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5. 1a.vcxproj]
+  lmathlib.obj : error LNK2019: unresolved external symbol log referenced in function math_log [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a .vcxproj]
+  lmathlib.obj : error LNK2019: unresolved external symbol log10 referenced in function math_log10 [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua 5.1a.vcxproj]
+  lmathlib.obj : error LNK2019: unresolved external symbol exp referenced in function math_exp [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a .vcxproj]
+  lmathlib.obj : error LNK2019: unresolved external symbol __imp_frexp referenced in function math_frexp [C:\UDefrag\ultradefrag-src\src\bin\lua5. 1a\lua5.1a.vcxproj]
+  lmathlib.obj : error LNK2019: unresolved external symbol __imp_ldexp referenced in function math_ldexp [C:\UDefrag\ultradefrag-src\src\bin\lua5. 1a\lua5.1a.vcxproj]
+  lmathlib.obj : error LNK2019: unresolved external symbol __imp_rand referenced in function math_random [C:\UDefrag\ultradefrag-src\src\bin\lua5. 1a\lua5.1a.vcxproj]
+  lmathlib.obj : error LNK2019: unresolved external symbol __imp_srand referenced in function math_randomseed [C:\UDefrag\ultradefrag-src\src\bin\ lua5.1a\lua5.1a.vcxproj]
+  lmathlib.obj : error LNK2001: unresolved external symbol __imp__HUGE [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  loadlib.obj : error LNK2019: unresolved external symbol __imp_strrchr referenced in function modinit [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a \lua5.1a.vcxproj]
+  loadlib.obj : error LNK2019: unresolved external symbol __imp_getenv referenced in function setpath [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\ lua5.1a.vcxproj]
+  lobject.obj : error LNK2019: unresolved external symbol __imp_strtod referenced in function luaO_str2d [C:\UDefrag\ultradefrag-src\src\bin\lua5. 1a\lua5.1a.vcxproj]
+  lobject.obj : error LNK2019: unresolved external symbol __imp_sprintf referenced in function luaO_pushvfstring [C:\UDefrag\ultradefrag-src\src\b in\lua5.1a\lua5.1a.vcxproj]
+  lstrlib.obj : error LNK2001: unresolved external symbol __imp_sprintf [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lvm.obj : error LNK2001: unresolved external symbol __imp_sprintf [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lobject.obj : error LNK2019: unresolved external symbol __imp_strncat referenced in function luaO_chunkid [C:\UDefrag\ultradefrag-src\src\bin\lu a5.1a\lua5.1a.vcxproj]
+  lobject.obj : error LNK2019: unresolved external symbol __imp_strcspn referenced in function luaO_chunkid [C:\UDefrag\ultradefrag-src\src\bin\lu a5.1a\lua5.1a.vcxproj]
+  lobject.obj : error LNK2019: unresolved external symbol strcat referenced in function luaO_chunkid [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\l ua5.1a.vcxproj]
+  lobject.obj : error LNK2019: unresolved external symbol strcpy referenced in function luaO_chunkid [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\l ua5.1a.vcxproj]
+  lstrlib.obj : error LNK2001: unresolved external symbol strcpy [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lobject.obj : error LNK2019: unresolved external symbol __imp_strncpy referenced in function luaO_chunkid [C:\UDefrag\ultradefrag-src\src\bin\lu a5.1a\lua5.1a.vcxproj]
+  lstrlib.obj : error LNK2001: unresolved external symbol __imp_strncpy [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  loslib.obj : error LNK2019: unresolved external symbol __imp_system referenced in function os_execute [C:\UDefrag\ultradefrag-src\src\bin\lua5.1 a\lua5.1a.vcxproj]
+  loslib.obj : error LNK2019: unresolved external symbol __imp_malloc referenced in function convert_to_utf16 [C:\UDefrag\ultradefrag-src\src\bin\ lua5.1a\lua5.1a.vcxproj]
+  loslib.obj : error LNK2019: unresolved external symbol __imp_remove referenced in function os_remove [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a \lua5.1a.vcxproj]
+  loslib.obj : error LNK2019: unresolved external symbol __imp_rename referenced in function os_rename [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a \lua5.1a.vcxproj]
+  loslib.obj : error LNK2019: unresolved external symbol __imp_tmpnam referenced in function os_tmpname [C:\UDefrag\ultradefrag-src\src\bin\lua5.1 a\lua5.1a.vcxproj]
+  loslib.obj : error LNK2019: unresolved external symbol __imp_wcslen referenced in function convert_to_utf8 [C:\UDefrag\ultradefrag-src\src\bin\l ua5.1a\lua5.1a.vcxproj]
+  loslib.obj : error LNK2019: unresolved external symbol __imp_clock referenced in function os_clock [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\l ua5.1a.vcxproj]
+  loslib.obj : error LNK2019: unresolved external symbol __imp_strftime referenced in function os_date [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a \lua5.1a.vcxproj]
+  loslib.obj : error LNK2019: unresolved external symbol __imp__gmtime64 referenced in function gmtime [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a \lua5.1a.vcxproj]
+  loslib.obj : error LNK2019: unresolved external symbol __imp__localtime64 referenced in function localtime [C:\UDefrag\ultradefrag-src\src\bin\l ua5.1a\lua5.1a.vcxproj]
+  loslib.obj : error LNK2019: unresolved external symbol __imp__time64 referenced in function time [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua 5.1a.vcxproj]
+  loslib.obj : error LNK2019: unresolved external symbol __imp__mktime64 referenced in function mktime [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a \lua5.1a.vcxproj]
+  loslib.obj : error LNK2019: unresolved external symbol __imp__difftime64 referenced in function difftime [C:\UDefrag\ultradefrag-src\src\bin\lua 5.1a\lua5.1a.vcxproj]
+  loslib.obj : error LNK2019: unresolved external symbol __imp_setlocale referenced in function os_setlocale [C:\UDefrag\ultradefrag-src\src\bin\l ua5.1a\lua5.1a.vcxproj]
+  lstring.obj : error LNK2019: unresolved external symbol memcmp referenced in function luaS_newlstr [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\l ua5.1a.vcxproj]
+  lstrlib.obj : error LNK2001: unresolved external symbol memcmp [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lundump.obj : error LNK2001: unresolved external symbol memcmp [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  lstrlib.obj : error LNK2019: unresolved external symbol __imp_tolower referenced in function str_lower [C:\UDefrag\ultradefrag-src\src\bin\lua5. 1a\lua5.1a.vcxproj]
+  lstrlib.obj : error LNK2019: unresolved external symbol __imp_toupper referenced in function str_upper [C:\UDefrag\ultradefrag-src\src\bin\lua5. 1a\lua5.1a.vcxproj]
+  lstrlib.obj : error LNK2019: unresolved external symbol __imp_strpbrk referenced in function str_find_aux [C:\UDefrag\ultradefrag-src\src\bin\lu a5.1a\lua5.1a.vcxproj]
+  lstrlib.obj : error LNK2019: unresolved external symbol __imp_isxdigit referenced in function match_class [C:\UDefrag\ultradefrag-src\src\bin\lu a5.1a\lua5.1a.vcxproj]
+  lstrlib.obj : error LNK2019: unresolved external symbol __imp_isupper referenced in function match_class [C:\UDefrag\ultradefrag-src\src\bin\lua 5.1a\lua5.1a.vcxproj]
+  lstrlib.obj : error LNK2019: unresolved external symbol __imp_ispunct referenced in function match_class [C:\UDefrag\ultradefrag-src\src\bin\lua 5.1a\lua5.1a.vcxproj]
+  lstrlib.obj : error LNK2019: unresolved external symbol __imp_islower referenced in function match_class [C:\UDefrag\ultradefrag-src\src\bin\lua 5.1a\lua5.1a.vcxproj]
+  lstrlib.obj : error LNK2019: unresolved external symbol __imp_memchr referenced in function lmemfind [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a \lua5.1a.vcxproj]
+  lvm.obj : error LNK2019: unresolved external symbol __imp_strcoll referenced in function l_strcmp [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lu a5.1a.vcxproj]
+  LINK : error LNK2001: unresolved external symbol _DllMainCRTStartup [C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj]
+  C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\Debug\lua5.1a.dll : fatal error LNK1120: 104 unresolved externals [C:\UDefrag\ultradefrag-src\src\bin \lua5.1a\lua5.1a.vcxproj]
+
+    4 Warning(s)
+    235 Error(s)
+
+Time Elapsed 00:00:23.74
+
+C:\UDefrag\ultradefrag-src\src\bin>

@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{AE5784C0-4D25-3DC9-9E72-E850580CBC75}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>ZERO_CHECK</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="CMakeFiles\c342ab3a9d6999e34ef4554bbe960b6e\generate.stamp.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Checking Build System</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+C:\msys64\mingw64\bin\cmake.exe -HC:/UDefrag/ultradefrag-src/src -BC:/UDefrag/ultradefrag-src/src/bin --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/UDefrag/ultradefrag-src/src/bin/UltraDefrag.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/UDefrag/ultradefrag-src/src/bin/CMakeFiles/c342ab3a9d6999e34ef4554bbe960b6e/generate.stamp.rule;C:\UDefrag\ultradefrag-src\src\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeCCompiler.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeCXXCompiler.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeRCCompiler.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeSystem.cmake;C:\UDefrag\ultradefrag-src\src\dll\udefrag\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\dll\zenwinx\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\lua5.1\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\stopgap\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\wxgui\CMakeLists.txt;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCXXInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCommonLanguageInclude.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeGenericSystem.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeLanguageInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeRCInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeSystemSpecificInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeSystemSpecificInitialize.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Compiler\MSVC-CXX.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\FindBoost.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\FindPackageHandleStandardArgs.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\FindPackageMessage.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\FindwxWidgets.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC-C.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC-CXX.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\WindowsPaths.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\UsewxWidgets.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\generate.stamp;C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\CMakeFiles\generate.stamp;C:\UDefrag\ultradefrag-src\src\bin\zenwinx\CMakeFiles\generate.stamp;C:\UDefrag\ultradefrag-src\src\bin\udefrag\CMakeFiles\generate.stamp;C:\UDefrag\ultradefrag-src\src\bin\stopgap\CMakeFiles\generate.stamp;C:\UDefrag\ultradefrag-src\src\bin\wxgui\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Checking Build System</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+C:\msys64\mingw64\bin\cmake.exe -HC:/UDefrag/ultradefrag-src/src -BC:/UDefrag/ultradefrag-src/src/bin --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/UDefrag/ultradefrag-src/src/bin/UltraDefrag.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/UDefrag/ultradefrag-src/src/bin/CMakeFiles/c342ab3a9d6999e34ef4554bbe960b6e/generate.stamp.rule;C:\UDefrag\ultradefrag-src\src\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeCCompiler.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeCXXCompiler.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeRCCompiler.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeSystem.cmake;C:\UDefrag\ultradefrag-src\src\dll\udefrag\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\dll\zenwinx\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\lua5.1\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\stopgap\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\wxgui\CMakeLists.txt;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCXXInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCommonLanguageInclude.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeGenericSystem.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeLanguageInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeRCInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeSystemSpecificInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeSystemSpecificInitialize.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Compiler\MSVC-CXX.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\FindBoost.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\FindPackageHandleStandardArgs.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\FindPackageMessage.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\FindwxWidgets.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC-C.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC-CXX.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\WindowsPaths.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\UsewxWidgets.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\generate.stamp;C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\CMakeFiles\generate.stamp;C:\UDefrag\ultradefrag-src\src\bin\zenwinx\CMakeFiles\generate.stamp;C:\UDefrag\ultradefrag-src\src\bin\udefrag\CMakeFiles\generate.stamp;C:\UDefrag\ultradefrag-src\src\bin\stopgap\CMakeFiles\generate.stamp;C:\UDefrag\ultradefrag-src\src\bin\wxgui\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Checking Build System</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+C:\msys64\mingw64\bin\cmake.exe -HC:/UDefrag/ultradefrag-src/src -BC:/UDefrag/ultradefrag-src/src/bin --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/UDefrag/ultradefrag-src/src/bin/UltraDefrag.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/UDefrag/ultradefrag-src/src/bin/CMakeFiles/c342ab3a9d6999e34ef4554bbe960b6e/generate.stamp.rule;C:\UDefrag\ultradefrag-src\src\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeCCompiler.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeCXXCompiler.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeRCCompiler.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeSystem.cmake;C:\UDefrag\ultradefrag-src\src\dll\udefrag\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\dll\zenwinx\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\lua5.1\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\stopgap\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\wxgui\CMakeLists.txt;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCXXInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCommonLanguageInclude.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeGenericSystem.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeLanguageInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeRCInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeSystemSpecificInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeSystemSpecificInitialize.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Compiler\MSVC-CXX.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\FindBoost.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\FindPackageHandleStandardArgs.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\FindPackageMessage.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\FindwxWidgets.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC-C.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC-CXX.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\WindowsPaths.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\UsewxWidgets.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\generate.stamp;C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\CMakeFiles\generate.stamp;C:\UDefrag\ultradefrag-src\src\bin\zenwinx\CMakeFiles\generate.stamp;C:\UDefrag\ultradefrag-src\src\bin\udefrag\CMakeFiles\generate.stamp;C:\UDefrag\ultradefrag-src\src\bin\stopgap\CMakeFiles\generate.stamp;C:\UDefrag\ultradefrag-src\src\bin\wxgui\CMakeFiles\generate.stamp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Checking Build System</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+C:\msys64\mingw64\bin\cmake.exe -HC:/UDefrag/ultradefrag-src/src -BC:/UDefrag/ultradefrag-src/src/bin --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/UDefrag/ultradefrag-src/src/bin/UltraDefrag.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/UDefrag/ultradefrag-src/src/bin/CMakeFiles/c342ab3a9d6999e34ef4554bbe960b6e/generate.stamp.rule;C:\UDefrag\ultradefrag-src\src\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeCCompiler.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeCXXCompiler.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeRCCompiler.cmake;C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\3.9.6\CMakeSystem.cmake;C:\UDefrag\ultradefrag-src\src\dll\udefrag\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\dll\zenwinx\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\lua5.1\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\stopgap\CMakeLists.txt;C:\UDefrag\ultradefrag-src\src\wxgui\CMakeLists.txt;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCXXInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeCommonLanguageInclude.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeGenericSystem.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeLanguageInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeRCInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeSystemSpecificInformation.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\CMakeSystemSpecificInitialize.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Compiler\MSVC-CXX.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\FindBoost.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\FindPackageHandleStandardArgs.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\FindPackageMessage.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\FindwxWidgets.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC-C.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC-CXX.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows-MSVC.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\Windows.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\Platform\WindowsPaths.cmake;C:\msys64\mingw64\share\cmake-3.9\Modules\UsewxWidgets.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\UDefrag\ultradefrag-src\src\bin\CMakeFiles\generate.stamp;C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\CMakeFiles\generate.stamp;C:\UDefrag\ultradefrag-src\src\bin\zenwinx\CMakeFiles\generate.stamp;C:\UDefrag\ultradefrag-src\src\bin\udefrag\CMakeFiles\generate.stamp;C:\UDefrag\ultradefrag-src\src\bin\stopgap\CMakeFiles\generate.stamp;C:\UDefrag\ultradefrag-src\src\bin\wxgui\CMakeFiles\generate.stamp</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

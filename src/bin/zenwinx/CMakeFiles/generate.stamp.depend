@@ -1,0 +1,24 @@
+# CMake generation dependency list for this directory.
+C:/UDefrag/ultradefrag-src/src/dll/zenwinx/CMakeLists.txt
+C:/UDefrag/ultradefrag-src/src/bin/CMakeFiles/3.9.6/CMakeSystem.cmake
+C:/msys64/mingw64/share/cmake-3.9/Modules/CMakeSystemSpecificInitialize.cmake
+C:/UDefrag/ultradefrag-src/src/bin/CMakeFiles/3.9.6/CMakeCCompiler.cmake
+C:/UDefrag/ultradefrag-src/src/bin/CMakeFiles/3.9.6/CMakeCXXCompiler.cmake
+C:/msys64/mingw64/share/cmake-3.9/Modules/CMakeSystemSpecificInformation.cmake
+C:/msys64/mingw64/share/cmake-3.9/Modules/CMakeGenericSystem.cmake
+C:/msys64/mingw64/share/cmake-3.9/Modules/Platform/Windows.cmake
+C:/msys64/mingw64/share/cmake-3.9/Modules/Platform/WindowsPaths.cmake
+C:/msys64/mingw64/share/cmake-3.9/Modules/CMakeCInformation.cmake
+C:/msys64/mingw64/share/cmake-3.9/Modules/CMakeLanguageInformation.cmake
+C:/msys64/mingw64/share/cmake-3.9/Modules/Platform/Windows-MSVC-C.cmake
+C:/msys64/mingw64/share/cmake-3.9/Modules/Platform/Windows-MSVC.cmake
+C:/UDefrag/ultradefrag-src/src/bin/CMakeFiles/3.9.6/CMakeRCCompiler.cmake
+C:/msys64/mingw64/share/cmake-3.9/Modules/CMakeRCInformation.cmake
+C:/msys64/mingw64/share/cmake-3.9/Modules/CMakeCommonLanguageInclude.cmake
+C:/msys64/mingw64/share/cmake-3.9/Modules/CMakeCXXInformation.cmake
+C:/msys64/mingw64/share/cmake-3.9/Modules/CMakeLanguageInformation.cmake
+C:/msys64/mingw64/share/cmake-3.9/Modules/Compiler/MSVC-CXX.cmake
+C:/msys64/mingw64/share/cmake-3.9/Modules/Compiler/CMakeCommonCompilerMacros.cmake
+C:/msys64/mingw64/share/cmake-3.9/Modules/Platform/Windows-MSVC-CXX.cmake
+C:/msys64/mingw64/share/cmake-3.9/Modules/Platform/Windows-MSVC.cmake
+C:/msys64/mingw64/share/cmake-3.9/Modules/CMakeCommonLanguageInclude.cmake

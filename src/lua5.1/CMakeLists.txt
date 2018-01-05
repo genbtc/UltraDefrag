@@ -19,7 +19,7 @@ add_definitions(
     -D_WINDOWS    
 )
 #/Zi /nologo /W3 /WX- /Od /GF /Gm /EHsc /RTC1 /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Gd
-set(CMAKE_C_FLAGS_DEBUG "/Zi /nologo /W3 /WX- /Ob0 /Od /GF /Gm /EHsc /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Gd /TC ")
+set(CMAKE_C_FLAGS_DEBUG "/Zi /nologo /W3 /WX- /Ob0 /Od /GF /Gm /EHsc /MDd /GS- /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Gd /TC ")
 if(Debug)
     add_definitions(
         -DATTACH_DEBUGGER
@@ -69,4 +69,4 @@ add_library(${PACKAGE_NAME} SHARED
 #3.   Set Subsystem
 #4.   No Default Libs
 #5.   Set Entry Point 
-set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/MANIFEST:NO /INCREMENTAL:NO /SUBSYSTEM:WINDOWS /NODEFAULTLIB")
+set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/MANIFEST:NO /INCREMENTAL:NO /SUBSYSTEM:WINDOWS")
