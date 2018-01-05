@@ -96,8 +96,7 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USING_V110_SDK71_;OFFICIAL_RELEASE;UNICODE;_UNICODE;WXUSINGDLL;_CRTDBG_MAP_ALLOC;_WIN32;_WINDLL;__WXMSW__;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\mswud;A:\wxWidgets\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(wxWidgets)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
       <AdditionalIncludeDirectories>A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\mswud;A:\wxWidgets\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

@@ -144,12 +144,8 @@ FONT 9, "Courier New"
 BEGIN
 END
 
-// manifests for all targets produces make-manifests.cmd script
-#ifdef _WIN64
-1 24 "res/ultradefragx64.manifest"
-#else
-1 24 "res/ultradefragx86.manifest"
-#endif
+// manifests for all targets produced by make-manifests.cmd script
+1 24 "res/ultradefrag-bothX86+X64.manifest"
 
 VS_VERSION_INFO VERSIONINFO
  FILEVERSION VERSION
