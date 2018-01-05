@@ -352,12 +352,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <None Include="..\..\lua5.1\lua5.1.def" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="C:\UDefrag\ultradefrag-src\src\bin\ZERO_CHECK.vcxproj">
-      <Project>{AE5784C0-4D25-3DC9-9E72-E850580CBC75}</Project>
-      <Name>ZERO_CHECK</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\lua5.1\lapi.h" />
     <ClInclude Include="..\..\lua5.1\lauxlib.h" />
     <ClInclude Include="..\..\lua5.1\lcode.h" />

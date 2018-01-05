@@ -46,11 +46,8 @@
     <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <ImportGroup Label="ExtensionSettings">
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
@@ -91,7 +88,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TreatWarningAsError>false</TreatWarningAsError>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>DEBUG;_DEBUG;_UNICODE;UNICODE;wxMSVC_VERSION=Windows7.1SDK;__WXDEBUG__;WXUSINGDLL;_CRTDBG_MAP_ALLOC;_WINDOWS;__WXMSW__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;wxMSVC_VERSION=Windows7.1SDK;__WXDEBUG__;WXUSINGDLL;_CRTDBG_MAP_ALLOC;_WINDOWS;__WXMSW__;</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -111,7 +108,7 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxbase31ud_net.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxmsw31ud_adv.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxmsw31ud_core.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxbase31ud.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxpngd.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxtiffd.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxjpegd.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxzlibd.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxregexud.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxexpatd.lib;winmm.lib;comctl32.lib;oleacc.lib;rpcrt4.lib;shlwapi.lib;version.lib;wsock32.lib;..\udefrag\Debug\udefrag.lib;..\zenwinx\Debug\zenwinx.lib;..\lua5.1a\Debug\lua5.1a.lib;..\stopgap\Debug\stopgap.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxbase31ud_net.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxmsw31ud_adv.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxmsw31ud_core.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxbase31ud.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxpngd.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxtiffd.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxjpegd.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxzlibd.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxregexud.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxexpatd.lib;winmm.lib;comctl32.lib;oleacc.lib;rpcrt4.lib;shlwapi.lib;version.lib;wsock32.lib;..\udefrag\Debug\udefrag.lib;..\zenwinx\Debug\zenwinx.lib;..\lua5.1a\Debug\lua5.1a.lib;..\stopgap\Debug\stopgap.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>ucrtd.lib</IgnoreSpecificDefaultLibraries>
@@ -358,10 +355,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="..\..\wxgui\main.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="C:\UDefrag\ultradefrag-src\src\bin\ZERO_CHECK.vcxproj">
-      <Project>{AE5784C0-4D25-3DC9-9E72-E850580CBC75}</Project>
-      <Name>ZERO_CHECK</Name>
-    </ProjectReference>
     <ProjectReference Include="C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj">
       <Project>{2B29AD58-7BE5-36AE-80B3-D33F011084A2}</Project>
       <Name>lua5.1a</Name>

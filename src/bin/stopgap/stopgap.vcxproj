@@ -341,10 +341,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="..\..\stopgap\zen.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="C:\UDefrag\ultradefrag-src\src\bin\ZERO_CHECK.vcxproj">
-      <Project>{AE5784C0-4D25-3DC9-9E72-E850580CBC75}</Project>
-      <Name>ZERO_CHECK</Name>
-    </ProjectReference>
     <ProjectReference Include="C:\UDefrag\ultradefrag-src\src\bin\zenwinx\zenwinx.vcxproj">
       <Project>{82164877-678B-3133-8F45-21476E2648E4}</Project>
       <Name>zenwinx</Name>

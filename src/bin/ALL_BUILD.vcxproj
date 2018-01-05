@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -154,10 +154,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="C:\UDefrag\ultradefrag-src\src\bin\ZERO_CHECK.vcxproj">
-      <Project>{AE5784C0-4D25-3DC9-9E72-E850580CBC75}</Project>
-      <Name>ZERO_CHECK</Name>
-    </ProjectReference>
     <ProjectReference Include="C:\UDefrag\ultradefrag-src\src\bin\lua5.1a\lua5.1a.vcxproj">
       <Project>{2B29AD58-7BE5-36AE-80B3-D33F011084A2}</Project>
       <Name>lua5.1a</Name>
