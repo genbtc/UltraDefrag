@@ -82,8 +82,6 @@
     <ClCompile>
       <AdditionalIncludeDirectories>$(wxWidgets)\include\msvc;$(wxWidgets)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
-      <CallingConvention>Cdecl</CallingConvention>
-      <CompileAs>CompileAsCpp</CompileAs>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FloatingPointModel>Precise</FloatingPointModel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -97,6 +95,8 @@
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USING_V110_SDK71_;OFFICIAL_RELEASE;UNICODE;_UNICODE;WXUSINGDLL;_CRTDBG_MAP_ALLOC;_WIN32;_WINDLL;__WXMSW__;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -113,7 +113,6 @@
     <Link>
       <AdditionalDependencies>A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxbase31ud_net.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxmsw31ud_adv.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxmsw31ud_core.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxbase31ud.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxpngd.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxtiffd.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxjpegd.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxzlibd.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxregexud.lib;A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\wxexpatd.lib;winmm.lib;comctl32.lib;oleacc.lib;rpcrt4.lib;shlwapi.lib;version.lib;wsock32.lib;..\udefrag\Debug\udefrag.lib;..\zenwinx\Debug\zenwinx.lib;..\lua5.1a\Debug\lua5.1a.lib;..\stopgap\Debug\stopgap.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>ucrtd.lib</IgnoreSpecificDefaultLibraries>
       <ImportLibrary>C:/UDefrag/ultradefrag-src/src/bin/wxgui/Debug/wxgui.lib</ImportLibrary>
@@ -130,7 +129,6 @@
     <ClCompile>
       <AdditionalIncludeDirectories>A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\mswud;A:\wxWidgets\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
-      <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <Optimization>MaxSpeed</Optimization>
@@ -143,6 +141,10 @@
       <DebugInformationFormat>
       </DebugInformationFormat>
       <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_USING_V110_SDK71_;OFFICIAL_RELEASE;UNICODE;_UNICODE;WXUSINGDLL;_CRTDBG_MAP_ALLOC;_WIN32;_WINDLL;__WXMSW__;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -176,7 +178,6 @@
     <ClCompile>
       <AdditionalIncludeDirectories>A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\mswud;A:\wxWidgets\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
-      <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <Optimization>MinSpace</Optimization>
@@ -189,6 +190,10 @@
       <DebugInformationFormat>
       </DebugInformationFormat>
       <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_USING_V110_SDK71_;OFFICIAL_RELEASE;UNICODE;_UNICODE;WXUSINGDLL;_CRTDBG_MAP_ALLOC;_WIN32;_WINDLL;__WXMSW__;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -222,7 +227,6 @@
     <ClCompile>
       <AdditionalIncludeDirectories>A:\wxWidgets\lib\vcWindows7.1SDK_x64_dll\mswud;A:\wxWidgets\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
-      <CompileAs>CompileAsCpp</CompileAs>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
@@ -234,6 +238,10 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_USING_V110_SDK71_;OFFICIAL_RELEASE;UNICODE;_UNICODE;WXUSINGDLL;_CRTDBG_MAP_ALLOC;_WIN32;_WINDLL;__WXMSW__;CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <PrecompiledHeaderFile>prec.h</PrecompiledHeaderFile>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_USING_V110_SDK71_;OFFICIAL_RELEASE;UNICODE;_UNICODE;WXUSINGDLL;_CRTDBG_MAP_ALLOC;_WIN32;_WINDLL;__WXMSW__;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
