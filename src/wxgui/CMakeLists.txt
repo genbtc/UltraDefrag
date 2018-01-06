@@ -102,9 +102,7 @@ target_sources(${PACKAGE_NAME} PRIVATE prec.h udefrag-internals_flags.h main.h)
 #C++11 features:
 target_compile_features(${PACKAGE_NAME} INTERFACE cxx_std_11)
 #Link Libraries, Make the EXE
-target_link_libraries(${PACKAGE_NAME} PUBLIC ${wxWidgets_LIBRARIES} udefrag zenwinx lua5.1a stopgap)
+target_link_libraries(${PACKAGE_NAME} PUBLIC ${wxWidgets_LIBRARIES} lua5.1a zenwinx udefrag stopgap)
 #Set Link Flags:
 #1.   Disable the default manifest because we provide our own in wxgui.rc resource file above^
-#2.   Disable incremental build.
-#3.   Set Subsystem
-set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/MANIFEST:NO /INCREMENTAL:NO /SUBSYSTEM:WINDOWS")
+set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/MANIFEST:NO")

@@ -63,10 +63,30 @@ add_library(${PACKAGE_NAME} SHARED
     lzio.c
     lua5.1.def
 )
-#Set Link Flags:
-#1.   Disable the default manifest because we provide our own in zenwinx.rc resource file above^
-#2.   Disable incremental build.
-#3.   Set Subsystem
-#4.   No Default Libs
-#5.   Set Entry Point 
-set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/MANIFEST:NO /INCREMENTAL:NO /SUBSYSTEM:WINDOWS")
+#Add .H Files
+target_sources(${PACKAGE_NAME} PRIVATE 
+    lapi.h
+    lauxlib.h
+    lcode.h
+    ldebug.h
+    ldo.h
+    lfunc.h
+    lgc.h
+    llex.h
+    llimits.h
+    lmem.h
+    lobject.h
+    lopcodes.h
+    lparser.h
+    lstate.h
+    lstring.h
+    ltable.h
+    ltm.h
+    lua.h
+    luaconf.h
+    lualib.h
+    lundump.h
+    lvm.h
+    lzio.h
+)
+#No other config needed.

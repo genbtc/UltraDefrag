@@ -71,4 +71,4 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE
 #3.   Set Subsystem
 #4.   No Default Libs
 #5.   Set Entry Point 
-set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/MANIFEST:NO /INCREMENTAL:NO /SUBSYSTEM:WINDOWS /NODEFAULTLIB /ENTRY:\"DllMain\"")
+set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/MANIFEST:NO /NODEFAULTLIB /ENTRY:\"DllMain\"")

@@ -67,24 +67,16 @@ target_sources(${PACKAGE_NAME} PRIVATE prec.h main.hpp op.hpp resource.h stopgap
 target_compile_features(${PACKAGE_NAME} INTERFACE cxx_std_14)
 #Compile it.
 target_link_libraries(${PACKAGE_NAME} PRIVATE
-    kernel32
-    user32
+    zenwinx
     ntdll
-    version
-    shlwapi
-    advapi32
-    msvcrtd
-    msvcprtd
     Boost::boost
     Boost::dynamic_linking
     Boost::program_options
     Boost::regex
     ${Boost_LIBRARIES}
-    zenwinx
-    ntdll
 )
 #Set Link Flags:
 #1.   Disable the default manifest because we provide our own in stopgap.rc resource file above^
 #2.   Disable incremental build.
 #3.   Set Subsystem
-set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/MANIFEST:NO /INCREMENTAL:NO /SUBSYSTEM:CONSOLE")
+#set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/MANIFEST:NO")

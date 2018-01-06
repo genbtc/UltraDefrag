@@ -78,10 +78,6 @@ target_sources(${PACKAGE_NAME} PRIVATE prec.h case-tables.h ntfs.h ntndk.h prb.h
 #Link Libraries, Make the DLL
 target_link_libraries(${PACKAGE_NAME} PRIVATE
     ntdll
-    #Somethings like These are needed for _snprintf and vswprintf that kinda thing,
-    #(or Win7SDK msvcrt100 or ucrtd from new win10.)
-    #msvcrtd
-    #msvcprtd
 )
 #Set Link Flags:
 #1.   Disable the default manifest because we provide our own in zenwinx.rc resource file above^
@@ -89,4 +85,4 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE
 #3.   Set Subsystem
 #4.   No Default Libs
 #5.   Set Entry Point 
-set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/MANIFEST:NO /INCREMENTAL:NO /SUBSYSTEM:CONSOLE /NODEFAULTLIB /ENTRY:\"DllMain\"")
+set_target_properties(${PACKAGE_NAME} PROPERTIES LINK_FLAGS "/MANIFEST:NO /NODEFAULTLIB /ENTRY:\"DllMain\"")
