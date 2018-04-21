@@ -260,39 +260,72 @@ END_EVENT_TABLE();
 ***            Event Handlers  &  Right Click Popup Menu Handlers           **
 ***=========================================================================**/
 
+//TODO: Only supports 1 file at a time. (working on this now)
+//TODO: Currently Blocks GUI.
+//TODO: Add Progress Meter or some kind of status.
+//TODO: Only the Timestamp on the file for Modified is preserved, thats it. 
+//      Created time and both Folder times get set to current date.
+//TODO: 
 void FilesList::RClickSubMenuMoveFiletoDriveX(wxCommandEvent& event)
 {
-    wxString itemtext = GetListItem().GetText();
+    const wchar_t letter = wchar_t(event.GetId() - 2000);
+    int c = GetItemCount();
+    if (c == 0) return;
+    if (c == 1) {
+        wxString itemtext = GetListItem().GetText();
+       
+        wchar_t *srcfilename = _wcsdup(itemtext.wc_str());
+        wchar_t *dstfilename = _wcsdup(itemtext.wc_str());
 
-	const wchar_t letter = wchar_t(event.GetId() - 2000);
-    wchar_t *srcfilename = _wcsdup(itemtext.wc_str());
-    wchar_t *dstfilename = _wcsdup(itemtext.wc_str());
+        dstfilename[0] = letter;
 
-    dstfilename[0] = letter;
+        wchar_t *dstpath = _wcsdup(dstfilename);
+        winx_path_remove_filename(dstpath);
 
-    wchar_t *dstpath = _wcsdup(dstfilename);
-    winx_path_remove_filename(dstpath);
+        GetFilesAndMakeFilterLists();
 
-    GetFilesAndMakeFilterLists();
+        Utils::createDirectoryRecursively(dstpath);
 
-    Utils::createDirectoryRecursively(dstpath);
-    
-    winx_file_info checkMove;
-    checkMove.path = srcfilename;
-    //TODO Change "NTFS" to detect what it actually is and if able to move it..
-    const int result = can_move(&checkMove, FS_NTFS);
-    if (result)
-        MoveFile(srcfilename,dstfilename);
-    //TODO: maybe Zenwinx native move_file is better instead or something?
-//    dtrace("srcfilename was %ws",srcfilename);
-//    dtrace("dstfilename was %ws",dstfilename);
-//    dtrace("dst path was %ws",dstpath);
-    delete srcfilename;    delete dstfilename;    delete dstpath;
+        //winx_file_info checkMove;
+        //checkMove.path = srcfilename;
+        //TODO Change "NTFS" to detect what it actually is and if able to move it..
+        //const int result = can_move(&checkMove, FS_NTFS);
+        //if (result)
+        MoveFile(srcfilename, dstfilename);
+        //TODO: maybe Zenwinx native move_file is better instead or something?
+        //    dtrace("srcfilename was %ws",srcfilename);
+        //    dtrace("dstfilename was %ws",dstfilename);
+        //    dtrace("dst path was %ws",dstpath);
+        delete srcfilename;    delete dstfilename;    delete dstpath;
 
-    RemoveSingleFileAt(); //remove from the listview.
-    g_mainFrame->m_jobThread->singlefile = false;
-    wxUnsetEnv(L"UD_CUT_FILTER");
-    dtrace("The Move Has Completed Fully."); //Final Complete Message.
+        RemoveSingleFileAt(); //remove from the listview.
+        g_mainFrame->m_jobThread->singlefile = false;
+        wxUnsetEnv(L"UD_CUT_FILTER");
+        dtrace("The Move Has Completed Fully."); //Final Complete Message.
+    }
+    if (c > 1)
+    {
+        GetFilesAndMakeFilterLists();
+        long i = GetFirstSelected();
+        while (i != -1) {
+            wxString itemtext = GetItemText(i);
+            wchar_t *srcfilename = _wcsdup(itemtext.wc_str());
+            wchar_t *dstfilename = _wcsdup(itemtext.wc_str());
+            dstfilename[0] = letter;
+            wchar_t *dstpath = _wcsdup(dstfilename);
+            winx_path_remove_filename(dstpath); //truncate filename off pathname
+
+            Utils::createDirectoryRecursively(dstpath);
+
+            MoveFile(srcfilename, dstfilename); //use OS to move.
+            delete srcfilename;    delete dstfilename;    delete dstpath;   //clean pointers.
+            i = GetNextSelected(i); //iterate next item in loop.
+        }
+        RemoveSingleFileAt(); //remove from the listview.
+        g_mainFrame->m_jobThread->singlefile = false;
+        wxUnsetEnv(L"UD_CUT_FILTER");
+        dtrace("The Move Has Completed Fully."); //Final Complete Message.        
+    }
 }
 
 //Take the FilesList and read what files are selected, then 
@@ -373,6 +406,7 @@ void FilesList::OnSelect(wxListEvent& event)
 
 void FilesList::OnDeSelect(wxListEvent& event)
 {
+    //TODO: On Deselect, Check for Multi-select, and if one is still available, pick that first one left.
     currentlyselected = -1;
     event.Skip();
 }
@@ -535,8 +569,11 @@ void MainFrame::FilesPopulateList(wxCommandEvent& event)
 
 wxString FilesList::OnGetItemText(long item, long column) const
 {
-    wxCHECK_MSG(item >= 0 && item < (long)allitems.size(),
-        "", "Invalid item index in FilesList::OnGetItemText");
+    auto result = item >= 0 && item < (long)allitems.size();
+    if (!result) {
+        wxCHECK_MSG(result, "", "Invalid item index in FilesList::OnGetItemText");
+        return "";
+    }
     
     switch (column) {
         case 0:
@@ -548,6 +585,7 @@ wxString FilesList::OnGetItemText(long item, long column) const
             return allitems[item].ReturnColumn(column);
         default:
             wxFAIL_MSG("Invalid column index in FilesList::OnGetItemText");
+            break;
     }
     return "";
 }
